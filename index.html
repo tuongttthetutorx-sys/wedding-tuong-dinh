@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Thiệp Cưới Thuận Tường &amp; Tiểu Dinh • 06.01.2027</title>
+  <meta name="description" content="Trân trọng kính mời Quý Khách đến dự buổi tiệc chung vui cùng gia đình Triệu Thuận Tường & Lư Tiểu Dinh vào lúc 18:00 Thứ Tư 06.01.2027 tại Riverside Palace (Sảnh Seine)." />
+
+  <!-- Open Graph / LINE (Taiwan), Zalo & Messenger Rich Share Preview -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://thuantuongtieudinh.io.vn/" />
+  <meta property="og:title" content="囍 Thuận Tường &amp; Tiểu Dinh｜趙順祥 &amp; 盧小瑩 婚禮喜帖 • 06.01.2027" />
+  <meta property="og:description" content="18:00 • 06.01.2027 • Riverside Palace (Sảnh Seine / Seine 宴會廳) — 360D Bến Vân Đồn, P. Vĩnh Hội, TP. Hồ Chí Minh." />
+  <meta property="og:image" content="https://thuantuongtieudinh.io.vn/assets/og-preview.jpg" />
+
+  <!-- Inline SVG Favicon (囍) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23721427'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='38' fill='%23fffbf2'%3E%E5%9B%8D%3C/text%3E%3C/svg%3E" />
+
+  <!-- Google Fonts: Vietnamese + Calligraphy + Traditional Chinese -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,500;1,600&family=Dancing+Script:wght@600;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/styles.css?v=38" />
+</head>
+<body class="envelope-locked">
+  <!-- Ambient Floating Dust & Petals -->
+  <canvas id="ambient-canvas" aria-hidden="true"></canvas>
+
+  <!-- Studio Stereo MP3 Soundtrack (Canon in D — Grand Piano, Harp & Warm Strings)
+       Real HTML5 <audio> plays on iPhone Media Channel even when hardware Silent Switch is ON! -->
+  <audio id="wedding-bgm" src="assets/wedding-canon.mp3?v=17" preload="auto" loop playsinline webkit-playsinline></audio>
+
+  <!-- Floating Top Stationery Navigation & Language Toggle -->
+  <header class="floating-topbar" aria-label="Điều hướng thiệp cưới">
+    <nav class="topbar-nav">
+      <a href="#envelope" id="nav-replay-envelope" class="nav-pill" data-i18n="navEnv">Phong bì</a>
+      <a href="#card-wrap-reception" id="nav-primary-cards" class="nav-pill">
+        <span class="nav-label-desktop" data-i18n="navCard1">Thiệp mời tiệc</span>
+        <span class="nav-label-mobile" data-i18n="navCardsMobile">Thiệp mời</span>
+      </a>
+      <a href="#card-wrap-ceremony" class="nav-pill is-desktop-pill" data-i18n="navCard2">Lễ thành hôn</a>
+      <a href="#card-wrap-chinese" class="nav-pill nav-pill-zh-first is-desktop-pill" data-i18n="navCard3">喜帖 (Hoa)</a>
+      <a href="#section-location" id="nav-map-pill" class="nav-pill nav-pill-map">
+        <svg class="nav-map-pin" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20 10c0 5.5-8 12-8 12s-8-6.5-8-12a8 8 0 1 1 16 0Z"></path>
+          <circle cx="12" cy="10" r="2.8"></circle>
+        </svg>
+        <span data-i18n="navVenue">Bản đồ</span>
+      </a>
+    </nav>
+    <div class="lang-switch" role="group" aria-label="Chọn ngôn ngữ VI / 中文">
+      <button type="button" class="lang-btn is-active" data-lang="vi">VI</button>
+      <button type="button" class="lang-btn" data-lang="zh">中文</button>
+    </div>
+  </header>
+
+  <!-- Floating Music Control -->
+  <button type="button" id="music-toggle" class="music-fab" aria-label="Bật / Tắt nhạc nền cưới" title="Bật / Tắt nhạc nền">
+    <span class="music-bars" aria-hidden="true">
+      <span></span><span></span><span></span><span></span>
+    </span>
+  </button>
+
+  <!-- Gentle Scroll-Down Invitation Pill (appears after inner card unfolds onto table) -->
+  <button type="button" id="scroll-invite-cue" class="scroll-invite-cue" aria-label="Vuốt xuống xem tiếp thiệp">
+    <span class="scroll-cue-text" data-i18n="scrollCue">Vuốt xuống xem tiếp thiệp</span>
+    <span class="scroll-cue-chevron" aria-hidden="true">⌄</span>
+  </button>
+
+  <!-- Puppy / Couple Interactive Toast -->
+  <div id="puppy-toast" class="puppy-toast" role="status" aria-live="polite"></div>
+
+  <!-- ========================================================================
+       ACT I: 3D BURGUNDY ENVELOPE ON FESTIVE BRIDAL CRIMSON SILK-PAPER STAGE
+       Tap / Swipe 1: Organic Hand Lift & 180° Paper Turn | Tap 2: Unseal Real Wax & Pull Card Out
+       ======================================================================== -->
+  <section id="envelope-stage" class="envelope-stage" aria-label="Phong bì thiệp cưới Thuận Tường & Tiểu Dinh">
+    <!-- Delicate Champagne-Gold Bridal Silk Ribbon Waves & Warm Candlelight Filigree -->
+    <svg class="tabletop-dappled-light" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <defs>
+        <linearGradient id="silkGoldStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#fbe7c6" stop-opacity="0.04" />
+          <stop offset="50%" stop-color="#f6d59e" stop-opacity="0.18" />
+          <stop offset="100%" stop-color="#fbe7c6" stop-opacity="0.04" />
+        </linearGradient>
+        <radialGradient id="stageWarmGlow" cx="50%" cy="48%" r="54%">
+          <stop offset="0%" stop-color="#ffdfb0" stop-opacity="0.18" />
+          <stop offset="52%" stop-color="#d4374a" stop-opacity="0.08" />
+          <stop offset="100%" stop-color="#3a040d" stop-opacity="0" />
+        </radialGradient>
+      </defs>
+      <rect width="800" height="1000" fill="url(#stageWarmGlow)" />
+      <!-- Whisper-fine flowing bridal silk ribbon waves echoing Card 3 artwork -->
+      <g fill="none" stroke="url(#silkGoldStroke)" stroke-width="1">
+        <path d="M -40 165 C 140 95, 290 225, 470 150 C 620 88, 725 145, 845 110" />
+        <path d="M -40 182 C 145 112, 295 242, 475 166 C 625 104, 730 162, 845 126" opacity="0.7" />
+        <path d="M -40 199 C 150 130, 300 258, 480 183 C 630 120, 735 178, 845 142" opacity="0.45" />
+        <path d="M -40 855 C 135 795, 315 905, 505 835 C 655 780, 740 835, 845 805" />
+        <path d="M -40 872 C 140 812, 320 922, 510 852 C 660 797, 745 852, 845 822" opacity="0.68" />
+        <path d="M -40 889 C 145 829, 325 939, 515 869 C 665 814, 750 869, 845 839" opacity="0.42" />
+      </g>
+    </svg>
+
+    <div id="envelope-lift-rig" class="envelope-lift-rig">
+      <!-- Realistic Multi-Layered Warm Tabletop Shadow on Cream Linen Desk -->
+      <div class="envelope-ground-shadow" aria-hidden="true"></div>
+
+      <div class="envelope-scene">
+        <div id="envelope-3d" class="envelope-3d" role="button" tabindex="0" aria-label="Chạm hoặc vuốt để lật và mở phong bì thiệp cưới">
+
+          <!-- FRONT FACE (Vỏ 100c Page 1) -->
+          <div class="envelope-face envelope-front">
+            <div id="svg-vo-front" class="envelope-svg-wrap"></div>
+            <div id="env-guest-name" class="envelope-guest-name">Quý Khách</div>
+            <div class="envelope-daylight envelope-daylight-front" aria-hidden="true"></div>
+            <div class="envelope-shade envelope-shade-front" aria-hidden="true"></div>
+          </div>
+
+          <!-- MATTE 350GSM BURGUNDY COTTON PAPER FOLDED THICKNESS SPINE -->
+          <div class="envelope-thickness-plate plate-paper-hi" aria-hidden="true"></div>
+          <div class="envelope-thickness-plate plate-paper-core" aria-hidden="true"></div>
+          <div class="envelope-thickness-plate plate-paper-lo" aria-hidden="true"></div>
+
+          <!-- BACK FACE (Vỏ 100c Page 2: V-Pocket + Pull-out Cream Card + 3D Top Flap + Hand-Poured Wax Seal) -->
+          <div class="envelope-face envelope-back">
+            <!-- Layer 1: Dark Wine Envelope Interior -->
+            <div class="env-back-interior" aria-hidden="true"></div>
+
+            <!-- Warm Golden Candlelight Aura Blooming from Envelope Throat on Open -->
+            <div class="env-throat-glow" aria-hidden="true"></div>
+
+            <!-- Layer 2: Cream Handmade-Paper Wedding Card tucked inside V-Pocket -->
+            <div class="env-pocket-card-clip" aria-hidden="true">
+              <div id="env-pullout-card" class="env-pullout-card">
+                <div id="env-pullout-svg" class="env-pullout-svg"></div>
+              </div>
+            </div>
+
+            <!-- Layer 3: Folded Side & Bottom Burgundy Pocket Flaps (V-cut recessed notch casting real paper shadow) -->
+            <div class="env-back-pocket-wrap">
+              <div class="env-back-pocket">
+                <div class="env-pocket-seams" aria-hidden="true"></div>
+                <div id="svg-vo-back" class="envelope-svg-wrap"></div>
+              </div>
+            </div>
+
+            <!-- Layer 4a: GPU-Composited Soft Flap Shadow -->
+            <div class="env-top-flap-shadow" aria-hidden="true"></div>
+
+            <!-- Layer 4b & 5 Unified inside Isolated 2D->3D Perspective Stage (prevents Chromium 3D clip culling on V-pocket card!) -->
+            <div id="env-flap-stage" class="env-flap-stage" aria-hidden="true">
+              <div id="env-top-flap" class="env-top-flap">
+                <!-- Outer Face (0° -> 90°): Burgundy Triangular Flap + Embossed T & D Wax Seal at Tip -->
+                <div class="env-flap-face env-flap-outer">
+                  <div class="env-top-flap-paper"></div>
+                  <div id="env-wax-seal" class="wax-seal-badge">
+                    <img
+                      src="assets/wax-seal-td.webp?v=13"
+                      alt=""
+                      width="250"
+                      height="250"
+                      decoding="async"
+                      draggable="false"
+                      class="wax-seal-photo"
+                    />
+                    <span class="wax-seal-glint-clip" aria-hidden="true">
+                      <span class="wax-seal-glint"></span>
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Inner Face (90° -> 174°): Opened Velvet Flap Lining + Smooth Wax Seal Underside Behind Tip -->
+                <div class="env-flap-face env-flap-inner">
+                  <div class="wax-seal-backside">
+                    <img
+                      src="assets/wax-seal-td.webp?v=13"
+                      alt=""
+                      width="250"
+                      height="250"
+                      decoding="async"
+                      draggable="false"
+                      class="wax-seal-photo is-backside"
+                    />
+                  </div>
+                  <div class="env-top-flap-lining"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Soft Natural Window-Light Modulation Across Back Face During Turn -->
+            <div class="envelope-back-fx" aria-hidden="true">
+              <div class="envelope-daylight envelope-daylight-back"></div>
+              <div class="envelope-shade envelope-shade-back"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Access Paused Overlay (shown only when WEDDING_CONFIG.isPublished === false or ?preview=paused) -->
+  <div id="access-paused-overlay" class="access-paused-overlay" hidden>
+    <div class="access-paused-card">
+      <div class="access-paused-monogram">囍</div>
+      <h2 id="paused-title">Thiệp Cưới Đang Tạm Khóa</h2>
+      <p id="paused-desc">
+        Trang thiệp cưới của Thuận Tường &amp; Tiểu Dinh hiện đang tạm ngưng truy cập hoặc đang được cập nhật. Xin cảm ơn Quý Khách đã ghé thăm!
+      </p>
+      <p class="access-paused-zh">趙順祥 &amp; 盧小瑩 婚禮喜帖目前暫時關閉或更新中，感謝您的造訪與祝福！</p>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       ACT II & III: MAIN SCROLLABLE WEDDING INVITATION
+       ======================================================================== -->
+  <main class="invitation-main">
+    <header class="hero-prelude">
+      <div class="hero-prelude-tag">
+        <span>囍</span>
+        <span data-i18n="heroTag">06 • 01 • 2027</span>
+        <span>囍</span>
+      </div>
+      <h1 data-i18n="heroTitle">Thuận Tường &amp; Tiểu Dinh</h1>
+    </header>
+
+    <!-- POST-WEDDING THANK YOU CARD & GOOGLE DRIVE PHOTO ALBUM (Active when thankYouMode=true or ?mode=thankyou) -->
+    <section id="thank-you-showcase" class="thank-you-showcase" hidden aria-label="Thiệp Cảm Ơn &amp; Kho Ảnh Kỷ Niệm">
+      <div class="thank-you-paper">
+        <div class="thank-you-seal">囍</div>
+        <div class="thank-you-eyebrow" id="ty-eyebrow">THIỆP CẢM ƠN • THANK YOU • 感謝卡</div>
+        <h2 class="thank-you-heading" id="ty-heading">Trân trọng cảm ơn Quý Khách</h2>
+        <p class="thank-you-body" id="ty-body">
+          Sự hiện diện, lời chúc phúc và tình cảm nồng ấm của Quý Khách trong ngày chung đôi 06.01.2027 là niềm vinh hạnh và món quà vô giá đối với gia đình chúng tôi.
+        </p>
+        <div class="thank-you-actions" id="ty-drive-wrap">
+          <a
+            id="ty-drive-btn"
+            href="https://drive.google.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="thank-you-drive-btn"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span id="ty-drive-label">Xem &amp; Tải Ảnh / Video Buổi Tiệc (Google Drive)</span>
+          </a>
+          <p class="thank-you-drive-hint" id="ty-drive-hint">
+            Album ảnh &amp; khoảnh khắc kỷ niệm ngày cưới để Quý Khách xem lại và tải ảnh chất lượng gốc
+          </p>
+        </div>
+        <div class="thank-you-signature">Thuận Tường &amp; Tiểu Dinh • 06.01.2027</div>
+      </div>
+    </section>
+
+    <!-- THE 3 ORIGINAL HANDMADE-PAPER CARDS -->
+    <section class="cards-stream" aria-label="Bộ 3 tờ thiệp cưới gốc">
+
+      <!-- CARD 1: RECEPTION AT RIVERSIDE PALACE + COUPLE & 5 PUPPIES -->
+      <div id="card-wrap-reception" class="card-showcase-block">
+        <div class="card-step-caption" data-i18n="capCard1">Thiệp Mời Tiệc Chung Vui</div>
+
+        <article class="stationery-card" aria-label="Thiệp mời tiệc Riverside Palace - Sảnh Seine">
+          <!-- Dynamic Handwritten Guest Name on Dotted Line -->
+          <div class="card1-guest-slot">
+            <span id="card1-guest-name" class="card1-guest-text">Quý Khách</span>
+          </div>
+
+          <!-- Warm Twinkling Fairy String-Light Bulbs along the Floral Arch -->
+          <div class="card-fx-overlay" aria-hidden="true">
+            <span class="arch-bulb" style="left:33.2%; top:61.5%; animation-delay:0s;"></span>
+            <span class="arch-bulb" style="left:35.8%; top:57.6%; animation-delay:0.4s;"></span>
+            <span class="arch-bulb" style="left:40.5%; top:56.4%; animation-delay:0.85s;"></span>
+            <span class="arch-bulb" style="left:45.5%; top:56.1%; animation-delay:1.25s;"></span>
+            <span class="arch-bulb" style="left:54.8%; top:56.1%; animation-delay:0.25s;"></span>
+            <span class="arch-bulb" style="left:59.8%; top:56.5%; animation-delay:0.7s;"></span>
+            <span class="arch-bulb" style="left:64.2%; top:57.8%; animation-delay:1.1s;"></span>
+            <span class="arch-bulb" style="left:66.8%; top:61.6%; animation-delay:1.55s;"></span>
+          </div>
+
+          <div id="svg-card-1" class="card-svg-stage"></div>
+        </article>
+      </div>
+
+      <!-- CARD 2: CEREMONY ANNOUNCEMENT & HOT-FOIL HANDWRITTEN BORDER -->
+      <div id="card-wrap-ceremony" class="card-showcase-block">
+        <div class="card-step-caption" data-i18n="capCard2">Lễ Thành Hôn</div>
+
+        <article id="card-2-article" class="stationery-card has-secret-border" aria-label="Thiệp báo tin Lễ Thành Hôn Triệu Thuận Tường & Lư Tiểu Dinh">
+          <!-- 3 Live Flickering Candle Flames + Effervescent Champagne Bubbles -->
+          <div class="card-fx-overlay" aria-hidden="true">
+            <span class="candle-flame" style="left:27.58%; top:54.82%;"></span>
+            <span class="candle-flame" style="left:31.34%; top:53.87%;"></span>
+            <span class="candle-flame" style="left:35.07%; top:54.82%;"></span>
+
+            <span class="champagne-bubble" style="left:47.5%; top:54.5%; animation-delay:0.2s;"></span>
+            <span class="champagne-bubble" style="left:50.2%; top:53.8%; animation-delay:1.3s;"></span>
+            <span class="champagne-bubble" style="left:52.1%; top:54.8%; animation-delay:2.2s;"></span>
+          </div>
+
+          <div id="svg-card-2" class="card-svg-stage"></div>
+
+          <!-- Discreet Tactile Zones Along the 4 Handwritten Margins of Card 2 -->
+          <button type="button" class="c2-edge-hit is-top" data-edge="top" aria-label="We began as classmates in high school and became each other’s love."></button>
+          <button type="button" class="c2-edge-hit is-right" data-edge="right" aria-label="We grew together, understood each other, and found happiness in our relationship."></button>
+          <button type="button" class="c2-edge-hit is-bottom" data-edge="bottom" aria-label="Despite many arguments and challenges, we made it through that chapter."></button>
+          <button type="button" class="c2-edge-hit is-left" data-edge="left" aria-label="After seven and a half years, our story continues — now as husband and wife. T&D"></button>
+        </article>
+
+        <!-- Understated Editorial Epigraph (blossoms in-place into the 4-line original English note when tapped) -->
+        <div id="c2-border-secret" class="c2-border-secret">
+          <button type="button" id="c2-border-whisper-btn" class="c2-epigraph-trigger" aria-expanded="false">
+            <span class="c2-epigraph-excerpt">“We began as classmates…”</span>
+            <span class="c2-epigraph-dot" aria-hidden="true">·</span>
+            <span class="c2-epigraph-sig">T &amp; D</span>
+          </button>
+
+          <div id="c2-border-reader" class="c2-border-reader" hidden>
+            <blockquote class="c2-verse-poem">
+              <p class="c2-verse-line is-active" data-edge="top">“We began as classmates in high school and became each other’s love.</p>
+              <p class="c2-verse-line" data-edge="right">We grew together, understood each other, and found happiness in our relationship.</p>
+              <p class="c2-verse-line" data-edge="bottom">Despite many arguments and challenges, we made it through that chapter.</p>
+              <p class="c2-verse-line" data-edge="left">After seven and a half years, our story continues — now as husband and wife.”</p>
+            </blockquote>
+
+            <div class="c2-verse-colophon">
+              <button type="button" id="btn-fold-sig" class="c2-verse-sig-btn" aria-label="Fold quote">— T &amp; D —</button>
+              <span class="c2-verse-sep" aria-hidden="true">·</span>
+              <button type="button" id="btn-copy-border-en" class="c2-verse-action">
+                <svg width="11.5" height="11.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                <span id="c2-copy-label">Copy</span>
+              </button>
+              <span class="c2-verse-sep" aria-hidden="true">·</span>
+              <button type="button" id="btn-close-border-en" class="c2-verse-action c2-verse-close" aria-label="Close">×</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 3: TRADITIONAL CHINESE HERITAGE INVITATION (囍 永結同心) -->
+      <div id="card-wrap-chinese" class="card-showcase-block">
+        <div class="card-step-caption" data-i18n="capCard3">Hỷ Thiếp Truyền Thống (傳統喜帖)</div>
+
+        <article class="stationery-card" aria-label="Hỷ thiếp truyền thống chữ Hoa - Vĩnh Kết Đồng Tâm">
+          <div id="svg-card-3" class="card-svg-stage"></div>
+        </article>
+      </div>
+
+    </section>
+
+    <!-- ======================================================================
+         ACT III: INTERACTIVE WEDDING UTILITIES
+         ====================================================================== -->
+    <div class="utilities-wrapper">
+
+      <!-- 1. LIVE COUNTDOWN & KEEPSAKE JANUARY 2027 CALENDAR (BALANCED EDITORIAL LAYOUT) -->
+      <section id="section-countdown" class="paper-sheet" aria-label="Đếm ngược ngày cưới">
+        <div class="countdown-layout">
+          <div class="cd-editorial-col">
+            <div class="cd-heading-block">
+              <span class="cd-eyebrow">
+                <span class="cd-xi-mark" aria-hidden="true">囍</span>
+                <span data-i18n="cdEyebrow">Đếm Ngược Ngày Chung Đôi</span>
+              </span>
+              <h2 data-i18n="cdTitle">Hẹn Gặp Quý Khách Tại Buổi Tiệc</h2>
+              <p class="cd-sub-main" data-i18n="cdSub">
+                18:00 • Thứ Tư, ngày 06 tháng 01 năm 2027 (Nhằm ngày 29 tháng 11 năm Bính Ngọ)
+              </p>
+              <p class="cd-sub-venue" data-i18n="cdVenueLine">
+                Riverside Palace — Sảnh Seine • 360D Bến Vân Đồn, TP. Hồ Chí Minh
+              </p>
+            </div>
+
+            <div class="countdown-boxes" role="timer" aria-live="off">
+              <div class="cd-unit">
+                <span id="cd-days" class="cd-num">00</span>
+                <span class="cd-label" data-i18n="cdDays">Ngày</span>
+              </div>
+              <div class="cd-unit">
+                <span id="cd-hours" class="cd-num">00</span>
+                <span class="cd-label" data-i18n="cdHours">Giờ</span>
+              </div>
+              <div class="cd-unit">
+                <span id="cd-mins" class="cd-num">00</span>
+                <span class="cd-label" data-i18n="cdMins">Phút</span>
+              </div>
+              <div class="cd-unit">
+                <span id="cd-secs" class="cd-num">00</span>
+                <span class="cd-label" data-i18n="cdSecs">Giây</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="keepsake-calendar" aria-label="Lịch tháng 01 năm 2027">
+            <span class="cal-eyebrow">SAVE THE DATE</span>
+            <div class="cal-title" data-i18n="calMonthTitle">THÁNG 01 • 2027</div>
+            <div id="jan-2027-grid" class="cal-grid"></div>
+            <div class="cal-footer-note" data-i18n="calFooterNote">Thứ Tư • 06.01.2027 • 18:00</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. SINGLE-DAY CONNECTED SCHEDULE TIMELINE (06.01.2027) & GOOGLE MAPS -->
+      <section id="section-location" class="paper-sheet" aria-label="Thời gian và bản đồ địa điểm cưới">
+        <div class="section-heading">
+          <span class="eyebrow" data-i18n="venueEyebrow">Thời Gian &amp; Địa Điểm</span>
+          <h2 data-i18n="venueTitle">Lịch Trình Hôn Lễ &amp; Chỉ Đường</h2>
+          <p data-i18n="venueSub">
+            Sự hiện diện của Quý Khách là niềm vinh hạnh lớn lao cho gia đình chúng tôi.
+          </p>
+        </div>
+
+        <div class="venue-grid">
+          <div class="day-schedule-ledger">
+            <div class="day-schedule-header">
+              <span class="day-schedule-badge" data-i18n="dayBadge">Trọn Ngày Hỷ Sự</span>
+              <div class="day-schedule-date" data-i18n="dayMainDate">Thứ Tư • 06.01.2027</div>
+              <div class="day-schedule-lunar" data-i18n="dayLunarDate">Nhằm ngày 29 tháng 11 năm Bính Ngọ</div>
+            </div>
+
+            <div class="timeline-list is-same-day-rail">
+              <div class="timeline-item">
+                <span class="timeline-node" aria-hidden="true"></span>
+                <span class="timeline-period" data-i18n="tl1Period">Buổi sáng • 06:00</span>
+                <h3 data-i18n="tl1Title">Lễ Thành Hôn Tại Tư Gia</h3>
+                <p data-i18n="tl1Desc">
+                  Nhà Trai (P. Phú Định) &amp; Nhà Gái (P. Hoà Bình), TP. Hồ Chí Minh.
+                </p>
+              </div>
+
+              <div class="timeline-item">
+                <span class="timeline-node is-evening" aria-hidden="true"></span>
+                <span class="timeline-period" data-i18n="tl2Period">Buổi tối cùng ngày • Đón khách 18:00 · Khai tiệc 19:00</span>
+                <h3 data-i18n="tl2Title">Tiệc Cưới — Riverside Palace (Sảnh Seine)</h3>
+                <p data-i18n="tl2Desc">
+                  360D Bến Vân Đồn, Phường Vĩnh Hội, TP. Hồ Chí Minh.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="venue-map-frame">
+            <iframe
+              id="venue-map-iframe"
+              title="Bản đồ Riverside Palace - 360D Bến Vân Đồn"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              src="https://maps.google.com/maps?q=Riverside%20Palace%20360D%20B%E1%BA%BFn%20V%C3%A2n%20%C4%90%E1%BB%93n%20H%E1%BB%93%20Ch%C3%AD%20Minh&t=&z=16&ie=UTF8&iwloc=&output=embed"
+            ></iframe>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- FOOTER COLOPHON -->
+    <footer class="wedding-footer">
+      <div class="footer-monogram">囍 • T &amp; D • 06.01.2027</div>
+      <p class="footer-credit" data-i18n="footerCredit">
+        Personally designed by the Bride &amp; Groom — Tiểu Dinh &amp; Thuận Tường
+      </p>
+    </footer>
+  </main>
+
+  <!-- Artwork Bundle & Interactive Scripts -->
+  <script src="js/config.js?v=38"></script>
+  <script src="js/artwork.js?v=38"></script>
+  <script src="js/audio.js?v=38"></script>
+  <script src="js/app.js?v=38"></script>
+</body>
+</html>

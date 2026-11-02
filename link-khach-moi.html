@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Tạo Link Mời Khách — Thiệp Cưới Thuận Tường &amp; Tiểu Dinh</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Cormorant+Garamond:wght@600;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css?v=36" />
+  <style>
+    body { overflow: auto; height: auto; }
+    .builder-wrap { max-width: 960px; margin: 0 auto; padding: 36px 16px calc(64px + env(safe-area-inset-bottom, 0px)); }
+    .builder-header { text-align: center; margin-bottom: 28px; }
+    .builder-header h1 {
+      margin: 6px 0;
+      font-family: var(--font-serif);
+      font-size: clamp(26px, 4.5vw, 40px);
+      color: var(--crimson-ink);
+      text-wrap: balance;
+    }
+    .btn-crimson,
+    .btn-outline-crimson {
+      appearance: none;
+      min-height: 44px;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.18s ease, opacity 0.18s ease, background 0.18s ease;
+    }
+    .btn-crimson {
+      border: 1.5px solid var(--crimson-ink);
+      background: var(--crimson-ink);
+      color: var(--ivory-ink);
+      box-shadow: 0 6px 18px rgba(132, 21, 23, 0.2);
+    }
+    .btn-outline-crimson {
+      border: 1.5px solid rgba(132, 21, 23, 0.35);
+      background: rgba(255, 255, 255, 0.8);
+      color: var(--crimson-ink);
+    }
+    .btn-crimson:hover,
+    .btn-outline-crimson:hover {
+      opacity: 0.92;
+    }
+    .tw-guide-box {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 8px;
+      background: rgba(132, 21, 23, 0.045);
+      border: 1px dashed rgba(132, 21, 23, 0.25);
+      font-size: 13.2px;
+      line-height: 1.65;
+      color: var(--text-main);
+    }
+    .tw-guide-box strong.tw-head {
+      display: block;
+      color: var(--crimson-ink);
+      font-size: 13.8px;
+      margin-bottom: 6px;
+    }
+    .tw-guide-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 6px 18px;
+    }
+    .tw-code {
+      font-family: "Noto Serif TC", serif;
+      font-weight: 700;
+      color: var(--crimson-ink);
+      background: rgba(255, 255, 255, 0.78);
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+    .builder-table-wrap { overflow-x: auto; margin-top: 20px; }
+    table.guest-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.8px;
+      background: rgba(255, 255, 255, 0.72);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .guest-table th, .guest-table td {
+      padding: 11px 12px;
+      text-align: left;
+      border-bottom: 1px solid rgba(132, 21, 23, 0.12);
+    }
+    .guest-table th {
+      background: rgba(132, 21, 23, 0.08);
+      color: var(--crimson-ink);
+      font-weight: 700;
+    }
+    .url-preview {
+      font-family: monospace;
+      font-size: 12px;
+      color: var(--text-muted);
+      word-break: break-all;
+      max-width: 310px;
+    }
+    .row-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+    .btn-mini {
+      appearance: none;
+      border: 1px solid var(--crimson-ink);
+      background: #fff;
+      color: var(--crimson-ink);
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 600;
+      min-height: 36px;
+      padding: 6px 11px;
+      border-radius: 6px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-tap-highlight-color: transparent;
+      transition: all 0.18s ease;
+    }
+    .btn-mini.primary {
+      background: var(--crimson-ink);
+      color: var(--ivory-ink);
+    }
+    .btn-mini:hover { opacity: 0.88; transform: translateY(-1px); }
+    @media (max-width: 640px) {
+      .builder-wrap { padding: 24px 12px calc(56px + env(safe-area-inset-bottom, 0px)); }
+      .tw-guide-grid { grid-template-columns: 1fr; }
+      .btn-crimson, .btn-outline-crimson { flex: 1 1 100%; width: 100%; }
+      .guest-table thead { display: none; }
+      .guest-table, .guest-table tbody, .guest-table tr, .guest-table td { display: block; width: 100%; }
+      .guest-table { background: transparent; }
+      .guest-table tr {
+        background: rgba(255, 255, 255, 0.78);
+        border: 1px solid rgba(132, 21, 23, 0.16);
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 10px;
+      }
+      .guest-table td {
+        padding: 4px 0;
+        border-bottom: none;
+      }
+      .guest-table td:first-child { display: none; }
+      .url-preview { max-width: 100%; margin: 2px 0 6px; }
+      .row-actions { gap: 8px; }
+      .row-actions .btn-mini { flex: 1 1 auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="builder-wrap">
+    <div class="builder-header">
+      <a href="index.html" class="footer-tools-link">← Quay lại xem Thiệp Cưới</a>
+      <h1>囍 Công Cụ Tạo Link Tên Khách Mời</h1>
+      <p style="color:var(--text-muted); max-width:600px; margin:0 auto; font-size:14px;">
+        Nhập danh sách khách mời (mỗi dòng 1 tên). Tên khách sẽ được viết tay tự động lên cả <strong>Vỏ phong bì đỏ</strong> lẫn dòng chấm <strong>“Trân trọng kính mời...”</strong> trên Thiệp Mời Tiệc!
+      </p>
+    </div>
+
+    <section class="paper-sheet">
+      <div class="field-row-2" style="margin-bottom:14px;">
+        <div class="field-group">
+          <label for="base-url">Đường dẫn gốc Website (khi đưa lên mạng thì dán domain vào đây)</label>
+          <input type="text" id="base-url" class="rsvp-input" />
+        </div>
+        <div class="field-group">
+          <label for="default-lang">Ngôn ngữ mở thiệp mặc định cho nhóm khách này</label>
+          <select id="default-lang" class="rsvp-select">
+            <option value="vi">🇻🇳 Tiếng Việt (Mặc định — tự chuyển 中文 nếu tên có chữ Hoa)</option>
+            <option value="zh">🧧 繁體中文 Chuẩn Đài Loan (Đưa tờ Hỷ Thiếp chữ Hoa lên đầu)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-row-2" style="margin-bottom:14px;">
+        <div class="field-group">
+          <label for="card-mode">Chế độ gửi thiệp (Trước đám cưới / Sau đám cưới)</label>
+          <select id="card-mode" class="rsvp-select">
+            <option value="invite">💌 Thiệp Mời Tiệc Cưới (Mặc định trước 06.01.2027)</option>
+            <option value="thankyou">📸 Thiệp Cảm Ơn + Gửi Kho Ảnh Google Drive (Sau tiệc cưới)</option>
+          </select>
+        </div>
+        <div class="field-group" id="drive-url-group">
+          <label for="drive-url">Link thư mục Ảnh/Video Google Drive (kèm vào Thiệp Cảm Ơn)</label>
+          <input
+            type="url"
+            id="drive-url"
+            class="rsvp-input"
+            placeholder="https://drive.google.com/drive/folders/..."
+          />
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label for="guest-list">Danh sách tên khách mời (mỗi dòng 1 khách / gia đình)</label>
+        <textarea id="guest-list" class="rsvp-textarea" style="min-height:140px;">Anh Tuấn & Chị Thảo
+Gia đình Cô Chú Minh
+陳伯父 闔府
+林志明先生 賢伉儷
+王雅婷 小姐</textarea>
+      </div>
+
+      <div class="tw-guide-box">
+        <strong class="tw-head">🧧 Cẩm nang ghi tên Khách Đài Loan chuẩn lễ nghi (台灣喜帖稱謂指南 — dùng 100% chữ Phồn Thể):</strong>
+        <div class="tw-guide-grid">
+          <div>• <strong>Mời cả gia đình (trưởng bối / cô chú bác):</strong> <span class="tw-code">陳伯父 闔府</span>, <span class="tw-code">林叔叔 闔府</span>, <span class="tw-code">張文豪先生 闔府</span></div>
+          <div>• <strong>Mời cặp vợ chồng (bạn bè / anh chị đã cưới):</strong> <span class="tw-code">林志明先生 賢伉儷</span> (chuẩn lịch sự nhất Đài Loan)</div>
+          <div>• <strong>Bạn bè / đồng nghiệp Nam đi lẻ:</strong> <span class="tw-code">王大明 先生</span> (hoặc <span class="tw-code">陳建宏 學長</span>)</div>
+          <div>• <strong>Bạn bè / đồng nghiệp Nữ đi lẻ:</strong> <span class="tw-code">王雅婷 小姐</span> (nữ trưởng bối lớn tuổi kính trọng: <span class="tw-code">陳淑芬 女士</span>)</div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px; display:flex; flex-wrap:wrap; gap:10px;">
+        <button type="button" id="btn-generate" class="btn-crimson">✨ Tạo Danh Sách Link Mời</button>
+        <button type="button" id="btn-export-csv" class="btn-outline-crimson">📥 Tải File Excel (.CSV)</button>
+      </div>
+
+      <div class="builder-table-wrap">
+        <table class="guest-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Tên hiển thị trên thiệp</th>
+              <th>Link cá nhân hóa</th>
+              <th>Thao tác nhanh (LINE / Zalo / Messenger)</th>
+            </tr>
+          </thead>
+          <tbody id="guest-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <div id="puppy-toast" class="puppy-toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (function () {
+      const baseInput = document.getElementById("base-url");
+      const langSelect = document.getElementById("default-lang");
+      const modeSelect = document.getElementById("card-mode");
+      const driveInput = document.getElementById("drive-url");
+      const listArea = document.getElementById("guest-list");
+      const tbody = document.getElementById("guest-tbody");
+      const toast = document.getElementById("puppy-toast");
+      let timer = null;
+
+      // Default to official domain https://thuantuongtieudinh.io.vn/ when opened locally
+      const isLocal = /^(file:|https?:\/\/(localhost|127\.0\.0\.1))/i.test(window.location.href);
+      const detectedBase = isLocal
+        ? "https://thuantuongtieudinh.io.vn/"
+        : window.location.href.replace(/link-khach-moi(\.html)?.*$/i, "");
+      baseInput.value = detectedBase;
+
+      function notify(msg) {
+        toast.textContent = msg;
+        toast.classList.add("is-shown");
+        clearTimeout(timer);
+        timer = setTimeout(() => toast.classList.remove("is-shown"), 2600);
+      }
+
+      async function copyText(str, okMsg) {
+        try {
+          await navigator.clipboard.writeText(str);
+        } catch (_) {
+          const ta = document.createElement("textarea");
+          ta.value = str;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          ta.remove();
+        }
+        notify(okMsg);
+      }
+
+      function buildRows() {
+        const base = (baseInput.value || "index.html").trim().replace(/\?.*$/, "");
+        const lang = langSelect.value;
+        const mode = modeSelect ? modeSelect.value : "invite";
+        const driveUrl = driveInput ? driveInput.value.trim() : "";
+        const names = (listArea.value || "")
+          .split(/\r?\n/)
+          .map((s) => s.trim())
+          .filter(Boolean);
+
+        tbody.innerHTML = "";
+        const rowsData = [];
+
+        names.forEach((name, idx) => {
+          // Auto-detect Chinese characters if user didn't switch dropdown
+          const hasHanzi = /[\u4e00-\u9fff]/.test(name);
+          const effectiveLang = lang === "zh" || hasHanzi ? "zh" : "vi";
+          const qs = new URLSearchParams();
+          qs.set("to", name);
+          if (effectiveLang === "zh") qs.set("lang", "zh");
+          if (mode === "thankyou") {
+            qs.set("mode", "thankyou");
+            if (driveUrl) qs.set("drive", driveUrl);
+          }
+          const fullUrl = `${base}?${qs.toString()}`;
+
+          const inviteMsg =
+            mode === "thankyou"
+              ? effectiveLang === "zh"
+                ? `囍 婚禮感謝卡與現場相簿｜${name} 您好：\n誠摯感謝您蒞臨參與順祥與小瑩的婚禮！我們已整理好婚禮現場高畫質照片與紀錄（Google Drive），歡迎點擊專屬感謝卡瀏覽與下載：\n${fullUrl}`
+                : `📸 Thiệp Cảm Ơn & Album Ảnh Cưới｜Trân trọng cảm ơn ${name},\nThuận Tường & Tiểu Dinh xin gửi lời cảm ơn chân thành nhất đến ${name} đã đến chung vui cùng gia đình. Mời ${name} mở Thiệp Cảm Ơn và xem / tải ảnh kỷ niệm buổi tiệc trên Google Drive tại đây nhé:\n${fullUrl}`
+              : effectiveLang === "zh"
+                ? `囍 婚禮喜帖敬邀｜${name} 您好：\n順祥與小瑩謹訂於 2027 年 1 月 6 日（星期三）晚間六時，於越南胡志明市 RIVERSIDE PALACE（Seine 宴會廳）敬備喜筵。\n誠摯邀請您開啟專屬電子喜帖，與我們分享這份喜悅：\n${fullUrl}`
+                : `💌 Trân trọng kính mời ${name},\nThuận Tường & Tiểu Dinh rất hạnh phúc được mời ${name} đến dự buổi tiệc cưới chung vui vào lúc 18:00 Thứ Tư, 06.01.2027 tại Riverside Palace (Sảnh Seine).\nMời xem thiệp cưới dành riêng cho ${name} tại đây nhé:\n${fullUrl}`;
+
+          rowsData.push({ idx: idx + 1, name, effectiveLang, fullUrl, inviteMsg });
+
+          const tr = document.createElement("tr");
+          const msgBtnLabel = effectiveLang === "zh" ? "💬 Copy lời mời LINE" : "💬 Copy lời mời Zalo";
+          tr.innerHTML = `
+            <td>${idx + 1}</td>
+            <td><strong></strong> <span style="font-size:11px; color:var(--text-muted);">(${effectiveLang === "zh" ? "繁體中文" : "VI"})</span></td>
+            <td class="url-preview"></td>
+            <td>
+              <div class="row-actions">
+                <button type="button" class="btn-mini primary js-copy-link">📋 Copy Link</button>
+                <button type="button" class="btn-mini js-copy-msg">${msgBtnLabel}</button>
+                <a class="btn-mini js-preview" target="_blank" rel="noopener">👁️ Xem thử</a>
+              </div>
+            </td>
+          `;
+          tr.querySelector("strong").textContent = name;
+          tr.querySelector(".url-preview").textContent = fullUrl;
+          tr.querySelector(".js-preview").href = fullUrl;
+          tr.querySelector(".js-copy-link").addEventListener("click", () =>
+            copyText(fullUrl, `✅ Đã copy link thiệp của "${name}"!`)
+          );
+          tr.querySelector(".js-copy-msg").addEventListener("click", () =>
+            copyText(inviteMsg, `💌 Đã copy trọn bộ lời mời + link cho "${name}"!`)
+          );
+          tbody.appendChild(tr);
+        });
+
+        return rowsData;
+      }
+
+      document.getElementById("btn-generate").addEventListener("click", buildRows);
+      langSelect.addEventListener("change", buildRows);
+      if (modeSelect) modeSelect.addEventListener("change", buildRows);
+      if (driveInput) driveInput.addEventListener("input", buildRows);
+      baseInput.addEventListener("input", buildRows);
+
+      document.getElementById("btn-export-csv").addEventListener("click", () => {
+        const rows = buildRows();
+        const header = ["STT", "Ten Khach Moi", "Ngon Ngu", "Link Thiep", "Tin Nhan Moi Mau"];
+        const csvLines = [
+          header.join(","),
+          ...rows.map((r) =>
+            [r.idx, r.name, r.effectiveLang, r.fullUrl, r.inviteMsg.replace(/\n/g, " ")]
+              .map((v) => `"${String(v).replace(/"/g, '""')}"`)
+              .join(",")
+          )
+        ];
+        const blob = new Blob(["\uFEFF" + csvLines.join("\r\n")], { type: "text/csv;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "Danh-Sach-Link-Thiep-Cuoi-Tuong-Dinh.csv";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      });
+
+      buildRows();
+    })();
+  </script>
+</body>
+</html>

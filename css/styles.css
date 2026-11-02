@@ -1,0 +1,3542 @@
+/* ==========================================================================
+   THIỆP CƯỚI ONLINE — TRIỆU THUẬN TƯỜNG & LƯ TIỂU DINH (06.01.2027)
+   Bespoke Hand-Crafted Digital Stationery Stylesheet
+   ========================================================================== */
+
+:root {
+  --wine-deep: #3d0611;
+  --wine-velvet: #560b1a;
+  --envelope-front: #721427;
+  --envelope-back: #640619;
+  --crimson-ink: #841517;
+  --crimson-hover: #690f11;
+  --crimson-faint: rgba(132, 21, 23, 0.08);
+  --crimson-line: rgba(132, 21, 23, 0.22);
+  --paper-cream: #faf6ee;
+  --paper-desk: #efe7da;
+  --paper-desk-2: #e7dccb;
+  --gold-champagne: #d9b277;
+  --gold-soft: #f2dec0;
+  --ivory-ink: #fffbf2;
+  --text-main: #4a1517;
+  --text-muted: #7c4a4c;
+
+  --font-serif: "Cormorant Garamond", "Noto Serif TC", Georgia, serif;
+  --font-script: "Dancing Script", "Cormorant Garamond", "Noto Serif TC", cursive;
+  --font-sans: "Be Vietnam Pro", "Noto Serif TC", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-zh: "Noto Serif TC", "Cormorant Garamond", serif;
+
+  --card-shadow:
+    0 2px 5px rgba(74, 21, 23, 0.06),
+    0 18px 44px -10px rgba(74, 21, 23, 0.17),
+    0 36px 72px -24px rgba(61, 6, 17, 0.2);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  max-width: 100%;
+  background-color: var(--paper-desk);
+  background-image:
+    radial-gradient(circle at 18% 12%, rgba(255, 251, 242, 0.65) 0%, transparent 48%),
+    radial-gradient(circle at 84% 78%, rgba(132, 21, 23, 0.06) 0%, transparent 52%),
+    linear-gradient(180deg, #f3ece1 0%, #ebe0cf 50%, #f1e9dc 100%);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  overflow-x: clip;
+}
+
+body.envelope-locked {
+  overflow: hidden;
+  height: 100vh;
+  height: 100dvh;
+  overscroll-behavior: none;
+}
+
+body.lang-zh {
+  font-family: var(--font-zh);
+}
+
+/* Ambient Floating Dust & Petals Canvas */
+#ambient-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 52;
+}
+
+/* ==========================================================================
+   FLOATING TOP NAVIGATION & LANGUAGE / MUSIC CONTROLS
+   ========================================================================== */
+.floating-topbar {
+  --tb-alpha: 1;
+  --tb-shift: 0px;
+  --tb-scale: 1;
+  position: fixed;
+  top: max(14px, calc(env(safe-area-inset-top, 0px) + 8px));
+  left: 50%;
+  opacity: var(--tb-alpha, 1);
+  transform: translate3d(-50%, var(--tb-shift, 0px), 0) scale(var(--tb-scale, 1));
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(250, 246, 238, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(132, 21, 23, 0.18);
+  box-shadow: 0 10px 28px rgba(61, 6, 17, 0.1);
+  width: max-content;
+  max-width: calc(100vw - 20px);
+  will-change: transform, opacity;
+}
+
+/* Disable pointer capture once mostly dissolved so cards underneath receive taps freely */
+body:not(.envelope-locked):not(.is-table-preparing):not(.is-table-cascading)
+  .floating-topbar.is-scroll-faded {
+  pointer-events: none;
+}
+
+.topbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.topbar-nav.has-fade-right:not(.has-fade-left) {
+  -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 calc(100% - 22px), transparent 100%);
+  mask-image: linear-gradient(90deg, #000 0%, #000 calc(100% - 22px), transparent 100%);
+}
+
+.topbar-nav.has-fade-left:not(.has-fade-right) {
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 18px, #000 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 18px, #000 100%);
+}
+
+.topbar-nav.has-fade-left.has-fade-right {
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    #000 16px,
+    #000 calc(100% - 20px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    #000 16px,
+    #000 calc(100% - 20px),
+    transparent 100%
+  );
+}
+
+.topbar-nav::-webkit-scrollbar {
+  display: none;
+}
+
+body.envelope-locked .topbar-nav {
+  display: none;
+}
+
+body.envelope-locked .floating-topbar {
+  opacity: 1;
+  transform: translate3d(-50%, 0, 0) scale(1);
+  pointer-events: auto;
+  background: rgba(255, 249, 240, 0.94);
+  border-color: rgba(255, 232, 198, 0.55);
+  box-shadow: 0 10px 28px rgba(24, 1, 6, 0.34);
+}
+
+/* Glide VI | 中文 pill gently upward out of the way when top flap + wax seal swing open */
+body.is-unsealing-env .floating-topbar {
+  opacity: 0;
+  transform: translate3d(-50%, -14px, 0) scale(0.96);
+  pointer-events: none;
+  transition: opacity 0.42s ease, transform 0.44s ease;
+}
+
+.nav-pill {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 4px;
+  border: none;
+  background: transparent;
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  padding: 6px 11px;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.nav-label-mobile {
+  display: none;
+}
+
+.nav-map-pin {
+  flex-shrink: 0;
+  color: var(--crimson-ink);
+  opacity: 0.86;
+  margin-top: -0.5px;
+}
+
+.nav-pill:hover,
+.nav-pill.is-active {
+  background: var(--crimson-faint);
+  color: var(--crimson-ink);
+}
+
+/* Reorder topbar pills in 中文 mode to match Card 3 (#1) -> Card 1 (#2) -> Card 2 (#3) */
+body.lang-zh #nav-replay-envelope {
+  order: -2;
+}
+
+body.lang-zh .nav-pill-zh-first {
+  order: -1;
+}
+
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(132, 21, 23, 0.08);
+  border-radius: 999px;
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.lang-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.22s ease;
+}
+
+.lang-btn.is-active {
+  background: var(--crimson-ink);
+  color: var(--ivory-ink);
+  box-shadow: 0 2px 8px rgba(132, 21, 23, 0.26);
+}
+
+/* Floating Music Button */
+.music-fab {
+  position: fixed;
+  right: max(18px, calc(env(safe-area-inset-right, 0px) + 14px));
+  bottom: max(18px, calc(env(safe-area-inset-bottom, 0px) + 14px));
+  z-index: 65;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(242, 222, 192, 0.6);
+  background: radial-gradient(circle at 32% 30%, #9b1d28, #5d0c1b 75%);
+  color: var(--ivory-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 10px 24px rgba(61, 6, 17, 0.34);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.music-fab:hover {
+  transform: scale(1.07);
+  box-shadow: 0 14px 30px rgba(61, 6, 17, 0.44);
+}
+
+.music-bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2.5px;
+  height: 16px;
+}
+
+.music-bars span {
+  display: block;
+  width: 2.5px;
+  height: 5px;
+  border-radius: 2px;
+  background: var(--gold-soft);
+  transition: height 0.2s ease;
+}
+
+.music-fab.is-playing .music-bars span:nth-child(1) {
+  animation: eqBar 0.85s ease-in-out infinite;
+}
+.music-fab.is-playing .music-bars span:nth-child(2) {
+  animation: eqBar 0.65s ease-in-out 0.15s infinite;
+}
+.music-fab.is-playing .music-bars span:nth-child(3) {
+  animation: eqBar 0.95s ease-in-out 0.3s infinite;
+}
+.music-fab.is-playing .music-bars span:nth-child(4) {
+  animation: eqBar 0.75s ease-in-out 0.1s infinite;
+}
+
+.music-fab:not(.is-playing) .music-bars {
+  opacity: 0.55;
+}
+
+@keyframes eqBar {
+  0%, 100% { height: 4px; }
+  50% { height: 16px; }
+}
+
+/* ==========================================================================
+   ACT I: 3D BURGUNDY ENVELOPE ON FESTIVE BRIDAL CRIMSON SILK-PAPER STAGE
+   Warm Tone-on-Tone Bridal Red + Single-Curve C-Infinity Paper Turn +
+   Photorealistic Hand-Poured Champagne-Gold Wax Seal (T & D)
+   ========================================================================== */
+.envelope-stage {
+  --flip-dir: -1;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 52px 18px 34px;
+  background-color: #6d0e1d;
+  background-image:
+    radial-gradient(ellipse 68% 54% at 50% 48%, rgba(255, 224, 178, 0.14) 0%, rgba(178, 32, 50, 0.42) 42%, transparent 78%),
+    radial-gradient(circle at 20% 15%, rgba(188, 38, 56, 0.36) 0%, transparent 55%),
+    radial-gradient(circle at 50% 50%, transparent 46%, rgba(44, 3, 11, 0.52) 100%),
+    linear-gradient(155deg, #8b1829 0%, #731020 52%, #530915 100%);
+  color: var(--ivory-ink);
+  touch-action: none;
+  overscroll-behavior: none;
+  user-select: none;
+  -webkit-user-select: none;
+  overflow: hidden;
+  transition:
+    opacity 0.76s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0.76s ease,
+    transform 0.76s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Subtle Real Handmade Silk-Cotton Paper Grain Across Festive Red Stage */
+.envelope-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("../assets/paper-texture.webp");
+  background-size: cover;
+  background-position: center;
+  opacity: 0.24;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+.tabletop-dappled-light {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Warm Sunlit Champagne-Ivory Curtain Bloom when Inner Card Expands onto Reading Table */
+.envelope-stage::after {
+  content: "";
+  position: absolute;
+  inset: -12%;
+  z-index: 1;
+  background: radial-gradient(
+    circle at 50% 45%,
+    rgba(253, 248, 238, 0.96) 0%,
+    rgba(246, 237, 222, 0.88) 42%,
+    rgba(239, 231, 218, 0.55) 72%,
+    transparent 100%
+  );
+  opacity: 0;
+  transform: scale3d(0.68, 0.68, 1);
+  pointer-events: none;
+  will-change: opacity, transform;
+  transition:
+    opacity 0.82s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1.14s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.envelope-stage.is-curtain-bloom::after {
+  opacity: 1;
+  transform: scale3d(1.24, 1.24, 1);
+}
+
+.envelope-stage.is-curtain-bloom {
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 1.04s cubic-bezier(0.25, 1, 0.38, 1) 0.20s,
+    visibility 1.04s ease 0.20s;
+}
+
+.envelope-stage.is-dismissed {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: scale(1.03);
+}
+
+.envelope-stage.is-gone {
+  display: none !important;
+}
+
+/* Outer 2D Hand-Lift Rig (keeps perspective center fixed while providing subtle organic hand lift) */
+.envelope-lift-rig {
+  width: min(91vw, 590px);
+  width: min(91vw, 590px, calc((100dvh - 136px) * 1.38));
+  aspect-ratio: 510.24 / 368.50;
+  position: relative;
+  z-index: 2;
+  will-change: transform, opacity;
+  animation: envelopeTableBreath 5.2s ease-in-out infinite;
+}
+
+.envelope-stage.is-pressing .envelope-lift-rig {
+  animation: none;
+  transform: scale3d(0.99, 0.99, 1) translate3d(0, 1.5px, 0);
+  transition: transform 0.14s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.envelope-stage.is-flipping-to-back .envelope-lift-rig,
+.envelope-stage.is-flipping-to-front .envelope-lift-rig {
+  animation: envNaturalHandArc 1.08s ease-out forwards;
+}
+
+.envelope-stage.is-flipped .envelope-lift-rig {
+  animation: none;
+}
+
+/* Beat 2: During Tap 2 flap-open + card pull-out, envelope glides gently downward so opened flap & seal have full headroom */
+.envelope-stage.is-opening .envelope-lift-rig {
+  animation: none;
+  transform: translate3d(0, 28.5%, 0) scale3d(0.952, 0.952, 1);
+  transition: transform 1.55s cubic-bezier(0.30, 0.04, 0.24, 1) 0.06s;
+}
+
+/* Beat 3: Once inner card clears throat, burgundy pocket slips smoothly away downward */
+.envelope-stage.is-pulling-free .envelope-lift-rig {
+  animation: none;
+  transform: translate3d(0, 108%, 0) scale3d(0.89, 0.89, 1);
+  opacity: 0;
+  transition:
+    transform 1.06s cubic-bezier(0.30, 0, 0.20, 1),
+    opacity 0.86s ease 0.12s;
+}
+
+@keyframes envelopeTableBreath {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -3.5px, 0); }
+}
+
+/* Subtle, believable human-hand pickup & cushioned settle (no exaggerated CG bounce) */
+@keyframes envNaturalHandArc {
+  0% {
+    transform: translate3d(0, 0, 0) scale3d(1, 1, 1) rotateZ(0deg);
+    animation-timing-function: cubic-bezier(0.36, 0, 0.62, 0.45);
+  }
+  36% {
+    transform:
+      translate3d(0, -11px, 0)
+      scale3d(1.035, 1.035, 1)
+      rotateZ(calc(var(--flip-dir, -1) * 1.45deg));
+    animation-timing-function: cubic-bezier(0.22, 0.65, 0.34, 1);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale3d(1, 1, 1) rotateZ(0deg);
+  }
+}
+
+/* Plush Deep-Wine Velvet Shadow Cast onto Festive Crimson Stage (zero ::before box-shadow WebKit cutout!) */
+.envelope-ground-shadow {
+  position: absolute;
+  inset: 3% -2% -9% -2%;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side at 50% 50%,
+    rgba(22, 1, 6, 0.68) 0%,
+    rgba(26, 2, 7, 0.44) 48%,
+    rgba(30, 2, 8, 0.16) 76%,
+    transparent 100%
+  );
+  pointer-events: none;
+  will-change: transform, opacity;
+  transform: translate3d(0, 14px, 0) scale3d(1.02, 1.02, 1);
+  opacity: 0.96;
+}
+
+.envelope-stage.is-flipping-to-back .envelope-ground-shadow,
+.envelope-stage.is-flipping-to-front .envelope-ground-shadow {
+  animation: envTableShadowTurn 1.08s linear forwards;
+}
+
+@keyframes envTableShadowTurn {
+  0% {
+    transform: translate3d(0, 14px, 0) scale3d(1.02, 1.02, 1);
+    opacity: 0.96;
+    animation-timing-function: cubic-bezier(0.38, 0, 0.68, 0.4);
+  }
+  36.05% {
+    transform: translate3d(8px, 26px, 0) scale3d(0.24, 1.06, 1);
+    opacity: 0.55;
+    animation-timing-function: cubic-bezier(0.2, 0.62, 0.34, 1);
+  }
+  100% {
+    transform: translate3d(0, 14px, 0) scale3d(1.02, 1.02, 1);
+    opacity: 0.96;
+  }
+}
+
+.envelope-scene {
+  position: absolute;
+  inset: 0;
+  perspective: 1320px;
+  perspective-origin: 50% 48%;
+}
+
+.envelope-3d {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  will-change: transform;
+  cursor: pointer;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  transform: rotateY(0deg);
+}
+
+.envelope-stage.is-flipped .envelope-3d {
+  transform: rotateY(calc(var(--flip-dir, -1) * 180deg));
+}
+
+.envelope-stage.is-flipping-to-back .envelope-3d {
+  animation: envFlipToBack 1.08s cubic-bezier(0.42, 0.03, 0.22, 1) forwards;
+}
+
+.envelope-stage.is-flipping-to-front .envelope-3d {
+  animation: envFlipToFront 1.08s cubic-bezier(0.42, 0.03, 0.22, 1) forwards;
+}
+
+/* Single Unbroken C-Infinity Bezier Curve (0% -> 100%, ZERO velocity kinks!):
+   Analytical 90.00° midpoint of cubic-bezier(0.42, 0.03, 0.22, 1) is exact t = 36.046% */
+@keyframes envFlipToBack {
+  0% {
+    transform: rotateY(0deg);
+  }
+  100% {
+    transform: rotateY(calc(var(--flip-dir, -1) * 180deg));
+  }
+}
+
+@keyframes envFlipToFront {
+  0% {
+    transform: rotateY(calc(var(--flip-dir, -1) * 180deg));
+  }
+  100% {
+    transform: rotateY(0deg);
+  }
+}
+
+/* Authentic Matte 350gsm Burgundy Cotton-Paper Folded Edge Spine (no shiny gold coin bar) */
+.envelope-thickness-plate {
+  position: absolute;
+  inset: 0;
+  border-radius: 9px;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.envelope-thickness-plate.plate-paper-hi {
+  transform: translateZ(1.1px);
+  background: linear-gradient(145deg, #8b1c31 0%, #6f1224 100%);
+  box-shadow: inset 0 0 0 1px rgba(255, 245, 232, 0.22);
+}
+
+.envelope-thickness-plate.plate-paper-core {
+  transform: translateZ(0px);
+  background: linear-gradient(145deg, #771427 0%, #5b0b1a 100%);
+}
+
+.envelope-thickness-plate.plate-paper-lo {
+  transform: translateZ(-1.1px);
+  background: linear-gradient(145deg, #650d1e 0%, #4d0715 100%);
+  box-shadow: inset 0 0 0 1px rgba(255, 245, 232, 0.14);
+}
+
+.envelope-stage.is-flipping-to-back .envelope-thickness-plate,
+.envelope-stage.is-flipping-to-front .envelope-thickness-plate {
+  animation: envThicknessEdgePulse 1.08s linear forwards;
+}
+
+@keyframes envThicknessEdgePulse {
+  0%, 6% { opacity: 0; }
+  16%, 72% { opacity: 1; }
+  90%, 100% { opacity: 0; }
+}
+
+.envelope-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 9px;
+  will-change: opacity, transform;
+}
+
+/* Front Face — Deep Matte Burgundy Cotton Stock */
+.envelope-front {
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 22% 18%, rgba(162, 34, 58, 0.36), transparent 60%),
+    linear-gradient(148deg, #7b162b 0%, #6d1224 54%, #5b0d1c 100%);
+  box-shadow:
+    0 18px 42px rgba(22, 1, 6, 0.42),
+    0 4px 12px rgba(18, 1, 5, 0.28),
+    inset 0 1px 0 rgba(252, 224, 194, 0.22),
+    inset 0 -1px 0 rgba(32, 2, 8, 0.42),
+    inset 0 0 0 1px rgba(248, 214, 184, 0.12);
+  opacity: 1;
+}
+
+.envelope-front::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 251, 242, 0.12);
+  pointer-events: none;
+}
+
+.envelope-stage.is-flipping-to-back .envelope-front {
+  transform: translateZ(2.1px);
+  animation: envFrontSwapToBack 1.08s linear forwards;
+}
+
+.envelope-stage.is-flipping-to-front .envelope-front {
+  transform: translateZ(2.1px);
+  animation: envFrontSwapToFront 1.08s linear forwards;
+}
+
+.envelope-stage.is-flipped .envelope-front {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* During Tap 2 unsealing (.is-opening), flatten outer 3D flip rig (net -180deg + 180deg = 0deg identity!)
+   so Chromium NEVER culls the V-pocket card layer when the 3D top flap crosses 90°! */
+.envelope-stage.is-opening .envelope-3d {
+  transform-style: flat;
+  -webkit-transform-style: flat;
+  transform: none;
+}
+
+.envelope-stage.is-opening .envelope-front,
+.envelope-stage.is-opening .envelope-thickness-plate {
+  display: none;
+}
+
+/* Back Face */
+.envelope-back {
+  transform: rotateY(180deg);
+  overflow: visible;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.envelope-stage.is-opening .envelope-back {
+  transform: none;
+  isolation: isolate;
+}
+
+.envelope-stage.is-flipping-to-back .envelope-back {
+  transform: rotateY(180deg) translateZ(2.1px);
+  animation: envBackSwapToBack 1.08s linear forwards;
+}
+
+.envelope-stage.is-flipping-to-front .envelope-back {
+  transform: rotateY(180deg) translateZ(2.1px);
+  animation: envBackSwapToFront 1.08s linear forwards;
+}
+
+.envelope-stage.is-flipped .envelope-back {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Exact 36.05% (Analytical 90.00° Zero-Width Edge-On) Face Swap */
+@keyframes envFrontSwapToBack {
+  0%, 35.92% { opacity: 1; }
+  36.18%, 100% { opacity: 0; }
+}
+
+@keyframes envBackSwapToBack {
+  0%, 35.92% { opacity: 0; }
+  36.18%, 100% { opacity: 1; }
+}
+
+@keyframes envFrontSwapToFront {
+  0%, 35.92% { opacity: 0; }
+  36.18%, 100% { opacity: 1; }
+}
+
+@keyframes envBackSwapToFront {
+  0%, 35.92% { opacity: 1; }
+  36.18%, 100% { opacity: 0; }
+}
+
+/* Soft Matte Cotton-Paper Window-Light Modulation (no harsh metallic plastic glare!) */
+.envelope-back-fx {
+  position: absolute;
+  inset: 0;
+  border-radius: 9px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 6;
+}
+
+.envelope-stage.is-opening .envelope-back-fx {
+  opacity: 0;
+}
+
+.envelope-daylight {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    125deg,
+    rgba(255, 250, 240, 0.16) 0%,
+    rgba(255, 246, 230, 0.06) 48%,
+    transparent 85%
+  );
+  z-index: 6;
+}
+
+.envelope-shade {
+  position: absolute;
+  inset: 0;
+  border-radius: 9px;
+  pointer-events: none;
+  opacity: 0;
+  will-change: opacity;
+  background: linear-gradient(
+    90deg,
+    rgba(24, 2, 7, 0.42) 0%,
+    rgba(30, 3, 9, 0.28) 50%,
+    rgba(24, 2, 7, 0.42) 100%
+  );
+  z-index: 7;
+}
+
+.envelope-stage.is-flipping-to-back .envelope-daylight-front,
+.envelope-stage.is-flipping-to-front .envelope-daylight-back {
+  animation: envDaylightLift 1.08s linear forwards;
+}
+
+.envelope-stage.is-flipping-to-back .envelope-daylight-back,
+.envelope-stage.is-flipping-to-front .envelope-daylight-front {
+  animation: envDaylightSettle 1.08s linear forwards;
+}
+
+.envelope-stage.is-flipping-to-back .envelope-shade-front,
+.envelope-stage.is-flipping-to-front .envelope-shade-back {
+  animation: envShadeFirstHalf 1.08s linear forwards;
+}
+
+.envelope-stage.is-flipping-to-back .envelope-shade-back,
+.envelope-stage.is-flipping-to-front .envelope-shade-front {
+  animation: envShadeSecondHalf 1.08s linear forwards;
+}
+
+@keyframes envDaylightLift {
+  0% { opacity: 0; }
+  16% { opacity: 0.85; }
+  36% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+@keyframes envDaylightSettle {
+  0%, 36% { opacity: 0; }
+  58% { opacity: 0.78; }
+  100% { opacity: 0; }
+}
+
+@keyframes envShadeFirstHalf {
+  0% { opacity: 0; }
+  20% { opacity: 0.10; }
+  36.05% { opacity: 0.44; }
+  36.5%, 100% { opacity: 0; }
+}
+
+@keyframes envShadeSecondHalf {
+  0%, 35.8% { opacity: 0; }
+  36.2% { opacity: 0.44; }
+  66% { opacity: 0.09; }
+  100% { opacity: 0; }
+}
+
+/* Layer 1: Continuous Dark Burgundy Cotton-Paper Envelope Interior Cavity
+   Matches .env-top-flap-lining (#4b0614) at the y=0 hinge crease so the opened flap & pocket throat look like one folded sheet! */
+.env-back-interior {
+  position: absolute;
+  inset: 0;
+  border-radius: 9px;
+  background: linear-gradient(180deg, #4b0614 0%, #3b040f 52%, #2c030a 100%);
+  box-shadow:
+    0 18px 42px rgba(22, 1, 6, 0.42),
+    0 4px 12px rgba(18, 1, 5, 0.28),
+    inset 0 4px 12px rgba(14, 0, 4, 0.46),
+    inset 0 0 0 1px rgba(255, 232, 204, 0.08);
+  z-index: 1;
+}
+
+/* Subtle Warm Candlelight Aura Above Envelope Throat when Card Rises */
+.env-throat-glow {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: -32%;
+  height: 62%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at 50% 60%,
+    rgba(255, 236, 196, 0.34) 0%,
+    rgba(255, 210, 152, 0.12) 48%,
+    transparent 74%
+  );
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+  transition: opacity 1.15s ease 1.48s;
+}
+
+.envelope-stage.is-opening .env-throat-glow {
+  opacity: 1;
+}
+
+/* Layer 2: Pure 2D GPU-Isolated Clipping Window for Inner Cream Card inside V-Pocket (zero 3D clip-path culling!) */
+.env-pocket-card-clip {
+  position: absolute;
+  left: 8.2%;
+  right: 8.2%;
+  bottom: 6.8%;
+  height: 192%;
+  overflow: hidden;
+  transform: translate3d(0, 0, 0);
+  pointer-events: none;
+  z-index: 2;
+  visibility: hidden;
+}
+
+.envelope-stage.is-flipped .env-pocket-card-clip,
+.envelope-stage.is-back-ready .env-pocket-card-clip,
+.envelope-stage.is-opening .env-pocket-card-clip {
+  visibility: visible;
+}
+
+.env-pullout-card {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 46%;
+  border-radius: 6px;
+  background-color: var(--paper-cream);
+  background-image: url("../assets/paper-texture.webp");
+  background-size: cover;
+  box-shadow:
+    0 -4px 18px rgba(48, 10, 16, 0.18),
+    0 10px 28px rgba(48, 10, 16, 0.28),
+    inset 0 0 0 1px rgba(132, 21, 23, 0.12);
+  overflow: hidden;
+  will-change: transform, opacity;
+  transform: translate3d(0, 0%, 0) scale3d(0.985, 0.985, 1);
+  /* Act 2 (1.62s delay, 1.64s slow glide): Inner card rises slowly ONLY AFTER top flap + wax seal have opened & settled! */
+  transition: transform 1.64s cubic-bezier(0.38, 0.05, 0.28, 1) 1.62s;
+}
+
+.envelope-stage.is-opening .env-pullout-card {
+  transform: translate3d(0, -56%, 0) scale3d(1, 1, 1);
+}
+
+.env-pullout-card.is-handed-off {
+  opacity: 0 !important;
+  transition: none !important;
+}
+
+.env-pullout-svg {
+  width: 100%;
+  aspect-ratio: 340.16 / 481.89;
+  position: relative;
+}
+
+.env-pullout-svg svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Layer 3: Folded Left, Right & Bottom Burgundy Pocket Flaps (V-cut recessed notch casting real paper shadow!) */
+.env-back-pocket-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  filter: drop-shadow(0 -2px 5px rgba(12, 0, 3, 0.52));
+}
+
+.env-back-pocket {
+  position: absolute;
+  inset: 0;
+  border-radius: 9px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 38% 68%, rgba(142, 22, 44, 0.38), transparent 64%),
+    linear-gradient(162deg, #720e22 0%, #5b0718 100%);
+  clip-path: polygon(0 0, 50% 46.5%, 100% 0, 100% 100%, 0 100%);
+  box-shadow: inset 0 0 0 1px rgba(248, 214, 184, 0.14);
+}
+
+/* Crisp Architectural Paper Fold Seams */
+.env-pocket-seams {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.env-pocket-seams::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(33deg, rgba(0, 0, 0, 0.20) 0%, transparent 43%),
+    linear-gradient(-33deg, rgba(0, 0, 0, 0.20) 0%, transparent 43%),
+    linear-gradient(34.5deg, transparent 47.5%, rgba(22, 1, 5, 0.34) 48.8%, rgba(255, 242, 220, 0.12) 49.4%, transparent 50.4%),
+    linear-gradient(-34.5deg, transparent 47.5%, rgba(22, 1, 5, 0.34) 48.8%, rgba(255, 242, 220, 0.12) 49.4%, transparent 50.4%);
+}
+
+.env-pocket-seams::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(126, 17, 38, 0.34) 0%, rgba(82, 6, 20, 0.14) 100%);
+  clip-path: polygon(0 100%, 44% 49%, 56% 49%, 100% 100%);
+}
+
+/* Layer 4a: GPU-Composited Soft Flap Drop-Shadow (fades out completely before 722ms 90° crossing) */
+.env-top-flap-shadow {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 6px;
+  height: 54.5%;
+  z-index: 4;
+  border-radius: 9px 9px 0 0;
+  background: linear-gradient(180deg, rgba(16, 1, 4, 0.16) 0%, rgba(16, 1, 4, 0.42) 100%);
+  clip-path: polygon(0 0, 100% 0, 53% 97%, 50% 100%, 47% 97%);
+  pointer-events: none;
+  transition: opacity 0.56s ease 0.04s;
+}
+
+.envelope-stage.is-opening .env-top-flap-shadow {
+  opacity: 0;
+}
+
+/* Layer 4b & 5 Unified inside Isolated 2D->3D Perspective Stage:
+   Confines 3D perspective strictly to the top flap so V-pocket & inner card stay 100% pure 2D! */
+.env-flap-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  perspective: 1100px;
+  perspective-origin: 50% 18%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+/* Once flap swings past 90° vertical (722ms), drop flat 2D stage behind rising inner card */
+.env-flap-stage.is-behind {
+  z-index: 1;
+}
+
+.env-top-flap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 53.5%;
+  transform-origin: 50% 0%;
+  transform: rotateX(0deg);
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  overflow: visible;
+  /* Unhurried, weighted 1.65s 3D lift (analytical 90.0° crossing at 722ms) */
+  transition: transform 1.65s cubic-bezier(0.48, 0.06, 0.36, 1) 0s;
+  pointer-events: none;
+}
+
+.envelope-stage.is-opening .env-top-flap {
+  transform: rotateX(174deg);
+}
+
+.env-flap-face {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.env-flap-outer {
+  transform: rotateX(0deg) translateZ(0.6px);
+}
+
+.env-top-flap-paper {
+  position: absolute;
+  inset: 0;
+  border-radius: 9px 9px 0 0;
+  background: linear-gradient(175deg, #7d1429 0%, #660a1c 92%);
+  clip-path: polygon(0 0, 100% 0, 52.5% 97.5%, 50% 100%, 47.5% 97.5%);
+}
+
+/* Inner Face Revealed Above Envelope After Passing 90° (wide base at local_y=100%, pointed tip + wax seal at local_y=0%) */
+.env-flap-inner {
+  transform-origin: 50% 50%;
+  transform: rotateX(180deg) translateZ(0.6px);
+}
+
+.env-top-flap-lining {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: 0 0 9px 9px;
+  background: linear-gradient(0deg, #4b0614 0%, #680b1f 94%);
+  clip-path: polygon(0 100%, 100% 100%, 52.5% 2.5%, 50% 0%, 47.5% 2.5%);
+}
+
+/* Photorealistic Hand-Poured Champagne-Gold Wax Seal Physically Adhered to Flap Tip (95.33% of 53.5% = exact 51.0% envelope Y) */
+.wax-seal-badge {
+  position: absolute;
+  left: 50%;
+  top: 95.33%;
+  transform: translate3d(-50%, -50%, 1px);
+  width: clamp(104px, 21.5vw, 138px);
+  height: clamp(104px, 21.5vw, 138px);
+  z-index: 3;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.wax-seal-backside {
+  position: absolute;
+  left: 50%;
+  top: 4.67%;
+  transform: translate3d(-50%, -50%, 0);
+  width: clamp(104px, 21.5vw, 138px);
+  height: clamp(104px, 21.5vw, 138px);
+  z-index: 1;
+  overflow: visible;
+  pointer-events: none;
+}
+
+/* Smooth pressed champagne-gold wax underside (preserves organic hand-poured outer rim without mirrored T & D stamp) */
+.wax-seal-backside::after {
+  content: "";
+  position: absolute;
+  inset: 16.5%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 46% 38%,
+    #c6a883 0%,
+    #b1926c 54%,
+    #957650 86%,
+    rgba(149, 118, 80, 0) 100%
+  );
+  filter: blur(2.4px);
+}
+
+.wax-seal-photo {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.wax-seal-photo.is-backside {
+  transform: scaleY(-1);
+  filter: brightness(0.84) contrast(0.92);
+}
+
+/* Confine subtle warm luster strictly inside the inner stamped brass circle (never clipping outer rim!) */
+.wax-seal-glint-clip {
+  position: absolute;
+  inset: 12%;
+  border-radius: 50%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.wax-seal-glint {
+  position: absolute;
+  inset: -25% -70%;
+  background: linear-gradient(
+    118deg,
+    transparent 38%,
+    rgba(255, 250, 236, 0.32) 50%,
+    transparent 62%
+  );
+  transform: translate3d(-95%, 0, 0);
+  pointer-events: none;
+}
+
+.envelope-stage.is-flipping-to-back .wax-seal-glint {
+  animation: waxSealFoilGlint 1.08s ease-out forwards;
+}
+
+.envelope-stage.is-back-ready .wax-seal-glint {
+  animation: waxSealIdleLuster 4.8s ease-in-out 1.4s infinite;
+}
+
+@keyframes waxSealFoilGlint {
+  0%, 52% {
+    transform: translate3d(-95%, 0, 0);
+    opacity: 0;
+  }
+  68% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate3d(95%, 0, 0);
+    opacity: 0;
+  }
+}
+
+@keyframes waxSealIdleLuster {
+  0%, 62% {
+    transform: translate3d(-95%, 0, 0);
+    opacity: 0;
+  }
+  78% {
+    opacity: 0.65;
+  }
+  100% {
+    transform: translate3d(95%, 0, 0);
+    opacity: 0;
+  }
+}
+
+.envelope-svg-wrap {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.envelope-svg-wrap svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Dynamic Guest Name on Envelope Front dotted line (x=29.67%..92.97%, baseline y=92.54%) */
+.envelope-guest-name {
+  position: absolute;
+  left: 29.8%;
+  width: 62.8%;
+  bottom: 7.4%;
+  z-index: 12;
+  text-align: center;
+  font-family: var(--font-script);
+  font-size: clamp(17px, 3.5vw, 28px);
+  font-weight: 700;
+  color: var(--ivory-ink);
+  line-height: 1.32;
+  padding: 0.06em 0.16em 0.42em;
+  margin-bottom: -0.39em;
+  letter-spacing: 0.01em;
+  text-shadow: 0 2px 8px rgba(34, 2, 8, 0.45);
+  white-space: nowrap;
+  overflow: visible;
+  pointer-events: none;
+}
+
+body.lang-zh .envelope-guest-name,
+.envelope-guest-name.has-hanzi-guest {
+  font-family: var(--font-zh);
+  font-size: clamp(15px, 2.9vw, 23px);
+  letter-spacing: 0.06em;
+}
+
+/* ==========================================================================
+   MAIN SCROLLABLE INVITATION CONTAINER
+   ========================================================================== */
+.invitation-main {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 84px 16px 72px;
+}
+
+.hero-prelude {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto 34px;
+}
+
+.hero-prelude-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-serif);
+  font-size: 14px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--crimson-ink);
+  margin-bottom: 6px;
+}
+
+.hero-prelude h1 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(30px, 5.5vw, 48px);
+  font-weight: 700;
+  color: var(--crimson-ink);
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+.hero-prelude p {
+  margin: 8px auto 0;
+  font-size: 14.5px;
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   ACT II: THE 3 ORIGINAL HANDMADE-PAPER STATIONERY CARDS
+   ========================================================================== */
+.cards-stream {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 54px;
+}
+
+/* Reorder Chinese Card (#card-wrap-chinese) to position #1 when ?lang=zh or 中文 is active! */
+body.lang-zh #card-wrap-chinese {
+  order: -1;
+}
+
+#card-wrap-reception,
+#card-wrap-ceremony,
+#card-wrap-chinese,
+#section-countdown,
+#section-location {
+  scroll-margin-top: 74px;
+}
+
+.card-showcase-block {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.card-step-caption {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  max-width: 93vw;
+  margin-bottom: 14px;
+  font-family: var(--font-serif);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: center;
+  text-wrap: balance;
+  color: var(--crimson-ink);
+}
+
+.card-step-caption::before,
+.card-step-caption::after {
+  content: "";
+  width: 28px;
+  height: 1px;
+  flex-shrink: 0;
+  background: var(--crimson-line);
+}
+
+/* Physical 120x170mm Cotton Paper Card */
+.hero-prelude,
+.card-step-caption {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.stationery-card {
+  position: relative;
+  width: min(93vw, 540px);
+  aspect-ratio: 340.16 / 481.89;
+  border-radius: 6px;
+  background-color: var(--paper-cream);
+  background-image: url("../assets/paper-texture.webp");
+  background-size: cover;
+  background-position: center;
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: box-shadow 0.35s ease, transform 0.35s ease;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.stationery-card * {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.stationery-card.will-reveal {
+  opacity: 0;
+  transform: translateY(28px) scale(0.988);
+}
+
+.stationery-card.will-reveal.is-visible {
+  animation: cardRevealIn 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Zero-offset measurement & invisible landing slot during Envelope -> Card FLIP Handoff */
+.stationery-card.is-handoff-target {
+  opacity: 0 !important;
+  transform: none !important;
+  animation: none !important;
+  transition: none !important;
+}
+
+/* Shared-Element GPU Flying Hero Card (expands from envelope pocket directly onto scrollable table) */
+.hero-flying-card {
+  position: fixed !important;
+  z-index: 56;
+  margin: 0 !important;
+  pointer-events: none;
+  will-change: transform, opacity;
+  transform-origin: 50% 50%;
+  box-shadow:
+    0 28px 68px -12px rgba(48, 8, 16, 0.34),
+    0 12px 26px -6px rgba(61, 6, 17, 0.2),
+    0 2px 6px rgba(74, 21, 23, 0.08);
+  transition:
+    box-shadow 0.45s ease 0.45s,
+    opacity 0.16s ease;
+}
+
+.hero-flying-card.is-settling {
+  box-shadow: var(--card-shadow);
+}
+
+.hero-flying-card.is-fading-handoff {
+  opacity: 0 !important;
+}
+
+/* Warm Diagonal Window-Sunlight Ribbon Gliding Across Expanding Card */
+.flying-card-sheen {
+  position: absolute;
+  inset: -24% -65%;
+  z-index: 9;
+  pointer-events: none;
+  background: linear-gradient(
+    114deg,
+    transparent 35%,
+    rgba(255, 251, 240, 0.56) 48%,
+    rgba(255, 234, 194, 0.28) 54%,
+    transparent 67%
+  );
+  transform: translate3d(-85%, 0, 0);
+  animation: flyingCardSunlight 1.34s cubic-bezier(0.22, 1, 0.36, 1) 0.08s forwards;
+}
+
+@keyframes flyingCardSunlight {
+  0% {
+    transform: translate3d(-85%, 0, 0);
+    opacity: 0;
+  }
+  28% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate3d(88%, 0, 0);
+    opacity: 0;
+  }
+}
+
+/* Luminous Champagne-Gold Shimmer Burst when Wax Seal Unseals */
+.seal-sparkle-mote {
+  position: fixed;
+  z-index: 62;
+  pointer-events: none;
+  user-select: none;
+  left: 0;
+  top: 0;
+  font-size: var(--sz, 13px);
+  color: var(--clr, #f8deb0);
+  text-shadow: 0 0 10px rgba(255, 224, 166, 0.72);
+  will-change: transform, opacity;
+  animation: sealSparkleBurst var(--dur, 0.92s) cubic-bezier(0.16, 0.88, 0.3, 1) forwards;
+}
+
+.seal-sparkle-mote.is-orb {
+  width: var(--sz, 6px);
+  height: var(--sz, 6px);
+  border-radius: 50%;
+  background: radial-gradient(circle, #fffaf0 0%, #f5d393 58%, rgba(245, 211, 147, 0) 100%);
+  box-shadow: 0 0 10px rgba(255, 228, 174, 0.8);
+}
+
+@keyframes sealSparkleBurst {
+  0% {
+    opacity: 0;
+    transform: translate3d(var(--x0), var(--y0), 0) scale(0.35) rotate(0deg);
+  }
+  18% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--x1), var(--y1), 0) scale(1.05) rotate(var(--rot, 28deg));
+  }
+}
+
+/* Staggered Harmonious Entrance of Reading Table Header, Topbar & Caption Around Landed Card */
+body.is-table-preparing .floating-topbar {
+  opacity: 0;
+  transform: translate3d(-50%, -12px, 0) scale(0.96);
+  transition: none;
+}
+
+body.is-table-preparing .hero-prelude,
+body.is-table-preparing .card-step-caption,
+body.is-table-preparing .c2-border-secret {
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+  transition: none;
+}
+
+body.is-table-cascading .floating-topbar {
+  opacity: 1;
+  transform: translate3d(-50%, 0, 0) scale(1);
+  transition:
+    opacity 0.52s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.52s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body.is-table-cascading .hero-prelude {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition:
+    opacity 0.56s cubic-bezier(0.22, 1, 0.36, 1) 0.04s,
+    transform 0.56s cubic-bezier(0.22, 1, 0.36, 1) 0.04s;
+}
+
+body.is-table-cascading .card-step-caption {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition:
+    opacity 0.54s cubic-bezier(0.22, 1, 0.36, 1) 0.11s,
+    transform 0.54s cubic-bezier(0.22, 1, 0.36, 1) 0.11s;
+}
+
+body.is-table-cascading .c2-border-secret {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition:
+    opacity 0.56s cubic-bezier(0.22, 1, 0.36, 1) 0.19s,
+    transform 0.56s cubic-bezier(0.22, 1, 0.36, 1) 0.19s;
+}
+
+/* Gentle Floating Bottom Scroll-Down Invitation Pill */
+.scroll-invite-cue {
+  position: fixed;
+  left: 50%;
+  bottom: max(18px, calc(env(safe-area-inset-bottom, 0px) + 14px));
+  transform: translate3d(-50%, 16px, 0);
+  z-index: 46;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 15px;
+  max-width: calc(100vw - 140px);
+  border-radius: 999px;
+  border: 1px solid rgba(132, 21, 23, 0.22);
+  background: rgba(255, 250, 242, 0.94);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow:
+    0 10px 26px rgba(61, 6, 17, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  color: var(--crimson-ink);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.44s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.44s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.scroll-invite-cue.is-visible {
+  opacity: 1;
+  transform: translate3d(-50%, 0, 0);
+  pointer-events: auto;
+}
+
+.scroll-invite-cue:hover {
+  background: #fffdf8;
+}
+
+.scroll-cue-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.scroll-cue-chevron {
+  display: inline-block;
+  font-size: 15px;
+  line-height: 1;
+  margin-top: -3px;
+  animation: scrollCueBob 1.5s ease-in-out infinite;
+}
+
+@keyframes scrollCueBob {
+  0%, 100% { transform: translate3d(0, -1px, 0); }
+  50% { transform: translate3d(0, 3px, 0); }
+}
+
+@keyframes cardRevealIn {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.988);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Subtle paper bevel edge */
+.stationery-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 0 0 1px rgba(132, 21, 23, 0.08);
+  pointer-events: none;
+  z-index: 8;
+}
+
+.card-svg-stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+
+.card-svg-stage svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Dynamic Guest Name resting on Card 1 dotted line (x=21.6%..78.9%, baseline y=12.95%) — Topmost z-index so descender tails ("y", "g", "q") render 100% whole */
+.card1-guest-slot {
+  position: absolute;
+  left: 21.6%;
+  width: 57.3%;
+  top: 7.9%;
+  height: 5.25%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 16;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.card1-guest-text {
+  font-family: var(--font-script);
+  font-size: clamp(18px, 4.3vw, 27px);
+  font-weight: 700;
+  color: var(--crimson-ink);
+  line-height: 1.34;
+  text-align: center;
+  white-space: nowrap;
+  overflow: visible;
+  max-width: 100%;
+  padding: 0.08em 0.18em 0.44em;
+  margin-bottom: -0.41em;
+  paint-order: stroke fill;
+  -webkit-text-stroke: 2px var(--paper-cream);
+  animation: inkAppear 0.85s ease both 0.15s;
+}
+
+.env-pullout-card .card1-guest-text,
+.hero-flying-card .card1-guest-text,
+.stationery-card.is-revealed-done .card1-guest-text {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+body.lang-zh .card1-guest-text,
+.card1-guest-text.has-hanzi-guest {
+  font-family: var(--font-zh);
+  font-size: clamp(15px, 3.4vw, 21px);
+  letter-spacing: 0.06em;
+}
+
+@keyframes inkAppear {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================================================
+   NATIVE ARTWORK MICRO-ANIMATIONS (SVG GROUPS & LIVE OVERLAYS)
+   ========================================================================== */
+
+/* Envelope Front Artwork */
+.vo-rings {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: gentleFloat 4.8s ease-in-out infinite;
+}
+
+.vo-flutes {
+  transform-box: fill-box;
+  transform-origin: 50% 85%;
+  animation: champagneToast 3.8s ease-in-out infinite;
+}
+
+@keyframes gentleFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-3px) rotate(-1.5deg); }
+}
+
+@keyframes champagneToast {
+  0%, 100% { transform: rotate(0deg); }
+  35% { transform: rotate(-2.6deg) translateY(-1.5px); }
+  65% { transform: rotate(1.4deg); }
+}
+
+/* Card 1: Fireworks, String Lights, 囍, Couple & 5 Beloved Puppies */
+.c1-firework,
+.c2-firework {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: fireworkBloom 4.2s ease-in-out infinite;
+}
+
+.c1-fw-2,
+.c2-fw-3,
+.c2-fw-7 {
+  animation-delay: 1.3s;
+}
+
+.c1-fw-3,
+.c2-fw-11,
+.c2-fw-15 {
+  animation-delay: 2.5s;
+}
+
+@keyframes fireworkBloom {
+  0%, 100% {
+    opacity: 0.82;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.045);
+  }
+}
+
+.c1-xi-seal {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: xiPulse 3.6s ease-in-out infinite;
+}
+
+@keyframes xiPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+.c1-dog-xiuxiu {
+  transform-box: fill-box;
+  transform-origin: 50% 92%;
+  pointer-events: bounding-box;
+  cursor: pointer;
+  outline: none;
+  animation: puppyWagLeft 2.9s ease-in-out infinite;
+}
+
+.c1-dogs-right {
+  transform-box: fill-box;
+  transform-origin: 50% 94%;
+  pointer-events: bounding-box;
+  cursor: pointer;
+  outline: none;
+  animation: puppyWagRight 3.4s ease-in-out 0.6s infinite;
+}
+
+.c1-couple {
+  transform-box: fill-box;
+  transform-origin: 50% 96%;
+  pointer-events: bounding-box;
+  cursor: pointer;
+  outline: none;
+  animation: coupleSway 5.2s ease-in-out infinite;
+}
+
+.c1-dog-xiuxiu:hover,
+.c1-dogs-right:hover,
+.c1-couple:hover {
+  filter: none;
+}
+
+@keyframes puppyWagLeft {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  30% { transform: rotate(-2.4deg) translateY(-1.6px); }
+  65% { transform: rotate(2deg) translateY(-0.6px); }
+}
+
+@keyframes puppyWagRight {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  40% { transform: rotate(2.1deg) translateY(-1.5px); }
+  75% { transform: rotate(-1.6deg) translateY(0); }
+}
+
+@keyframes coupleSway {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(0.75deg) translateY(-1px); }
+}
+
+/* Warm Fairy String-Light Bulbs along Card 1 Floral Arch */
+.card-fx-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.arch-bulb {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  margin-left: -4.5px;
+  margin-top: -4.5px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 244, 196, 0.98) 0%, rgba(247, 178, 59, 0.68) 45%, rgba(247, 178, 59, 0) 75%);
+  animation: bulbTwinkle 2.4s ease-in-out infinite;
+}
+
+@keyframes bulbTwinkle {
+  0%, 100% { opacity: 0.35; transform: scale(0.78); }
+  50% { opacity: 1; transform: scale(1.32); }
+}
+
+/* Card 2: 3 Flickering Candle Flames + Champagne Bubbles + 4-Side Story Reveal */
+.candle-flame {
+  position: absolute;
+  width: 8px;
+  height: 13px;
+  margin-left: -4px;
+  margin-top: -11px;
+  border-radius: 50% 50% 42% 42% / 65% 65% 35% 35%;
+  background: radial-gradient(ellipse at 50% 72%, #fffdf0 0%, #ffd15c 45%, rgba(235, 108, 36, 0.55) 80%, transparent 100%);
+  box-shadow: 0 0 12px 4px rgba(255, 196, 77, 0.48);
+  transform-origin: 50% 90%;
+  animation: flameFlicker 1.9s ease-in-out infinite alternate;
+}
+
+.candle-flame:nth-child(2) {
+  animation-duration: 1.55s;
+  animation-delay: 0.3s;
+}
+.candle-flame:nth-child(3) {
+  animation-duration: 2.15s;
+  animation-delay: 0.65s;
+}
+
+@keyframes flameFlicker {
+  0% { transform: rotate(-3deg) scale(0.92, 0.96); opacity: 0.86; }
+  50% { transform: rotate(2.5deg) scale(1.06, 1.1); opacity: 1; }
+  100% { transform: rotate(-1.5deg) scale(0.96, 1.04); opacity: 0.92; }
+}
+
+.champagne-bubble {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff8dc, #e5b35a);
+  opacity: 0;
+  animation: bubbleRise 3.2s ease-out infinite;
+}
+
+@keyframes bubbleRise {
+  0% { opacity: 0; transform: translateY(6px) scale(0.5); }
+  30% { opacity: 0.85; }
+  100% { opacity: 0; transform: translateY(-22px) scale(1.1); }
+}
+
+@keyframes inkFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Card 3: Flying Crane, Silk Ribbon Waves, Right-to-Left Chinese Columns & Red Bamboo */
+.c3-crane {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: craneGlide 5.4s ease-in-out infinite;
+}
+
+@keyframes craneGlide {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(-3.5px, -3.5px) rotate(-1.8deg); }
+}
+
+/* Card 3: Keep ultra-fine silk ribbon hairlines 100% steady & crisp (prevents sub-pixel moiré flickering on 1x desktop monitors) */
+.c3-silk-waves {
+  animation: none !important;
+  transform: none !important;
+}
+
+.art-card-3 .c3-silk-waves path {
+  fill: none !important;
+  stroke: #841518;
+  stroke-width: 0.36px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  shape-rendering: geometricPrecision;
+}
+
+.c3-bamboo {
+  transform-box: fill-box;
+  transform-origin: 22% 98%;
+  animation: bambooBreeze 4.8s ease-in-out infinite;
+}
+
+@keyframes bambooBreeze {
+  0%, 100% { transform: rotate(0deg); }
+  45% { transform: rotate(1.75deg); }
+  75% { transform: rotate(-1.1deg); }
+}
+
+.stationery-card.will-reveal .c3-vcol {
+  opacity: 0;
+}
+
+.stationery-card.is-visible .c3-vcol {
+  animation: inkFadeIn 0.45s ease both;
+  animation-delay: calc(var(--col-order, 0) * 38ms + 40ms);
+}
+
+.stationery-card.is-revealed-done .c3-vcol {
+  animation: none !important;
+  opacity: 1 !important;
+}
+
+/* Interactive Easter Egg Pop Hearts & Puppy Speech Bubble */
+.interactive-hint-pill {
+  margin-top: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(250, 246, 238, 0.85);
+  border: 1px solid var(--crimson-line);
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.puppy-toast {
+  position: fixed;
+  left: 50%;
+  bottom: max(24px, calc(env(safe-area-inset-bottom, 0px) + 18px));
+  transform: translateX(-50%) translateY(20px);
+  z-index: 80;
+  background: var(--paper-cream);
+  color: var(--crimson-ink);
+  border: 1.5px solid var(--crimson-ink);
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 600;
+  box-shadow: 0 12px 30px rgba(61, 6, 17, 0.22);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s ease, transform 0.28s ease;
+  max-width: calc(100vw - 32px);
+  text-align: center;
+}
+
+.puppy-toast.is-shown {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Frameless Couture Floating Ink Whispers & Hand-Drawn Guest Hearts (Card 1 Taps) */
+.c1-guest-hit {
+  fill: transparent;
+  stroke: none;
+  pointer-events: all;
+  cursor: pointer;
+}
+
+.floating-whisper {
+  position: absolute;
+  z-index: 76;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5.5px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  text-shadow:
+    0 0 6px rgba(250, 246, 238, 0.99),
+    0 0 13px rgba(250, 246, 238, 0.97),
+    0 0 22px rgba(250, 246, 238, 0.92),
+    0 1px 2px rgba(250, 246, 238, 1);
+  will-change: transform, opacity;
+  animation: whisperFloatUp var(--dur, 3.15s) cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.floating-whisper.is-retiring {
+  transition: opacity 0.38s ease, filter 0.38s ease;
+  opacity: 0 !important;
+  filter: blur(1px);
+}
+
+.floating-whisper .fw-ornament {
+  font-size: 11.5px;
+  color: #c67d08;
+  line-height: 1;
+  transform: translateY(-0.5px);
+}
+
+.floating-whisper .fw-speaker {
+  font-family: var(--font-serif);
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14.8px;
+  letter-spacing: 0.03em;
+  color: #985704;
+  paint-order: stroke fill;
+  -webkit-text-stroke: 3.4px rgba(250, 246, 238, 0.96);
+}
+
+.floating-whisper .fw-dot {
+  font-family: var(--font-serif);
+  font-size: 14px;
+  color: #c67d08;
+}
+
+.floating-whisper .fw-words {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 18.2px;
+  letter-spacing: 0.015em;
+  color: #a46005;
+  paint-order: stroke fill;
+  -webkit-text-stroke: 3.6px rgba(250, 246, 238, 0.96);
+}
+
+body.lang-zh .floating-whisper .fw-speaker,
+body.lang-zh .floating-whisper .fw-words {
+  font-family: var(--font-zh);
+  font-style: normal;
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: 0.055em;
+}
+
+body.lang-zh .floating-whisper .fw-speaker {
+  font-weight: 700;
+}
+
+/* Optional Live Preview Themes for Floating Whisper (?whisper_theme=olive | velvet) */
+body[data-whisper-theme="olive"] .floating-whisper .fw-ornament,
+body[data-whisper-theme="olive"] .floating-whisper .fw-dot {
+  color: #4c785c;
+}
+
+body[data-whisper-theme="olive"] .floating-whisper .fw-speaker {
+  color: #264a34;
+}
+
+body[data-whisper-theme="olive"] .floating-whisper .fw-words {
+  color: #2f5a41;
+}
+
+body[data-whisper-theme="velvet"] .floating-whisper {
+  padding: 4.5px 13px 5.5px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, rgba(86, 11, 26, 0.93) 0%, rgba(114, 20, 39, 0.93) 100%);
+  box-shadow: 0 8px 20px -6px rgba(61, 6, 17, 0.28);
+  text-shadow: none;
+}
+
+body[data-whisper-theme="velvet"] .floating-whisper .fw-ornament,
+body[data-whisper-theme="velvet"] .floating-whisper .fw-dot {
+  color: #e6be7a;
+}
+
+body[data-whisper-theme="velvet"] .floating-whisper .fw-speaker,
+body[data-whisper-theme="velvet"] .floating-whisper .fw-words {
+  color: #fbf0d9;
+  -webkit-text-stroke: 0 transparent;
+}
+
+/* Hand-Sketched Crimson & Champagne-Gold Floating Hearts from Background Banquet Guests */
+.guest-heart-mote {
+  position: absolute;
+  z-index: 75;
+  width: var(--sz, 16px);
+  height: var(--sz, 16px);
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: guestHeartFloat var(--dur, 2.55s) cubic-bezier(0.22, 0.61, 0.36, 1) var(--delay, 0s) forwards;
+}
+
+.guest-heart-mote svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+@keyframes guestHeartFloat {
+  0% {
+    opacity: 0;
+    transform: translate3d(-50%, 4px, 0) scale(0.45) rotate(0deg);
+  }
+  16% {
+    opacity: 0.96;
+    transform: translate3d(calc(-50% + var(--dx1, 10px) * 0.35), -18px, 0) scale(1.06) rotate(var(--rot1, -8deg));
+  }
+  58% {
+    opacity: 0.88;
+    transform: translate3d(calc(-50% + var(--dx1, 14px)), calc(var(--rise, -124px) * 0.56), 0) scale(1) rotate(var(--rot1, -10deg));
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(calc(-50% + var(--dx2, -10px)), var(--rise, -124px), 0) scale(0.86) rotate(var(--rot2, 10deg));
+  }
+}
+
+@keyframes whisperFloatUp {
+  0% {
+    opacity: 0;
+    transform: translate3d(-50%, 6px, 0) scale(0.93) rotate(0deg);
+  }
+  14% {
+    opacity: 1;
+    transform: translate3d(calc(-50% + var(--dx1, 10px) * 0.32), -18px, 0) scale(1) rotate(var(--rot1, -0.7deg));
+  }
+  58% {
+    opacity: 0.95;
+    transform: translate3d(calc(-50% + var(--dx1, 16px)), calc(var(--rise, -138px) * 0.56), 0) scale(1.01) rotate(var(--rot1, -1.1deg));
+  }
+  84% {
+    opacity: 0.38;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(calc(-50% + var(--dx2, -12px)), var(--rise, -138px), 0) scale(0.98) rotate(var(--rot2, 1.1deg));
+  }
+}
+
+.floating-mote {
+  position: absolute;
+  z-index: 75;
+  pointer-events: none;
+  user-select: none;
+  font-size: var(--sz, 11.5px);
+  color: var(--clr, #c9923a);
+  will-change: transform, opacity;
+  animation: moteFloatUp var(--dur, 2.8s) cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+@keyframes moteFloatUp {
+  0% {
+    opacity: 0;
+    transform: translate3d(-50%, 0, 0) scale(0.6);
+  }
+  18% {
+    opacity: 0.82;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(calc(-50% + var(--dx, 18px)), var(--dy, -118px), 0) scale(1.1);
+  }
+}
+
+/* ==========================================================================
+   CARD 2: QUIET-LUXURY WORD-BY-WORD HOT-FOIL SPOTLIGHT & EDITORIAL EPIGRAPH
+   Steps cleanly word-by-word ("We" -> "began" -> "as" -> "classmates"...)
+   across all 50 handwritten words with crisp 24K gold-amber ink & soft aura.
+   ========================================================================== */
+
+#card-2-article .c2-word {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+#card-2-article .c2-word path {
+  paint-order: stroke fill;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+#card-2-article.is-awaiting-pen .c2-word {
+  opacity: 0;
+}
+
+/* 1. Word-by-Word Calligraphic Write-On when Card 2 Enters View (50 words * 66ms) */
+#card-2-article.is-writing-pen .c2-word {
+  animation: c2WordWriteGroup 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--wi, 0) * 66ms);
+}
+
+#card-2-article.is-writing-pen .c2-word path {
+  animation: c2WordWriteInk 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--wi, 0) * 66ms);
+}
+
+@keyframes c2WordWriteGroup {
+  0% {
+    opacity: 0;
+    transform: scale(0.93);
+  }
+  42% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes c2WordWriteInk {
+  0% {
+    fill: #d89212;
+    stroke: rgba(252, 206, 96, 0.82);
+    stroke-width: 0.8px;
+  }
+  45% {
+    fill: #c27406;
+    stroke: rgba(250, 200, 88, 0.68);
+    stroke-width: 0.65px;
+  }
+  100% {
+    fill: #841518;
+    stroke: rgba(250, 200, 88, 0);
+    stroke-width: 0px;
+  }
+}
+
+/* 2. Continuous Single-Word 24K Gold Spotlight ("We" -> "began" -> "as" -> "classmates"...)
+      50 words * 340ms = 17.0s clockwise reading tour + 1.0s breath = 18.0s cycle.
+      Tight 0.55%..1.65% peak (99ms..297ms, full crimson by 441ms) guarantees
+      STRICTLY ONE SINGLE WORD gleams bright 24K gold at any moment! */
+#card-2-article.is-pen-done .c2-word {
+  opacity: 1;
+}
+
+#card-2-article.is-pen-done .c2-word path {
+  transition: opacity 0.36s ease, fill 0.36s ease;
+}
+
+#card-2-article.is-pen-done.is-in-view:not([data-focus-edge]) .c2-word {
+  animation: c2WordPulseGroup 18s linear infinite;
+  animation-delay: calc(var(--wi, 0) * 340ms);
+}
+
+#card-2-article.is-pen-done.is-in-view:not([data-focus-edge]) .c2-word path {
+  animation: c2WordPulseInk 18s linear infinite;
+  animation-delay: calc(var(--wi, 0) * 340ms);
+}
+
+@keyframes c2WordPulseGroup {
+  0%, 2.45%, 100% {
+    transform: scale(1);
+  }
+  0.55%, 1.65% {
+    transform: scale(1.095);
+  }
+}
+
+@keyframes c2WordPulseInk {
+  0%, 2.45%, 100% {
+    fill: #841518;
+    stroke: rgba(252, 206, 96, 0);
+    stroke-width: 0px;
+  }
+  0.55%, 1.65% {
+    fill: #c27406;
+    stroke: rgba(252, 206, 96, 0.88);
+    stroke-width: 0.86px;
+  }
+}
+
+/* 3. Focused Edge Burnished Gold-Foil Gleam (when verse is open or a margin is tapped) */
+#card-2-article[data-focus-edge] .c2-word {
+  animation: none !important;
+  transform: scale(1) !important;
+}
+
+#card-2-article[data-focus-edge] .c2-story-border path {
+  animation: none !important;
+  opacity: 0.36 !important;
+  fill: #841518;
+  stroke: none;
+  stroke-width: 0;
+}
+
+#card-2-article[data-focus-edge="top"] .c2-border-top path,
+#card-2-article[data-focus-edge="right"] .c2-border-right path,
+#card-2-article[data-focus-edge="bottom"] .c2-border-bottom path,
+#card-2-article[data-focus-edge="left"] .c2-border-left path {
+  opacity: 1 !important;
+  fill: #b36608;
+  stroke: rgba(248, 202, 96, 0.52);
+  stroke-width: 0.45px;
+}
+
+/* Invisible Tactile Hit Zones Right Along the 4 Handwritten Margins of Card 2 */
+.c2-edge-hit {
+  position: absolute;
+  z-index: 6;
+  appearance: none;
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.c2-edge-hit:focus-visible {
+  outline: 1px dashed rgba(132, 21, 23, 0.45);
+  outline-offset: -2px;
+  border-radius: 4px;
+}
+
+.c2-edge-hit.is-top {
+  left: 8%;
+  right: 6%;
+  top: 5.8%;
+  height: 8.6%;
+}
+
+.c2-edge-hit.is-right {
+  right: 3.5%;
+  width: 9.8%;
+  top: 13.5%;
+  bottom: 10.5%;
+}
+
+.c2-edge-hit.is-bottom {
+  left: 7%;
+  right: 10%;
+  bottom: 5.8%;
+  height: 8.6%;
+}
+
+.c2-edge-hit.is-left {
+  left: 3.5%;
+  width: 9.8%;
+  top: 13.5%;
+  bottom: 12.5%;
+}
+
+/* 4. Understated Couture Editorial Epigraph & Pure-English Letterpress Verse */
+.c2-border-secret {
+  width: min(92vw, 490px);
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.c2-epigraph-trigger {
+  appearance: none;
+  border: none;
+  background: transparent;
+  padding: 6px 12px;
+  margin: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+  color: rgba(132, 21, 23, 0.68);
+  transition: color 0.28s ease, opacity 0.28s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.c2-epigraph-trigger:hover {
+  color: var(--crimson-ink);
+}
+
+.c2-epigraph-excerpt {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 15.5px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.c2-epigraph-dot {
+  font-family: var(--font-serif);
+  font-size: 14px;
+  color: rgba(182, 134, 64, 0.72);
+}
+
+.c2-epigraph-sig {
+  font-family: var(--font-serif);
+  font-style: normal;
+  font-size: 11.8px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: rgba(132, 21, 23, 0.56);
+}
+
+.c2-border-secret.is-open .c2-epigraph-trigger {
+  display: none;
+}
+
+.c2-border-reader {
+  width: 100%;
+  padding: 4px 6px 2px;
+  position: relative;
+  animation: inkAppear 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.c2-border-reader::before {
+  content: "";
+  display: block;
+  width: 34px;
+  height: 1px;
+  margin: 0 auto 12px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(168, 118, 48, 0.62),
+    transparent
+  );
+}
+
+.c2-border-reader[hidden] {
+  display: none !important;
+}
+
+.c2-verse-poem {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.c2-verse-line {
+  margin: 0;
+  max-width: 455px;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(15.8px, 4vw, 17.6px);
+  line-height: 1.54;
+  letter-spacing: 0.01em;
+  color: rgba(74, 21, 23, 0.5);
+  cursor: pointer;
+  user-select: text;
+  -webkit-user-select: text;
+  transition: color 0.32s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.c2-verse-line:hover {
+  color: rgba(132, 21, 23, 0.82);
+}
+
+.c2-verse-line.is-active {
+  color: var(--crimson-ink);
+}
+
+.c2-verse-colophon {
+  margin-top: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: rgba(132, 21, 23, 0.58);
+}
+
+.c2-verse-sig-btn,
+.c2-verse-action {
+  appearance: none;
+  border: none;
+  background: transparent;
+  padding: 3px 5px;
+  margin: 0;
+  cursor: pointer;
+  color: inherit;
+  font-family: var(--font-serif);
+  transition: color 0.22s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.c2-verse-sig-btn {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+}
+
+.c2-verse-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 4.5px;
+  font-size: 13px;
+  font-style: italic;
+  letter-spacing: 0.03em;
+}
+
+.c2-verse-close {
+  font-style: normal;
+  font-size: 15.5px;
+  line-height: 1;
+  padding: 2px 6px;
+}
+
+.c2-verse-sig-btn:hover,
+.c2-verse-action:hover {
+  color: var(--crimson-ink);
+}
+
+.c2-verse-sep {
+  font-family: var(--font-serif);
+  font-size: 13px;
+  color: rgba(182, 134, 64, 0.6);
+}
+
+/* Taiwanese Traditional Chinese Typography Polish (prevent faux-italic & forced uppercase) */
+body.lang-zh .hero-prelude-tag,
+body.lang-zh .card-step-caption,
+body.lang-zh .section-heading .eyebrow,
+body.lang-zh .cd-label {
+  text-transform: none;
+  letter-spacing: 0.08em;
+}
+
+/* Hide internal couple link-generator tool when opened via personalized guest link (?to=...) */
+body.is-guest-mode .footer-tools-link {
+  display: none !important;
+}
+
+/* ==========================================================================
+   ACT III: INTERACTIVE WEDDING UTILITIES (COUNTDOWN, MAP, RSVP & GUESTBOOK)
+   ========================================================================== */
+.utilities-wrapper {
+  margin-top: 68px;
+  display: flex;
+  flex-direction: column;
+  gap: 44px;
+}
+
+.paper-sheet {
+  background-color: var(--paper-cream);
+  background-image: url("../assets/paper-texture.webp");
+  background-size: cover;
+  border-radius: 10px;
+  padding: clamp(24px, 4.5vw, 42px);
+  box-shadow: var(--card-shadow);
+  position: relative;
+  border: 1px solid rgba(132, 21, 23, 0.12);
+}
+
+.section-heading {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.section-heading .eyebrow {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 13.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.section-heading h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(24px, 4.2vw, 36px);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--crimson-ink);
+  text-wrap: balance;
+}
+
+.section-heading p {
+  margin: 6px auto 0;
+  max-width: 520px;
+  font-size: 14px;
+  color: var(--text-muted);
+  text-wrap: pretty;
+}
+
+/* Symmetrical Editorial Save-the-Date Countdown + Keepsake January 2027 Calendar */
+.countdown-layout {
+  display: grid;
+  grid-template-columns: 1.18fr 0.82fr;
+  gap: clamp(24px, 3.6vw, 38px);
+  align-items: center;
+}
+
+.cd-editorial-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 24px;
+  padding: 6px 2px;
+}
+
+.cd-heading-block {
+  text-align: left;
+}
+
+.cd-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-serif);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #a46005;
+  margin-bottom: 8px;
+}
+
+body.lang-zh .cd-eyebrow {
+  font-family: var(--font-zh);
+  text-transform: none;
+  letter-spacing: 0.1em;
+}
+
+.cd-xi-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--crimson-ink);
+  color: var(--ivory-ink);
+  font-size: 12px;
+  letter-spacing: 0;
+}
+
+.cd-heading-block h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(25px, 3.9vw, 36px);
+  font-weight: 700;
+  line-height: 1.18;
+  color: var(--crimson-ink);
+  text-wrap: balance;
+}
+
+.cd-sub-main {
+  margin: 10px 0 0;
+  font-size: 14.5px;
+  line-height: 1.5;
+  font-weight: 600;
+  color: var(--text-main);
+  text-wrap: pretty;
+}
+
+.cd-sub-venue {
+  margin: 5px 0 0;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--text-muted);
+  text-wrap: pretty;
+}
+
+.countdown-boxes {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 13px;
+}
+
+.cd-unit {
+  text-align: center;
+  padding: 22px 10px 19px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(132, 21, 23, 0.18);
+  box-shadow: inset 0 0 0 3px rgba(250, 246, 238, 0.85), inset 0 0 0 4px rgba(198, 125, 8, 0.14);
+}
+
+.cd-num {
+  display: block;
+  font-family: var(--font-serif);
+  font-variant-numeric: lining-nums tabular-nums;
+  font-size: clamp(34px, 4.9vw, 48px);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--crimson-ink);
+}
+
+.cd-label {
+  display: block;
+  margin-top: 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Mini Keepsake Calendar January 2027 */
+.keepsake-calendar {
+  padding: 20px 20px 18px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(132, 21, 23, 0.18);
+  box-shadow: inset 0 0 0 4px rgba(250, 246, 238, 0.88), inset 0 0 0 5px rgba(198, 125, 8, 0.16);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.cal-eyebrow {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  color: #a46005;
+  margin-bottom: 2px;
+}
+
+.cal-title {
+  font-family: var(--font-serif);
+  font-variant-numeric: lining-nums tabular-nums;
+  font-size: 20.5px;
+  font-weight: 700;
+  color: var(--crimson-ink);
+  margin-bottom: 10px;
+  letter-spacing: 0.08em;
+}
+
+.cal-footer-note {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(132, 21, 23, 0.16);
+  font-family: var(--font-serif);
+  font-variant-numeric: lining-nums tabular-nums;
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--crimson-ink);
+}
+
+body.lang-zh .cal-footer-note {
+  font-family: var(--font-zh);
+  font-size: 12.5px;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  font-size: 12.5px;
+}
+
+.cal-dow {
+  font-weight: 600;
+  color: var(--text-muted);
+  padding-bottom: 4px;
+  font-size: 11px;
+}
+
+.cal-day {
+  width: 32px;
+  height: 32px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--text-main);
+  position: relative;
+}
+
+.cal-day.is-wedding-day {
+  background: var(--crimson-ink);
+  color: var(--ivory-ink);
+  font-weight: 700;
+  box-shadow: 0 0 0 4px rgba(132, 21, 23, 0.16);
+  animation: xiPulse 2.6s ease-in-out infinite;
+}
+
+.cal-day.is-wedding-day::after {
+  content: "♥";
+  position: absolute;
+  top: -7px;
+  right: -3px;
+  font-size: 10px;
+  color: var(--crimson-ink);
+}
+
+/* Unified Single-Day Schedule Ledger (06.01.2027) & Map Layout */
+.venue-grid {
+  display: grid;
+  grid-template-columns: 0.95fr 1.05fr;
+  gap: 26px;
+  align-items: stretch;
+}
+
+.day-schedule-ledger {
+  padding: 22px 24px 24px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(132, 21, 23, 0.15);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.day-schedule-header {
+  padding-bottom: 16px;
+  margin-bottom: 18px;
+  border-bottom: 1px dashed rgba(132, 21, 23, 0.2);
+}
+
+.day-schedule-badge {
+  display: inline-block;
+  font-family: var(--font-serif);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #a46005;
+  margin-bottom: 4px;
+}
+
+body.lang-zh .day-schedule-badge {
+  font-family: var(--font-zh);
+  text-transform: none;
+  letter-spacing: 0.1em;
+}
+
+.day-schedule-date {
+  font-family: var(--font-serif);
+  font-variant-numeric: lining-nums tabular-nums;
+  font-size: clamp(22px, 3vw, 27px);
+  font-weight: 700;
+  color: var(--crimson-ink);
+  line-height: 1.18;
+  text-wrap: balance;
+}
+
+.day-schedule-lunar {
+  margin-top: 3px;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-wrap: pretty;
+}
+
+.timeline-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.timeline-list.is-same-day-rail {
+  position: relative;
+  padding-left: 24px;
+}
+
+.timeline-list.is-same-day-rail::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 10px;
+  bottom: 14px;
+  width: 1.5px;
+  background: linear-gradient(
+    180deg,
+    #c67d08 0%,
+    rgba(132, 21, 23, 0.45) 55%,
+    var(--crimson-ink) 100%
+  );
+}
+
+.timeline-item {
+  position: relative;
+  padding: 0;
+  background: transparent;
+  border: none;
+}
+
+.timeline-node {
+  position: absolute;
+  left: -24px;
+  top: 5px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--paper-cream);
+  border: 2.5px solid #c67d08;
+  box-shadow: 0 0 0 3px rgba(198, 125, 8, 0.14);
+}
+
+.timeline-node.is-evening {
+  border-color: var(--crimson-ink);
+  background: var(--crimson-ink);
+  box-shadow: 0 0 0 3.5px rgba(132, 21, 23, 0.15);
+}
+
+.timeline-period {
+  display: inline-block;
+  font-family: var(--font-serif);
+  font-size: 16.5px;
+  font-weight: 700;
+  color: #a46005;
+}
+
+.timeline-node.is-evening + .timeline-period {
+  color: var(--crimson-ink);
+}
+
+.timeline-item h3 {
+  margin: 3px 0 5px;
+  font-family: var(--font-serif);
+  font-size: 21px;
+  line-height: 1.28;
+  color: var(--text-main);
+  text-wrap: pretty;
+}
+
+.timeline-item p {
+  margin: 0;
+  font-size: 13.8px;
+  color: var(--text-muted);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.venue-map-frame {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--crimson-line);
+  min-height: 300px;
+  background: #eae2d6;
+  display: flex;
+  flex-direction: column;
+}
+
+.venue-map-frame iframe {
+  width: 100%;
+  flex: 1;
+  min-height: 260px;
+  border: 0;
+}
+
+/* RSVP & Wishes Guestbook */
+.rsvp-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.rsvp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.field-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.field-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.rsvp-input,
+.rsvp-select,
+.rsvp-textarea {
+  width: 100%;
+  font-family: inherit;
+  font-size: 16px;
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.78);
+  border: 1.5px solid rgba(132, 21, 23, 0.28);
+  border-radius: 8px;
+  padding: 11px 13px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.rsvp-input:focus,
+.rsvp-select:focus,
+.rsvp-textarea:focus {
+  outline: none;
+  border-color: var(--crimson-ink);
+  box-shadow: 0 0 0 3px rgba(132, 21, 23, 0.12);
+  background: #ffffff;
+}
+
+.rsvp-textarea {
+  min-height: 98px;
+  resize: vertical;
+}
+
+.quick-wishes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.wish-chip {
+  appearance: none;
+  border: 1px solid var(--crimson-line);
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--crimson-ink);
+  font-family: inherit;
+  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.wish-chip:hover {
+  background: var(--crimson-faint);
+}
+
+.wishes-wall {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 470px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.wish-note {
+  padding: 15px 17px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(132, 21, 23, 0.16);
+  animation: inkAppear 0.45s ease;
+}
+
+.wish-note-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.wish-author {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--crimson-ink);
+}
+
+.wish-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--crimson-faint);
+  color: var(--crimson-ink);
+}
+
+.wish-text {
+  margin: 0;
+  font-size: 13.8px;
+  color: var(--text-main);
+  line-height: 1.55;
+}
+
+.wish-meta {
+  margin-top: 6px;
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+/* Footer Colophon */
+.wedding-footer {
+  margin-top: 56px;
+  text-align: center;
+  padding: 24px 16px 12px;
+  border-top: 1px solid var(--crimson-line);
+  color: var(--text-muted);
+}
+
+.footer-monogram {
+  font-family: var(--font-serif);
+  font-variant-numeric: lining-nums tabular-nums;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--crimson-ink);
+  letter-spacing: 0.06em;
+}
+
+.footer-credit {
+  margin: 4px 0 12px;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 16px;
+  color: var(--text-main);
+}
+
+.footer-tools-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--crimson-ink);
+  text-decoration: none;
+  padding: 6px 13px;
+  border-radius: 999px;
+  border: 1px solid var(--crimson-line);
+  background: rgba(250, 246, 238, 0.7);
+}
+
+.footer-tools-link:hover {
+  background: var(--paper-cream);
+}
+
+/* ==========================================================================
+   RESPONSIVE BREAKPOINTS & REDUCED MOTION
+   ========================================================================== */
+@media (max-width: 820px) {
+  .countdown-layout,
+  .venue-grid,
+  .rsvp-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cd-heading-block {
+    text-align: center;
+  }
+
+  .invitation-main {
+    padding-top: 74px;
+  }
+}
+
+@media (max-width: 620px) {
+  .is-desktop-pill,
+  .nav-label-desktop {
+    display: none !important;
+  }
+
+  .nav-label-mobile {
+    display: inline;
+  }
+}
+
+@media (max-width: 520px) {
+  .floating-topbar {
+    top: max(10px, calc(env(safe-area-inset-top, 0px) + 6px));
+    padding: 4px 6px 4px 8px;
+    gap: 5px;
+    max-width: calc(100vw - 16px);
+  }
+
+  .nav-pill {
+    font-size: 12px;
+    padding: 5.5px 9.5px;
+    min-height: 31px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  body.lang-zh .nav-pill {
+    padding: 5.5px 9px;
+  }
+
+  .lang-btn {
+    font-size: 11.5px;
+    padding: 4.5px 8.5px;
+  }
+
+  .music-fab {
+    width: 44px;
+    height: 44px;
+    right: max(14px, calc(env(safe-area-inset-right, 0px) + 12px));
+    bottom: max(16px, calc(env(safe-area-inset-bottom, 0px) + 12px));
+  }
+
+  .scroll-invite-cue {
+    left: calc(50% - 20px);
+    max-width: calc(100vw - 92px);
+    bottom: max(18px, calc(env(safe-area-inset-bottom, 0px) + 14px));
+    font-size: 12px;
+    padding: 8px 14px;
+    gap: 6px;
+  }
+
+  .invitation-main {
+    padding: 70px 14px calc(84px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .hero-prelude {
+    margin-bottom: 26px;
+  }
+
+  .cards-stream {
+    gap: 42px;
+  }
+
+  .card-step-caption {
+    font-size: 13.5px;
+    gap: 8px;
+    margin-bottom: 12px;
+    letter-spacing: 0.08em;
+  }
+
+  .card-step-caption::before,
+  .card-step-caption::after {
+    width: 18px;
+  }
+
+  .floating-whisper .fw-ornament {
+    font-size: 10.5px;
+  }
+
+  .floating-whisper .fw-speaker {
+    font-size: 13px;
+    -webkit-text-stroke: 2.8px rgba(250, 246, 238, 0.96);
+  }
+
+  .floating-whisper .fw-words {
+    font-size: 15.5px;
+    -webkit-text-stroke: 3px rgba(250, 246, 238, 0.96);
+  }
+
+  body.lang-zh .floating-whisper .fw-speaker,
+  body.lang-zh .floating-whisper .fw-words {
+    font-size: 13.5px;
+  }
+
+  .c2-edge-hit.is-top {
+    top: 4.5%;
+    height: 11%;
+  }
+
+  .c2-edge-hit.is-bottom {
+    bottom: 4.5%;
+    height: 11%;
+  }
+
+  .c2-edge-hit.is-left {
+    left: 1.5%;
+    width: 13.5%;
+  }
+
+  .c2-edge-hit.is-right {
+    right: 1.5%;
+    width: 13.5%;
+  }
+
+  .c2-verse-sig-btn,
+  .c2-verse-action {
+    padding: 6px 9px;
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .utilities-wrapper {
+    margin-top: 52px;
+    gap: 32px;
+  }
+
+  .paper-sheet {
+    padding: 22px 17px;
+  }
+
+  .section-heading {
+    margin-bottom: 22px;
+  }
+
+  body.lang-zh .section-heading h2 {
+    font-size: clamp(20.5px, 5.4vw, 26px);
+  }
+
+  .cd-editorial-col {
+    gap: 20px;
+    padding: 2px 0;
+  }
+
+  .cd-eyebrow {
+    font-size: 11.5px;
+    letter-spacing: 0.12em;
+    gap: 6px;
+  }
+
+  .countdown-boxes {
+    gap: 9px;
+  }
+
+  .cd-unit {
+    padding: 15px 6px 13px;
+  }
+
+  .cd-num {
+    font-size: clamp(28px, 8.2vw, 35px);
+  }
+
+  .cd-label {
+    margin-top: 6px;
+    font-size: 11px;
+  }
+
+  .keepsake-calendar {
+    padding: 16px 14px 15px;
+  }
+
+  .cal-day {
+    width: 30px;
+    height: 30px;
+  }
+
+  .day-schedule-ledger {
+    padding: 18px 17px 20px;
+  }
+
+  .timeline-period {
+    font-size: 15.5px;
+  }
+
+  body.lang-zh .timeline-period {
+    font-size: 13.8px;
+  }
+
+  .timeline-item h3 {
+    font-size: 19.5px;
+  }
+
+  .venue-map-frame,
+  .venue-map-frame iframe {
+    min-height: 255px;
+  }
+
+  .wedding-footer {
+    margin-top: 44px;
+    padding: 22px 12px 10px;
+  }
+
+  .footer-monogram {
+    font-size: 24px;
+  }
+
+  .footer-credit {
+    font-size: 15px;
+  }
+
+  .field-row-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .envelope-actions {
+    flex-direction: column;
+    width: 100%;
+    max-width: 290px;
+  }
+
+  .btn-open-envelope,
+  .btn-flip-envelope {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+
+  .stationery-card.will-reveal,
+  .paper-sheet.will-reveal,
+  #card-2-article.is-awaiting-pen .c2-word,
+  .stationery-card.will-reveal .c3-vcol {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* ==========================================================================
+   POST-WEDDING THANK YOU CARD + GOOGLE DRIVE ALBUM & ACCESS GATE
+   ========================================================================== */
+.access-paused-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: radial-gradient(circle at 50% 35%, #721427 0%, #3d0611 100%);
+  color: var(--ivory-ink);
+  text-align: center;
+}
+
+.access-paused-overlay[hidden] {
+  display: none !important;
+}
+
+.access-paused-card {
+  max-width: 520px;
+  width: 100%;
+  padding: 40px 28px;
+  border-radius: 16px;
+  background: rgba(250, 246, 238, 0.97);
+  color: var(--text-main);
+  border: 2px solid var(--gold-champagne);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.42);
+}
+
+.access-paused-monogram {
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  background: var(--crimson-ink);
+  color: var(--ivory-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-family: var(--font-zh);
+}
+
+.access-paused-card h2 {
+  margin: 0 0 10px;
+  font-family: var(--font-serif);
+  font-size: clamp(24px, 4vw, 32px);
+  color: var(--crimson-ink);
+}
+
+.access-paused-card p {
+  margin: 0 0 10px;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.access-paused-zh {
+  font-family: var(--font-zh);
+  color: var(--text-muted);
+  font-size: 14px !important;
+}
+
+.thank-you-showcase {
+  max-width: 780px;
+  margin: 0 auto 44px;
+  padding: 0 16px;
+}
+
+.thank-you-showcase[hidden] {
+  display: none !important;
+}
+
+.thank-you-paper {
+  position: relative;
+  padding: 36px 28px 32px;
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(217, 178, 119, 0.16), transparent 65%),
+    var(--paper-cream);
+  border: 1.5px solid rgba(132, 21, 23, 0.24);
+  box-shadow: var(--card-shadow);
+  text-align: center;
+}
+
+.thank-you-seal {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  background: var(--crimson-ink);
+  color: var(--ivory-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 25px;
+  font-family: var(--font-zh);
+  box-shadow: 0 6px 18px rgba(132, 21, 23, 0.26);
+}
+
+.thank-you-eyebrow {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: #a46005;
+  margin-bottom: 8px;
+}
+
+.thank-you-heading {
+  margin: 0 0 14px;
+  font-family: var(--font-serif);
+  font-size: clamp(26px, 4.2vw, 36px);
+  color: var(--crimson-ink);
+  line-height: 1.25;
+}
+
+body.lang-zh .thank-you-heading {
+  font-family: var(--font-zh);
+}
+
+.thank-you-body {
+  max-width: 620px;
+  margin: 0 auto 22px;
+  font-size: 15.2px;
+  line-height: 1.75;
+  color: var(--text-main);
+}
+
+.thank-you-actions {
+  margin-top: 16px;
+}
+
+.thank-you-drive-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 26px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #841517 0%, #5c0c12 100%);
+  color: var(--ivory-ink);
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  border: 1px solid rgba(217, 178, 119, 0.55);
+  box-shadow: 0 10px 26px rgba(132, 21, 23, 0.28);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.thank-you-drive-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(132, 21, 23, 0.36);
+}
+
+.thank-you-drive-hint {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.thank-you-signature {
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px dashed rgba(132, 21, 23, 0.18);
+  font-family: var(--font-script);
+  font-size: 22px;
+  color: var(--crimson-ink);
+}
