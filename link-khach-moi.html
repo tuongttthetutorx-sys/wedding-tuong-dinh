@@ -1107,7 +1107,7 @@
                         class="adm-input"
                         min="0"
                         max="300"
-                        value="10"
+                        value="13"
                       />
                     </div>
                     <div>
@@ -1998,13 +1998,13 @@
 
         // =====================================================================
         // MODE A: PINTEREST SLENDER VERTICAL BOOKMARK STRIP (~3.28cm x 9.46cm)
-        // Full-bleed Warm Champagne-Sand (#EFE3CE) background for printing on White 250gsm cardstock!
+        // Exact Milk-Ivory Off-White (#FAF8F4 / #FBF9F5) sampled directly from the user's invitation card!
         // =====================================================================
         if (isPinterestStrip) {
-          const champagneBg = "#efe3ce";
+          const champagneBg = "#faf8f4";
           const foldY = 260; // Deeper ~1.9cm top fold-over tab so it hooks firmly onto the back of the card!
 
-          // Always fill edge-to-edge with Warm Champagne (#EFE3CE) so White 250gsm paper prints with full-bleed Champagne tone!
+          // Fill edge-to-edge with delicate Milk-Ivory (#FAF8F4) matching the actual invitation card!
           ctx.fillStyle = champagneBg;
           if (!forPrintTransparent) {
             drawRoundedRect(ctx, 0, 0, W, H, 12);
@@ -2525,7 +2525,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: ${isPinterestStrip ? "#efe3ce" : "transparent"};
+      background: ${isPinterestStrip ? "#faf8f4" : "transparent"};
       page-break-inside: avoid;
       break-inside: avoid;
     }
@@ -2536,14 +2536,14 @@
     }
     @media screen {
       .a4-sheet {
-        background: #fbf7ef;
+        background: transparent;
         box-shadow: 0 10px 28px rgba(0,0,0,0.08);
       }
     }
     @media print {
       body { background: transparent; }
       .print-toolbar { display: none !important; }
-      .a4-sheet { width: 100%; margin: 0; padding: 0; box-shadow: none; background: ${isPinterestStrip ? "#efe3ce" : "transparent"}; }
+      .a4-sheet { width: 100%; margin: 0; padding: 0; box-shadow: none; background: transparent !important; }
     }
   </style>
 </head>
@@ -2662,7 +2662,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: ${isPinterestStrip ? "#efe3ce" : "transparent"};
+      background: ${isPinterestStrip ? "#faf8f4" : "transparent"};
       page-break-inside: avoid;
       break-inside: avoid;
     }
@@ -2673,14 +2673,14 @@
     }
     @media screen {
       .a4-sheet {
-        background: #fbf7ef;
+        background: transparent;
         box-shadow: 0 10px 28px rgba(0,0,0,0.08);
       }
     }
     @media print {
       body { background: transparent; }
       .print-toolbar { display: none !important; }
-      .a4-sheet { width: 100%; margin: 0; padding: 0; box-shadow: none; background: ${isPinterestStrip ? "#efe3ce" : "transparent"}; }
+      .a4-sheet { width: 100%; margin: 0; padding: 0; box-shadow: none; background: transparent !important; }
     }
   </style>
 </head>
