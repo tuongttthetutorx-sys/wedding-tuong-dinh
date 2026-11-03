@@ -2138,27 +2138,31 @@
           ctx.fillStyle = "#681115";
           if (capMode === "zh") {
             ctx.font = '700 24px "Noto Serif TC", serif';
-            ctx.fillText("喜 帖 ＆ 婚 宴 地 圖", W / 2, 1188);
+            ctx.fillText("喜 帖 ＆ 婚 宴 地 圖", W / 2, 1182);
             ctx.fillStyle = "#7a3b0c";
-            ctx.font = '600 19.5px "Noto Serif TC", serif';
-            ctx.fillText("掃碼開啟導航 · 06.01.2027", W / 2, 1226);
+            ctx.font = '600 19px "Noto Serif TC", serif';
+            ctx.fillText("掃碼開啟導航 · 06.01.2027", W / 2, 1216);
           } else if (capMode === "vi") {
             ctx.font = '700 24.5px "Cormorant Garamond", "Be Vietnam Pro", serif';
-            ctx.fillText("T H I Ệ P   &   B Ả N   Đ Ồ", W / 2, 1188);
+            ctx.fillText("T H I Ệ P   &   B Ả N   Đ Ồ", W / 2, 1182);
             ctx.fillStyle = "#7a3b0c";
-            ctx.font = '600 19px "Be Vietnam Pro", sans-serif';
-            ctx.fillText("Quét mã xem thiệp & chỉ đường", W / 2, 1226);
+            ctx.font = '600 18.5px "Be Vietnam Pro", sans-serif';
+            ctx.fillText("Quét mã xem thiệp & chỉ đường", W / 2, 1214);
           } else {
             ctx.font = '700 24.5px "Cormorant Garamond", "Be Vietnam Pro", serif';
-            ctx.fillText("T H I Ệ P   &   B Ả N   Đ Ồ", W / 2, 1186);
+            ctx.fillText("T H I Ệ P   &   B Ả N   Đ Ồ", W / 2, 1180);
             ctx.fillStyle = "#7a3b0c";
-            ctx.font = '600 20px "Noto Serif TC", serif';
-            ctx.fillText("喜 帖 與 婚 宴 地 圖 導 航", W / 2, 1224);
+            ctx.font = '600 19.5px "Noto Serif TC", serif';
+            ctx.fillText("喜 帖 與 婚 宴 地 圖 導 航", W / 2, 1214);
           }
 
-          ctx.fillStyle = "#6e4b4b";
-          ctx.font = '600 18px "Be Vietnam Pro", sans-serif';
-          ctx.fillText("thuantuongtieudinh.io.vn", W / 2, 1264);
+          // Couture Signature Footer ("Personally designed by the Bride & Groom — Tiểu Dinh & Thuận Tường")
+          ctx.fillStyle = "#6e4242";
+          ctx.font = 'italic 500 19px "Cormorant Garamond", serif';
+          ctx.fillText("Personally designed by the Bride & Groom", W / 2, 1252);
+          ctx.fillStyle = "#681115";
+          ctx.font = '600 17.5px "Cormorant Garamond", "Be Vietnam Pro", serif';
+          ctx.fillText("—  Tiểu Dinh & Thuận Tường  —", W / 2, 1280);
           return;
         }
 
@@ -2330,9 +2334,13 @@
         ctx.font = '500 19px "Be Vietnam Pro", sans-serif';
         ctx.fillText("360D Bến Vân Đồn, P. Vĩnh Hội, TP.HCM", W / 2, footBaseY + 88);
 
-        ctx.fillStyle = "#8a6d6d";
-        ctx.font = '400 16px "Cormorant Garamond", serif';
-        ctx.fillText("thuantuongtieudinh.io.vn", W / 2, footBaseY + 116);
+        ctx.fillStyle = "#6e4242";
+        ctx.font = 'italic 500 19px "Cormorant Garamond", serif';
+        ctx.fillText(
+          "Personally designed by the Bride & Groom — Tiểu Dinh & Thuận Tường",
+          W / 2,
+          footBaseY + 118
+        );
       }
 
       function openGuestInQrStudio(guestNameStr, guestUrlStr, langCode) {
