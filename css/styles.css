@@ -3808,3 +3808,373 @@ body.lang-zh .thank-you-heading {
   font-size: 22px;
   color: var(--crimson-ink);
 }
+
+/* ==========================================================================
+   15. WEDDING-DAY PRIORITY DIRECTIONS MODE, ILLUSTRATED MAP & ROUTE GUIDES
+   ========================================================================== */
+
+/* When Priority Directions Mode is active, elevate #section-location to the very top of the page right below the couple's name */
+body.is-directions-priority-mode .invitation-table {
+  display: flex;
+  flex-direction: column;
+}
+
+body.is-directions-priority-mode .utilities-wrapper {
+  display: contents;
+}
+
+body.is-directions-priority-mode .table-prelude {
+  order: 1;
+}
+
+body.is-directions-priority-mode #section-location {
+  order: 2;
+  width: min(980px, 100%);
+  margin: 8px auto 34px;
+  border: 2px solid rgba(132, 21, 23, 0.28);
+  box-shadow: 0 20px 52px rgba(68, 12, 16, 0.14);
+}
+
+body.is-directions-priority-mode #thank-you-section {
+  order: 3;
+}
+
+body.is-directions-priority-mode .cards-stream {
+  order: 4;
+}
+
+body.is-directions-priority-mode #section-countdown {
+  order: 5;
+  width: min(980px, 100%);
+  margin: 0 auto 28px;
+}
+
+body.is-directions-priority-mode .wedding-footer {
+  order: 6;
+}
+
+/* Wedding-Day Live Arrival Banner inside #section-location */
+.directions-priority-banner {
+  margin-bottom: 24px;
+  padding: 20px 22px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #7d1518 0%, #590d11 100%);
+  color: #fff9ef;
+  border: 1px solid rgba(226, 190, 126, 0.55);
+  box-shadow: 0 12px 28px rgba(90, 14, 18, 0.22);
+  text-align: center;
+}
+
+.directions-priority-banner[hidden] {
+  display: none !important;
+}
+
+.dpb-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(255, 240, 208, 0.14);
+  border: 1px solid rgba(255, 224, 166, 0.4);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #ffe2a8;
+  margin-bottom: 10px;
+}
+
+.dpb-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.25);
+}
+
+.dpb-title {
+  margin: 0 0 6px;
+  font-family: var(--font-serif);
+  font-size: clamp(22px, 3.4vw, 28px);
+  font-weight: 700;
+  color: #ffffff;
+}
+
+body.lang-zh .dpb-title {
+  font-family: var(--font-zh);
+}
+
+.dpb-desc {
+  margin: 0 auto 16px;
+  max-width: 660px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba(255, 244, 225, 0.9);
+}
+
+.dpb-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.dpb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.dpb-btn.primary {
+  background: linear-gradient(135deg, #f5d696 0%, #dfb260 100%);
+  color: #4a0d10;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22);
+}
+
+.dpb-btn.secondary {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff7e8;
+  border: 1px solid rgba(255, 232, 189, 0.4);
+}
+
+.dpb-btn:hover {
+  transform: translateY(-1px);
+}
+
+/* Quick 1-Tap Action Buttons under Evening Banquet Address */
+.venue-quick-actions {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.venue-action-btn {
+  appearance: none;
+  border: 1px solid rgba(132, 21, 23, 0.28);
+  background: #fffdf8;
+  color: var(--crimson-ink);
+  font-family: inherit;
+  font-size: 12.8px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.18s ease;
+}
+
+.venue-action-btn:hover {
+  border-color: var(--crimson-ink);
+  background: rgba(132, 21, 23, 0.06);
+}
+
+.venue-action-btn.is-primary {
+  background: var(--crimson-ink);
+  border-color: var(--crimson-ink);
+  color: #fff9ef;
+}
+
+.venue-action-btn.is-primary:hover {
+  background: #650f12;
+}
+
+/* Bespoke Illustrated Wedding Map Section */
+.illustrated-map-section {
+  margin-top: 28px;
+  padding-top: 26px;
+  border-top: 1px dashed rgba(132, 21, 23, 0.22);
+}
+
+.imap-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.imap-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #a46005;
+  margin-bottom: 4px;
+}
+
+.imap-title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(20px, 2.8vw, 25px);
+  font-weight: 700;
+  color: var(--crimson-ink);
+}
+
+body.lang-zh .imap-title {
+  font-family: var(--font-zh);
+}
+
+.imap-sub {
+  margin: 4px 0 0;
+  font-size: 13.2px;
+  color: var(--text-muted);
+}
+
+.imap-canvas-frame {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1.5px solid rgba(132, 21, 23, 0.22);
+  background: #fbf6ec;
+  box-shadow: 0 10px 28px rgba(70, 16, 18, 0.08);
+  cursor: zoom-in;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.imap-canvas-frame:hover {
+  box-shadow: 0 14px 34px rgba(70, 16, 18, 0.13);
+}
+
+.wedding-route-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* 3 Detailed Route Cards + Hall/Parking Card (2x2 Grid) */
+.route-cards-grid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.route-guide-card {
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.76);
+  border: 1px solid rgba(132, 21, 23, 0.15);
+}
+
+.route-guide-card.is-hall-guide {
+  background: linear-gradient(135deg, rgba(132, 21, 23, 0.06) 0%, rgba(212, 170, 99, 0.12) 100%);
+  border-color: rgba(132, 21, 23, 0.26);
+}
+
+.rg-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.rg-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--crimson-ink);
+  color: #fff9ef;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.rg-head h4 {
+  margin: 0;
+  font-size: 14.2px;
+  font-weight: 700;
+  color: var(--crimson-ink);
+}
+
+.route-guide-card p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.58;
+  color: var(--text-main);
+}
+
+/* Fullscreen Lightbox for Illustrated Map */
+.imap-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.imap-lightbox[hidden] {
+  display: none !important;
+}
+
+.imap-lightbox-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(24, 6, 8, 0.82);
+  backdrop-filter: blur(5px);
+}
+
+.imap-lightbox-card {
+  position: relative;
+  z-index: 1;
+  width: min(1120px, 96vw);
+  max-height: 92vh;
+  background: #fbf6ec;
+  border-radius: 14px;
+  border: 2px solid #d5b887;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.imap-lightbox-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 18px;
+  background: var(--crimson-ink);
+  color: #fff9ef;
+  font-size: 14px;
+}
+
+.imap-lightbox-close {
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.imap-lightbox-body {
+  padding: 12px;
+  overflow: auto;
+}
+
+@media (max-width: 760px) {
+  .route-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -590,6 +590,11 @@
       color: var(--adm-crimson);
       box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
     }
+    .mode-switch-btn.is-active-dir {
+      background: #a45a04;
+      color: #fff;
+      box-shadow: 0 1px 4px rgba(164, 90, 4, 0.28);
+    }
     .mode-switch-btn.is-active-ty {
       background: #116939;
       color: #fff;
@@ -760,7 +765,7 @@
         <span class="adm-tab-badge" id="badge-logs-count">0</span>
       </button>
       <button type="button" class="adm-tab-btn" data-tab="tab-thankyou">
-        💝 Cài Đặt Lời Cảm Ơn &amp; Kho Ảnh (Cho Link Đã Gửi)
+        📍 Chế Độ Ngày Cưới (Chỉ Đường) &amp; 📸 Thiệp Cảm Ơn
       </button>
     </nav>
 
@@ -829,6 +834,7 @@
             <button type="button" class="filter-chip is-active" data-filter="all">Tất cả</button>
             <button type="button" class="filter-chip" data-filter="opened">✨ Đã xem thiệp</button>
             <button type="button" class="filter-chip" data-filter="pending">⏳ Chưa mở</button>
+            <button type="button" class="filter-chip" data-filter="directions">📍 Đang bật Chỉ Đường</button>
             <button type="button" class="filter-chip" data-filter="thankyou">📸 Đang bật Lời Cảm Ơn</button>
           </div>
           <input type="search" id="guest-search-input" class="search-box" placeholder="🔍 Tìm nhanh tên khách mời..." />
@@ -872,15 +878,15 @@
     </section>
 
     <!-- =====================================================================
-         TAB 3: CÀI ĐẶT THIỆP CẢM ƠN & KHO ẢNH CHO CÁC LINK ĐÃ GỬI
+         TAB 3: CÀI ĐẶT CHẾ ĐỘ NGÀY CƯỚI (CHỈ ĐƯỜNG) & THIỆP CẢM ƠN CHO LINK ĐÃ GỬI
          ===================================================================== -->
     <section id="tab-thankyou" class="adm-panel">
       <div class="adm-box">
         <div class="adm-box-head">
           <div>
-            <h2 class="adm-box-title">💝 Cập Nhật Lời Cảm Ơn &amp; Kho Ảnh Cho Các Link Đã Gửi</h2>
+            <h2 class="adm-box-title">📍 Chế Độ Ngày Cưới (Ưu Tiên Bản Đồ) &amp; 📸 Thiệp Cảm Ơn Cho Các Link Đã Gửi</h2>
             <p class="adm-box-desc">
-              Không cần gửi lại link mới! Khi bật chế độ này (hoặc bật nút <strong>📸 Cảm Ơn</strong> trên từng khách), khách bấm lại vào <strong>đúng đường link cũ trong Zalo / LINE</strong> sẽ thấy ngay Thiệp Cảm Ơn mang tên mình &amp; nút mở Album Ảnh Google Drive.
+              Không cần gửi lại link mới! Bạn có thể chuyển đổi toàn bộ các link đã gửi sang <strong>📍 Chế độ Ngày Cưới (Đẩy Sơ Đồ Đường Đi &amp; Google Maps lên đầu trang, tự động mở sẵn bao thư)</strong> khi gần tới giờ đón khách, hoặc sang <strong>📸 Thiệp Cảm Ơn &amp; Kho Ảnh Google Drive</strong> sau buổi tiệc.
             </p>
           </div>
         </div>
@@ -889,8 +895,9 @@
           <div>
             <label for="global-thankyou-select" style="display:block; font-size:12.5px; font-weight:600; margin-bottom:6px;">Chế độ áp dụng cho toàn bộ link đã gửi:</label>
             <select id="global-thankyou-select" class="adm-select">
-              <option value="off">💌 Theo từng khách (Mặc định là Thiệp Mời trước đám cưới)</option>
-              <option value="on">📸 BẬT ĐỒNG LOẠT: Hiện Thiệp Cảm Ơn trên TẤT CẢ các link đã gửi!</option>
+              <option value="invite">💌 Theo từng khách (Mặc định: Mở Phong Bì 3D &amp; Thiệp Mời)</option>
+              <option value="directions">📍 BẬT ĐỒNG LOẠT NGÀY CƯỚI: Đẩy Bản Đồ &amp; Sơ Đồ Đường Đi lên ĐẦU TRANG!</option>
+              <option value="thankyou">📸 BẬT ĐỒNG LOẠT SAU TIỆC: Hiện Thiệp Cảm Ơn &amp; Kho Ảnh trên TẤT CẢ link!</option>
             </select>
           </div>
           <div>
@@ -952,7 +959,9 @@
       let visitLogsByGuest = {};
       let currentFilter = "all";
       let globalSiteConfig = {
+        globalMode: "invite",
         globalThankYou: false,
+        globalDirections: false,
         driveUrl: "",
         thankYouVI: "",
         thankYouZH: ""
@@ -1118,7 +1127,9 @@
         notify(
           nextMode === "thankyou"
             ? `📸 Đã bật "Thiệp Cảm Ơn" cho link của "${name}"!`
-            : `💌 Đã chuyển link của "${name}" về chế độ Thiệp Mời!`
+            : nextMode === "directions"
+              ? `📍 Đã bật "Chế Độ Chỉ Đường Ngày Cưới (Đẩy Bản Đồ lên đầu)" cho "${name}"!`
+              : `💌 Đã chuyển link của "${name}" về chế độ Thiệp Mời!`
         );
       }
 
@@ -1166,7 +1177,21 @@
           const hasHanzi = /[\u4e00-\u9fff]/.test(name);
           const effectiveLang = guestObj.lang === "zh" || hasHanzi ? "zh" : "vi";
           const mode = guestObj.mode || "invite";
-          const isTyEffective = Boolean(globalSiteConfig.globalThankYou || mode === "thankyou");
+          const globalMode =
+            globalSiteConfig.globalMode ||
+            (globalSiteConfig.globalThankYou
+              ? "thankyou"
+              : globalSiteConfig.globalDirections
+                ? "directions"
+                : "invite");
+          const effectiveMode =
+            globalMode === "thankyou" || mode === "thankyou"
+              ? "thankyou"
+              : globalMode === "directions" || mode === "directions"
+                ? "directions"
+                : "invite";
+          const isTyEffective = effectiveMode === "thankyou";
+          const isDirEffective = effectiveMode === "directions";
           const driveUrl = guestObj.driveUrl || globalSiteConfig.driveUrl || "";
 
           const qs = new URLSearchParams();
@@ -1202,6 +1227,7 @@
           if (q && !name.toLowerCase().includes(q)) return;
           if (currentFilter === "opened" && !hasOpened) return;
           if (currentFilter === "pending" && hasOpened) return;
+          if (currentFilter === "directions" && !isDirEffective) return;
           if (currentFilter === "thankyou" && !isTyEffective) return;
 
           visibleCount++;
@@ -1230,8 +1256,9 @@
 
               <div class="guest-actions-col">
                 <div class="guest-btn-group">
-                  <div class="mode-switch-pill" title="Chuyển đổi giữa Thiệp Mời và Thiệp Cảm Ơn ngay trên link cũ đã gửi">
-                    <button type="button" class="mode-switch-btn js-mode-invite ${!isTyEffective ? "is-active-invite" : ""}">💌 Thiệp Mời</button>
+                  <div class="mode-switch-pill" title="Chuyển đổi trực tiếp giữa Thiệp Mời, Chỉ Đường Ngày Cưới (Đẩy Bản Đồ lên đầu) và Thiệp Cảm Ơn ngay trên link cũ đã gửi">
+                    <button type="button" class="mode-switch-btn js-mode-invite ${effectiveMode === "invite" ? "is-active-invite" : ""}">💌 Thiệp Mời</button>
+                    <button type="button" class="mode-switch-btn js-mode-dir ${isDirEffective ? "is-active-dir" : ""}" title="Đẩy Sơ Đồ Đường Đi & Google Maps lên đầu trang, tự động mở sẵn bao thư">📍 Chỉ Đường</button>
                     <button type="button" class="mode-switch-btn js-mode-ty ${isTyEffective ? "is-active-ty" : ""}">📸 Cảm Ơn</button>
                   </div>
                   <button type="button" class="btn-adm primary js-copy-link">📋 Copy Link</button>
@@ -1296,10 +1323,13 @@
           }
 
           card.querySelector(".js-mode-invite").addEventListener("click", () => {
-            if (isTyEffective) setGuestModeOnServer(name, "invite");
+            if (effectiveMode !== "invite") setGuestModeOnServer(name, "invite");
+          });
+          card.querySelector(".js-mode-dir").addEventListener("click", () => {
+            if (effectiveMode !== "directions") setGuestModeOnServer(name, "directions");
           });
           card.querySelector(".js-mode-ty").addEventListener("click", () => {
-            if (!isTyEffective) setGuestModeOnServer(name, "thankyou");
+            if (effectiveMode !== "thankyou") setGuestModeOnServer(name, "thankyou");
           });
           card.querySelector(".js-copy-link").addEventListener("click", () =>
             copyText(fullUrl, `✅ Đã copy link thiệp của "${name}"!`)
@@ -1393,17 +1423,27 @@
 
           if (st.siteConfig && typeof st.siteConfig === "object") {
             globalSiteConfig = st.siteConfig;
+            const resolvedGlobalMode =
+              globalSiteConfig.globalMode ||
+              (globalSiteConfig.globalThankYou
+                ? "thankyou"
+                : globalSiteConfig.globalDirections
+                  ? "directions"
+                  : "invite");
             if (!globalConfigLoadedOnce) {
               globalConfigLoadedOnce = true;
-              if (globalTySelect) globalTySelect.value = globalSiteConfig.globalThankYou ? "on" : "off";
+              if (globalTySelect) globalTySelect.value = resolvedGlobalMode;
               if (globalDriveInput && globalSiteConfig.driveUrl) globalDriveInput.value = globalSiteConfig.driveUrl;
               if (globalTyViInput && globalSiteConfig.thankYouVI) globalTyViInput.value = globalSiteConfig.thankYouVI;
               if (globalTyZhInput && globalSiteConfig.thankYouZH) globalTyZhInput.value = globalSiteConfig.thankYouZH;
             }
             if (globalStatusEl) {
-              globalStatusEl.textContent = globalSiteConfig.globalThankYou
-                ? "✅ Đang bật Thiệp Cảm Ơn đồng loạt trên TẤT CẢ link đã gửi!"
-                : "💌 Đang ở chế độ Thiệp Mời mặc định (hoặc bật riêng từng khách ở Tab 1).";
+              globalStatusEl.textContent =
+                resolvedGlobalMode === "thankyou"
+                  ? "✅ Đang bật Thiệp Cảm Ơn đồng loạt trên TẤT CẢ link đã gửi!"
+                  : resolvedGlobalMode === "directions"
+                    ? "📍 Đang bật Chế Độ Chỉ Đường Ngày Cưới (Đẩy Bản Đồ lên đầu trang) trên TẤT CẢ link đã gửi!"
+                    : "💌 Đang ở chế độ theo từng khách (hoặc bật riêng Chỉ Đường / Cảm Ơn ở Tab 1).";
             }
           }
 
@@ -1540,8 +1580,11 @@
       });
 
       document.getElementById("btn-save-global-config").addEventListener("click", async () => {
+        const selectedMode = (globalTySelect && globalTySelect.value) || "invite";
         const payload = {
-          globalThankYou: globalTySelect && globalTySelect.value === "on",
+          globalMode: selectedMode,
+          globalThankYou: selectedMode === "thankyou",
+          globalDirections: selectedMode === "directions",
           driveUrl: globalDriveInput ? globalDriveInput.value.trim() : "",
           thankYouVI: globalTyViInput ? globalTyViInput.value.trim() : "",
           thankYouZH: globalTyZhInput ? globalTyZhInput.value.trim() : ""
@@ -1556,9 +1599,11 @@
             globalConfigLoadedOnce = false;
             await fetchAnalytics(false);
             notify(
-              payload.globalThankYou
+              selectedMode === "thankyou"
                 ? "📸 Đã bật Lời Cảm Ơn trên TẤT CẢ các link đã gửi!"
-                : "💾 Đã lưu cài đặt Lời Cảm Ơn & Kho Ảnh!"
+                : selectedMode === "directions"
+                  ? "📍 Đã bật Chế Độ Chỉ Đường Ngày Cưới (Đẩy Bản Đồ lên đầu) cho TẤT CẢ các link đã gửi!"
+                  : "💾 Đã lưu cài đặt chế độ link & Kho Ảnh!"
             );
           }
         } catch (_) {

@@ -114,7 +114,9 @@ function defaultState(existingSavedGuests = [], existingSiteConfig = null) {
       existingSiteConfig && typeof existingSiteConfig === "object"
         ? existingSiteConfig
         : {
+            globalMode: "invite",
             globalThankYou: false,
+            globalDirections: false,
             driveUrl: "",
             thankYouVI: "",
             thankYouZH: ""
@@ -175,7 +177,9 @@ export class WeddingAnalytics {
     }
     if (!stored.siteConfig || typeof stored.siteConfig !== "object") {
       stored.siteConfig = {
+        globalMode: "invite",
         globalThankYou: false,
+        globalDirections: false,
         driveUrl: "",
         thankYouVI: "",
         thankYouZH: ""
@@ -190,10 +194,23 @@ export class WeddingAnalytics {
     const saved = k
       ? (data.savedGuests || []).find((g) => normalizeGuestKey(g.name) === k)
       : null;
-    const isThankYou = Boolean(cfg.globalThankYou || (saved && saved.mode === "thankyou"));
+
+    let effectiveMode = "invite";
+    if (cfg.globalMode === "thankyou" || cfg.globalThankYou || (saved && saved.mode === "thankyou")) {
+      effectiveMode = "thankyou";
+    } else if (
+      cfg.globalMode === "directions" ||
+      cfg.globalDirections ||
+      (saved && saved.mode === "directions")
+    ) {
+      effectiveMode = "directions";
+    }
+
     const driveUrl = (saved && saved.driveUrl) || cfg.driveUrl || "";
     return {
-      thankYouMode: isThankYou,
+      mode: effectiveMode,
+      thankYouMode: effectiveMode === "thankyou",
+      directionsMode: effectiveMode === "directions",
       driveUrl,
       thankYouVI: cfg.thankYouVI || "",
       thankYouZH: cfg.thankYouZH || ""
@@ -220,15 +237,25 @@ export class WeddingAnalytics {
       return Response.json({ ok: true, stats: this.formatStats(fresh) }, { headers: CORS_HEADERS });
     }
 
-    // Update global Thank-You & Google Drive settings for already-sent links
+    // Update global Mode (Invite / Wedding-Day Directions / Thank-You) & Google Drive settings for already-sent links
     if (url.pathname === "/api/config" && request.method === "POST") {
       let body = {};
       try {
         body = await request.json();
       } catch (_) {}
       const data = await this.loadData();
+      const requestedMode =
+        body.globalMode === "thankyou" || body.globalMode === "directions" || body.globalMode === "invite"
+          ? body.globalMode
+          : body.globalThankYou
+            ? "thankyou"
+            : body.globalDirections
+              ? "directions"
+              : "invite";
       data.siteConfig = {
-        globalThankYou: Boolean(body.globalThankYou),
+        globalMode: requestedMode,
+        globalThankYou: requestedMode === "thankyou",
+        globalDirections: requestedMode === "directions",
         driveUrl: String(body.driveUrl ?? data.siteConfig.driveUrl ?? "").trim(),
         thankYouVI: String(body.thankYouVI ?? data.siteConfig.thankYouVI ?? "").trim(),
         thankYouZH: String(body.thankYouZH ?? data.siteConfig.thankYouZH ?? "").trim()
@@ -240,7 +267,7 @@ export class WeddingAnalytics {
       );
     }
 
-    // Lightweight endpoint for any already-sent guest link (?to=...) to check if Thank-You mode was enabled
+    // Lightweight endpoint for any already-sent guest link (?to=...) to check if Thank-You or Directions mode was enabled
     if (url.pathname === "/api/guest-config") {
       const guest = url.searchParams.get("guest") || "";
       const data = await this.loadData();
@@ -264,6 +291,7 @@ export class WeddingAnalytics {
 
       const data = await this.loadData();
       const action = String(body.action || "add");
+      const validModes = ["invite", "directions", "thankyou"];
 
       if (action === "add" && Array.isArray(body.guests)) {
         body.guests.forEach((item) => {
@@ -276,7 +304,7 @@ export class WeddingAnalytics {
           const record = {
             name,
             lang: item.lang === "zh" ? "zh" : "vi",
-            mode: item.mode === "thankyou" ? "thankyou" : "invite",
+            mode: validModes.includes(item.mode) ? item.mode : "invite",
             driveUrl: String(item.driveUrl || "").trim(),
             createdAt:
               existingIdx >= 0 && data.savedGuests[existingIdx].createdAt
@@ -296,12 +324,11 @@ export class WeddingAnalytics {
             (g) => normalizeGuestKey(g.name) === targetKey
           );
           if (idx >= 0) {
-            data.savedGuests[idx].mode =
-              body.mode === "thankyou" || body.mode === "invite"
-                ? body.mode
-                : data.savedGuests[idx].mode === "thankyou"
-                  ? "invite"
-                  : "thankyou";
+            data.savedGuests[idx].mode = validModes.includes(body.mode)
+              ? body.mode
+              : data.savedGuests[idx].mode === "thankyou"
+                ? "invite"
+                : "thankyou";
             if (body.driveUrl !== undefined) {
               data.savedGuests[idx].driveUrl = String(body.driveUrl || "").trim();
             }

@@ -52,6 +52,32 @@
       tl2Period: "Buổi tối cùng ngày • Đón khách 18:00 · Khai tiệc 19:00",
       tl2Title: "Tiệc Cưới — Riverside Palace (Sảnh Seine)",
       tl2Desc: "360D Bến Vân Đồn, Phường Vĩnh Hội, TP. Hồ Chí Minh.",
+      dpbTag: "CHẾ ĐỘ CHỈ ĐƯỜNG NGÀY CƯỚI • 06.01.2027",
+      dpbTitle: "Chào mừng Quý Khách đến chung vui cùng Thuận Tường & Tiểu Dinh!",
+      dpbDesc:
+        "Sơ đồ đường đi, hướng dẫn gửi xe và vị trí Sảnh Seine (Riverside Palace — 360D Bến Vân Đồn) đã được đưa lên đầu trang để thuận tiện di chuyển.",
+      btnOpenGmapsNav: "🧭 Mở Google Maps dẫn đường ngay",
+      btnJumpToCards: "💌 Xem 3 tấm thiệp mời bên dưới ↓",
+      btnStartRoute: "🧭 Chỉ đường Google Maps",
+      btnCopyAddr: "📋 Copy địa chỉ đặt Grab",
+      copiedAddr: "✅ Đã copy địa chỉ nhà hàng Riverside Palace (360D Bến Vân Đồn)!",
+      imapBadge: "SƠ ĐỒ VẼ CHI TIẾT • WEDDING ROUTE MAP",
+      imapTitle: "Sơ Đồ Đường Đi Đến Riverside Palace (Sảnh Seine)",
+      imapSub:
+        "Nằm ngay mặt tiền 360D Bến Vân Đồn (đoạn giữa Cầu Nguyễn Văn Cừ và Cầu Ông Lãnh, dọc bờ Kênh Tàu Hủ). Chạm vào sơ đồ để phóng to.",
+      btnZoomImap: "🔍 Phóng to sơ đồ",
+      rg1Title: "Hướng từ Quận 1, Quận 3, Phú Nhuận",
+      rg1Body:
+        "Đi đường Nguyễn Thái Học qua Cầu Ông Lãnh → vừa xuống chân cầu rẽ phải ngay vào đường Bến Vân Đồn → đi thẳng dọc bờ kênh khoảng 900m là tới Riverside Palace (360D Bến Vân Đồn) bên tay trái.",
+      rg2Title: "Hướng từ Quận 5, Quận 10, Quận 8",
+      rg2Body:
+        "Qua Cầu Nguyễn Văn Cừ hướng về Quận 4 → xuống nhánh cầu rẽ vào đường Bến Vân Đồn → đi thẳng dọc bờ kênh khoảng 400m là thấy tòa nhà trắng Riverside Palace (360D Bến Vân Đồn) ngay bên tay phải.",
+      rg3Title: "Hướng từ Quận 7, Nhà Bè, Thủ Đức",
+      rg3Body:
+        "Qua Cầu Kênh Tẻ đi thẳng hết đường Khánh Hội → gặp bờ sông rẽ trái vào Bến Vân Đồn → đi thẳng qua giao lộ Nguyễn Khoái khoảng 250m là tới Riverside Palace.",
+      rg4Title: "Hướng dẫn Gửi xe & Vào Sảnh Seine",
+      rg4Body:
+        "🚗 Gửi xe & Taxi/Grab: Cổng giữ xe máy & ô tô nằm ngay mặt tiền 360D Bến Vân Đồn (Taxi/Grab chạy thẳng vào sảnh đón có mái che). 🏛️ Sảnh tiệc: Tiến vào sảnh chính tầng trệt theo bảng đón khách Thuận Tường & Tiểu Dinh — Sảnh Seine (Đón khách 18:00 · Khai tiệc 19:00).",
       scrollCue: "Vuốt xuống xem tiếp thiệp",
       footerCredit: "Personally designed by the Bride & Groom — Tiểu Dinh & Thuận Tường",
       footerToolLink: "🔗 Công cụ tạo link tên Khách Mời (dành cho Cô dâu & Chú rể)"
@@ -100,6 +126,31 @@
       tl2Period: "同日晚間 • 18:00 迎賓入席 · 19:00 準時開席",
       tl2Title: "婚禮晚宴 — RIVERSIDE PALACE（Seine 宴會廳）",
       tl2Desc: "胡志明市永會坊檳雲屯街 360D 號（Sảnh Seine）• 敬備喜筵，誠摯恭候蒞臨。",
+      dpbTag: "婚宴當日快速導航模式 • 2027.01.06",
+      dpbTitle: "誠摯歡迎 Quý Khách 蒞臨順祥 & 小瑩的婚禮晚宴！",
+      dpbDesc:
+        "為方便您乘車或自駕前往，我們已將「Riverside Palace（Seine 宴會廳 — 360D Bến Vân Đồn）」手繪路線圖與交通指引置於頁面最上方。",
+      btnOpenGmapsNav: "🧭 立即開啟 Google Maps 路線導航",
+      btnJumpToCards: "💌 下滑瀏覽 3 張結婚喜帖 ↓",
+      btnStartRoute: "🧭 開啟 Google 導航",
+      btnCopyAddr: "📋 複製餐廳地址（Grab 叫車）",
+      copiedAddr: "✅ 已複製 Riverside Palace 餐廳地址（360D Bến Vân Đồn）！",
+      imapBadge: "手繪交通路線圖 • WEDDING ROUTE MAP",
+      imapTitle: "Riverside Palace（Seine 宴會廳）手繪交通指引圖",
+      imapSub: "位於 360D Bến Vân Đồn 大道（介於 Nguyễn Văn Cừ 橋與 Ông Lãnh 橋之間）。點擊地圖可放大檢視。",
+      btnZoomImap: "🔍 放大檢視路線圖",
+      rg1Title: "路線 1：由第一郡、第三郡、富潤郡前往",
+      rg1Body:
+        "沿 Nguyễn Thái Học 街過「Ông Lãnh 橋（Cầu Ông Lãnh）」→ 下橋立即右轉進入「Bến Vân Đồn 大道」→ 沿河岸直行約 900 公尺，左側即達 Riverside Palace（360D Bến Vân Đồn）。",
+      rg2Title: "路線 2：由第五郡、第十郡、第八郡前往",
+      rg2Body:
+        "過「Nguyễn Văn Cừ 橋（Cầu Nguyễn Văn Cừ）」往第四郡方向 → 下匝道轉入「Bến Vân Đồn 大道」→ 沿河岸直行約 400 公尺，右側白色歐式建築即為 Riverside Palace。",
+      rg3Title: "路線 3：由第七郡、芽皮、守德前往",
+      rg3Body:
+        "過「Kênh Tẻ 橋」沿 Khánh Hội 街直行到底 → 遇河岸左轉進入「Bến Vân Đồn 大道」→ 經過 Nguyễn Khoái 路口直行約 250 公尺即達。",
+      rg4Title: "停車與進入「Seine 宴會廳（Sảnh Seine）」指引",
+      rg4Body:
+        "🚗 停車與計程車/Grab：360D Bến Vân Đồn 正門設有汽車與機車停車場（Grab 可直達正門有頂迎賓處）。🏛️ 宴會廳位置：進入一樓大廳後請依「順祥 & 小瑩 — Sảnh Seine（Seine 宴會廳）」指示牌入席（18:00 迎賓 · 19:00 開席）。",
       scrollCue: "下滑繼續瀏覽喜帖",
       footerCredit: "Personally designed by the Bride & Groom — Tiểu Dinh & Thuận Tường",
       footerToolLink: "🔗 賓客專屬喜帖連結產生器（新人專用）"
@@ -124,7 +175,10 @@
         : /[\u4e00-\u9fff]/.test(guestName)
           ? "zh"
           : "vi";
-  let envelopeOpened = params.get("open") === "1";
+  let envelopeOpened =
+    params.get("open") === "1" ||
+    params.get("mode") === "directions" ||
+    params.get("map") === "1";
   let envelopeFlipped = false;
   let toastTimeout = null;
   let syncTopbarNavUI = null;
@@ -833,19 +887,58 @@
       pausedEl.hidden = !isPaused;
     }
 
+    const isZh = currentLang === "zh";
+    const dict = I18N[currentLang];
+    const displayGuest = guestName || dict.defaultGuest;
+
+    // 1. Wedding-Day Priority Directions Mode (Elevates Map & Illustrated Route Guide to top of page)
+    const isDirectionsPriority =
+      cfg.directionsMode === true ||
+      rCfg.directionsMode === true ||
+      rCfg.mode === "directions" ||
+      params.get("mode") === "directions" ||
+      params.get("map") === "1";
+
+    document.body.classList.toggle("is-directions-priority-mode", isDirectionsPriority);
+    const dpbBanner = document.getElementById("directions-priority-banner");
+    if (dpbBanner) {
+      dpbBanner.hidden = !isDirectionsPriority;
+      const dpbTitle = document.getElementById("dpb-guest-title");
+      if (dpbTitle) {
+        dpbTitle.textContent = isZh
+          ? `誠摯歡迎 ${displayGuest} 蒞臨順祥 & 小瑩的婚禮晚宴！`
+          : `Chào mừng ${displayGuest} đến chung vui cùng Thuận Tường & Tiểu Dinh!`;
+      }
+    }
+
+    if (isDirectionsPriority && !envelopeOpened) {
+      const stageEl = document.getElementById("envelope-stage");
+      if (stageEl) {
+        stageEl.classList.add("is-dismissed", "is-gone");
+        stageEl.classList.remove("is-opening");
+      }
+      document.body.classList.remove("envelope-locked", "is-unsealing-env");
+      envelopeOpened = true;
+      const locSec = document.getElementById("section-location");
+      if (locSec) {
+        locSec.classList.remove("will-reveal");
+        locSec.classList.add("is-visible");
+      }
+      window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
+      triggerScrollRevealCheck();
+    }
+
+    // 2. Post-Wedding Thank You Card & Google Drive Photo Album
     const isThankYou =
       cfg.thankYouMode === true ||
       rCfg.thankYouMode === true ||
+      rCfg.mode === "thankyou" ||
       params.get("mode") === "thankyou" ||
       params.get("thankyou") === "1";
     const tySection = document.getElementById("thank-you-showcase");
     if (!tySection) return;
     tySection.hidden = !isThankYou;
     if (!isThankYou) return;
-
-    const isZh = currentLang === "zh";
-    const dict = I18N[currentLang];
-    const displayGuest = guestName || dict.defaultGuest;
 
     const eyebrow = document.getElementById("ty-eyebrow");
     const heading = document.getElementById("ty-heading");
@@ -1935,6 +2028,58 @@
           ta.remove();
         }
         showToast(I18N[currentLang].copiedAddr);
+      });
+    }
+
+    // Illustrated Wedding Map Fullscreen Lightbox & Jump-to-Cards Button
+    const zoomBtn = document.getElementById("btn-zoom-imap");
+    const imapTrigger = document.getElementById("imap-canvas-trigger");
+    const lightbox = document.getElementById("imap-lightbox");
+    const lightboxBody = document.getElementById("imap-lightbox-body");
+    const closeLbBtn = document.getElementById("btn-close-imap-lightbox");
+    const closeLbBg = document.getElementById("imap-lightbox-close-bg");
+
+    const openImapLightbox = () => {
+      if (!lightbox || !lightboxBody || !imapTrigger) return;
+      const svgEl = imapTrigger.querySelector("svg");
+      if (svgEl) {
+        lightboxBody.innerHTML = "";
+        const clone = svgEl.cloneNode(true);
+        clone.style.minWidth = "720px";
+        clone.style.width = "100%";
+        clone.style.height = "auto";
+        lightboxBody.appendChild(clone);
+      }
+      lightbox.hidden = false;
+    };
+
+    const closeImapLightbox = () => {
+      if (lightbox) lightbox.hidden = true;
+    };
+
+    if (zoomBtn) zoomBtn.addEventListener("click", openImapLightbox);
+    if (imapTrigger) {
+      imapTrigger.addEventListener("click", openImapLightbox);
+      imapTrigger.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          openImapLightbox();
+        }
+      });
+    }
+    if (closeLbBtn) closeLbBtn.addEventListener("click", closeImapLightbox);
+    if (closeLbBg) closeLbBg.addEventListener("click", closeImapLightbox);
+
+    const jumpCardsBtn = document.getElementById("btn-jump-to-cards");
+    if (jumpCardsBtn) {
+      jumpCardsBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const targetId = currentLang === "zh" ? "card-wrap-chinese" : "card-wrap-reception";
+        const targetEl = document.getElementById(targetId);
+        if (targetEl) {
+          targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+          setTimeout(triggerScrollRevealCheck, 400);
+        }
       });
     }
   }
