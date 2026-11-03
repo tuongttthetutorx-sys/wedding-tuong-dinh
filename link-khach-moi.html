@@ -1977,9 +1977,10 @@
           "flap_and_front";
 
         const isPinterestStrip = layoutMode === "pinterest_strip";
-        // Slimmer 1 : 2.903 ratio (460 x 1335 -> prints at 31mm x 90mm, 6 cols x 3 rows = 18 strips/A4 with 12mm-13.5mm safe margins!)
+        // Exact A4-filling ratio: 6 cols x 3 rows inside 197mm x 284mm (6.5mm safe printer margin on all 4 sides of A4)
+        // Each Bookmark is ~3.28cm wide x 9.46cm tall (W=460, H=1326)
         const W = isPinterestStrip ? 460 : 900;
-        const H = isPinterestStrip ? 1335 : 1120;
+        const H = isPinterestStrip ? 1326 : 1120;
         if (qrCanvas.width !== W) qrCanvas.width = W;
         if (qrCanvas.height !== H) qrCanvas.height = H;
 
@@ -1996,12 +1997,12 @@
         const eyeHoleFill = forPrintTransparent ? "transparent" : "#fbf7ef";
 
         // =====================================================================
-        // MODE A: PINTEREST SLENDER VERTICAL BOOKMARK STRIP (3.1cm x 9.0cm)
+        // MODE A: PINTEREST SLENDER VERTICAL BOOKMARK STRIP (~3.28cm x 9.46cm)
         // Full-bleed Warm Champagne-Sand (#EFE3CE) background for printing on White 250gsm cardstock!
         // =====================================================================
         if (isPinterestStrip) {
           const champagneBg = "#efe3ce";
-          const foldY = 205; // ~1.4cm top fold-over tab
+          const foldY = 260; // Deeper ~1.9cm top fold-over tab so it hooks firmly onto the back of the card!
 
           // Always fill edge-to-edge with Warm Champagne (#EFE3CE) so White 250gsm paper prints with full-bleed Champagne tone!
           ctx.fillStyle = champagneBg;
@@ -2012,67 +2013,47 @@
             ctx.fillRect(0, 0, W, H);
           }
 
+          // Clear dashed fold line (-------------) across the entire width at y=foldY (both screen & print!)
+          ctx.save();
+          ctx.strokeStyle = "rgba(110, 20, 20, 0.55)";
+          ctx.lineWidth = 2.2;
+          ctx.setLineDash([12, 9]);
+          ctx.beginPath();
+          ctx.moveTo(0, foldY);
+          ctx.lineTo(W, foldY);
+          ctx.stroke();
+          ctx.restore();
+
           if (!forPrintTransparent) {
-            // Subtle shaded preview of the 1.4cm top fold-over tab on screen
+            // Subtle shaded preview of the 1.9cm top fold-over tab on screen
             ctx.fillStyle = "rgba(110, 20, 20, 0.045)";
             ctx.fillRect(0, 0, W, foldY);
 
-            ctx.save();
-            ctx.strokeStyle = "rgba(110, 20, 20, 0.36)";
-            ctx.lineWidth = 1.5;
-            ctx.setLineDash([7, 7]);
-            ctx.beginPath();
-            ctx.moveTo(20, foldY);
-            ctx.lineTo(W - 20, foldY);
-            ctx.stroke();
-            ctx.restore();
-
             ctx.textAlign = "center";
-            ctx.fillStyle = "rgba(110, 20, 20, 0.62)";
-            ctx.font = '600 14px "Be Vietnam Pro", sans-serif';
-            ctx.fillText("▴ NẾP GẬP RA SAU (1.4CM) ▴", W / 2, 84);
-            ctx.font = '400 12.5px "Be Vietnam Pro", sans-serif';
+            ctx.fillStyle = "rgba(110, 20, 20, 0.65)";
+            ctx.font = '600 14.5px "Be Vietnam Pro", sans-serif';
+            ctx.fillText("▴ NẾP GẬP RA SAU (~1.9CM) ▴", W / 2, 110);
+            ctx.font = '400 13px "Be Vietnam Pro", sans-serif';
             ctx.fillText(
               guestText
                 ? `QR riêng: ${guestText}`
-                : "Gập xuống máng vô đầu thiệp",
+                : "Gập theo đường  - - - - -  máng vô đầu thiệp",
               W / 2,
-              112
+              140
             );
           } else {
-            // On print: draw a delicate hairline crease guide across y=foldY so user can score all 6 columns at once with a ruler!
-            ctx.save();
-            ctx.strokeStyle = "rgba(122, 59, 12, 0.22)";
-            ctx.lineWidth = 1;
-            ctx.setLineDash([5, 7]);
-            ctx.beginPath();
-            ctx.moveTo(0, foldY);
-            ctx.lineTo(W, foldY);
-            ctx.stroke();
-            ctx.restore();
-
-            // Solid edge tick marks at left & right edges for ruler alignment
-            ctx.strokeStyle = "rgba(110, 20, 20, 0.45)";
-            ctx.lineWidth = 1.6;
-            ctx.beginPath();
-            ctx.moveTo(0, foldY);
-            ctx.lineTo(16, foldY);
-            ctx.moveTo(W - 16, foldY);
-            ctx.lineTo(W, foldY);
-            ctx.stroke();
-
             // If this strip has a personalized guest QR, print a clear guest label on the back-folded flap
             if (guestText) {
               ctx.textAlign = "center";
-              ctx.fillStyle = "rgba(110, 20, 20, 0.72)";
-              ctx.font = '600 19px "Be Vietnam Pro", "Noto Serif TC", sans-serif';
-              ctx.fillText(`‹ ${guestText} ›`, W / 2, 108);
+              ctx.fillStyle = "rgba(110, 20, 20, 0.75)";
+              ctx.font = '600 19.5px "Be Vietnam Pro", "Noto Serif TC", sans-serif';
+              ctx.fillText(`‹ ${guestText} ›`, W / 2, 136);
             }
           }
 
-          // Upper Body (y = 225..795): Long, Slender Vertical Editorial Typography
+          // Upper Body (y = 275..815): Long, Slender Vertical Editorial Typography
           ctx.save();
-          ctx.translate(W / 2, 512);
+          ctx.translate(W / 2, 545);
           ctx.rotate(-Math.PI / 2);
           ctx.textAlign = "center";
 
@@ -2101,10 +2082,10 @@
           }
           ctx.restore();
 
-          // Lower Body (y = 812..1128): Compact Frameless Minimalist QR Code directly on Champagne background
-          const qrBoxSize = 316;
+          // Lower Body (y = 824..1136): Compact Frameless Minimalist QR Code directly on Champagne background
+          const qrBoxSize = 312;
           const qrX = (W - qrBoxSize) / 2;
-          const qrY = 812;
+          const qrY = 824;
           const pad = 10;
           const innerQrSize = qrBoxSize - pad * 2;
           const cellSize = innerQrSize / count;
@@ -2160,32 +2141,31 @@
           ctx.fillStyle = "#681115";
           if (capMode === "zh") {
             ctx.font = '700 21px "Noto Serif TC", serif';
-            ctx.fillText("喜 帖 ＆ 婚 宴 地 圖", W / 2, 1172);
+            ctx.fillText("喜 帖 ＆ 婚 宴 地 圖", W / 2, 1176);
             ctx.fillStyle = "#7a3b0c";
             ctx.font = '600 16.5px "Noto Serif TC", serif';
-            ctx.fillText("掃碼開啟導航 · 06.01.2027", W / 2, 1202);
+            ctx.fillText("掃碼開啟導航 · 06.01.2027", W / 2, 1206);
           } else if (capMode === "vi") {
             ctx.font = '700 21.5px "Cormorant Garamond", "Be Vietnam Pro", serif';
-            ctx.fillText("T H I Ệ P   &   B Ả N   Đ Ồ", W / 2, 1172);
+            ctx.fillText("T H I Ệ P   &   B Ả N   Đ Ồ", W / 2, 1176);
             ctx.fillStyle = "#7a3b0c";
             ctx.font = '600 16px "Be Vietnam Pro", sans-serif';
-            ctx.fillText("Quét mã xem thiệp & chỉ đường", W / 2, 1202);
+            ctx.fillText("Quét mã xem thiệp & chỉ đường", W / 2, 1206);
           } else {
             ctx.font = '700 21.5px "Cormorant Garamond", "Be Vietnam Pro", serif';
-            ctx.fillText("T H I Ệ P   &   B Ả N   Đ Ồ", W / 2, 1170);
+            ctx.fillText("T H I Ệ P   &   B Ả N   Đ Ồ", W / 2, 1174);
             ctx.fillStyle = "#7a3b0c";
             ctx.font = '600 17px "Noto Serif TC", serif';
-            ctx.fillText("喜 帖 與 婚 宴 地 圖 導 航", W / 2, 1202);
+            ctx.fillText("喜 帖 與 婚 宴 地 圖 導 航", W / 2, 1206);
           }
 
           // Couture Signature Footer ("Personally designed by the Bride & Groom — Tiểu Dinh & Thuận Tường")
-          // Kept well above y=1285 so bottom safe margin is 100% protected from printer clipping
           ctx.fillStyle = "#633939";
           ctx.font = 'italic 500 16.5px "Cormorant Garamond", serif';
-          ctx.fillText("Personally designed by the Bride & Groom", W / 2, 1242);
+          ctx.fillText("Personally designed by the Bride & Groom", W / 2, 1244);
           ctx.fillStyle = "#681115";
           ctx.font = '600 15.5px "Cormorant Garamond", "Be Vietnam Pro", serif';
-          ctx.fillText("—  Tiểu Dinh & Thuận Tường  —", W / 2, 1268);
+          ctx.fillText("—  Tiểu Dinh & Thuận Tường  —", W / 2, 1270);
           return;
         }
 
@@ -2489,7 +2469,7 @@
   <meta charset="UTF-8" />
   <title>In Tờ A4 Gộp (${personalNames.length} QR Riêng + ${genericCount} QR Chung = ${totalCount} Bookmark) — Thuận Tường & Tiểu Dinh</title>
   <style>
-    @page { size: A4 portrait; margin: 12mm 13mm; }
+    @page { size: A4 portrait; margin: 6.5mm; }
     * {
       box-sizing: border-box;
       -webkit-print-color-adjust: exact !important;
@@ -2525,14 +2505,14 @@
       white-space: nowrap;
     }
     .a4-sheet {
-      width: 184mm;
+      width: 197mm;
       margin: 0 auto 20px;
       background: transparent;
       display: grid;
       grid-template-columns: repeat(${cols}, 1fr);
       gap: 0;
-      border-top: 0.15mm solid rgba(125, 21, 24, 0.18);
-      border-left: 0.15mm solid rgba(125, 21, 24, 0.18);
+      border-top: 0.18mm solid rgba(125, 21, 24, 0.25);
+      border-left: 0.18mm solid rgba(125, 21, 24, 0.25);
     }
     .sticker-cell {
       border-right: 0.15mm solid rgba(125, 21, 24, 0.22);
@@ -2559,7 +2539,7 @@
     @media print {
       body { background: transparent; }
       .print-toolbar { display: none !important; }
-      .a4-sheet { width: 184mm; margin: 0 auto; padding: 0; box-shadow: none; background: ${isPinterestStrip ? "#efe3ce" : "transparent"}; }
+      .a4-sheet { width: 100%; margin: 0; padding: 0; box-shadow: none; background: ${isPinterestStrip ? "#efe3ce" : "transparent"}; }
     }
   </style>
 </head>
@@ -2626,7 +2606,7 @@
   <meta charset="UTF-8" />
   <title>In Tờ A4 (${totalItems} ${isPinterestStrip ? "Dải Bookmark Dọc Thon Dài" : "Thẻ Phụ QR Không Khung"}) — Thuận Tường & Tiểu Dinh</title>
   <style>
-    @page { size: A4 portrait; margin: 12mm 13mm; }
+    @page { size: A4 portrait; margin: 6.5mm; }
     * {
       box-sizing: border-box;
       -webkit-print-color-adjust: exact !important;
@@ -2662,14 +2642,14 @@
       white-space: nowrap;
     }
     .a4-sheet {
-      width: 184mm;
+      width: 197mm;
       margin: 0 auto 20px;
       background: transparent;
       display: grid;
       grid-template-columns: repeat(${cols}, 1fr);
       gap: 0;
-      border-top: 0.15mm solid rgba(125, 21, 24, 0.18);
-      border-left: 0.15mm solid rgba(125, 21, 24, 0.18);
+      border-top: 0.18mm solid rgba(125, 21, 24, 0.25);
+      border-left: 0.18mm solid rgba(125, 21, 24, 0.25);
     }
     .sticker-cell {
       border-right: 0.15mm solid rgba(125, 21, 24, 0.22);
@@ -2696,7 +2676,7 @@
     @media print {
       body { background: transparent; }
       .print-toolbar { display: none !important; }
-      .a4-sheet { width: 184mm; margin: 0 auto; padding: 0; box-shadow: none; background: ${isPinterestStrip ? "#efe3ce" : "transparent"}; }
+      .a4-sheet { width: 100%; margin: 0; padding: 0; box-shadow: none; background: ${isPinterestStrip ? "#efe3ce" : "transparent"}; }
     }
   </style>
 </head>
