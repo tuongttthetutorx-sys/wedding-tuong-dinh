@@ -392,19 +392,26 @@
       background: #fff;
       border: 1px solid var(--adm-border);
       border-radius: 10px;
-      padding: 14px 16px;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 14px;
-      align-items: start;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
       transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
     .guest-item-card:hover {
       border-color: var(--adm-border-strong);
       box-shadow: 0 3px 12px rgba(125, 21, 24, 0.06);
     }
+    .guest-top-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px 14px;
+    }
     .guest-main-info {
       min-width: 0;
+      flex: 1 1 260px;
     }
     .guest-title-row {
       display: flex;
@@ -439,14 +446,14 @@
       color: var(--adm-muted);
     }
     .guest-url-line {
-      margin-top: 4px;
+      margin-top: 3px;
       font-family: monospace;
-      font-size: 12px;
+      font-size: 11.8px;
       color: var(--adm-muted);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 540px;
+      max-width: 520px;
     }
 
     /* STATUS BADGES */
@@ -476,40 +483,68 @@
       border: 1px solid rgba(110, 98, 98, 0.2);
     }
 
-    /* COMPACT SESSION LOG PILLS UNDER EACH GUEST */
+    /* COMPACT FULL-WIDTH 2-COLUMN SESSION LOG BAR */
     .guest-sessions-wrap {
-      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed rgba(125, 21, 24, 0.14);
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 6px;
+    }
+    .guest-sessions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 6px;
     }
     .session-row-pill {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 6px 10px;
+      gap: 4px 8px;
       padding: 5px 10px;
       border-radius: 6px;
       background: #faf6f0;
       border: 1px solid rgba(125, 21, 24, 0.1);
-      font-size: 12px;
+      font-size: 11.8px;
+      line-height: 1.35;
       color: var(--adm-text);
     }
     .session-num {
       font-weight: 700;
       color: var(--adm-crimson);
+      white-space: nowrap;
     }
     .session-dev {
       font-weight: 600;
+      color: var(--adm-text);
     }
     .session-act {
       color: var(--adm-green-text);
       font-weight: 600;
+      white-space: nowrap;
     }
     .session-time {
       color: var(--adm-muted);
-      font-size: 11.5px;
+      font-size: 11.2px;
       margin-left: auto;
+      white-space: nowrap;
+    }
+    .btn-toggle-sessions {
+      align-self: flex-start;
+      appearance: none;
+      border: 1px solid rgba(125, 21, 24, 0.18);
+      background: rgba(125, 21, 24, 0.04);
+      color: var(--adm-crimson);
+      font-family: inherit;
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .btn-toggle-sessions:hover {
+      background: rgba(125, 21, 24, 0.1);
     }
 
     /* RIGHT SIDE ACTIONS ON GUEST CARD */
@@ -1182,29 +1217,31 @@
           const msgBtnLabel = effectiveLang === "zh" ? "💬 Copy lời mời LINE" : "💬 Copy lời mời Zalo";
 
           card.innerHTML = `
-            <div class="guest-main-info">
-              <div class="guest-title-row">
-                <span class="guest-idx">#${idx + 1}</span>
-                <span class="guest-name-text js-guest-name"></span>
-                <span class="lang-tag">${effectiveLang === "zh" ? "繁體中文" : "VI"}</span>
-                ${statusBadgeHtml}
-              </div>
-              <div class="guest-url-line js-url-preview"></div>
-              <div class="guest-sessions-wrap js-sessions-wrap"></div>
-            </div>
-
-            <div class="guest-actions-col">
-              <div class="guest-btn-group">
-                <div class="mode-switch-pill" title="Chuyển đổi giữa Thiệp Mời và Thiệp Cảm Ơn ngay trên link cũ đã gửi">
-                  <button type="button" class="mode-switch-btn js-mode-invite ${!isTyEffective ? "is-active-invite" : ""}">💌 Thiệp Mời</button>
-                  <button type="button" class="mode-switch-btn js-mode-ty ${isTyEffective ? "is-active-ty" : ""}">📸 Cảm Ơn</button>
+            <div class="guest-top-row">
+              <div class="guest-main-info">
+                <div class="guest-title-row">
+                  <span class="guest-idx">#${idx + 1}</span>
+                  <span class="guest-name-text js-guest-name"></span>
+                  <span class="lang-tag">${effectiveLang === "zh" ? "繁體中文" : "VI"}</span>
+                  ${statusBadgeHtml}
                 </div>
-                <button type="button" class="btn-adm primary js-copy-link">📋 Copy Link</button>
-                <button type="button" class="btn-adm js-copy-msg">${msgBtnLabel}</button>
-                <a class="btn-adm js-preview" target="_blank" rel="noopener" title="Mở xem thử (Không tính vào lượt xem)">👁️ Xem thử</a>
-                <button type="button" class="btn-adm danger js-remove-guest" title="Xóa khách này khỏi danh sách">✕</button>
+                <div class="guest-url-line js-url-preview"></div>
+              </div>
+
+              <div class="guest-actions-col">
+                <div class="guest-btn-group">
+                  <div class="mode-switch-pill" title="Chuyển đổi giữa Thiệp Mời và Thiệp Cảm Ơn ngay trên link cũ đã gửi">
+                    <button type="button" class="mode-switch-btn js-mode-invite ${!isTyEffective ? "is-active-invite" : ""}">💌 Thiệp Mời</button>
+                    <button type="button" class="mode-switch-btn js-mode-ty ${isTyEffective ? "is-active-ty" : ""}">📸 Cảm Ơn</button>
+                  </div>
+                  <button type="button" class="btn-adm primary js-copy-link">📋 Copy Link</button>
+                  <button type="button" class="btn-adm js-copy-msg">${msgBtnLabel}</button>
+                  <a class="btn-adm js-preview" target="_blank" rel="noopener" title="Mở xem thử (Không tính vào lượt xem)">👁️ Xem thử</a>
+                  <button type="button" class="btn-adm danger js-remove-guest" title="Xóa khách này khỏi danh sách">✕</button>
+                </div>
               </div>
             </div>
+            <div class="guest-sessions-wrap js-sessions-wrap"></div>
           `;
 
           card.querySelector(".js-guest-name").textContent = name;
@@ -1215,23 +1252,47 @@
           if (!sessions.length) {
             sessionsWrap.style.display = "none";
           } else {
-            sessions.forEach((s, sIdx) => {
+            window._expandedGuestSessions = window._expandedGuestSessions || {};
+            const isExpanded = Boolean(window._expandedGuestSessions[key]);
+            const visibleLimit = 2;
+            const shownSessions = isExpanded ? sessions : sessions.slice(0, visibleLimit);
+
+            const gridEl = document.createElement("div");
+            gridEl.className = "guest-sessions-grid";
+
+            shownSessions.forEach((s, sIdx) => {
               const num = sessions.length - sIdx;
               const pill = document.createElement("div");
               pill.className = "session-row-pill";
               const actText =
-                (s.openedEnvelope ? "✨ Đã mở phong bì" : "👀 Đã mở link") +
-                (s.flippedBack ? " · ↺ Đã lật mặt sau" : "");
+                (s.openedEnvelope ? "✨ Mở phong bì" : "👀 Mở link") +
+                (s.flippedBack ? " · ↺ Lật sau" : "");
               const locText = s.city ? ` • ${s.city}` : "";
+              const compactDev = String(s.deviceDetail || "Thiết bị di động").replace("Máy tính ", "");
               pill.innerHTML = `
                 <span class="session-num">Lần ${num}:</span>
                 <span class="session-dev js-s-dev"></span>
                 <span class="session-act">${actText}</span>
                 <span class="session-time">${formatExactAndRelativeTime(s.lastActionAt || s.openedAt)}${locText}</span>
               `;
-              pill.querySelector(".js-s-dev").textContent = s.deviceDetail || "Thiết bị di động";
-              sessionsWrap.appendChild(pill);
+              pill.querySelector(".js-s-dev").textContent = compactDev;
+              gridEl.appendChild(pill);
             });
+            sessionsWrap.appendChild(gridEl);
+
+            if (sessions.length > visibleLimit) {
+              const toggleBtn = document.createElement("button");
+              toggleBtn.type = "button";
+              toggleBtn.className = "btn-toggle-sessions";
+              toggleBtn.textContent = isExpanded
+                ? `▴ Thu gọn lịch sử (${sessions.length} lần mở)`
+                : `▾ Xem thêm ${sessions.length - visibleLimit} lần mở trước đó`;
+              toggleBtn.addEventListener("click", () => {
+                window._expandedGuestSessions[key] = !window._expandedGuestSessions[key];
+                buildRows();
+              });
+              sessionsWrap.appendChild(toggleBtn);
+            }
           }
 
           card.querySelector(".js-mode-invite").addEventListener("click", () => {
