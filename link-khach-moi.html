@@ -2013,14 +2013,14 @@
             ctx.fillRect(0, 0, W, H);
           }
 
-          // Clear dashed fold line (-------------) across the entire width at y=foldY (both screen & print!)
+          // Clear dashed fold line (-------------) across the width with 2mm safe inner margin at both ends
           ctx.save();
           ctx.strokeStyle = "rgba(110, 20, 20, 0.55)";
           ctx.lineWidth = 2.2;
           ctx.setLineDash([12, 9]);
           ctx.beginPath();
-          ctx.moveTo(0, foldY);
-          ctx.lineTo(W, foldY);
+          ctx.moveTo(26, foldY);
+          ctx.lineTo(W - 26, foldY);
           ctx.stroke();
           ctx.restore();
 
@@ -2514,10 +2514,13 @@
       background: transparent;
       display: grid;
       grid-template-columns: repeat(${cols}, 1fr);
-      gap: 1.8mm;
+      gap: 0;
+      border-top: 0.15mm solid rgba(125, 21, 24, 0.24);
+      border-left: 0.15mm solid rgba(125, 21, 24, 0.24);
     }
     .sticker-cell {
-      border: 0.18mm solid rgba(125, 21, 24, 0.28);
+      border-right: 0.15mm solid rgba(125, 21, 24, 0.22);
+      border-bottom: 0.15mm solid rgba(125, 21, 24, 0.22);
       padding: ${isPinterestStrip ? "0" : "1.8mm 2.2mm"};
       display: flex;
       align-items: center;
@@ -2648,10 +2651,13 @@
       background: transparent;
       display: grid;
       grid-template-columns: repeat(${cols}, 1fr);
-      gap: 1.8mm;
+      gap: 0;
+      border-top: 0.15mm solid rgba(125, 21, 24, 0.24);
+      border-left: 0.15mm solid rgba(125, 21, 24, 0.24);
     }
     .sticker-cell {
-      border: 0.18mm solid rgba(125, 21, 24, 0.28);
+      border-right: 0.15mm solid rgba(125, 21, 24, 0.22);
+      border-bottom: 0.15mm solid rgba(125, 21, 24, 0.22);
       padding: ${isPinterestStrip ? "0" : "1.8mm 2.2mm"};
       display: flex;
       align-items: center;
