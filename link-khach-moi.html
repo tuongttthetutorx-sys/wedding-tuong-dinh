@@ -771,7 +771,7 @@
       <div class="adm-top-actions">
         <a href="index.html?notrack=1" class="btn-adm">← Mở xem Thiệp Cưới</a>
         <button type="button" id="btn-refresh-stats" class="btn-adm primary">🔄 Làm mới</button>
-        <button type="button" id="btn-reset-stats" class="btn-adm danger" title="Xóa lịch sử lượt xem thử về 0 (Giữ nguyên danh sách khách)">🗑️ Reset lượt xem</button>
+        <button type="button" id="btn-reset-stats" class="btn-adm danger" style="display:none;" title="Xóa lịch sử lượt xem thử về 0 (Giữ nguyên danh sách khách)">🗑️ Reset lượt xem</button>
       </div>
     </header>
 
@@ -2227,12 +2227,7 @@
           );
         }
 
-        // 3. Generate QR Matrix (Error Correction Level H for 30% redundancy around center 囍 seal)
-        const qr = window.qrcode(0, "H");
-        qr.addData(targetUrl);
-        qr.make();
-        const count = qr.getModuleCount();
-
+        // 3. Position QR Matrix for Wide Card
         const qrBoxSize = isFoldTab ? 580 : 620;
         const qrX = (W - qrBoxSize) / 2;
         const qrY = (isFoldTab ? 210 : 224) + shiftY;
@@ -2241,13 +2236,6 @@
         const cellSize = innerQrSize / count;
         const startX = qrX + pad;
         const startY = qrY + pad;
-
-        // NO BOXED BORDER AROUND THE QR CODE (100% Frameless Minimalist!)
-        const eyeHoleFill = forPrintTransparent ? "transparent" : "#fbf7ef";
-
-        // Center exclusion zone for 囍 emblem (~21% of matrix width)
-        const centerMin = count * 0.39;
-        const centerMax = count * 0.61;
 
         // Draw 3 Ornate Rounded Finder Eyes
         drawFinderEye(ctx, startX, startY, cellSize, eyeHoleFill);
