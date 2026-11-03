@@ -101,7 +101,7 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Headers": "Content-Type"
 };
 
-function defaultState(existingSavedGuests = []) {
+function defaultState(existingSavedGuests = [], existingSiteConfig = null) {
   return {
     totalViews: 0,
     openedEnvelopeTotal: 0,
@@ -110,6 +110,15 @@ function defaultState(existingSavedGuests = []) {
     visitors: {}, // key -> aggregated guest summary
     visitLogs: [], // unmerged array of every individual visit/device session
     savedGuests: Array.isArray(existingSavedGuests) ? existingSavedGuests : [],
+    siteConfig:
+      existingSiteConfig && typeof existingSiteConfig === "object"
+        ? existingSiteConfig
+        : {
+            globalThankYou: false,
+            driveUrl: "",
+            thankYouVI: "",
+            thankYouZH: ""
+          },
     updatedAt: new Date().toISOString()
   };
 }
@@ -164,7 +173,31 @@ export class WeddingAnalytics {
         }
       });
     }
+    if (!stored.siteConfig || typeof stored.siteConfig !== "object") {
+      stored.siteConfig = {
+        globalThankYou: false,
+        driveUrl: "",
+        thankYouVI: "",
+        thankYouZH: ""
+      };
+    }
     return stored;
+  }
+
+  resolveGuestConfig(data, guestName = "") {
+    const cfg = data.siteConfig || {};
+    const k = normalizeGuestKey(guestName);
+    const saved = k
+      ? (data.savedGuests || []).find((g) => normalizeGuestKey(g.name) === k)
+      : null;
+    const isThankYou = Boolean(cfg.globalThankYou || (saved && saved.mode === "thankyou"));
+    const driveUrl = (saved && saved.driveUrl) || cfg.driveUrl || "";
+    return {
+      thankYouMode: isThankYou,
+      driveUrl,
+      thankYouVI: cfg.thankYouVI || "",
+      thankYouZH: cfg.thankYouZH || ""
+    };
   }
 
   async saveData(data) {
@@ -179,12 +212,47 @@ export class WeddingAnalytics {
       return new Response(null, { status: 204, headers: CORS_HEADERS });
     }
 
-    // Reset analytics counters & logs (keeps savedGuests intact unless clearGuests=true)
+    // Reset analytics counters & logs (keeps savedGuests & siteConfig intact)
     if (url.pathname === "/api/reset" && request.method === "POST") {
       const current = await this.loadData();
-      const fresh = defaultState(current.savedGuests || []);
+      const fresh = defaultState(current.savedGuests || [], current.siteConfig || null);
       await this.saveData(fresh);
       return Response.json({ ok: true, stats: this.formatStats(fresh) }, { headers: CORS_HEADERS });
+    }
+
+    // Update global Thank-You & Google Drive settings for already-sent links
+    if (url.pathname === "/api/config" && request.method === "POST") {
+      let body = {};
+      try {
+        body = await request.json();
+      } catch (_) {}
+      const data = await this.loadData();
+      data.siteConfig = {
+        globalThankYou: Boolean(body.globalThankYou),
+        driveUrl: String(body.driveUrl ?? data.siteConfig.driveUrl ?? "").trim(),
+        thankYouVI: String(body.thankYouVI ?? data.siteConfig.thankYouVI ?? "").trim(),
+        thankYouZH: String(body.thankYouZH ?? data.siteConfig.thankYouZH ?? "").trim()
+      };
+      await this.saveData(data);
+      return Response.json(
+        { ok: true, siteConfig: data.siteConfig, stats: this.formatStats(data) },
+        { headers: CORS_HEADERS }
+      );
+    }
+
+    // Lightweight endpoint for any already-sent guest link (?to=...) to check if Thank-You mode was enabled
+    if (url.pathname === "/api/guest-config") {
+      const guest = url.searchParams.get("guest") || "";
+      const data = await this.loadData();
+      return Response.json(
+        { ok: true, config: this.resolveGuestConfig(data, guest) },
+        {
+          headers: {
+            ...CORS_HEADERS,
+            "Cache-Control": "no-store, no-cache, must-revalidate"
+          }
+        }
+      );
     }
 
     // Manage permanent saved guest list on server
@@ -221,6 +289,24 @@ export class WeddingAnalytics {
             data.savedGuests.push(record);
           }
         });
+      } else if (action === "toggle_mode") {
+        const targetKey = normalizeGuestKey(body.name || "");
+        if (targetKey) {
+          const idx = data.savedGuests.findIndex(
+            (g) => normalizeGuestKey(g.name) === targetKey
+          );
+          if (idx >= 0) {
+            data.savedGuests[idx].mode =
+              body.mode === "thankyou" || body.mode === "invite"
+                ? body.mode
+                : data.savedGuests[idx].mode === "thankyou"
+                  ? "invite"
+                  : "thankyou";
+            if (body.driveUrl !== undefined) {
+              data.savedGuests[idx].driveUrl = String(body.driveUrl || "").trim();
+            }
+          }
+        }
       } else if (action === "remove") {
         const targetKey = normalizeGuestKey(body.name || "");
         if (targetKey) {
@@ -411,6 +497,12 @@ export class WeddingAnalytics {
       visitLogs: visitLogs.slice(0, 300),
       guests: visitorsList.slice(0, 200),
       savedGuests: Array.isArray(data.savedGuests) ? data.savedGuests : [],
+      siteConfig: data.siteConfig || {
+        globalThankYou: false,
+        driveUrl: "",
+        thankYouVI: "",
+        thankYouZH: ""
+      },
       updatedAt: data.updatedAt || new Date().toISOString()
     };
   }

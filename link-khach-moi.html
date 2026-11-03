@@ -402,6 +402,67 @@
       </div>
     </section>
 
+    <!-- CÔNG TẮC CẬP NHẬT LỜI CẢM ƠN CHO CÁC LINK ĐÃ GỬI (KHÔNG CẦN GỬI LẠI LINK MỚI) -->
+    <section class="paper-sheet analytics-sheet" aria-label="Cập nhật Thiệp Cảm Ơn cho các link đã gửi">
+      <div class="analytics-top-bar" style="margin-bottom:12px;">
+        <div class="analytics-title-group">
+          <h2>💝 Cập Nhật Lời Cảm Ơn &amp; Kho Ảnh Cho Các Link Đã Gửi</h2>
+          <p class="analytics-sub">
+            Dành cho lúc sau đám cưới (hoặc khi muốn bật lời cảm ơn): Khách bấm lại vào <strong>đúng đường link cũ đã gửi trong Zalo / LINE</strong> sẽ tự động thấy thêm <strong>Thiệp Cảm Ơn &amp; Nút Mở Album Ảnh Google Drive</strong> mà hai bạn không cần gửi lại link mới!
+          </p>
+        </div>
+      </div>
+
+      <div class="field-row-2" style="margin-bottom:12px;">
+        <div class="field-group">
+          <label for="global-thankyou-select">Chế độ hiển thị của tất cả các link đã gửi</label>
+          <select id="global-thankyou-select" class="rsvp-select">
+            <option value="off">💌 Giữ mặc định theo từng khách (Thiệp Mời trước ngày cưới)</option>
+            <option value="on">📸 BẬT ĐỒNG LOẠT: Hiện thêm Thiệp Cảm Ơn + Kho Ảnh trên TẤT CẢ link cũ đã gửi!</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label for="global-drive-url">Link thư mục Ảnh / Video Google Drive (tự động gắn vào các link cũ)</label>
+          <input
+            type="url"
+            id="global-drive-url"
+            class="rsvp-input"
+            placeholder="https://drive.google.com/drive/folders/..."
+          />
+        </div>
+      </div>
+
+      <div class="field-row-2" style="margin-bottom:12px;">
+        <div class="field-group">
+          <label for="global-ty-vi">Lời Cảm Ơn Tiếng Việt (để trống sẽ dùng lời cảm ơn trang trọng mặc định)</label>
+          <textarea
+            id="global-ty-vi"
+            class="rsvp-textarea"
+            style="min-height:76px;"
+            placeholder="Sự hiện diện, lời chúc phúc và tình cảm nồng ấm của Quý Khách trong ngày chung đôi 06.01.2027 là niềm vinh hạnh và món quà vô giá đối với gia đình chúng tôi..."
+          ></textarea>
+        </div>
+        <div class="field-group">
+          <label for="global-ty-zh">Lời Cảm Ơn Tiếng Trung 繁體中文 (dành cho khách Đài Loan)</label>
+          <textarea
+            id="global-ty-zh"
+            class="rsvp-textarea"
+            style="min-height:76px;"
+            placeholder="誠摯感謝您於 2027 年 1 月 6 日蒞臨參與我們的婚禮，您的祝福與陪伴是我們最珍貴的禮物。順祥 & 小瑩 謹致上最深切的謝意..."
+          ></textarea>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px;">
+        <button type="button" id="btn-save-global-config" class="btn-crimson">
+          💾 Lưu &amp; Áp Dụng Ngay Cho Các Link Đã Gửi
+        </button>
+        <span id="global-config-status" style="font-size:12.8px; color:var(--text-muted);">
+          Mẹo: Bạn cũng có thể bật/tắt Lời Cảm Ơn cho riêng từng khách bằng nút ở từng dòng bên dưới!
+        </span>
+      </div>
+    </section>
+
     <!-- CÔNG CỤ TẠO & LƯU DANH SÁCH LINK KHÁCH MỜI -->
     <section class="paper-sheet">
       <div class="field-row-2" style="margin-bottom:14px;">
@@ -507,6 +568,19 @@
 
       let savedGuests = []; // [{ name, lang, mode, driveUrl, createdAt }]
       let visitLogsByGuest = {}; // normalizedName -> array of unmerged visit session logs
+      let globalSiteConfig = {
+        globalThankYou: false,
+        driveUrl: "",
+        thankYouVI: "",
+        thankYouZH: ""
+      };
+      let globalConfigLoadedOnce = false;
+
+      const globalTySelect = document.getElementById("global-thankyou-select");
+      const globalDriveInput = document.getElementById("global-drive-url");
+      const globalTyViInput = document.getElementById("global-ty-vi");
+      const globalTyZhInput = document.getElementById("global-ty-zh");
+      const globalStatusEl = document.getElementById("global-config-status");
 
       const isLocal = /^(file:|https?:\/\/(localhost|127\.0\.0\.1))/i.test(window.location.href);
       const detectedBase = isLocal
@@ -654,6 +728,40 @@
         return `<div style="margin-top:4px;">${badgeHtml}</div><div class="per-guest-device-list">${itemsHtml}</div>`;
       }
 
+      async function toggleGuestModeOnServer(name, currentMode) {
+        const nextMode = currentMode === "thankyou" ? "invite" : "thankyou";
+        const key = normalizeNameKey(name);
+        const driveVal =
+          (globalDriveInput && globalDriveInput.value.trim()) ||
+          (driveInput && driveInput.value.trim()) ||
+          "";
+        savedGuests = savedGuests.map((g) => {
+          if (normalizeNameKey(g.name) === key) {
+            return { ...g, mode: nextMode, driveUrl: driveVal || g.driveUrl || "" };
+          }
+          return g;
+        });
+        persistLocalGuests();
+        buildRows();
+        try {
+          await fetch(`${apiBase}/api/guests`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "toggle_mode",
+              name,
+              mode: nextMode,
+              driveUrl: driveVal
+            })
+          });
+        } catch (_) {}
+        notify(
+          nextMode === "thankyou"
+            ? `📸 Đã bật "Thiệp Cảm Ơn" trực tiếp trên link cũ đã gửi cho "${name}"!`
+            : `💌 Đã chuyển link của "${name}" về chế độ Thiệp Mời!`
+        );
+      }
+
       async function removeGuestFromList(name) {
         const key = normalizeNameKey(name);
         savedGuests = savedGuests.filter((g) => normalizeNameKey(g.name) !== key);
@@ -729,6 +837,10 @@
 
           const tr = document.createElement("tr");
           const msgBtnLabel = effectiveLang === "zh" ? "💬 Copy lời mời LINE" : "💬 Copy lời mời Zalo";
+          const isTyRow = Boolean(globalSiteConfig.globalThankYou || mode === "thankyou");
+          const toggleModeLabel = isTyRow
+            ? "📸 Đang bật: Lời Cảm Ơn (Bấm đổi về Thiệp Mời)"
+            : "💌 Đang là: Thiệp Mời (Bấm bật Lời Cảm Ơn)";
           tr.innerHTML = `
             <td>${idx + 1}</td>
             <td>
@@ -743,6 +855,7 @@
               <div class="row-actions">
                 <button type="button" class="btn-mini primary js-copy-link">📋 Copy Link</button>
                 <button type="button" class="btn-mini js-copy-msg">${msgBtnLabel}</button>
+                <button type="button" class="btn-mini js-toggle-mode" title="Cập nhật chế độ Thiệp Cảm Ơn ngay trên link cũ đã gửi mà không cần gửi lại link mới">${toggleModeLabel}</button>
                 <a class="btn-mini js-preview" target="_blank" rel="noopener" title="Xem thử không tính vào bộ đếm">👁️ Xem thử</a>
                 <button type="button" class="btn-mini danger js-remove-guest" title="Xóa khách này khỏi danh sách">✕</button>
               </div>
@@ -763,6 +876,9 @@
           );
           tr.querySelector(".js-copy-msg").addEventListener("click", () =>
             copyText(inviteMsg, `💌 Đã copy trọn bộ lời mời + link cho "${name}"!`)
+          );
+          tr.querySelector(".js-toggle-mode").addEventListener("click", () =>
+            toggleGuestModeOnServer(name, mode)
           );
           tr.querySelector(".js-remove-guest").addEventListener("click", () =>
             removeGuestFromList(name)
@@ -859,6 +975,31 @@
             <span class="country-pill">🇹🇼 TW: ${twCount}</span>
             ${otherCount > 0 ? `<span class="country-pill">🌍 Khác: ${otherCount}</span>` : ""}
           `;
+
+          // Sync global Thank-You siteConfig from server
+          if (st.siteConfig && typeof st.siteConfig === "object") {
+            globalSiteConfig = st.siteConfig;
+            if (!globalConfigLoadedOnce) {
+              globalConfigLoadedOnce = true;
+              if (globalTySelect) {
+                globalTySelect.value = globalSiteConfig.globalThankYou ? "on" : "off";
+              }
+              if (globalDriveInput && globalSiteConfig.driveUrl) {
+                globalDriveInput.value = globalSiteConfig.driveUrl;
+              }
+              if (globalTyViInput && globalSiteConfig.thankYouVI) {
+                globalTyViInput.value = globalSiteConfig.thankYouVI;
+              }
+              if (globalTyZhInput && globalSiteConfig.thankYouZH) {
+                globalTyZhInput.value = globalSiteConfig.thankYouZH;
+              }
+            }
+            if (globalStatusEl) {
+              globalStatusEl.textContent = globalSiteConfig.globalThankYou
+                ? "📸 Trạng thái hiện tại: ĐANG BẬT Thiệp Cảm Ơn trên TẤT CẢ các link cũ đã gửi!"
+                : "💌 Trạng thái hiện tại: Đang ở chế độ Thiệp Mời mặc định (hoặc bật riêng từng khách bên dưới).";
+            }
+          }
 
           // Sync savedGuests from server
           if (Array.isArray(st.savedGuests) && st.savedGuests.length > 0) {
@@ -977,6 +1118,33 @@
           });
         } catch (_) {}
         notify("🗑️ Đã xóa trống danh sách khách mời.");
+      });
+
+      document.getElementById("btn-save-global-config").addEventListener("click", async () => {
+        const payload = {
+          globalThankYou: globalTySelect && globalTySelect.value === "on",
+          driveUrl: globalDriveInput ? globalDriveInput.value.trim() : "",
+          thankYouVI: globalTyViInput ? globalTyViInput.value.trim() : "",
+          thankYouZH: globalTyZhInput ? globalTyZhInput.value.trim() : ""
+        };
+        try {
+          const res = await fetch(`${apiBase}/api/config`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+          if (res.ok) {
+            globalConfigLoadedOnce = false;
+            await fetchAnalytics(false);
+            notify(
+              payload.globalThankYou
+                ? "📸 Đã bật Lời Cảm Ơn & Kho Ảnh trên TẤT CẢ các link đã gửi!"
+                : "💾 Đã lưu cài đặt Lời Cảm Ơn & Kho Ảnh!"
+            );
+          }
+        } catch (_) {
+          notify("⚠️ Không thể kết nối máy chủ, vui lòng thử lại.");
+        }
       });
 
       document.getElementById("btn-generate").addEventListener("click", handleAddGuests);

@@ -718,8 +718,28 @@
   }
 
   /* Post-Wedding Thank You Card + Google Drive Photo Album & Access Toggle */
+  let remoteGuestConfig = null;
+
+  function fetchRemoteGuestConfig() {
+    try {
+      const qs = new URLSearchParams();
+      if (guestName) qs.set("guest", guestName);
+      qs.set("t", String(Date.now()));
+      fetch(`/api/guest-config?${qs.toString()}`, { cache: "no-store" })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((data) => {
+          if (data && data.config) {
+            remoteGuestConfig = data.config;
+            syncPostWeddingAndAccessMode();
+          }
+        })
+        .catch(() => {});
+    } catch (_) {}
+  }
+
   function syncPostWeddingAndAccessMode() {
     const cfg = window.WEDDING_CONFIG || {};
+    const rCfg = remoteGuestConfig || {};
     const isPaused = cfg.isPublished === false || params.get("preview") === "paused";
     const pausedEl = document.getElementById("access-paused-overlay");
     if (pausedEl) {
@@ -728,6 +748,7 @@
 
     const isThankYou =
       cfg.thankYouMode === true ||
+      rCfg.thankYouMode === true ||
       params.get("mode") === "thankyou" ||
       params.get("thankyou") === "1";
     const tySection = document.getElementById("thank-you-showcase");
@@ -759,13 +780,15 @@
     }
     if (body) {
       body.textContent = isZh
-        ? cfg.thankYouMessageZH ||
+        ? rCfg.thankYouZH ||
+          cfg.thankYouMessageZH ||
           "誠摯感謝您蒞臨參與我們的婚禮，您的祝福與陪伴是我們最珍貴的禮物。順祥 & 小瑩 謹致上最深切的謝意！"
-        : cfg.thankYouMessageVI ||
+        : rCfg.thankYouVI ||
+          cfg.thankYouMessageVI ||
           "Sự hiện diện, lời chúc phúc và tình cảm nồng ấm của Quý Khách trong ngày chung đôi 06.01.2027 là món quà vô giá đối với gia đình chúng tôi.";
     }
 
-    const driveUrl = (params.get("drive") || cfg.googleDrivePhotoUrl || "").trim();
+    const driveUrl = (params.get("drive") || rCfg.driveUrl || cfg.googleDrivePhotoUrl || "").trim();
     if (driveWrap && driveBtn) {
       if (driveUrl) {
         driveWrap.style.display = "";
@@ -2201,6 +2224,7 @@
     });
 
     applyLanguage(currentLang);
+    fetchRemoteGuestConfig();
     trackGuestActivity("view");
     if (envelopeOpened) {
       trackGuestActivity("open_envelope");
