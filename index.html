@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,500;1,600&family=Dancing+Script:wght@600;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="css/styles.css?v=52" />
+  <link rel="stylesheet" href="css/styles.css?v=53" />
 </head>
 <body class="envelope-locked">
   <!-- Ambient Floating Dust & Petals -->
@@ -502,195 +502,8 @@
           </div>
         </div>
 
-        <!-- BESPOKE ILLUSTRATED WEDDING MAP SVG + STEP-BY-STEP DIRECTIONS GUIDE -->
+        <!-- STEP-BY-STEP DIRECTIONS & PARKING/HALL GUIDE -->
         <div class="illustrated-map-section" id="illustrated-map-section">
-          <div class="imap-header">
-            <div class="imap-title-group">
-              <span class="imap-badge" data-i18n="imapBadge">SƠ ĐỒ VẼ CHI TIẾT • WEDDING ROUTE MAP</span>
-              <h3 class="imap-title" data-i18n="imapTitle">Sơ Đồ Đường Đi Đến Riverside Palace (Sảnh Seine)</h3>
-              <p class="imap-sub" data-i18n="imapSub">
-                Nằm ngay mặt tiền 360D Bến Vân Đồn (đoạn giữa Cầu Nguyễn Văn Cừ và Cầu Ông Lãnh, dọc bờ Kênh Tàu Hủ). Chạm vào sơ đồ để phóng to.
-              </p>
-            </div>
-            <button type="button" id="btn-zoom-imap" class="venue-action-btn imap-zoom-btn" data-i18n="btnZoomImap">
-              🔍 Phóng to sơ đồ
-            </button>
-          </div>
-
-          <!-- Interactive Illustrated Map Canvas (Click to enlarge) -->
-          <div class="imap-canvas-frame" id="imap-canvas-trigger" role="button" tabindex="0" aria-label="Bấm để phóng to sơ đồ đường đi đến Riverside Palace">
-            <svg class="wedding-route-svg" viewBox="0 0 1000 540" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sơ đồ đường đi đến Nhà hàng tiệc cưới Riverside Palace - 360D Bến Vân Đồn">
-              <defs>
-                <linearGradient id="riverGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stop-color="#cfe4ec" />
-                  <stop offset="50%" stop-color="#dcecf2" />
-                  <stop offset="100%" stop-color="#cbe1ea" />
-                </linearGradient>
-                <linearGradient id="crimsonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#961b1e" />
-                  <stop offset="100%" stop-color="#6b1013" />
-                </linearGradient>
-                <filter id="mapCardShadow" x="-10%" y="-10%" width="120%" height="125%">
-                  <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#4a1012" flood-opacity="0.16" />
-                </filter>
-              </defs>
-
-              <!-- 1. Warm Cream Paper Background & Double Ornamental Frame -->
-              <rect x="0" y="0" width="1000" height="540" rx="14" fill="#fbf6ec" />
-              <rect x="10" y="10" width="980" height="520" rx="10" fill="none" stroke="#d5b887" stroke-width="1.5" />
-              <rect x="15" y="15" width="970" height="510" rx="8" fill="none" stroke="#7d1518" stroke-width="0.8" stroke-dasharray="4 4" opacity="0.45" />
-
-              <!-- Subtle Parks / Green Blocks -->
-              <rect x="640" y="276" width="165" height="92" rx="12" fill="#e6efe2" stroke="#c5d9bd" stroke-width="1" />
-              <text x="722" y="322" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="11.5" font-weight="600" fill="#4f6f46">🌿 Công viên Hồ Khánh Hội</text>
-              <text x="722" y="339" text-anchor="middle" font-family="Noto Serif TC, serif" font-size="10.5" fill="#64825b">慶會公園 (Quận 4)</text>
-
-              <!-- 2. North Highway: ĐẠI LỘ VÕ VĂN KIỆT (QUẬN 1 / QUẬN 5) -->
-              <path d="M 20 82 L 980 82" stroke="#efe4d0" stroke-width="28" stroke-linecap="round" />
-              <path d="M 20 82 L 980 82" stroke="#d3c0a3" stroke-width="1.5" stroke-dasharray="8 6" />
-              <text x="500" y="86" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="12.5" font-weight="700" fill="#5e4632" letter-spacing="1.2">ĐẠI LỘ VÕ VĂN KIỆT (BỜ QUẬN 1 &amp; QUẬN 5)</text>
-
-              <!-- District 1 & District 5 Direction Callouts at Top -->
-              <g transform="translate(88, 36)">
-                <rect x="0" y="0" width="210" height="28" rx="14" fill="#fff" stroke="#c89b57" stroke-width="1.2" />
-                <text x="105" y="18" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="11.5" font-weight="700" fill="#7d1518">⬅ Hướng từ Quận 5 / Quận 10 / Q.8</text>
-              </g>
-              <g transform="translate(650, 36)">
-                <rect x="0" y="0" width="248" height="28" rx="14" fill="#fff" stroke="#c89b57" stroke-width="1.2" />
-                <text x="124" y="18" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="11.5" font-weight="700" fill="#7d1518">Hướng từ Quận 1 / Chợ Bến Thành ➡</text>
-              </g>
-
-              <!-- 3. Waterway: KÊNH TÀU HỦ - BẾN NGHÉ -->
-              <path d="M 16 142 Q 260 132 500 142 T 984 138" stroke="url(#riverGrad)" stroke-width="54" fill="none" />
-              <path d="M 40 138 Q 180 130 320 140 T 620 138 T 940 136" stroke="#9ec5d5" stroke-width="1.5" stroke-dasharray="14 10" fill="none" />
-              <text x="495" y="146" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="12" font-weight="700" fill="#2c6378" letter-spacing="2">≈ SÔNG / KÊNH TÀU HỦ – BẾN NGHÉ ≈</text>
-
-              <!-- 4. Secondary District 4 Roads (Hoàng Diệu, Nguyễn Khoái, Khánh Hội) -->
-              <!-- Đường Hoàng Diệu (Bottom horizontal) -->
-              <path d="M 40 412 L 950 412" stroke="#f2e8d5" stroke-width="26" stroke-linecap="round" />
-              <path d="M 40 412 L 950 412" stroke="#d5c2a5" stroke-width="28" stroke-linecap="round" opacity="0.25" />
-              <path d="M 40 412 L 950 412" stroke="#c9b393" stroke-width="1.4" stroke-dasharray="6 6" />
-              <text x="275" y="416" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="12" font-weight="700" fill="#6d523b" letter-spacing="1">ĐƯỜNG HOÀNG DIỆU</text>
-              <text x="735" y="416" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="12" font-weight="700" fill="#6d523b" letter-spacing="1">ĐƯỜNG HOÀNG DIỆU</text>
-
-              <!-- Đường Nguyễn Khoái (Connecting Bến Vân Đồn down to Hoàng Diệu / Cầu Kênh Tẻ) -->
-              <path d="M 548 228 L 548 490" stroke="#f2e8d5" stroke-width="24" stroke-linecap="round" />
-              <path d="M 548 228 L 548 490" stroke="#c9b393" stroke-width="1.3" stroke-dasharray="5 5" />
-              <text x="530" y="345" text-anchor="end" font-family="Be Vietnam Pro, sans-serif" font-size="11.5" font-weight="700" fill="#6d523b">Đường Nguyễn Khoái</text>
-
-              <!-- Đường Khánh Hội (Connecting Cầu Kênh Tẻ / Quận 7 up to Bến Vân Đồn) -->
-              <path d="M 845 228 L 845 495" stroke="#f2e8d5" stroke-width="28" stroke-linecap="round" />
-              <path d="M 845 228 L 845 495" stroke="#c9b393" stroke-width="1.5" stroke-dasharray="6 6" />
-              <text x="865" y="340" text-anchor="start" font-family="Be Vietnam Pro, sans-serif" font-size="12" font-weight="700" fill="#6d523b">ĐƯỜNG KHÁNH HỘI</text>
-              <!-- Route arrows along Khánh Hội heading up to Bến Vân Đồn -->
-              <path class="imap-route-line" d="M 845 470 L 845 245" stroke="#961b1e" stroke-width="2.2" stroke-dasharray="5 5" />
-
-              <!-- District 7 / Cầu Kênh Tẻ Callout at Bottom Right -->
-              <g transform="translate(690, 476)">
-                <rect x="0" y="0" width="272" height="32" rx="16" fill="#fff" stroke="#7d1518" stroke-width="1.3" />
-                <text x="136" y="20" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="11.5" font-weight="700" fill="#7d1518">⬆ Hướng từ Quận 7 / Cầu Kênh Tẻ đi lên</text>
-              </g>
-
-              <!-- 5. MAIN AVENUE: ĐƯỜNG BẾN VÂN ĐỒN (Front of Riverside Palace) -->
-              <path d="M 24 226 L 976 226" stroke="#d5b887" stroke-width="40" stroke-linecap="round" />
-              <path d="M 24 226 L 976 226" stroke="#ffffff" stroke-width="34" stroke-linecap="round" />
-              <path d="M 36 226 L 964 226" stroke="#dfcaa5" stroke-width="1.5" stroke-dasharray="10 8" />
-
-              <!-- Route Guiding Arrows on Bến Vân Đồn converging on Riverside Palace (x=420) -->
-              <!-- From Left (Cầu Nguyễn Văn Cừ x=175 -> x=350) -->
-              <path class="imap-route-line" d="M 175 100 L 175 226 L 348 226" stroke="#7d1518" stroke-width="3.2" stroke-dasharray="7 5" fill="none" stroke-linejoin="round" />
-              <polygon points="354,226 342,220 342,232" fill="#7d1518" />
-              <text x="260" y="216" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="11" font-weight="700" fill="#7d1518">Đi thẳng 400m ➔</text>
-
-              <!-- From Right (Cầu Ông Lãnh x=675 -> x=495) -->
-              <path class="imap-route-line" d="M 675 100 L 675 226 L 502 226" stroke="#7d1518" stroke-width="3.2" stroke-dasharray="7 5" fill="none" stroke-linejoin="round" />
-              <polygon points="494,226 506,220 506,232" fill="#7d1518" />
-              <text x="595" y="216" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="11" font-weight="700" fill="#7d1518">⬅ Đi thẳng 900m</text>
-
-              <!-- Street Label on Bến Vân Đồn -->
-              <text x="102" y="231" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="12.5" font-weight="700" fill="#5a1818">ĐƯỜNG BẾN VÂN ĐỒN</text>
-              <text x="765" y="231" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="12.5" font-weight="700" fill="#5a1818">ĐƯỜNG BẾN VÂN ĐỒN</text>
-
-              <!-- 6. THE 3 BRIDGES ACROSS KÊNH TÀU HỦ -->
-              <!-- Bridge 1: CẦU NGUYỄN VĂN CỪ (Left, x=175) -->
-              <g class="imap-bridge-group" style="--br-idx: 0" transform="translate(175, 142)">
-                <rect x="-22" y="-56" width="44" height="112" rx="6" fill="#fffdf9" stroke="#7d1518" stroke-width="2.2" />
-                <line x1="-16" y1="-50" x2="-16" y2="50" stroke="#c89b57" stroke-width="1.2" stroke-dasharray="4 3" />
-                <line x1="16" y1="-50" x2="16" y2="50" stroke="#c89b57" stroke-width="1.2" stroke-dasharray="4 3" />
-                <rect x="-78" y="-18" width="156" height="36" rx="8" fill="#7d1518" filter="url(#mapCardShadow)" />
-                <text x="0" y="-2" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="11.5" font-weight="700" fill="#fff">CẦU NGUYỄN VĂN CỪ</text>
-                <text x="0" y="12" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="9.8" fill="#f7dfb9">Từ Q.5 / Q.10 / Q.8 qua ⬇</text>
-              </g>
-
-              <!-- Bridge 2: CẦU ÔNG LÃNH (Center-Right, x=675) -->
-              <g class="imap-bridge-group" style="--br-idx: 1" transform="translate(675, 142)">
-                <rect x="-22" y="-56" width="44" height="112" rx="6" fill="#fffdf9" stroke="#7d1518" stroke-width="2.2" />
-                <line x1="-16" y1="-50" x2="-16" y2="50" stroke="#c89b57" stroke-width="1.2" stroke-dasharray="4 3" />
-                <line x1="16" y1="-50" x2="16" y2="50" stroke="#c89b57" stroke-width="1.2" stroke-dasharray="4 3" />
-                <rect x="-74" y="-18" width="148" height="36" rx="8" fill="#7d1518" filter="url(#mapCardShadow)" />
-                <text x="0" y="-2" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="11.5" font-weight="700" fill="#fff">CẦU ÔNG LÃNH</text>
-                <text x="0" y="12" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="9.8" fill="#f7dfb9">Từ Q.1 (Nguyễn Thái Học) ⬇</text>
-              </g>
-
-              <!-- Bridge 3: CẦU CALMETTE / KHÁNH HỘI (Far Right, x=885) -->
-              <g class="imap-bridge-group" style="--br-idx: 2" transform="translate(885, 142)">
-                <rect x="-18" y="-54" width="36" height="108" rx="6" fill="#fffdf9" stroke="#9e7b4f" stroke-width="1.8" />
-                <rect x="-64" y="-16" width="128" height="32" rx="7" fill="#5e4632" />
-                <text x="0" y="-1" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="10.8" font-weight="700" fill="#fff">CẦU CALMETTE</text>
-                <text x="0" y="11" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="9.2" fill="#ebd6b7">Từ TT Quận 1 qua ⬇</text>
-              </g>
-
-              <!-- 7. HERO VENUE LANDMARK: RIVERSIDE PALACE (360D BẾN VÂN ĐỒN - SẢNH SEINE) -->
-              <g id="imap-riverside-landmark" class="imap-hero-landmark" transform="translate(424, 226)">
-                <!-- Pulsing Halo Ring & Sonar Wave on Bến Vân Đồn -->
-                <circle class="imap-sonar-ring" cx="0" cy="0" r="22" fill="none" stroke="#d49a38" stroke-width="2" />
-                <circle cx="0" cy="0" r="26" fill="rgba(125, 21, 24, 0.14)" />
-                <circle id="imap-riverside-pin-dot" cx="0" cy="0" r="16" fill="#7d1518" stroke="#fff" stroke-width="3" />
-                <text x="0" y="5" text-anchor="middle" font-family="Noto Serif TC, serif" font-size="13" font-weight="700" fill="#f9e0ae">囍</text>
-
-                <!-- Connector stem down to Palace Callout Box -->
-                <line x1="0" y1="18" x2="0" y2="42" stroke="#7d1518" stroke-width="2.5" />
-
-                <!-- Luxury Callout Card for Riverside Palace -->
-                <g class="imap-hero-callout" transform="translate(-148, 40)" filter="url(#mapCardShadow)">
-                  <rect x="0" y="0" width="296" height="114" rx="12" fill="url(#crimsonGrad)" stroke="#e2be7e" stroke-width="2" />
-                  <rect x="5" y="5" width="286" height="104" rx="9" fill="none" stroke="rgba(255, 232, 190, 0.35)" stroke-width="1" />
-
-                  <!-- Palace Classical Roof & Pillars Mini-Illustration -->
-                  <g transform="translate(148, 22)" fill="none" stroke="#f7dfb9" stroke-width="1.5">
-                    <polygon points="-28,6 0,-6 28,6" fill="rgba(247, 223, 185, 0.18)" />
-                    <line x1="-22" y1="6" x2="-22" y2="16" />
-                    <line x1="-10" y1="6" x2="-10" y2="16" />
-                    <line x1="10" y1="6" x2="10" y2="16" />
-                    <line x1="22" y1="6" x2="22" y2="16" />
-                    <line x1="-28" y1="16" x2="28" y2="16" />
-                  </g>
-
-                  <text x="148" y="56" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="19" font-weight="700" fill="#ffffff" letter-spacing="1.4">RIVERSIDE PALACE</text>
-                  <text x="148" y="75" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="12.5" font-weight="700" fill="#ffd996">★ SẢNH SEINE (SEINE HALL) ★</text>
-                  <text x="148" y="94" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="11.5" font-weight="500" fill="#fcefd9">360D Bến Vân Đồn, P. Vĩnh Hội, TP.HCM</text>
-                </g>
-              </g>
-
-              <!-- 8. COMPASS ROSE (TOP LEFT) -->
-              <g transform="translate(54, 482)">
-                <circle cx="0" cy="0" r="24" fill="#fffdf8" stroke="#c89b57" stroke-width="1.4" />
-                <polygon points="0,-17 5,0 0,-4 -5,0" fill="#7d1518" />
-                <polygon points="0,17 5,0 0,4 -5,0" fill="#c89b57" />
-                <text x="0" y="-20" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="10" font-weight="700" fill="#7d1518">BẮC (N)</text>
-              </g>
-
-              <!-- 9. LEGEND PILL (BOTTOM LEFT) -->
-              <g transform="translate(100, 466)">
-                <rect x="0" y="0" width="380" height="36" rx="8" fill="#fffdf8" stroke="#dec79e" stroke-width="1.2" />
-                <text x="14" y="22" font-family="Be Vietnam Pro, sans-serif" font-size="11.5" font-weight="600" fill="#5a1818">
-                  💡 Mẹo: Từ Q.1 đi Cầu Ông Lãnh • Từ Q.5 đi Cầu Nguyễn Văn Cừ
-                </text>
-              </g>
-            </svg>
-          </div>
-
-          <!-- 3 DETAILED STEP-BY-STEP DIRECTIONS CARDS + PARKING & HALL GUIDE -->
           <div class="route-cards-grid">
             <div class="route-guide-card" style="--rg-idx: 0">
               <div class="rg-head">
@@ -738,18 +551,6 @@
 
     </div>
 
-    <!-- FULLSCREEN ILLUSTRATED MAP LIGHTBOX MODAL -->
-    <div id="imap-lightbox" class="imap-lightbox" hidden role="dialog" aria-modal="true" aria-label="Phóng to sơ đồ đường đi Riverside Palace">
-      <div class="imap-lightbox-backdrop" id="imap-lightbox-close-bg"></div>
-      <div class="imap-lightbox-card">
-        <div class="imap-lightbox-head">
-          <strong>🗺️ Sơ Đồ Đường Đi — Riverside Palace (Sảnh Seine • 360D Bến Vân Đồn)</strong>
-          <button type="button" id="btn-close-imap-lightbox" class="imap-lightbox-close" aria-label="Đóng">✕ Đóng</button>
-        </div>
-        <div class="imap-lightbox-body" id="imap-lightbox-body"></div>
-      </div>
-    </div>
-
     <!-- FOOTER COLOPHON -->
     <footer class="wedding-footer">
       <div class="footer-monogram">囍 • T &amp; D • 06.01.2027</div>
@@ -760,9 +561,9 @@
   </main>
 
   <!-- Artwork Bundle & Interactive Scripts -->
-  <script src="js/config.js?v=52"></script>
-  <script src="js/artwork.js?v=52"></script>
-  <script src="js/audio.js?v=52"></script>
-  <script src="js/app.js?v=52"></script>
+  <script src="js/config.js?v=53"></script>
+  <script src="js/artwork.js?v=53"></script>
+  <script src="js/audio.js?v=53"></script>
+  <script src="js/app.js?v=53"></script>
 </body>
 </html>
