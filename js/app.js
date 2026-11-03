@@ -480,26 +480,31 @@
     const pill = document.createElement("div");
     pill.className = "floating-whisper";
 
-    const orn = document.createElement("span");
-    orn.className = "fw-ornament";
-    orn.setAttribute("aria-hidden", "true");
-    orn.textContent = phraseObj.ornament || "✦";
-    pill.appendChild(orn);
-
     if (phraseObj.speaker) {
+      const headRow = document.createElement("div");
+      headRow.className = "fw-head-row";
+
+      const ornL = document.createElement("span");
+      ornL.className = "fw-ornament";
+      ornL.setAttribute("aria-hidden", "true");
+      ornL.textContent = phraseObj.ornament || "✦";
+      headRow.appendChild(ornL);
+
       const spk = document.createElement("span");
       spk.className = "fw-speaker";
       spk.textContent = phraseObj.speaker;
-      pill.appendChild(spk);
+      headRow.appendChild(spk);
 
-      const dot = document.createElement("span");
-      dot.className = "fw-dot";
-      dot.setAttribute("aria-hidden", "true");
-      dot.textContent = "·";
-      pill.appendChild(dot);
+      const ornR = document.createElement("span");
+      ornR.className = "fw-ornament";
+      ornR.setAttribute("aria-hidden", "true");
+      ornR.textContent = phraseObj.ornament || "✦";
+      headRow.appendChild(ornR);
+
+      pill.appendChild(headRow);
     }
 
-    const words = document.createElement("span");
+    const words = document.createElement("div");
     words.className = "fw-words";
     words.textContent = phraseObj.words;
     pill.appendChild(words);

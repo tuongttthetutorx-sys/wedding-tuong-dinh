@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,500;1,600&family=Dancing+Script:wght@600;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="css/styles.css?v=50" />
+  <link rel="stylesheet" href="css/styles.css?v=51" />
 </head>
 <body class="envelope-locked">
   <!-- Ambient Floating Dust & Petals -->
@@ -62,10 +62,17 @@
     </span>
   </button>
 
-  <!-- Gentle Scroll-Down Invitation Pill (appears after inner card unfolds onto table) -->
+  <!-- Frameless Editorial Scroll-Down Cue (appears after inner card unfolds onto table) -->
   <button type="button" id="scroll-invite-cue" class="scroll-invite-cue" aria-label="Vuốt xuống xem tiếp thiệp">
-    <span class="scroll-cue-text" data-i18n="scrollCue">Vuốt xuống xem tiếp thiệp</span>
-    <span class="scroll-cue-chevron" aria-hidden="true">⌄</span>
+    <span class="scroll-cue-row">
+      <span class="scroll-cue-wing" aria-hidden="true">✦</span>
+      <span class="scroll-cue-text" data-i18n="scrollCue">Vuốt xuống xem tiếp thiệp</span>
+      <span class="scroll-cue-wing" aria-hidden="true">✦</span>
+    </span>
+    <svg class="scroll-cue-chevrons" width="24" height="15" viewBox="0 0 24 15" fill="none" aria-hidden="true">
+      <path class="sc-chev sc-chev-1" d="M5 2.5L12 8.5L19 2.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      <path class="sc-chev sc-chev-2" d="M5 7.5L12 13.5L19 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
   </button>
 
   <!-- Puppy / Couple Interactive Toast -->
@@ -753,9 +760,9 @@
   </main>
 
   <!-- Artwork Bundle & Interactive Scripts -->
-  <script src="js/config.js?v=50"></script>
-  <script src="js/artwork.js?v=50"></script>
-  <script src="js/audio.js?v=50"></script>
-  <script src="js/app.js?v=50"></script>
+  <script src="js/config.js?v=51"></script>
+  <script src="js/artwork.js?v=51"></script>
+  <script src="js/audio.js?v=51"></script>
+  <script src="js/app.js?v=51"></script>
 </body>
 </html>
