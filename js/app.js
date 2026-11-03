@@ -779,13 +779,18 @@
         : `Trân trọng cảm ơn ${displayGuest}`;
     }
     if (body) {
+      const rawVi =
+        rCfg.thankYouVI ||
+        cfg.thankYouMessageVI ||
+        "Sự hiện diện, lời chúc phúc và tình cảm nồng ấm của Quý Khách trong ngày chung đôi 06.01.2027 là niềm vinh hạnh và món quà vô giá đối với gia đình chúng tôi. Thuận Tường & Tiểu Dinh xin gửi lời cảm ơn chân thành nhất, kính chúc Quý Khách cùng Gia đình luôn dồi dào sức khỏe, bình an và hạnh phúc!";
+      const rawZh =
+        rCfg.thankYouZH ||
+        cfg.thankYouMessageZH ||
+        "誠摯感謝您於 2027 年 1 月 6 日蒞臨參與我們的婚禮，您的祝福與陪伴是我們最珍貴的禮物。順祥 & 小瑩 謹致上最深切的謝意，敬祝 闔家平安、身體健康、萬事如意！";
+
       body.textContent = isZh
-        ? rCfg.thankYouZH ||
-          cfg.thankYouMessageZH ||
-          "誠摯感謝您蒞臨參與我們的婚禮，您的祝福與陪伴是我們最珍貴的禮物。順祥 & 小瑩 謹致上最深切的謝意！"
-        : rCfg.thankYouVI ||
-          cfg.thankYouMessageVI ||
-          "Sự hiện diện, lời chúc phúc và tình cảm nồng ấm của Quý Khách trong ngày chung đôi 06.01.2027 là món quà vô giá đối với gia đình chúng tôi.";
+        ? rawZh.replace(/\{guest\}|\{ten\}|貴賓/gi, displayGuest)
+        : rawVi.replace(/Quý\s+Khách|\{guest\}|\{ten\}/gi, displayGuest);
     }
 
     const driveUrl = (params.get("drive") || rCfg.driveUrl || cfg.googleDrivePhotoUrl || "").trim();
@@ -848,7 +853,11 @@
     document.querySelectorAll("[data-i18n]").forEach((el) => {
       const key = el.dataset.i18n;
       if (dict[key] !== undefined) {
-        el.textContent = dict[key];
+        let text = dict[key];
+        if (guestName && currentLang === "vi") {
+          text = text.replace(/Quý\s+Khách/gi, guestName);
+        }
+        el.textContent = text;
       }
     });
 
