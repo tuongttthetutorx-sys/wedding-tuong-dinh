@@ -2036,48 +2036,53 @@
             ctx.lineTo(W, 210);
             ctx.stroke();
 
-            // If this strip has a personalized guest QR, print a tiny discreet guest label on the back-folded flap
+            // If this strip has a personalized guest QR, print a clear guest label on the back-folded flap
             // so the bride/groom knows whose QR this is when assembling envelopes!
             if (guestText) {
               ctx.textAlign = "center";
-              ctx.fillStyle = "rgba(110, 20, 20, 0.42)";
-              ctx.font = '500 14px "Be Vietnam Pro", "Noto Serif TC", sans-serif';
-              ctx.fillText(`‹ ${guestText} ›`, W / 2, 95);
+              ctx.fillStyle = "rgba(110, 20, 20, 0.72)";
+              ctx.font = '600 21px "Be Vietnam Pro", "Noto Serif TC", sans-serif';
+              ctx.fillText(`‹ ${guestText} ›`, W / 2, 108);
             }
           }
 
-          // Upper Body (y = 235..755): Vertical Spaced-Out Editorial Typography
-          // Always prints TƯỜNG & DINH + Date 06.01.2027 (and optional guest name if flap_and_front)
+          // Upper Body (y = 225..760): Bold, Clear Vertical Editorial Typography
+          // Always prints TƯỜNG & DINH + Date 06.01.2027 clearly visible
           ctx.save();
-          ctx.translate(W / 2, 505);
+          ctx.translate(W / 2, 492);
           ctx.rotate(-Math.PI / 2);
           ctx.textAlign = "center";
 
-          ctx.fillStyle = "#6e1414";
+          const hasFrontGuest = Boolean(guestText && namePosMode === "flap_and_front");
+          const mainLineOffsetY = hasFrontGuest ? -34 : -16;
+          const dateLineOffsetY = hasFrontGuest ? 14 : 30;
+
+          ctx.fillStyle = "#681115";
           if (capMode === "zh") {
-            ctx.font = '600 29px "Noto Serif TC", serif';
-            ctx.fillText("趙 順 祥   &   盧 小 瑩", 0, -12);
+            ctx.font = '700 44px "Noto Serif TC", serif';
+            ctx.fillText("趙 順 祥  &  盧 小 瑩", 0, mainLineOffsetY);
           } else {
-            ctx.font = '600 31px "Cormorant Garamond", serif';
-            ctx.fillText("T Ư Ờ N G   &   D I N H", 0, -12);
+            ctx.font = '700 46px "Cormorant Garamond", "Noto Serif TC", serif';
+            ctx.fillText("T Ư Ờ N G  &  D I N H", 0, mainLineOffsetY);
           }
 
-          ctx.fillStyle = "#9a6316";
-          ctx.font = '500 17px "Cormorant Garamond", "Be Vietnam Pro", serif';
-          ctx.fillText("0 6  .  0 1  .  2 0 2 7", 0, 22);
+          // Use Noto Serif TC / Be Vietnam Pro for crisp full-height lining numbers so 06.01.2027 is super clear!
+          ctx.fillStyle = "#7a3b0c";
+          ctx.font = '700 26px "Noto Serif TC", "Be Vietnam Pro", serif';
+          ctx.fillText("06  ·  01  ·  2027", 0, dateLineOffsetY);
 
-          if (guestText && namePosMode === "flap_and_front") {
-            ctx.fillStyle = "#7a2024";
-            ctx.font = '500 15.5px "Cormorant Garamond", "Be Vietnam Pro", "Noto Serif TC", serif';
-            ctx.fillText(`✦  ${guestText}  ✦`, 0, 52);
+          if (hasFrontGuest) {
+            ctx.fillStyle = "#6e1414";
+            ctx.font = '600 23px "Be Vietnam Pro", "Noto Serif TC", sans-serif';
+            ctx.fillText(`✦  ${guestText}  ✦`, 0, 56);
           }
           ctx.restore();
 
-          // Lower Body (y = 775..1145): Frameless Minimalist QR Code
-          const qrBoxSize = 370;
+          // Lower Body (y = 768..1138): Frameless Minimalist QR Code
+          const qrBoxSize = 376;
           const qrX = (W - qrBoxSize) / 2;
-          const qrY = 775;
-          const pad = 12;
+          const qrY = 766;
+          const pad = 10;
           const innerQrSize = qrBoxSize - pad * 2;
           const cellSize = innerQrSize / count;
           const startX = qrX + pad;
@@ -2096,7 +2101,7 @@
                 const cx = startX + (c + 0.5) * cellSize;
                 const cy = startY + (r + 0.5) * cellSize;
                 ctx.beginPath();
-                ctx.arc(cx, cy, cellSize * 0.43, 0, Math.PI * 2);
+                ctx.arc(cx, cy, cellSize * 0.44, 0, Math.PI * 2);
                 ctx.fill();
               }
             }
@@ -2128,32 +2133,32 @@
           ctx.fillText("囍", sealCx, sealCy + 1.5);
           ctx.textBaseline = "alphabetic";
 
-          // Minimalist Concise Footer Caption below QR ("Thiệp Online & Bản Đồ")
+          // Crisp, Easy-to-Read Concise Footer Caption below QR ("THIỆP ONLINE & BẢN ĐỒ")
           ctx.textAlign = "center";
-          ctx.fillStyle = "#6e1414";
+          ctx.fillStyle = "#681115";
           if (capMode === "zh") {
-            ctx.font = '600 17.5px "Noto Serif TC", serif';
-            ctx.fillText("電子喜帖 ＆ 婚宴地圖", W / 2, 1184);
-            ctx.fillStyle = "#8a6262";
-            ctx.font = '400 14.5px "Noto Serif TC", serif';
-            ctx.fillText("掃碼開啟導航 · 06.01.2027", W / 2, 1214);
+            ctx.font = '700 24px "Noto Serif TC", serif';
+            ctx.fillText("電子喜帖 ＆ 婚宴地圖", W / 2, 1188);
+            ctx.fillStyle = "#7a3b0c";
+            ctx.font = '600 19.5px "Noto Serif TC", serif';
+            ctx.fillText("掃碼開啟導航 · 06.01.2027", W / 2, 1226);
           } else if (capMode === "vi") {
-            ctx.font = '600 17px "Cormorant Garamond", "Be Vietnam Pro", serif';
-            ctx.fillText("THIỆP ONLINE & BẢN ĐỒ", W / 2, 1184);
-            ctx.fillStyle = "#8a6262";
-            ctx.font = '400 14.5px "Be Vietnam Pro", sans-serif';
-            ctx.fillText("Quét mã xem thiệp & chỉ đường", W / 2, 1214);
+            ctx.font = '700 23.5px "Be Vietnam Pro", sans-serif';
+            ctx.fillText("THIỆP ONLINE & BẢN ĐỒ", W / 2, 1188);
+            ctx.fillStyle = "#7a3b0c";
+            ctx.font = '600 19px "Be Vietnam Pro", sans-serif';
+            ctx.fillText("Quét mã xem thiệp & chỉ đường", W / 2, 1226);
           } else {
-            ctx.font = '600 16.5px "Cormorant Garamond", "Be Vietnam Pro", serif';
-            ctx.fillText("THIỆP ONLINE & BẢN ĐỒ", W / 2, 1182);
-            ctx.fillStyle = "#8a6262";
-            ctx.font = '500 14.5px "Noto Serif TC", serif';
-            ctx.fillText("掃碼看電子喜帖與導航", W / 2, 1212);
+            ctx.font = '700 23.5px "Be Vietnam Pro", sans-serif';
+            ctx.fillText("THIỆP ONLINE & BẢN ĐỒ", W / 2, 1186);
+            ctx.fillStyle = "#7a3b0c";
+            ctx.font = '600 20px "Noto Serif TC", serif';
+            ctx.fillText("掃碼看電子喜帖與導航", W / 2, 1224);
           }
 
-          ctx.fillStyle = "#9a7b7b";
-          ctx.font = '400 14px "Cormorant Garamond", serif';
-          ctx.fillText("thuantuongtieudinh.io.vn", W / 2, 1244);
+          ctx.fillStyle = "#6e4b4b";
+          ctx.font = '600 18px "Be Vietnam Pro", sans-serif';
+          ctx.fillText("thuantuongtieudinh.io.vn", W / 2, 1264);
           return;
         }
 
