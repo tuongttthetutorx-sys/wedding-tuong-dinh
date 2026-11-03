@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,500;1,600&family=Dancing+Script:wght@600;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="css/styles.css?v=48" />
+  <link rel="stylesheet" href="css/styles.css?v=49" />
 </head>
 <body class="envelope-locked">
   <!-- Ambient Floating Dust & Petals -->
@@ -377,19 +377,19 @@
             </div>
 
             <div class="countdown-boxes" role="timer" aria-live="off">
-              <div class="cd-unit">
+              <div class="cd-unit" style="--cd-idx: 0">
                 <span id="cd-days" class="cd-num">00</span>
                 <span class="cd-label" data-i18n="cdDays">Ngày</span>
               </div>
-              <div class="cd-unit">
+              <div class="cd-unit" style="--cd-idx: 1">
                 <span id="cd-hours" class="cd-num">00</span>
                 <span class="cd-label" data-i18n="cdHours">Giờ</span>
               </div>
-              <div class="cd-unit">
+              <div class="cd-unit" style="--cd-idx: 2">
                 <span id="cd-mins" class="cd-num">00</span>
                 <span class="cd-label" data-i18n="cdMins">Phút</span>
               </div>
-              <div class="cd-unit">
+              <div class="cd-unit" style="--cd-idx: 3">
                 <span id="cd-secs" class="cd-num">00</span>
                 <span class="cd-label" data-i18n="cdSecs">Giây</span>
               </div>
@@ -448,7 +448,7 @@
             </div>
 
             <div class="timeline-list is-same-day-rail">
-              <div class="timeline-item">
+              <div class="timeline-item" style="--tl-idx: 0">
                 <span class="timeline-node" aria-hidden="true"></span>
                 <span class="timeline-period" data-i18n="tl1Period">Buổi sáng • 06:00</span>
                 <h3 data-i18n="tl1Title">Lễ Thành Hôn Tại Tư Gia</h3>
@@ -457,7 +457,7 @@
                 </p>
               </div>
 
-              <div class="timeline-item">
+              <div class="timeline-item" style="--tl-idx: 1">
                 <span class="timeline-node is-evening" aria-hidden="true"></span>
                 <span class="timeline-period" data-i18n="tl2Period">Buổi tối cùng ngày • Đón khách 18:00 · Khai tiệc 19:00</span>
                 <h3 data-i18n="tl2Title">Tiệc Cưới — Riverside Palace (Sảnh Seine)</h3>
@@ -576,7 +576,7 @@
               <path d="M 845 228 L 845 495" stroke="#c9b393" stroke-width="1.5" stroke-dasharray="6 6" />
               <text x="865" y="340" text-anchor="start" font-family="Be Vietnam Pro, sans-serif" font-size="12" font-weight="700" fill="#6d523b">ĐƯỜNG KHÁNH HỘI</text>
               <!-- Route arrows along Khánh Hội heading up to Bến Vân Đồn -->
-              <path d="M 845 470 L 845 245" stroke="#961b1e" stroke-width="2.2" stroke-dasharray="5 5" />
+              <path class="imap-route-line" d="M 845 470 L 845 245" stroke="#961b1e" stroke-width="2.2" stroke-dasharray="5 5" />
 
               <!-- District 7 / Cầu Kênh Tẻ Callout at Bottom Right -->
               <g transform="translate(690, 476)">
@@ -591,12 +591,12 @@
 
               <!-- Route Guiding Arrows on Bến Vân Đồn converging on Riverside Palace (x=420) -->
               <!-- From Left (Cầu Nguyễn Văn Cừ x=175 -> x=350) -->
-              <path d="M 175 100 L 175 226 L 348 226" stroke="#7d1518" stroke-width="3.2" stroke-dasharray="7 5" fill="none" stroke-linejoin="round" />
+              <path class="imap-route-line" d="M 175 100 L 175 226 L 348 226" stroke="#7d1518" stroke-width="3.2" stroke-dasharray="7 5" fill="none" stroke-linejoin="round" />
               <polygon points="354,226 342,220 342,232" fill="#7d1518" />
               <text x="260" y="216" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="11" font-weight="700" fill="#7d1518">Đi thẳng 400m ➔</text>
 
               <!-- From Right (Cầu Ông Lãnh x=675 -> x=495) -->
-              <path d="M 675 100 L 675 226 L 502 226" stroke="#7d1518" stroke-width="3.2" stroke-dasharray="7 5" fill="none" stroke-linejoin="round" />
+              <path class="imap-route-line" d="M 675 100 L 675 226 L 502 226" stroke="#7d1518" stroke-width="3.2" stroke-dasharray="7 5" fill="none" stroke-linejoin="round" />
               <polygon points="494,226 506,220 506,232" fill="#7d1518" />
               <text x="595" y="216" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="11" font-weight="700" fill="#7d1518">⬅ Đi thẳng 900m</text>
 
@@ -606,7 +606,7 @@
 
               <!-- 6. THE 3 BRIDGES ACROSS KÊNH TÀU HỦ -->
               <!-- Bridge 1: CẦU NGUYỄN VĂN CỪ (Left, x=175) -->
-              <g transform="translate(175, 142)">
+              <g class="imap-bridge-group" style="--br-idx: 0" transform="translate(175, 142)">
                 <rect x="-22" y="-56" width="44" height="112" rx="6" fill="#fffdf9" stroke="#7d1518" stroke-width="2.2" />
                 <line x1="-16" y1="-50" x2="-16" y2="50" stroke="#c89b57" stroke-width="1.2" stroke-dasharray="4 3" />
                 <line x1="16" y1="-50" x2="16" y2="50" stroke="#c89b57" stroke-width="1.2" stroke-dasharray="4 3" />
@@ -616,7 +616,7 @@
               </g>
 
               <!-- Bridge 2: CẦU ÔNG LÃNH (Center-Right, x=675) -->
-              <g transform="translate(675, 142)">
+              <g class="imap-bridge-group" style="--br-idx: 1" transform="translate(675, 142)">
                 <rect x="-22" y="-56" width="44" height="112" rx="6" fill="#fffdf9" stroke="#7d1518" stroke-width="2.2" />
                 <line x1="-16" y1="-50" x2="-16" y2="50" stroke="#c89b57" stroke-width="1.2" stroke-dasharray="4 3" />
                 <line x1="16" y1="-50" x2="16" y2="50" stroke="#c89b57" stroke-width="1.2" stroke-dasharray="4 3" />
@@ -626,7 +626,7 @@
               </g>
 
               <!-- Bridge 3: CẦU CALMETTE / KHÁNH HỘI (Far Right, x=885) -->
-              <g transform="translate(885, 142)">
+              <g class="imap-bridge-group" style="--br-idx: 2" transform="translate(885, 142)">
                 <rect x="-18" y="-54" width="36" height="108" rx="6" fill="#fffdf9" stroke="#9e7b4f" stroke-width="1.8" />
                 <rect x="-64" y="-16" width="128" height="32" rx="7" fill="#5e4632" />
                 <text x="0" y="-1" text-anchor="middle" font-family="Be Vietnam Pro, sans-serif" font-size="10.8" font-weight="700" fill="#fff">CẦU CALMETTE</text>
@@ -634,17 +634,18 @@
               </g>
 
               <!-- 7. HERO VENUE LANDMARK: RIVERSIDE PALACE (360D BẾN VÂN ĐỒN - SẢNH SEINE) -->
-              <g transform="translate(424, 226)">
-                <!-- Pulsing Halo Ring on Bến Vân Đồn -->
+              <g id="imap-riverside-landmark" class="imap-hero-landmark" transform="translate(424, 226)">
+                <!-- Pulsing Halo Ring & Sonar Wave on Bến Vân Đồn -->
+                <circle class="imap-sonar-ring" cx="0" cy="0" r="22" fill="none" stroke="#d49a38" stroke-width="2" />
                 <circle cx="0" cy="0" r="26" fill="rgba(125, 21, 24, 0.14)" />
-                <circle cx="0" cy="0" r="16" fill="#7d1518" stroke="#fff" stroke-width="3" />
+                <circle id="imap-riverside-pin-dot" cx="0" cy="0" r="16" fill="#7d1518" stroke="#fff" stroke-width="3" />
                 <text x="0" y="5" text-anchor="middle" font-family="Noto Serif TC, serif" font-size="13" font-weight="700" fill="#f9e0ae">囍</text>
 
                 <!-- Connector stem down to Palace Callout Box -->
                 <line x1="0" y1="18" x2="0" y2="42" stroke="#7d1518" stroke-width="2.5" />
 
                 <!-- Luxury Callout Card for Riverside Palace -->
-                <g transform="translate(-148, 40)" filter="url(#mapCardShadow)">
+                <g class="imap-hero-callout" transform="translate(-148, 40)" filter="url(#mapCardShadow)">
                   <rect x="0" y="0" width="296" height="114" rx="12" fill="url(#crimsonGrad)" stroke="#e2be7e" stroke-width="2" />
                   <rect x="5" y="5" width="286" height="104" rx="9" fill="none" stroke="rgba(255, 232, 190, 0.35)" stroke-width="1" />
 
@@ -684,7 +685,7 @@
 
           <!-- 3 DETAILED STEP-BY-STEP DIRECTIONS CARDS + PARKING & HALL GUIDE -->
           <div class="route-cards-grid">
-            <div class="route-guide-card">
+            <div class="route-guide-card" style="--rg-idx: 0">
               <div class="rg-head">
                 <span class="rg-num">1</span>
                 <h4 data-i18n="rg1Title">Hướng từ Quận 1, Quận 3, Phú Nhuận</h4>
@@ -694,7 +695,7 @@
               </p>
             </div>
 
-            <div class="route-guide-card">
+            <div class="route-guide-card" style="--rg-idx: 1">
               <div class="rg-head">
                 <span class="rg-num">2</span>
                 <h4 data-i18n="rg2Title">Hướng từ Quận 5, Quận 10, Quận 8</h4>
@@ -704,7 +705,7 @@
               </p>
             </div>
 
-            <div class="route-guide-card">
+            <div class="route-guide-card" style="--rg-idx: 2">
               <div class="rg-head">
                 <span class="rg-num">3</span>
                 <h4 data-i18n="rg3Title">Hướng từ Quận 7, Nhà Bè, Thủ Đức</h4>
@@ -714,7 +715,7 @@
               </p>
             </div>
 
-            <div class="route-guide-card is-hall-guide">
+            <div class="route-guide-card is-hall-guide" style="--rg-idx: 3">
               <div class="rg-head">
                 <span class="rg-num">囍</span>
                 <h4 data-i18n="rg4Title">Hướng dẫn Gửi xe &amp; Vào Sảnh Seine</h4>
@@ -752,9 +753,9 @@
   </main>
 
   <!-- Artwork Bundle & Interactive Scripts -->
-  <script src="js/config.js?v=48"></script>
-  <script src="js/artwork.js?v=48"></script>
-  <script src="js/audio.js?v=48"></script>
-  <script src="js/app.js?v=48"></script>
+  <script src="js/config.js?v=49"></script>
+  <script src="js/artwork.js?v=49"></script>
+  <script src="js/audio.js?v=49"></script>
+  <script src="js/app.js?v=49"></script>
 </body>
 </html>

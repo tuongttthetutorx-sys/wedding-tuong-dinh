@@ -832,6 +832,28 @@
   }
 
   /* Render January 2027 Calendar Grid with Localized Weekday Headers (VI vs 台灣繁體中文) */
+  function triggerCalendarDay6Celebration(anchorEl, ev) {
+    if (!anchorEl) return;
+    const isZh = currentLang === "zh";
+    const dict = I18N[currentLang];
+    const displayGuest = guestName || dict.defaultGuest;
+    const phrase = isZh
+      ? {
+          ornament: "♡",
+          speaker: "Save the Date · 2027.01.06",
+          words: guestName
+            ? `期待與 ${displayGuest} 於 18:00 婚宴相見 ♥`
+            : "期待於 2027.01.06 18:00 婚宴與您相見 ♥"
+        }
+      : {
+          ornament: "♡",
+          speaker: "Save the Date · 06.01.2027",
+          words: `Hẹn gặp ${displayGuest} lúc 18:00 ngày 06.01.2027 nhé ♥`
+        };
+    spawnFloatingWhisper(anchorEl, ev || null, phrase, true, 4.4);
+    spawnGuestHearts(anchorEl, ev || null, 22);
+  }
+
   function renderJan2027Calendar() {
     const calGrid = document.getElementById("jan-2027-grid");
     if (!calGrid) return;
@@ -844,11 +866,29 @@
     for (let e = 0; e < 4; e++) {
       html += `<div class="cal-day"></div>`;
     }
+    const inkRingSvg = `<svg class="cal-ink-ring-svg" viewBox="0 0 48 48" aria-hidden="true">
+      <path class="cal-ink-ring-path" d="M 24 4.5 C 36.5 3.8, 44.5 12.2, 43.8 24.4 C 43.1 36.8, 34.4 44.2, 22.8 43.6 C 11.2 43.0, 3.8 34.8, 4.6 22.6 C 5.3 11.8, 13.8 4.8, 26.5 5.2" />
+      <path class="cal-ink-ring-gold" d="M 22 3.2 C 35.2 2.8, 45.4 11.8, 44.8 24.8 C 44.1 37.6, 34.8 45.2, 22.2 44.6 C 10.4 44.0, 2.8 34.6, 3.8 21.8" />
+    </svg>`;
     for (let day = 1; day <= 31; day++) {
-      const cls = day === 6 ? "cal-day is-wedding-day" : "cal-day";
-      html += `<div class="${cls}">${day}</div>`;
+      if (day === 6) {
+        html += `<div class="cal-day is-wedding-day" data-day="6" style="--day-idx: 6" title="06.01.2027 — Chạm để thả tim Save the Date">${inkRingSvg}<span>6</span></div>`;
+      } else {
+        html += `<div class="cal-day" data-day="${day}" style="--day-idx: ${day}">${day}</div>`;
+      }
     }
     calGrid.innerHTML = html;
+
+    const weddingDayCell = calGrid.querySelector(".cal-day.is-wedding-day");
+    if (weddingDayCell) {
+      weddingDayCell.addEventListener("click", (e) => {
+        e.stopPropagation();
+        weddingDayCell.classList.remove("is-replaying-ring");
+        void weddingDayCell.offsetWidth;
+        weddingDayCell.classList.add("is-replaying-ring");
+        triggerCalendarDay6Celebration(weddingDayCell, e);
+      });
+    }
   }
 
   /* Update Google Calendar Event Link Dynamically for VI vs 台灣繁體中文 */
@@ -1632,6 +1672,24 @@
         document.querySelectorAll(".stationery-card").forEach((c) => {
           delete c.dataset.revealed;
         });
+        const cdSec = document.getElementById("section-countdown");
+        if (cdSec) {
+          delete cdSec.dataset.entrancePlayed;
+          cdSec.classList.remove("is-playing-entrance");
+          cdSec.classList.add("is-awaiting-entrance");
+        }
+        const locSec = document.getElementById("section-location");
+        if (locSec) {
+          delete locSec.dataset.entrancePlayed;
+          locSec.classList.remove("is-playing-entrance");
+          locSec.classList.add("is-awaiting-entrance");
+        }
+        const imapSec = document.getElementById("illustrated-map-section");
+        if (imapSec) {
+          delete imapSec.dataset.entrancePlayed;
+          imapSec.classList.remove("is-playing-map-entrance");
+          imapSec.classList.add("is-awaiting-map-entrance");
+        }
         if (scrollCueBtn) scrollCueBtn.classList.remove("is-visible");
         if (flapStage) flapStage.classList.remove("is-behind");
         if (topFlap) topFlap.classList.remove("is-behind");
@@ -1944,6 +2002,8 @@
     }
   }
 
+  let checkAct3UtilitiesEntrance = null;
+
   function triggerScrollRevealCheck() {
     if (!envelopeOpened || document.body.classList.contains("is-table-preparing")) return;
     const vh = window.innerHeight || 900;
@@ -1953,6 +2013,9 @@
         revealCard(card);
       }
     });
+    if (checkAct3UtilitiesEntrance) {
+      checkAct3UtilitiesEntrance();
+    }
   }
 
   /* 7. Countdown Timer & Keepsake January 2027 Calendar + .ics / Google Calendar */
@@ -1962,15 +2025,22 @@
     const elH = document.getElementById("cd-hours");
     const elM = document.getElementById("cd-mins");
     const elS = document.getElementById("cd-secs");
+    let isRollingUpCountdown = false;
 
-    function tick() {
+    function getRemainingParts() {
       const now = Date.now();
       const diff = Math.max(0, targetTime - now);
-      const d = Math.floor(diff / 86400000);
-      const h = Math.floor((diff % 86400000) / 3600000);
-      const m = Math.floor((diff % 3600000) / 60000);
-      const s = Math.floor((diff % 60000) / 1000);
+      return {
+        d: Math.floor(diff / 86400000),
+        h: Math.floor((diff % 86400000) / 3600000),
+        m: Math.floor((diff % 3600000) / 60000),
+        s: Math.floor((diff % 60000) / 1000)
+      };
+    }
 
+    function tick() {
+      if (isRollingUpCountdown) return;
+      const { d, h, m, s } = getRemainingParts();
       if (elD) elD.textContent = String(d).padStart(2, "0");
       if (elH) elH.textContent = String(h).padStart(2, "0");
       if (elM) elM.textContent = String(m).padStart(2, "0");
@@ -1979,8 +2049,171 @@
     tick();
     setInterval(tick, 1000);
 
+    function runCountdownSlotRollUp() {
+      const prefersReducedMotion =
+        window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (prefersReducedMotion) {
+        tick();
+        return;
+      }
+      isRollingUpCountdown = true;
+      const target = getRemainingParts();
+      const duration = 1220;
+      const startTs = performance.now();
+
+      function stepRoll(nowTs) {
+        const t = Math.min(1, (nowTs - startTs) / duration);
+        // Cubic ease-out for luxury horology slot-reel deceleration
+        const eased = 1 - Math.pow(1 - t, 3);
+        const curD = Math.round(target.d * eased);
+        const curH = Math.round(target.h * eased);
+        const curM = Math.round(target.m * eased);
+        const curS = Math.round(target.s * eased);
+
+        if (elD) elD.textContent = String(curD).padStart(2, "0");
+        if (elH) elH.textContent = String(curH).padStart(2, "0");
+        if (elM) elM.textContent = String(curM).padStart(2, "0");
+        if (elS) elS.textContent = String(curS).padStart(2, "0");
+
+        if (t < 1) {
+          requestAnimationFrame(stepRoll);
+        } else {
+          isRollingUpCountdown = false;
+          tick();
+        }
+      }
+      requestAnimationFrame(stepRoll);
+    }
+
     renderJan2027Calendar();
     updateGoogleCalendarLink();
+
+    // One-Time Luxury Entrance Choreography for #section-countdown, #section-location & #illustrated-map-section
+    const cdSec = document.getElementById("section-countdown");
+    const locSec = document.getElementById("section-location");
+    const imapSec = document.getElementById("illustrated-map-section");
+    const imapLandmark = document.getElementById("imap-riverside-landmark");
+
+    const reducedMotion =
+      window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (!reducedMotion) {
+      if (cdSec) cdSec.classList.add("is-awaiting-entrance");
+      if (locSec) locSec.classList.add("is-awaiting-entrance");
+      if (imapSec) imapSec.classList.add("is-awaiting-map-entrance");
+    }
+
+    function playCountdownSectionEntrance() {
+      if (!cdSec || cdSec.dataset.entrancePlayed === "1") return;
+      cdSec.dataset.entrancePlayed = "1";
+      cdSec.classList.remove("is-awaiting-entrance");
+      cdSec.classList.add("is-playing-entrance");
+      runCountdownSlotRollUp();
+
+      setTimeout(() => {
+        const day6El = cdSec.querySelector(".cal-day.is-wedding-day");
+        if (day6El) {
+          triggerCalendarDay6Celebration(day6El, null);
+        }
+      }, 680);
+    }
+
+    function playLocationSectionEntrance() {
+      if (!locSec || locSec.dataset.entrancePlayed === "1") return;
+      locSec.dataset.entrancePlayed = "1";
+      locSec.classList.remove("is-awaiting-entrance");
+      locSec.classList.add("is-playing-entrance");
+
+      setTimeout(() => {
+        const eveningNode = locSec.querySelector(".timeline-node.is-evening");
+        if (eveningNode) {
+          spawnGuestHearts(eveningNode, null, 14);
+        }
+      }, 640);
+    }
+
+    function triggerRiversideLandmarkCelebration(ev) {
+      const pinAnchor =
+        document.getElementById("imap-riverside-pin-dot") || imapLandmark;
+      if (!pinAnchor) return;
+      const isZh = currentLang === "zh";
+      const phrase = isZh
+        ? {
+            ornament: "囍",
+            speaker: "Riverside Palace · Seine 宴會廳",
+            words: "360D Bến Vân Đồn · 18:00 迎賓 · 19:00 開席 ♥"
+          }
+        : {
+            ornament: "囍",
+            speaker: "Riverside Palace · Sảnh Seine",
+            words: "360D Bến Vân Đồn · Đón khách 18:00 · Khai tiệc 19:00 ♥"
+          };
+      spawnFloatingWhisper(pinAnchor, ev || null, phrase, true, 4.4);
+      spawnGuestHearts(pinAnchor, ev || null, 20);
+    }
+
+    function playIllustratedMapEntrance() {
+      if (!imapSec || imapSec.dataset.entrancePlayed === "1") return;
+      imapSec.dataset.entrancePlayed = "1";
+      imapSec.classList.remove("is-awaiting-map-entrance");
+      imapSec.classList.add("is-playing-map-entrance");
+
+      setTimeout(() => {
+        triggerRiversideLandmarkCelebration(null);
+      }, 660);
+    }
+
+    if (imapLandmark) {
+      imapLandmark.addEventListener("click", (e) => {
+        e.stopPropagation();
+        triggerRiversideLandmarkCelebration(e);
+      });
+    }
+
+    checkAct3UtilitiesEntrance = function () {
+      if (!envelopeOpened || document.body.classList.contains("is-table-preparing")) return;
+      const vh = window.innerHeight || 860;
+      if (cdSec && cdSec.dataset.entrancePlayed !== "1") {
+        const r = cdSec.getBoundingClientRect();
+        if (r.top < vh * 0.8 && r.bottom > 60) {
+          playCountdownSectionEntrance();
+        }
+      }
+      if (locSec && locSec.dataset.entrancePlayed !== "1") {
+        const r = locSec.getBoundingClientRect();
+        if (r.top < vh * 0.82 && r.bottom > 60) {
+          playLocationSectionEntrance();
+        }
+      }
+      if (imapSec && imapSec.dataset.entrancePlayed !== "1") {
+        const r = imapSec.getBoundingClientRect();
+        if (r.top < vh * 0.84 && r.bottom > 50) {
+          playIllustratedMapEntrance();
+        }
+      }
+    };
+
+    if ("IntersectionObserver" in window && !reducedMotion) {
+      const act3Observer = new IntersectionObserver(
+        (entries) => {
+          if (!envelopeOpened || document.body.classList.contains("is-table-preparing")) return;
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            if (entry.target === cdSec) {
+              playCountdownSectionEntrance();
+            } else if (entry.target === locSec) {
+              playLocationSectionEntrance();
+            } else if (entry.target === imapSec) {
+              playIllustratedMapEntrance();
+            }
+          });
+        },
+        { threshold: 0.16 }
+      );
+      if (cdSec) act3Observer.observe(cdSec);
+      if (locSec) act3Observer.observe(locSec);
+      if (imapSec) act3Observer.observe(imapSec);
+    }
 
     // Download .ics Calendar File (Localized for VI & 台灣繁體中文)
     const icsBtn = document.getElementById("btn-ics-cal");
