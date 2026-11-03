@@ -1553,7 +1553,7 @@ body.is-table-cascading .c2-border-secret {
     transform 0.56s cubic-bezier(0.22, 1, 0.36, 1) 0.19s;
 }
 
-/* Frameless Editorial Floating Bottom Scroll-Down Cue */
+/* Frameless Delicate Floating Bottom Scroll-Down Cue */
 .scroll-invite-cue {
   position: fixed;
   left: 50%;
@@ -1563,17 +1563,12 @@ body.is-table-cascading .c2-border-secret {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
-  padding: 6px 18px 4px;
+  gap: 2px;
+  padding: 4px 12px;
   max-width: calc(100vw - 110px);
-  border: none;
-  background: radial-gradient(
-    ellipse 72% 68% at 50% 48%,
-    rgba(252, 248, 240, 0.92) 0%,
-    rgba(252, 248, 240, 0.68) 54%,
-    rgba(252, 248, 240, 0) 100%
-  );
-  box-shadow: none;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
   color: #781116;
   font-family: var(--font-serif);
   cursor: pointer;
@@ -1598,55 +1593,56 @@ body.is-table-cascading .c2-border-secret {
 .scroll-cue-row {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   white-space: nowrap;
 }
 
 .scroll-cue-row::before,
 .scroll-cue-row::after {
   content: "";
-  width: 22px;
+  width: 16px;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(132, 21, 23, 0.45), transparent);
+  background: linear-gradient(90deg, transparent, rgba(132, 21, 23, 0.38), transparent);
 }
 
 .scroll-cue-wing {
-  font-size: 11px;
-  color: #c28322;
+  font-size: 9.5px;
+  color: #b5741e;
   line-height: 1;
-  paint-order: stroke fill;
-  -webkit-text-stroke: 3px rgba(252, 248, 240, 0.95);
+  text-shadow: 0 0 6px #fbf7ef, 0 0 10px #fbf7ef;
 }
 
 .scroll-cue-text {
   font-family: var(--font-serif);
   font-style: italic;
-  font-weight: 700;
-  font-size: 18.5px;
-  letter-spacing: 0.03em;
+  font-weight: 600;
+  font-size: 15.5px;
+  letter-spacing: 0.025em;
   color: #781116;
-  paint-order: stroke fill;
-  -webkit-text-stroke: 4.2px rgba(252, 248, 240, 0.96);
+  -webkit-text-stroke: 0 transparent;
   text-shadow:
-    0 0 10px rgba(252, 248, 240, 0.98),
-    0 1px 2px rgba(255, 255, 255, 0.95);
+    0 0 6px #fbf7ef,
+    0 0 11px #fbf7ef,
+    0 0 16px rgba(251, 247, 239, 0.95);
 }
 
 body.lang-zh .scroll-cue-text {
   font-family: var(--font-zh);
   font-style: normal;
-  font-size: 15px;
-  letter-spacing: 0.08em;
+  font-size: 13.5px;
+  letter-spacing: 0.06em;
 }
 
 .scroll-cue-chevrons {
   display: block;
+  width: 18px;
+  height: 12px;
   color: #841517;
-  filter: drop-shadow(0 0 4px rgba(252, 248, 240, 0.98)) drop-shadow(0 0 8px rgba(252, 248, 240, 0.95));
+  filter: drop-shadow(0 0 4px #fbf7ef) drop-shadow(0 0 7px #fbf7ef);
 }
 
 .scroll-cue-chevrons .sc-chev-1 {
-  color: #c28322;
+  color: #b5741e;
   animation: scChevCascade 1.6s ease-in-out infinite;
 }
 
@@ -1658,11 +1654,11 @@ body.lang-zh .scroll-cue-text {
 @keyframes scChevCascade {
   0%, 100% {
     opacity: 0.35;
-    transform: translateY(-2px);
+    transform: translateY(-1.5px);
   }
   50% {
-    opacity: 1;
-    transform: translateY(2.5px);
+    opacity: 0.95;
+    transform: translateY(2px);
   }
 }
 
@@ -2231,21 +2227,20 @@ body.lang-zh .card1-guest-text,
   pointer-events: none;
   user-select: none;
   -webkit-user-select: none;
+  white-space: nowrap;
   display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  padding: 6px 16px;
-  max-width: min(92vw, 460px);
-  text-align: center;
-  border: none;
-  background: radial-gradient(
-    ellipse 74% 68% at 50% 50%,
-    rgba(253, 249, 241, 0.92) 0%,
-    rgba(253, 249, 241, 0.65) 58%,
-    rgba(253, 249, 241, 0) 100%
-  );
-  box-shadow: none;
+  align-items: baseline;
+  gap: 5px;
+  padding: 2px 4px;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  -webkit-text-stroke: 0 transparent;
+  text-shadow:
+    0 0 5px #fbf7ef,
+    0 0 10px #fbf7ef,
+    0 0 16px #fbf7ef,
+    0 1px 2px rgba(251, 247, 239, 0.98);
   will-change: transform, opacity;
   animation: whisperFloatUp var(--dur, 4.2s) cubic-bezier(0.2, 0.68, 0.32, 1) forwards;
 }
@@ -2256,65 +2251,43 @@ body.lang-zh .card1-guest-text,
   filter: blur(1px);
 }
 
-.floating-whisper .fw-head-row {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  white-space: nowrap;
-}
-
 .floating-whisper .fw-ornament {
   font-size: 12px;
-  color: #b87314;
+  color: #9e1b22;
   line-height: 1;
-  paint-order: stroke fill;
-  -webkit-text-stroke: 3.5px rgba(253, 249, 241, 0.96);
 }
 
 .floating-whisper .fw-speaker {
   font-family: var(--font-serif);
   font-style: normal;
-  font-weight: 700;
-  font-size: 13px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #9e5808;
-  paint-order: stroke fill;
-  -webkit-text-stroke: 3.8px rgba(253, 249, 241, 0.98);
-  text-shadow: 0 0 8px rgba(253, 249, 241, 0.98);
+  font-weight: 600;
+  font-size: 14.5px;
+  letter-spacing: 0.02em;
+  color: #841518;
+}
+
+.floating-whisper .fw-dot {
+  font-family: var(--font-serif);
+  font-size: 13.5px;
+  color: #a35c0f;
 }
 
 .floating-whisper .fw-words {
   font-family: var(--font-serif);
   font-style: italic;
-  font-weight: 700;
-  font-size: clamp(18.5px, 2.5vw, 22px);
-  line-height: 1.24;
-  letter-spacing: 0.015em;
-  color: #781116;
-  paint-order: stroke fill;
-  -webkit-text-stroke: 5px rgba(253, 249, 241, 0.98);
-  text-shadow:
-    0 0 12px rgba(253, 249, 241, 0.98),
-    0 2px 6px rgba(253, 249, 241, 0.95);
-  text-wrap: balance;
+  font-weight: 600;
+  font-size: 16.5px;
+  letter-spacing: 0.01em;
+  color: #6e0f14;
 }
 
-body.lang-zh .floating-whisper .fw-speaker {
-  font-family: var(--font-zh);
-  font-style: normal;
-  font-size: 12.5px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-}
-
+body.lang-zh .floating-whisper .fw-speaker,
 body.lang-zh .floating-whisper .fw-words {
   font-family: var(--font-zh);
   font-style: normal;
-  font-size: 16.5px;
-  font-weight: 700;
-  letter-spacing: 0.055em;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
 }
 
 /* Optional Live Preview Themes for Floating Whisper (?whisper_theme=olive | velvet) */
