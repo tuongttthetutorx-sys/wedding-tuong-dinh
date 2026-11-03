@@ -174,70 +174,10 @@
       this.ctx = new AudioCtx();
     }
 
-    /* Subtle D-Major Harp Harmonics synced to Canon in D key (D5 - F#5 - A5 - D6) */
-    playFlipChime() {
-      try {
-        this.configureAudioSession();
-        this.initContext();
-        if (this.ctx && this.ctx.state === "suspended") {
-          this.ctx.resume();
-        }
-        if (!this.ctx) return;
+    /* Envelope chime sound effects disabled per user preference (only background song plays) */
+    playFlipChime() {}
 
-        // Soft paper turn air brush + gentle D-major grace notes (A4 -> D5 -> F#5)
-        [
-          { freq: 440.0, delay: 20, gain: 0.04 },
-          { freq: 587.33, delay: 115, gain: 0.045 },
-          { freq: 739.99, delay: 220, gain: 0.038 }
-        ].forEach(({ freq, delay, gain }) => {
-          setTimeout(() => {
-            if (!this.ctx) return;
-            const t = this.ctx.currentTime;
-            const osc = this.ctx.createOscillator();
-            const g = this.ctx.createGain();
-            osc.type = "triangle";
-            osc.frequency.setValueAtTime(freq, t);
-            g.gain.setValueAtTime(0.0001, t);
-            g.gain.linearRampToValueAtTime(gain, t + 0.018);
-            g.gain.exponentialRampToValueAtTime(0.0001, t + 0.65);
-            osc.connect(g);
-            g.connect(this.ctx.destination);
-            osc.start(t);
-            osc.stop(t + 0.7);
-          }, delay);
-        });
-      } catch (_) {}
-    }
-
-    playOpenChime() {
-      try {
-        this.configureAudioSession();
-        this.initContext();
-        if (this.ctx && this.ctx.state === "suspended") {
-          this.ctx.resume();
-        }
-        if (!this.ctx) return;
-        // D Major Harp Arpeggio (D5 - F#5 - A5 - D6) in perfect harmony with Canon in D!
-        const notes = [587.33, 739.99, 880.0, 1174.66];
-        notes.forEach((f, idx) => {
-          setTimeout(() => {
-            if (!this.ctx) return;
-            const now = this.ctx.currentTime;
-            const osc = this.ctx.createOscillator();
-            const g = this.ctx.createGain();
-            osc.type = "triangle";
-            osc.frequency.setValueAtTime(f, now);
-            g.gain.setValueAtTime(0.0001, now);
-            g.gain.linearRampToValueAtTime(0.065, now + 0.018);
-            g.gain.exponentialRampToValueAtTime(0.0001, now + 0.95);
-            osc.connect(g);
-            g.connect(this.ctx.destination);
-            osc.start(now);
-            osc.stop(now + 1.0);
-          }, idx * 75);
-        });
-      } catch (_) {}
-    }
+    playOpenChime() {}
   }
 
   window.weddingMusic = new WeddingMusicBox();

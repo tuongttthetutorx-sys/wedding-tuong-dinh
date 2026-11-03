@@ -1325,8 +1325,6 @@
       if (env3d) void env3d.offsetWidth;
       stage.classList.add("is-flipping-to-back");
 
-      if (window.weddingMusic) window.weddingMusic.playFlipChime();
-
       flipTimer = setTimeout(() => {
         isFlipping = false;
         if (envelopeFlipped && !stage.classList.contains("is-opening")) {
@@ -1354,8 +1352,6 @@
       );
       if (env3d) void env3d.offsetWidth;
       stage.classList.add("is-flipping-to-front");
-
-      if (window.weddingMusic) window.weddingMusic.playFlipChime();
 
       flipTimer = setTimeout(() => {
         isFlipping = false;
@@ -1387,7 +1383,6 @@
 
       if (window.weddingMusic) {
         window.weddingMusic.startFromGesture();
-        window.weddingMusic.playOpenChime();
       }
 
       // Beat 2 (722ms): Analytical 90.0° vertical crossing of 1.65s cubic-bezier(0.48, 0.06, 0.36, 1) -> tuck flap stage behind rising card layer
