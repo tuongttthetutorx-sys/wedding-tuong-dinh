@@ -394,9 +394,11 @@
     };
   }
 
+  let hasPlayedWelcomeGreeting = false;
+  let triggerWelcomeGreetingIfReady = null;
   const activeWhispers = [];
 
-  function spawnFloatingWhisper(anchorEl, e, phraseObj, isTallFigure) {
+  function spawnFloatingWhisper(anchorEl, e, phraseObj, isTallFigure, customDurSec) {
     // Gracefully dissolve older whispers when clicked rapidly so lines never pile up on top of each other
     while (activeWhispers.length >= 1) {
       const older = activeWhispers.shift();
@@ -456,7 +458,7 @@
     const dx1 = dx1Val.toFixed(1) + "px";
     const dx2 = dx2Val.toFixed(1) + "px";
     const rise = -(66 + Math.random() * 22).toFixed(1) + "px";
-    const durSec = 3.05 + Math.random() * 0.45;
+    const durSec = customDurSec || 3.05 + Math.random() * 0.45;
     const rot1 = (dir * (0.45 + Math.random() * 0.9)).toFixed(2) + "deg";
     const rot2 = (-dir * (0.35 + Math.random() * 0.85)).toFixed(2) + "deg";
 
@@ -518,7 +520,7 @@
     '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="rgba(250,246,238,0.55)" stroke="#c28322" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M12 20.1C8 16.8 4 13.4 3.7 9.2 3.5 6.5 5.5 4.5 8 4.5c1.7 0 3.1.9 4 2.3.9-1.4 2.3-2.3 4-2.3 2.5 0 4.5 2 4.3 4.7-.3 4.2-4.3 7.6-8.3 10.9z"/></svg>'
   ];
 
-  function spawnGuestHearts(anchorEl, e) {
+  function spawnGuestHearts(anchorEl, e, customCount) {
     const rect = anchorEl ? anchorEl.getBoundingClientRect() : null;
     const baseClientX =
       e && e.clientX
@@ -535,7 +537,7 @@
 
     const basePageX = baseClientX + window.scrollX;
     const basePageY = baseClientY + window.scrollY;
-    const count = 6;
+    const count = customCount || 8;
 
     for (let i = 0; i < count; i++) {
       const heart = document.createElement("span");
@@ -543,15 +545,15 @@
       heart.setAttribute("aria-hidden", "true");
       heart.innerHTML = HAND_DRAWN_HEART_SVGS[i % HAND_DRAWN_HEART_SVGS.length];
 
-      const spreadX = (i - (count - 1) / 2) * 7.5 + (Math.random() * 10 - 5);
-      const spreadY = Math.random() * 10 - 5;
+      const spreadX = (i - (count - 1) / 2) * 8.5 + (Math.random() * 14 - 7);
+      const spreadY = Math.random() * 12 - 6;
       const dir = (i % 2 === 0 ? 1 : -1) * (Math.random() < 0.25 ? -1 : 1);
-      const dx1 = (dir * (10 + Math.random() * 18)).toFixed(1) + "px";
-      const dx2 = (-dir * (7 + Math.random() * 18) + (Math.random() * 12 - 6)).toFixed(1) + "px";
-      const rise = -(102 + Math.random() * 54).toFixed(1) + "px";
-      const dur = (2.15 + Math.random() * 0.75).toFixed(2) + "s";
-      const delay = (i * 0.065 + Math.random() * 0.04).toFixed(2) + "s";
-      const sz = (13.5 + (i % 3) * 2.8 + Math.random() * 2.2).toFixed(1) + "px";
+      const dx1 = (dir * (10 + Math.random() * 20)).toFixed(1) + "px";
+      const dx2 = (-dir * (7 + Math.random() * 20) + (Math.random() * 14 - 7)).toFixed(1) + "px";
+      const rise = -(108 + Math.random() * 62).toFixed(1) + "px";
+      const dur = (2.25 + Math.random() * 0.85).toFixed(2) + "s";
+      const delay = (i * 0.06 + Math.random() * 0.05).toFixed(2) + "s";
+      const sz = (14 + (i % 3) * 3.2 + Math.random() * 2.5).toFixed(1) + "px";
       const rot1 = (dir * (6 + Math.random() * 10)).toFixed(1) + "deg";
       const rot2 = (-dir * (5 + Math.random() * 11)).toFixed(1) + "deg";
 
@@ -567,7 +569,7 @@
       heart.style.setProperty("--rot2", rot2);
 
       document.body.appendChild(heart);
-      setTimeout(() => heart.remove(), 3500);
+      setTimeout(() => heart.remove(), 3800);
     }
   }
 
@@ -630,8 +632,60 @@
       couple.addEventListener("click", (e) => {
         e.stopPropagation();
         spawnFloatingWhisper(couple, e, pickCouple(), true);
+        spawnGuestHearts(couple, e, 9);
       });
     }
+
+    // One-time Welcome Thank-You Whisper & Heart Shower from Bride & Groom right when viewer enters
+    triggerWelcomeGreetingIfReady = function () {
+      if (hasPlayedWelcomeGreeting || !envelopeOpened) return;
+      if (document.body.classList.contains("is-table-preparing")) return;
+      if (!couple) return;
+      const r = couple.getBoundingClientRect();
+      const vh = window.innerHeight || 800;
+      if (r.width <= 0 || r.top > vh - 25 || r.bottom < 30) return;
+
+      hasPlayedWelcomeGreeting = true;
+      const isZh = currentLang === "zh";
+      const welcomePhrase = isZh
+        ? {
+            ornament: "♡",
+            speaker: "小瑩 & 順祥",
+            words: guestName
+              ? `謝謝 ${guestName} 開啟我們的喜帖，期待相見 ♥`
+              : "謝謝您開啟我們的喜帖，期待與您相見 ♥"
+          }
+        : {
+            ornament: "♡",
+            speaker: "Tiểu Dinh & Thuận Tường",
+            words: guestName
+              ? `Cảm ơn ${guestName} đã ghé xem thiệp của tụi mình nhé ♥`
+              : "Cảm ơn bạn đã ghé xem thiệp cưới của tụi mình nhé ♥"
+          };
+
+      spawnFloatingWhisper(couple, null, welcomePhrase, true, 4.6);
+      spawnGuestHearts(couple, null, 12);
+
+      const leftGuests = svgWrap.querySelector('.c1-guest-hit[data-table="left"]');
+      const rightGuests = svgWrap.querySelector('.c1-guest-hit[data-table="right"]');
+      setTimeout(() => {
+        if (leftGuests) spawnGuestHearts(leftGuests, null, 6);
+        if (rightGuests) spawnGuestHearts(rightGuests, null, 6);
+      }, 360);
+      setTimeout(() => {
+        if (couple) spawnGuestHearts(couple, null, 8);
+      }, 760);
+    };
+
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (!hasPlayedWelcomeGreeting && triggerWelcomeGreetingIfReady) {
+          triggerWelcomeGreetingIfReady();
+        }
+      },
+      { passive: true }
+    );
 
     if (params.get("debug_whisper") === "1") {
       setTimeout(() => {
@@ -1169,6 +1223,9 @@
           envelopeOpened = true;
           window.scrollTo(0, 0);
           triggerScrollRevealCheck();
+          if (triggerWelcomeGreetingIfReady) {
+            setTimeout(() => triggerWelcomeGreetingIfReady(), 160);
+          }
         }, 420);
         return;
       }
@@ -1296,6 +1353,9 @@
           stage.classList.remove("is-opening", "is-pulling-free", "is-curtain-bloom");
           if (pulloutCard) pulloutCard.classList.remove("is-handed-off");
           document.body.classList.remove("is-table-preparing", "is-table-cascading");
+          if (triggerWelcomeGreetingIfReady) {
+            setTimeout(() => triggerWelcomeGreetingIfReady(), 120);
+          }
         }, 1820);
       }, 3420);
     }
@@ -1421,6 +1481,7 @@
         isFlipping = false;
         envelopeFlipped = false;
         envelopeOpened = false;
+        hasPlayedWelcomeGreeting = false;
         if (scrollCueBtn) scrollCueBtn.classList.remove("is-visible");
         if (flapStage) flapStage.classList.remove("is-behind");
         if (topFlap) topFlap.classList.remove("is-behind");
@@ -2267,6 +2328,9 @@
         } catch (_) {}
       }
       triggerScrollRevealCheck();
+      if (triggerWelcomeGreetingIfReady) {
+        setTimeout(() => triggerWelcomeGreetingIfReady(), 480);
+      }
     }
   });
 })();
