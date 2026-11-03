@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Cormorant+Garamond:wght@600;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css?v=44" />
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
   <style>
     :root {
       --adm-bg: #f8f3eb;
@@ -704,6 +705,51 @@
       .guest-btn-group { justify-content: flex-start; }
       .session-time { margin-left: 0; width: 100%; }
     }
+
+    /* QR STUDIO & A4 STICKER SHEET PRINT LAYOUT */
+    .qr-studio-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 22px;
+      align-items: start;
+    }
+    .qr-preview-stage {
+      background: #f5ede0;
+      border: 1px dashed var(--adm-border-strong);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    #qr-studio-canvas {
+      width: min(100%, 310px);
+      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 12px 30px rgba(78, 12, 16, 0.14);
+      background: #fbf7ef;
+    }
+    .qr-saving-tips {
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      background: #fffdf9;
+      border: 1px solid var(--adm-border);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .qr-saving-tips h3 {
+      margin: 0 0 8px;
+      font-size: 14.5px;
+      color: var(--adm-crimson);
+    }
+    @media (max-width: 820px) {
+      .qr-studio-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
@@ -766,6 +812,9 @@
       </button>
       <button type="button" class="adm-tab-btn" data-tab="tab-thankyou">
         📍 Chế Độ Ngày Cưới (Chỉ Đường) &amp; 📸 Thiệp Cảm Ơn
+      </button>
+      <button type="button" class="adm-tab-btn" data-tab="tab-qr">
+        🖨️ Tạo Mã QR Đẹp &amp; In Tem Dán Phong Bì
       </button>
     </nav>
 
@@ -935,6 +984,93 @@
             💾 Lưu &amp; Áp Dụng Ngay
           </button>
           <span id="global-config-status" style="font-size:13px; color:var(--adm-muted);"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         TAB 4: TẠO MÃ QR NGHỆ THUẬT & DÀN TRANG IN TEM DECAL A4 DÁN PHONG BÌ
+         ===================================================================== -->
+    <section id="tab-qr" class="adm-panel">
+      <div class="adm-box">
+        <div class="adm-box-head">
+          <div>
+            <h2 class="adm-box-title">🖨️ Tạo Mã QR Hỷ Sự (囍) &amp; In Tem Decal Dán Phong Bì Đã In (Siêu Tiết Kiệm)</h2>
+            <p class="adm-box-desc">
+              Thiết kế đồng bộ màu Đỏ Rượu Vang &amp; Vàng Kim với thiệp giấy của bạn. Hỗ trợ tải file PNG sắc nét hoặc <strong>in nguyên tờ A4 gồm 20 tem QR</strong> để bóc dán lên phong bì đã in sẵn.
+            </p>
+          </div>
+        </div>
+
+        <div class="qr-studio-grid">
+          <div>
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <div>
+                <label for="qr-preset-select" style="display:block; font-size:12.5px; font-weight:600; margin-bottom:5px;">1. Chọn đích đến khi khách quét Mã QR:</label>
+                <select id="qr-preset-select" class="adm-select">
+                  <option value="directions">📍 Bản Đồ Chỉ Đường &amp; Thiệp Online (Khuyên dùng cho thiệp giấy đã in)</option>
+                  <option value="gmaps">🧭 Mở thẳng App Google Maps dẫn đường tới Riverside Palace (360D Bến Vân Đồn)</option>
+                  <option value="invite">💌 Mở Phong Bì Thiệp Cưới Online 3D (thuantuongtieudinh.io.vn)</option>
+                  <option value="custom">🔗 Link khách mời riêng (hoặc tự nhập link bên dưới)</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="qr-url-input" style="display:block; font-size:12.5px; font-weight:600; margin-bottom:5px;">Đường dẫn (Link) nhúng trong Mã QR:</label>
+                <input
+                  type="url"
+                  id="qr-url-input"
+                  class="adm-input"
+                  value="https://thuantuongtieudinh.io.vn/?mode=directions"
+                />
+              </div>
+
+              <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:10px;">
+                <div>
+                  <label for="qr-caption-style" style="display:block; font-size:12.5px; font-weight:600; margin-bottom:5px;">2. Ngôn ngữ dòng chữ trên tem:</label>
+                  <select id="qr-caption-style" class="adm-select">
+                    <option value="bilingual">🇻🇳+🇹🇼 Song ngữ: Chỉ đường &amp; Thiệp · 掃碼導航</option>
+                    <option value="vi">🇻🇳 Tiếng Việt: Quét mã mở Bản Đồ Chỉ Đường</option>
+                    <option value="zh">🇹🇼 Tiếng Trung: 掃碼開啟婚宴地圖導航</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="qr-guest-badge" style="display:block; font-size:12.5px; font-weight:600; margin-bottom:5px;">3. Tên khách trên tem (Để trống nếu in hàng loạt):</label>
+                  <input
+                    type="text"
+                    id="qr-guest-badge"
+                    class="adm-input"
+                    placeholder="VD: Anh Tuấn & Chị Thảo (hoặc để trống)"
+                  />
+                </div>
+              </div>
+
+              <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:6px;">
+                <button type="button" id="btn-download-qr-png" class="btn-adm primary lg">
+                  ⬇️ Tải Ảnh Mã QR Sắc Nét (.PNG)
+                </button>
+                <button type="button" id="btn-print-qr-sheet" class="btn-adm lg" style="border-color:var(--adm-crimson); color:var(--adm-crimson);">
+                  🖨️ In Tờ A4 Gồm 20 Tem Dán Phong Bì (~15k/tờ)
+                </button>
+              </div>
+            </div>
+
+            <div class="qr-saving-tips">
+              <h3>💡 3 Cách Tích Hợp Mã QR Vào Thiệp Đã In Sẵn (Đẹp Sang &amp; Tiết Kiệm Nhất):</h3>
+              <div>
+                <strong>• Cách 1 — In Decal Bóc Dán Khổ A4 (Chỉ ~15.000đ – 25.000đ/tờ = 20 tem):</strong> Bấm nút <strong>"🖨️ In Tờ A4 Gồm 20 Tem"</strong> ở trên → lưu file PDF (hoặc đem ra tiệm in màu / photocopy) bảo in trên <strong>giấy Decal sữa / Decal kem bế sẵn (hoặc tự cắt theo viền chấm)</strong>. Dán nhẹ 1 tem (`4cm × 5cm`) vào <strong>mặt trong nắp tam giác của phong bì</strong> (khi mở nắp sáp ra là thấy ngay) hoặc dán ở <strong>góc dưới mặt sau tờ thiệp mời tiệc</strong>.<br />
+                <strong>• Cách 2 — Thẻ Kẹp Mini (Mini Map Tag) bỏ chung vào bụng phong bì:</strong> Cũng dùng file A4 20 tem ở trên nhưng bảo tiệm in trên <strong>giấy mỹ thuật kem dày 250gsm</strong> (~15.000đ/tờ A4), cắt rời thành 20 thẻ nhỏ bỏ kèm vào trong phong bì cùng 3 tờ thiệp.<br />
+                <strong>• Cách 3 — Khắc con dấu đóng mực đỏ lên mặt trong phong bì (~90k – 120k/con dấu):</strong> Tải ảnh PNG Mã QR ở trên gửi các shop khắc dấu trên Shopee làm 1 con dấu QR liền mực đỏ đóng thẳng lên mặt trong nắp phong bì.
+              </div>
+            </div>
+          </div>
+
+          <div class="qr-preview-stage">
+            <canvas id="qr-studio-canvas" width="900" height="1120"></canvas>
+            <div style="font-size:12px; color:var(--adm-muted); text-align:center;">
+              📱 Bạn có thể giơ camera điện thoại hoặc Zalo quét thử trực tiếp hình trên màn hình!
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -1263,6 +1399,7 @@
                   </div>
                   <button type="button" class="btn-adm primary js-copy-link">📋 Copy Link</button>
                   <button type="button" class="btn-adm js-copy-msg">${msgBtnLabel}</button>
+                  <button type="button" class="btn-adm js-open-guest-qr" title="Tạo & tải Mã QR đẹp riêng cho khách này">📱 Mã QR</button>
                   <a class="btn-adm js-preview" target="_blank" rel="noopener" title="Mở xem thử (Không tính vào lượt xem)">👁️ Xem thử</a>
                   <button type="button" class="btn-adm danger js-remove-guest" title="Xóa khách này khỏi danh sách">✕</button>
                 </div>
@@ -1337,6 +1474,9 @@
           card.querySelector(".js-copy-msg").addEventListener("click", () =>
             copyText(inviteMsg, `💌 Đã copy lời mời + link cho "${name}"!`)
           );
+          card.querySelector(".js-open-guest-qr").addEventListener("click", () => {
+            openGuestInQrStudio(name, fullUrl, effectiveLang);
+          });
           card.querySelector(".js-remove-guest").addEventListener("click", () =>
             removeGuestFromList(name)
           );
@@ -1651,6 +1791,397 @@
         a.click();
         a.remove();
       });
+
+      /* =====================================================================
+         LUXURY WEDDING QR STUDIO & A4 STICKER SHEET GENERATOR
+         ===================================================================== */
+      const qrPresetSelect = document.getElementById("qr-preset-select");
+      const qrUrlInput = document.getElementById("qr-url-input");
+      const qrCaptionStyle = document.getElementById("qr-caption-style");
+      const qrGuestBadge = document.getElementById("qr-guest-badge");
+      const qrCanvas = document.getElementById("qr-studio-canvas");
+      const btnDownloadQr = document.getElementById("btn-download-qr-png");
+      const btnPrintQrSheet = document.getElementById("btn-print-qr-sheet");
+
+      const QR_PRESET_URLS = {
+        directions: "https://thuantuongtieudinh.io.vn/?mode=directions",
+        gmaps:
+          "https://www.google.com/maps/dir/?api=1&destination=Riverside+Palace+360D+Ben+Van+Don+Ho+Chi+Minh",
+        invite: "https://thuantuongtieudinh.io.vn/"
+      };
+
+      function drawRoundedRect(ctx, x, y, w, h, r) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + w, y, x + w, y + h, r);
+        ctx.arcTo(x + w, y + h, x, y + h, r);
+        ctx.arcTo(x, y + h, x, y, r);
+        ctx.arcTo(x, y, x + w, y, r);
+        ctx.closePath();
+      }
+
+      function isFinderPattern(r, c, count) {
+        if (r < 7 && c < 7) return true;
+        if (r < 7 && c >= count - 7) return true;
+        if (r >= count - 7 && c < 7) return true;
+        return false;
+      }
+
+      function drawFinderEye(ctx, ox, oy, cellSize) {
+        const outerSize = 7 * cellSize;
+        const innerGap = 1 * cellSize;
+        const midSize = 5 * cellSize;
+        const coreOffset = 2 * cellSize;
+        const coreSize = 3 * cellSize;
+
+        ctx.fillStyle = "#7d1518";
+        drawRoundedRect(ctx, ox, oy, outerSize, outerSize, cellSize * 1.65);
+        ctx.fill();
+
+        ctx.fillStyle = "#fbf7ef";
+        drawRoundedRect(
+          ctx,
+          ox + innerGap,
+          oy + innerGap,
+          midSize,
+          midSize,
+          cellSize * 1.15
+        );
+        ctx.fill();
+
+        ctx.fillStyle = "#961b1e";
+        drawRoundedRect(
+          ctx,
+          ox + coreOffset,
+          oy + coreOffset,
+          coreSize,
+          coreSize,
+          cellSize * 0.85
+        );
+        ctx.fill();
+      }
+
+      function renderLuxuryWeddingQR() {
+        if (!qrCanvas || typeof window.qrcode !== "function") return;
+        const ctx = qrCanvas.getContext("2d");
+        const W = qrCanvas.width; // 900
+        const H = qrCanvas.height; // 1120
+
+        const targetUrl =
+          (qrUrlInput && qrUrlInput.value.trim()) ||
+          "https://thuantuongtieudinh.io.vn/?mode=directions";
+        const capMode = (qrCaptionStyle && qrCaptionStyle.value) || "bilingual";
+        const guestText = (qrGuestBadge && qrGuestBadge.value.trim()) || "";
+
+        // 1. Cream Cotton Paper Background
+        ctx.clearRect(0, 0, W, H);
+        ctx.fillStyle = "#fbf7ef";
+        drawRoundedRect(ctx, 0, 0, W, H, 32);
+        ctx.fill();
+
+        // 2. Double Ornamental Gold & Crimson Border
+        ctx.strokeStyle = "#cfa561";
+        ctx.lineWidth = 4;
+        drawRoundedRect(ctx, 22, 22, W - 44, H - 44, 22);
+        ctx.stroke();
+
+        ctx.strokeStyle = "rgba(125, 21, 24, 0.38)";
+        ctx.lineWidth = 1.8;
+        drawRoundedRect(ctx, 34, 34, W - 68, H - 68, 16);
+        ctx.stroke();
+
+        // 3. Top Header: 囍 06 . 01 . 2027 囍 & Couple Names
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#9e6312";
+        ctx.font = '700 22px "Cormorant Garamond", "Noto Serif TC", serif';
+        ctx.fillText("囍   06  •  01  •  2027   囍", W / 2, 88);
+
+        ctx.fillStyle = "#7d1518";
+        if (capMode === "zh") {
+          ctx.font = '700 42px "Noto Serif TC", serif';
+          ctx.fillText("趙順祥  &  盧小瑩", W / 2, 144);
+        } else {
+          ctx.font = '700 46px "Cormorant Garamond", serif';
+          ctx.fillText("Thuận Tường  &  Tiểu Dinh", W / 2, 144);
+        }
+
+        if (guestText) {
+          ctx.fillStyle = "#8a181c";
+          ctx.font = '600 24px "Be Vietnam Pro", "Noto Serif TC", sans-serif';
+          ctx.fillText(`✦  ${guestText}  ✦`, W / 2, 186);
+        } else {
+          ctx.fillStyle = "#a36818";
+          ctx.font = '600 20px "Be Vietnam Pro", "Noto Serif TC", sans-serif';
+          ctx.fillText(
+            capMode === "zh"
+              ? "RIVERSIDE PALACE（Seine 宴會廳）• 18:00 迎賓"
+              : "RIVERSIDE PALACE (Sảnh Seine) • 18:00",
+            W / 2,
+            184
+          );
+        }
+
+        // 4. Generate QR Matrix (Error Correction Level H for 30% redundancy around center 囍 seal)
+        const qr = window.qrcode(0, "H");
+        qr.addData(targetUrl);
+        qr.make();
+        const count = qr.getModuleCount();
+
+        const qrBoxSize = 640;
+        const qrX = (W - qrBoxSize) / 2;
+        const qrY = 216;
+        const pad = 28;
+        const innerQrSize = qrBoxSize - pad * 2;
+        const cellSize = innerQrSize / count;
+        const startX = qrX + pad;
+        const startY = qrY + pad;
+
+        // Soft white-ivory framing plate behind QR for instant camera contrast
+        ctx.fillStyle = "#ffffff";
+        drawRoundedRect(ctx, qrX, qrY, qrBoxSize, qrBoxSize, 24);
+        ctx.fill();
+        ctx.strokeStyle = "rgba(207, 165, 97, 0.55)";
+        ctx.lineWidth = 2;
+        drawRoundedRect(ctx, qrX, qrY, qrBoxSize, qrBoxSize, 24);
+        ctx.stroke();
+
+        // Center exclusion zone for 囍 emblem (~21% of matrix width)
+        const centerMin = count * 0.39;
+        const centerMax = count * 0.61;
+
+        // Draw 3 Ornate Rounded Finder Eyes
+        drawFinderEye(ctx, startX, startY, cellSize);
+        drawFinderEye(ctx, startX + (count - 7) * cellSize, startY, cellSize);
+        drawFinderEye(ctx, startX, startY + (count - 7) * cellSize, cellSize);
+
+        // Draw Rounded Crimson Dots for Data Modules
+        ctx.fillStyle = "#721115";
+        for (let r = 0; r < count; r++) {
+          for (let c = 0; c < count; c++) {
+            if (isFinderPattern(r, c, count)) continue;
+            if (r > centerMin && r < centerMax && c > centerMin && c < centerMax) {
+              continue;
+            }
+            if (qr.isDark(r, c)) {
+              const cx = startX + (c + 0.5) * cellSize;
+              const cy = startY + (r + 0.5) * cellSize;
+              const radius = cellSize * 0.44;
+              ctx.beginPath();
+              ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+        }
+
+        // 5. Center 囍 Crimson & 24K Gold Medallion
+        const sealCx = qrX + qrBoxSize / 2;
+        const sealCy = qrY + qrBoxSize / 2;
+        const sealR = qrBoxSize * 0.098;
+
+        ctx.fillStyle = "#ffffff";
+        ctx.beginPath();
+        ctx.arc(sealCx, sealCy, sealR + 7, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = "#7d1518";
+        ctx.beginPath();
+        ctx.arc(sealCx, sealCy, sealR, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = "#e5be77";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(sealCx, sealCy, sealR - 4, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.fillStyle = "#ffdf9e";
+        ctx.font = `700 ${Math.round(sealR * 1.12)}px "Noto Serif TC", serif`;
+        ctx.textBaseline = "middle";
+        ctx.fillText("囍", sealCx, sealCy + 2);
+        ctx.textBaseline = "alphabetic";
+
+        // 6. Bottom Call-To-Action & Venue Address
+        ctx.fillStyle = "#7d1518";
+        if (capMode === "bilingual") {
+          ctx.font = '700 25px "Be Vietnam Pro", sans-serif';
+          ctx.fillText("📍 Quét mã Chỉ đường & Xem thiệp Online", W / 2, 912);
+          ctx.fillStyle = "#9a590d";
+          ctx.font = '700 22px "Noto Serif TC", serif';
+          ctx.fillText("掃碼開啟 Google 婚宴地圖與電子喜帖", W / 2, 948);
+        } else if (capMode === "zh") {
+          ctx.font = '700 28px "Noto Serif TC", serif';
+          ctx.fillText("📍 掃碼開啟 Google 婚宴地圖導航", W / 2, 922);
+          ctx.fillStyle = "#9a590d";
+          ctx.font = '600 20px "Noto Serif TC", serif';
+          ctx.fillText("胡志明市永會坊檳雲屯街 360D 號（Seine 宴會廳）", W / 2, 956);
+        } else {
+          ctx.font = '700 27px "Be Vietnam Pro", sans-serif';
+          ctx.fillText("📍 Quét mã mở Bản Đồ Chỉ Đường & Thiệp Cưới", W / 2, 920);
+          ctx.fillStyle = "#9a590d";
+          ctx.font = '600 20px "Be Vietnam Pro", sans-serif';
+          ctx.fillText("Thứ Tư • 06.01.2027 • Đón khách 18:00 — Khai tiệc 19:00", W / 2, 954);
+        }
+
+        // Divider hairline
+        ctx.strokeStyle = "rgba(125, 21, 24, 0.22)";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(140, 982);
+        ctx.lineTo(W - 140, 982);
+        ctx.stroke();
+
+        ctx.fillStyle = "#4d2c2c";
+        ctx.font = '600 21px "Be Vietnam Pro", sans-serif';
+        ctx.fillText("Riverside Palace (Sảnh Seine) • 360D Bến Vân Đồn, TP.HCM", W / 2, 1020);
+
+        ctx.fillStyle = "#8a6d6d";
+        ctx.font = '500 17px "Be Vietnam Pro", sans-serif';
+        ctx.fillText("thuantuongtieudinh.io.vn", W / 2, 1054);
+      }
+
+      function openGuestInQrStudio(guestNameStr, guestUrlStr, langCode) {
+        const qrTabBtn = document.querySelector('.adm-tab-btn[data-tab="tab-qr"]');
+        if (qrTabBtn) qrTabBtn.click();
+        if (qrPresetSelect) qrPresetSelect.value = "custom";
+        if (qrUrlInput) qrUrlInput.value = guestUrlStr;
+        if (qrGuestBadge) qrGuestBadge.value = guestNameStr;
+        if (qrCaptionStyle) {
+          qrCaptionStyle.value = langCode === "zh" ? "zh" : "bilingual";
+        }
+        renderLuxuryWeddingQR();
+        notify(`📱 Đã tạo Mã QR riêng cho khách "${guestNameStr}"!`);
+      }
+
+      if (qrPresetSelect) {
+        qrPresetSelect.addEventListener("change", () => {
+          const v = qrPresetSelect.value;
+          if (QR_PRESET_URLS[v] && qrUrlInput) {
+            qrUrlInput.value = QR_PRESET_URLS[v];
+          }
+          renderLuxuryWeddingQR();
+        });
+      }
+      if (qrUrlInput) qrUrlInput.addEventListener("input", renderLuxuryWeddingQR);
+      if (qrCaptionStyle) qrCaptionStyle.addEventListener("change", renderLuxuryWeddingQR);
+      if (qrGuestBadge) qrGuestBadge.addEventListener("input", renderLuxuryWeddingQR);
+
+      if (btnDownloadQr) {
+        btnDownloadQr.addEventListener("click", () => {
+          renderLuxuryWeddingQR();
+          const dataUrl = qrCanvas.toDataURL("image/png");
+          const guestSlug = (qrGuestBadge && qrGuestBadge.value.trim())
+            ? "-" + qrGuestBadge.value.trim().replace(/\s+/g, "-")
+            : "";
+          const a = document.createElement("a");
+          a.href = dataUrl;
+          a.download = `Ma-QR-Thiep-Cuoi-Tuong-Dinh${guestSlug}.png`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          notify("⬇️ Đã tải file ảnh Mã QR (.PNG độ phân giải cao)!");
+        });
+      }
+
+      if (btnPrintQrSheet) {
+        btnPrintQrSheet.addEventListener("click", () => {
+          renderLuxuryWeddingQR();
+          const dataUrl = qrCanvas.toDataURL("image/png");
+          const win = window.open("", "_blank");
+          if (!win) {
+            notify("⚠️ Trình duyệt chặn cửa sổ bật lên. Hãy cho phép Popup để mở trang in A4 nhé!");
+            return;
+          }
+          let stickersHtml = "";
+          for (let i = 0; i < 20; i++) {
+            stickersHtml += `<div class="sticker-cell"><img src="${dataUrl}" alt="QR Thiệp Cưới" /></div>`;
+          }
+          win.document.write(`<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>In Tờ A4 (20 Tem Mã QR Dán Phong Bì) — Thuận Tường & Tiểu Dinh</title>
+  <style>
+    @page { size: A4 portrait; margin: 8mm; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f4efe6;
+      color: #2c1e1e;
+    }
+    .print-toolbar {
+      max-width: 210mm;
+      margin: 12px auto;
+      padding: 12px 16px;
+      background: #fff;
+      border: 1px solid #d9c3a3;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .print-btn {
+      background: #7d1518;
+      color: #fff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .a4-sheet {
+      width: 194mm;
+      margin: 0 auto 20px;
+      background: #fff;
+      padding: 4mm;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 3.5mm;
+    }
+    .sticker-cell {
+      border: 0.4mm dashed rgba(125, 21, 24, 0.35);
+      border-radius: 3mm;
+      padding: 1mm;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fbf7ef;
+    }
+    .sticker-cell img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    @media print {
+      body { background: #fff; }
+      .print-toolbar { display: none !important; }
+      .a4-sheet { width: 100%; margin: 0; padding: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="print-toolbar">
+    <div>
+      <strong>🖨️ Bản dàn trang khổ A4 (20 Tem QR • 4 cột × 5 hàng • Kích thước ~4.4cm × 5.4cm/tem)</strong>
+      <div style="font-size:12.5px; color:#665555; margin-top:3px;">
+        Mẹo tiết kiệm: Bấm nút bên phải chọn <strong>"Lưu dưới dạng PDF (Save as PDF)"</strong> rồi đem ra tiệm in màu bảo <em>"In trên giấy Decal bóc dán khổ A4"</em> (chỉ ~15.000đ – 25.000đ/tờ = 20 tem!).
+      </div>
+    </div>
+    <button class="print-btn" onclick="window.print()">🖨️ In Ngay / Lưu File PDF</button>
+  </div>
+  <div class="a4-sheet">${stickersHtml}</div>
+</body>
+</html>`);
+          win.document.close();
+        });
+      }
+
+      setTimeout(renderLuxuryWeddingQR, 250);
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(renderLuxuryWeddingQR);
+      }
 
       buildRows();
       fetchAnalytics(false);
