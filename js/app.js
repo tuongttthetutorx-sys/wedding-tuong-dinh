@@ -1743,14 +1743,14 @@
       svgStage.classList.remove("is-awaiting-entrance");
       svgStage.classList.add("is-playing-entrance");
 
-      // When Card 3 (Chinese Traditional Card) first enters view and the Crane flies in, release auspicious hearts!
+      // When Card 3 (Chinese Traditional Card) Crane finishes its unhurried 3.5s glide, release auspicious hearts!
       if (svgStage.id === "svg-card-3") {
         setTimeout(() => {
           const craneEl = svgStage.querySelector(".c3-crane");
           if (craneEl) {
-            spawnGuestHearts(craneEl, null, 10);
+            spawnGuestHearts(craneEl, null, 8);
           }
-        }, 1150);
+        }, 3550);
       }
     }
     if (card.dataset.revealed === "1") return;
@@ -1759,7 +1759,7 @@
     setTimeout(() => {
       card.classList.remove("will-reveal");
       card.classList.add("is-revealed-done");
-    }, 1650);
+    }, 4200);
   }
 
   function setupScrollReveal() {
@@ -1785,7 +1785,7 @@
           }
         });
       },
-      { threshold: 0.14 }
+      { threshold: 0.28 }
     );
     cards.forEach((c) => cardObserver.observe(c));
     window.addEventListener("scroll", triggerScrollRevealCheck, { passive: true });
@@ -2009,7 +2009,7 @@
     const vh = window.innerHeight || 900;
     document.querySelectorAll(".stationery-card").forEach((card) => {
       const rect = card.getBoundingClientRect();
-      if (rect.top < vh * 0.78 && rect.bottom > 40) {
+      if (rect.top < vh * 0.68 && rect.bottom > 60) {
         revealCard(card);
       }
     });
