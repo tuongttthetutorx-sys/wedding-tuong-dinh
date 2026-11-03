@@ -1,7 +1,23 @@
 {
-  "name": "thuantuongtieudinh",
+  "name": "wedding-tuong-dinh",
+  "main": "worker.js",
   "compatibility_date": "2025-01-01",
   "assets": {
-    "directory": "."
-  }
+    "directory": ".",
+    "binding": "ASSETS"
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "WEDDING_ANALYTICS",
+        "class_name": "WeddingAnalytics"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["WeddingAnalytics"]
+    }
+  ]
 }

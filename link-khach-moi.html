@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Tạo Link Mời Khách — Thiệp Cưới Thuận Tường &amp; Tiểu Dinh</title>
+  <title>Quản Lý Link Khách Mời &amp; Thống Kê Lượt Xem — Thuận Tường &amp; Tiểu Dinh</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Cormorant+Garamond:wght@600;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=36" />
+  <link rel="stylesheet" href="css/styles.css?v=40" />
   <style>
     body { overflow: auto; height: auto; }
-    .builder-wrap { max-width: 960px; margin: 0 auto; padding: 36px 16px calc(64px + env(safe-area-inset-bottom, 0px)); }
-    .builder-header { text-align: center; margin-bottom: 28px; }
+    .builder-wrap { max-width: 980px; margin: 0 auto; padding: 34px 16px calc(64px + env(safe-area-inset-bottom, 0px)); }
+    .builder-header { text-align: center; margin-bottom: 26px; }
     .builder-header h1 {
       margin: 6px 0;
       font-family: var(--font-serif);
@@ -44,13 +44,145 @@
     }
     .btn-outline-crimson {
       border: 1.5px solid rgba(132, 21, 23, 0.35);
-      background: rgba(255, 255, 255, 0.8);
+      background: rgba(255, 255, 255, 0.85);
       color: var(--crimson-ink);
     }
     .btn-crimson:hover,
     .btn-outline-crimson:hover {
       opacity: 0.92;
     }
+
+    /* LIVE ANALYTICS DASHBOARD (LEVEL 2A + 2B) */
+    .analytics-sheet {
+      margin-bottom: 24px;
+    }
+    .analytics-top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(132, 21, 23, 0.14);
+    }
+    .analytics-title-group h2 {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-size: clamp(21px, 3.2vw, 27px);
+      color: var(--crimson-ink);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .live-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #16a34a;
+      box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.18);
+      display: inline-block;
+      animation: livePulse 2s infinite;
+    }
+    @keyframes livePulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.18); opacity: 0.72; }
+    }
+    .analytics-sub {
+      margin: 3px 0 0;
+      font-size: 12.8px;
+      color: var(--text-muted);
+    }
+    .analytics-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .stats-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .kpi-box {
+      padding: 14px 15px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid rgba(132, 21, 23, 0.16);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .kpi-label {
+      font-size: 12.2px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .kpi-value {
+      font-family: var(--font-serif);
+      font-size: clamp(26px, 3.6vw, 34px);
+      font-weight: 700;
+      color: var(--crimson-ink);
+      line-height: 1.05;
+    }
+    .kpi-foot {
+      margin-top: 6px;
+      font-size: 11.8px;
+      color: var(--text-muted);
+    }
+    .country-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .country-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(132, 21, 23, 0.08);
+      color: var(--crimson-ink);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .status-badge.is-opened {
+      background: rgba(22, 130, 72, 0.12);
+      color: #116939;
+      border: 1px solid rgba(22, 130, 72, 0.28);
+    }
+    .status-badge.is-viewed {
+      background: rgba(180, 110, 18, 0.12);
+      color: #8c5208;
+      border: 1px solid rgba(180, 110, 18, 0.28);
+    }
+    .status-badge.is-pending {
+      background: rgba(120, 110, 110, 0.09);
+      color: #6e6262;
+      border: 1px solid rgba(120, 110, 110, 0.2);
+    }
+    .log-empty {
+      padding: 20px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13.5px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 8px;
+      border: 1px dashed rgba(132, 21, 23, 0.2);
+    }
+
     .tw-guide-box {
       margin-top: 14px;
       padding: 14px 16px;
@@ -80,12 +212,12 @@
       padding: 1px 6px;
       border-radius: 4px;
     }
-    .builder-table-wrap { overflow-x: auto; margin-top: 20px; }
+    .builder-table-wrap { overflow-x: auto; margin-top: 16px; }
     table.guest-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 13.8px;
-      background: rgba(255, 255, 255, 0.72);
+      font-size: 13.5px;
+      background: rgba(255, 255, 255, 0.76);
       border-radius: 8px;
       overflow: hidden;
     }
@@ -93,6 +225,7 @@
       padding: 11px 12px;
       text-align: left;
       border-bottom: 1px solid rgba(132, 21, 23, 0.12);
+      vertical-align: middle;
     }
     .guest-table th {
       background: rgba(132, 21, 23, 0.08);
@@ -101,10 +234,10 @@
     }
     .url-preview {
       font-family: monospace;
-      font-size: 12px;
+      font-size: 11.8px;
       color: var(--text-muted);
       word-break: break-all;
-      max-width: 310px;
+      max-width: 280px;
     }
     .row-actions { display: flex; flex-wrap: wrap; gap: 6px; }
     .btn-mini {
@@ -131,6 +264,10 @@
       color: var(--ivory-ink);
     }
     .btn-mini:hover { opacity: 0.88; transform: translateY(-1px); }
+
+    @media (max-width: 780px) {
+      .stats-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
     @media (max-width: 640px) {
       .builder-wrap { padding: 24px 12px calc(56px + env(safe-area-inset-bottom, 0px)); }
       .tw-guide-grid { grid-template-columns: 1fr; }
@@ -139,7 +276,7 @@
       .guest-table, .guest-table tbody, .guest-table tr, .guest-table td { display: block; width: 100%; }
       .guest-table { background: transparent; }
       .guest-table tr {
-        background: rgba(255, 255, 255, 0.78);
+        background: rgba(255, 255, 255, 0.82);
         border: 1px solid rgba(132, 21, 23, 0.16);
         border-radius: 8px;
         padding: 12px;
@@ -159,17 +296,84 @@
 <body>
   <div class="builder-wrap">
     <div class="builder-header">
-      <a href="index.html" class="footer-tools-link">← Quay lại xem Thiệp Cưới</a>
-      <h1>囍 Công Cụ Tạo Link Tên Khách Mời</h1>
-      <p style="color:var(--text-muted); max-width:600px; margin:0 auto; font-size:14px;">
-        Nhập danh sách khách mời (mỗi dòng 1 tên). Tên khách sẽ được viết tay tự động lên cả <strong>Vỏ phong bì đỏ</strong> lẫn dòng chấm <strong>“Trân trọng kính mời...”</strong> trên Thiệp Mời Tiệc!
+      <a href="index.html?notrack=1" class="footer-tools-link">← Quay lại xem Thiệp Cưới (Chế độ Cô Dâu &amp; Chú Rể)</a>
+      <h1>囍 Quản Lý Khách Mời &amp; Theo Dõi Lượt Mở Thiệp</h1>
+      <p style="color:var(--text-muted); max-width:640px; margin:0 auto; font-size:14px;">
+        Theo dõi trực tiếp tổng lượt xem thiệp (Việt Nam &amp; Đài Loan), biết chính xác <strong>khách mời nào đã mở thiệp</strong> và tạo link mời cá nhân hóa cho từng khách.
       </p>
     </div>
 
+    <!-- MỨC 2A & 2B: BẢNG THỐNG KÊ TRỰC TIẾP LƯỢT MỞ THIỆP -->
+    <section class="paper-sheet analytics-sheet" aria-label="Thống kê lượt mở thiệp trực tiếp">
+      <div class="analytics-top-bar">
+        <div class="analytics-title-group">
+          <h2><span class="live-dot" aria-hidden="true"></span> Thống Kê Lượt Xem Thiệp (Thời Gian Thực)</h2>
+          <p class="analytics-sub" id="stats-updated-label">Đang tải dữ liệu từ máy chủ thuantuongtieudinh.io.vn...</p>
+        </div>
+        <div class="analytics-actions">
+          <button type="button" id="btn-refresh-stats" class="btn-mini primary">🔄 Làm mới ngay</button>
+          <button type="button" id="btn-reset-stats" class="btn-mini">🗑️ Xóa lịch sử test (Reset về 0)</button>
+        </div>
+      </div>
+
+      <!-- MỨC 2A: 4 Ô TỔNG QUAN -->
+      <div class="stats-kpi-grid">
+        <div class="kpi-box">
+          <span class="kpi-label">Tổng lượt mở trang thiệp</span>
+          <span class="kpi-value" id="kpi-total-views">0</span>
+          <span class="kpi-foot">Tính mọi lần khách mở thiệp</span>
+        </div>
+        <div class="kpi-box">
+          <span class="kpi-label">Số khách / gia đình đã xem</span>
+          <span class="kpi-value" id="kpi-unique-guests">0</span>
+          <span class="kpi-foot">Gộp trùng theo tên khách mời</span>
+        </div>
+        <div class="kpi-box">
+          <span class="kpi-label">Đã chạm mở nắp phong bì</span>
+          <span class="kpi-value" id="kpi-opened-env">0</span>
+          <span class="kpi-foot" id="kpi-flipped-back">0 khách đã lật xem mặt sau</span>
+        </div>
+        <div class="kpi-box">
+          <span class="kpi-label">Khu vực mở thiệp (VN / Đài Loan)</span>
+          <div class="country-pills" id="kpi-countries">
+            <span class="country-pill">🇻🇳 VN: 0</span>
+            <span class="country-pill">🇹🇼 TW: 0</span>
+          </div>
+          <span class="kpi-foot">Tự động nhận diện theo mạng</span>
+        </div>
+      </div>
+
+      <!-- MỨC 2B: NHẬT KÝ CHI TIẾT TỪNG KHÁCH MỜI ĐÃ XEM -->
+      <div>
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px;">
+          <strong style="color:var(--crimson-ink); font-size:14.2px;">📋 Nhật ký khách mời đã mở thiệp gần nhất:</strong>
+          <span style="font-size:12px; color:var(--text-muted);">Tự động cập nhật mỗi 15 giây</span>
+        </div>
+        <div id="guest-activity-empty" class="log-empty">
+          Chưa có lượt mở thiệp nào được ghi nhận (hoặc bạn vừa Reset bộ đếm). Khi khách bấm vào link thiệp, tên khách và thời gian mở sẽ hiện ngay tại đây!
+        </div>
+        <div class="builder-table-wrap" id="guest-activity-table-wrap" style="display:none; margin-top:8px;">
+          <table class="guest-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Tên khách mời</th>
+                <th>Trạng thái xem thiệp</th>
+                <th>Khu vực &amp; Thiết bị</th>
+                <th>Số lần &amp; Thời gian mở</th>
+              </tr>
+            </thead>
+            <tbody id="guest-activity-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- CÔNG CỤ TẠO LINK KHÁCH MỜI -->
     <section class="paper-sheet">
       <div class="field-row-2" style="margin-bottom:14px;">
         <div class="field-group">
-          <label for="base-url">Đường dẫn gốc Website (khi đưa lên mạng thì dán domain vào đây)</label>
+          <label for="base-url">Đường dẫn gốc Website</label>
           <input type="text" id="base-url" class="rsvp-input" />
         </div>
         <div class="field-group">
@@ -201,7 +405,7 @@
       </div>
 
       <div class="field-group">
-        <label for="guest-list">Danh sách tên khách mời (mỗi dòng 1 khách / gia đình)</label>
+        <label for="guest-list">Danh sách tên khách mời (mỗi dòng 1 khách / gia đình — tự động lưu trên máy của bạn)</label>
         <textarea id="guest-list" class="rsvp-textarea" style="min-height:140px;">Anh Tuấn & Chị Thảo
 Gia đình Cô Chú Minh
 陳伯父 闔府
@@ -229,7 +433,7 @@ Gia đình Cô Chú Minh
           <thead>
             <tr>
               <th>#</th>
-              <th>Tên hiển thị trên thiệp</th>
+              <th>Tên hiển thị &amp; Trạng thái xem</th>
               <th>Link cá nhân hóa</th>
               <th>Thao tác nhanh (LINE / Zalo / Messenger)</th>
             </tr>
@@ -252,13 +456,29 @@ Gia đình Cô Chú Minh
       const tbody = document.getElementById("guest-tbody");
       const toast = document.getElementById("puppy-toast");
       let timer = null;
+      let latestGuestMap = {}; // normalized guest name -> stats record
 
-      // Default to official domain https://thuantuongtieudinh.io.vn/ when opened locally
       const isLocal = /^(file:|https?:\/\/(localhost|127\.0\.0\.1))/i.test(window.location.href);
       const detectedBase = isLocal
         ? "https://thuantuongtieudinh.io.vn/"
         : window.location.href.replace(/link-khach-moi(\.html)?.*$/i, "");
       baseInput.value = detectedBase;
+
+      const apiBase = isLocal ? "https://thuantuongtieudinh.io.vn" : "";
+
+      // Restore saved guest list from localStorage if available
+      try {
+        const savedList = localStorage.getItem("td_saved_guest_list");
+        if (savedList && savedList.trim()) {
+          listArea.value = savedList;
+        }
+      } catch (_) {}
+
+      listArea.addEventListener("input", () => {
+        try {
+          localStorage.setItem("td_saved_guest_list", listArea.value);
+        } catch (_) {}
+      });
 
       function notify(msg) {
         toast.textContent = msg;
@@ -281,6 +501,50 @@ Gia đình Cô Chú Minh
         notify(okMsg);
       }
 
+      function normalizeNameKey(name) {
+        return String(name || "").trim().toLowerCase().replace(/\s+/g, " ");
+      }
+
+      function formatCountryFlag(code) {
+        const c = String(code || "VN").toUpperCase();
+        if (c === "VN") return "🇻🇳 Việt Nam";
+        if (c === "TW") return "🇹🇼 Đài Loan";
+        if (c === "US") return "🇺🇸 Mỹ";
+        if (c === "SG") return "🇸🇬 Singapore";
+        if (c === "AU") return "🇦🇺 Úc";
+        if (c === "JP") return "🇯🇵 Nhật Bản";
+        if (c === "KR") return "🇰🇷 Hàn Quốc";
+        if (c === "HK") return "🇭🇰 Hồng Kông";
+        return "🌍 " + c;
+      }
+
+      function formatRelativeTime(iso) {
+        if (!iso) return "";
+        const d = new Date(iso);
+        if (isNaN(d.getTime())) return "";
+        const diffSec = Math.max(0, Math.floor((Date.now() - d.getTime()) / 1000));
+        const timeStr = d.toLocaleString("vi-VN", {
+          hour: "2-digit",
+          minute: "2-digit",
+          day: "2-digit",
+          month: "2-digit"
+        });
+        if (diffSec < 45) return `Vừa xong (${timeStr})`;
+        if (diffSec < 3600) return `${Math.floor(diffSec / 60)} phút trước (${timeStr})`;
+        if (diffSec < 86400) return `${Math.floor(diffSec / 3600)} giờ trước (${timeStr})`;
+        return `${Math.floor(diffSec / 86400)} ngày trước (${timeStr})`;
+      }
+
+      function renderGuestStatusBadge(rec) {
+        if (!rec) {
+          return `<span class="status-badge is-pending">⏳ Chưa mở</span>`;
+        }
+        if (rec.openedEnvelope) {
+          return `<span class="status-badge is-opened">✨ Đã mở phong bì (${rec.views || 1} lần)</span>`;
+        }
+        return `<span class="status-badge is-viewed">👀 Đã mở link (${rec.views || 1} lần)</span>`;
+      }
+
       function buildRows() {
         const base = (baseInput.value || "index.html").trim().replace(/\?.*$/, "");
         const lang = langSelect.value;
@@ -295,7 +559,6 @@ Gia đình Cô Chú Minh
         const rowsData = [];
 
         names.forEach((name, idx) => {
-          // Auto-detect Chinese characters if user didn't switch dropdown
           const hasHanzi = /[\u4e00-\u9fff]/.test(name);
           const effectiveLang = lang === "zh" || hasHanzi ? "zh" : "vi";
           const qs = new URLSearchParams();
@@ -306,6 +569,7 @@ Gia đình Cô Chú Minh
             if (driveUrl) qs.set("drive", driveUrl);
           }
           const fullUrl = `${base}?${qs.toString()}`;
+          const previewUrl = `${fullUrl}&notrack=1`;
 
           const inviteMsg =
             mode === "thankyou"
@@ -316,25 +580,43 @@ Gia đình Cô Chú Minh
                 ? `囍 婚禮喜帖敬邀｜${name} 您好：\n順祥與小瑩謹訂於 2027 年 1 月 6 日（星期三）晚間六時，於越南胡志明市 RIVERSIDE PALACE（Seine 宴會廳）敬備喜筵。\n誠摯邀請您開啟專屬電子喜帖，與我們分享這份喜悅：\n${fullUrl}`
                 : `💌 Trân trọng kính mời ${name},\nThuận Tường & Tiểu Dinh rất hạnh phúc được mời ${name} đến dự buổi tiệc cưới chung vui vào lúc 18:00 Thứ Tư, 06.01.2027 tại Riverside Palace (Sảnh Seine).\nMời xem thiệp cưới dành riêng cho ${name} tại đây nhé:\n${fullUrl}`;
 
-          rowsData.push({ idx: idx + 1, name, effectiveLang, fullUrl, inviteMsg });
+          const rec = latestGuestMap[normalizeNameKey(name)] || null;
+          rowsData.push({
+            idx: idx + 1,
+            name,
+            effectiveLang,
+            fullUrl,
+            inviteMsg,
+            status: rec
+              ? rec.openedEnvelope
+                ? `Đã mở phong bì (${rec.views || 1} lần)`
+                : `Đã mở link (${rec.views || 1} lần)`
+              : "Chưa mở"
+          });
 
           const tr = document.createElement("tr");
           const msgBtnLabel = effectiveLang === "zh" ? "💬 Copy lời mời LINE" : "💬 Copy lời mời Zalo";
           tr.innerHTML = `
             <td>${idx + 1}</td>
-            <td><strong></strong> <span style="font-size:11px; color:var(--text-muted);">(${effectiveLang === "zh" ? "繁體中文" : "VI"})</span></td>
+            <td>
+              <div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px;">
+                <strong class="js-guest-name"></strong>
+                <span style="font-size:11px; color:var(--text-muted);">(${effectiveLang === "zh" ? "繁體中文" : "VI"})</span>
+              </div>
+              <div style="margin-top:4px;">${renderGuestStatusBadge(rec)}</div>
+            </td>
             <td class="url-preview"></td>
             <td>
               <div class="row-actions">
                 <button type="button" class="btn-mini primary js-copy-link">📋 Copy Link</button>
                 <button type="button" class="btn-mini js-copy-msg">${msgBtnLabel}</button>
-                <a class="btn-mini js-preview" target="_blank" rel="noopener">👁️ Xem thử</a>
+                <a class="btn-mini js-preview" target="_blank" rel="noopener" title="Xem thử không tính vào bộ đếm">👁️ Xem thử</a>
               </div>
             </td>
           `;
-          tr.querySelector("strong").textContent = name;
+          tr.querySelector(".js-guest-name").textContent = name;
           tr.querySelector(".url-preview").textContent = fullUrl;
-          tr.querySelector(".js-preview").href = fullUrl;
+          tr.querySelector(".js-preview").href = previewUrl;
           tr.querySelector(".js-copy-link").addEventListener("click", () =>
             copyText(fullUrl, `✅ Đã copy link thiệp của "${name}"!`)
           );
@@ -347,6 +629,110 @@ Gia đình Cô Chú Minh
         return rowsData;
       }
 
+      async function fetchAnalytics(showToast) {
+        const subLabel = document.getElementById("stats-updated-label");
+        try {
+          const res = await fetch(`${apiBase}/api/stats?t=${Date.now()}`, { cache: "no-store" });
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          const data = await res.json();
+          if (!data || !data.stats) throw new Error("Invalid stats");
+          const st = data.stats;
+
+          document.getElementById("kpi-total-views").textContent = String(st.totalViews || 0);
+          document.getElementById("kpi-unique-guests").textContent = String(st.uniqueVisitors || 0);
+          document.getElementById("kpi-opened-env").textContent = String(st.openedEnvelopeCount || 0);
+          document.getElementById("kpi-flipped-back").textContent = `${st.flippedBackCount || 0} khách đã lật xem mặt sau`;
+
+          const countries = st.countries || {};
+          const vnCount = countries.VN || 0;
+          const twCount = countries.TW || 0;
+          const otherCount = Object.keys(countries)
+            .filter((k) => k !== "VN" && k !== "TW")
+            .reduce((acc, k) => acc + (countries[k] || 0), 0);
+
+          const countryWrap = document.getElementById("kpi-countries");
+          countryWrap.innerHTML = `
+            <span class="country-pill">🇻🇳 VN: ${vnCount}</span>
+            <span class="country-pill">🇹🇼 TW: ${twCount}</span>
+            ${otherCount > 0 ? `<span class="country-pill">🌍 Khác: ${otherCount}</span>` : ""}
+          `;
+
+          const guests = Array.isArray(st.guests) ? st.guests : [];
+          latestGuestMap = {};
+          guests.forEach((g) => {
+            if (g && g.hasCustomName && g.guestName) {
+              latestGuestMap[normalizeNameKey(g.guestName)] = g;
+            }
+          });
+
+          const emptyEl = document.getElementById("guest-activity-empty");
+          const tableWrap = document.getElementById("guest-activity-table-wrap");
+          const actTbody = document.getElementById("guest-activity-tbody");
+
+          if (!guests.length) {
+            emptyEl.style.display = "block";
+            tableWrap.style.display = "none";
+            actTbody.innerHTML = "";
+          } else {
+            emptyEl.style.display = "none";
+            tableWrap.style.display = "block";
+            actTbody.innerHTML = "";
+            guests.forEach((g, i) => {
+              const tr = document.createElement("tr");
+              const statusHtml = g.openedEnvelope
+                ? `<span class="status-badge is-opened">✨ Đã mở phong bì</span>`
+                : `<span class="status-badge is-viewed">👀 Đã mở link</span>`;
+              const flipNote = g.flippedBack
+                ? `<div style="font-size:11.2px; color:var(--text-muted); margin-top:3px;">↺ Đã lật xem mặt sau bao thư</div>`
+                : "";
+              const locStr = formatCountryFlag(g.country) + (g.city ? ` (${g.city})` : "");
+              const devStr = `${g.device || "Điện thoại"} · ${g.lang === "zh" ? "繁體中文" : "Tiếng Việt"}`;
+
+              tr.innerHTML = `
+                <td>${i + 1}</td>
+                <td><strong class="js-log-guest"></strong></td>
+                <td>${statusHtml}${flipNote}</td>
+                <td>
+                  <div>${locStr}</div>
+                  <div style="font-size:11.5px; color:var(--text-muted);">${devStr}</div>
+                </td>
+                <td>
+                  <div><strong>${g.views || 1} lần mở</strong></div>
+                  <div style="font-size:11.5px; color:var(--text-muted);">${formatRelativeTime(g.lastSeenAt)}</div>
+                </td>
+              `;
+              tr.querySelector(".js-log-guest").textContent = g.guestName || "Khách mời";
+              actTbody.appendChild(tr);
+            });
+          }
+
+          buildRows();
+          subLabel.textContent = "Đang kết nối trực tiếp • Cập nhật lúc " + new Date().toLocaleTimeString("vi-VN");
+          if (showToast) notify("✅ Đã cập nhật số liệu lượt xem mới nhất!");
+        } catch (err) {
+          subLabel.textContent = "Đang đồng bộ máy chủ thống kê...";
+        }
+      }
+
+      document.getElementById("btn-refresh-stats").addEventListener("click", () => {
+        fetchAnalytics(true);
+      });
+
+      document.getElementById("btn-reset-stats").addEventListener("click", async () => {
+        if (!window.confirm("Bạn có chắc muốn xóa toàn bộ lịch sử xem thử để đặt bộ đếm về 0 trước khi gửi thiệp cho khách không?")) {
+          return;
+        }
+        try {
+          const res = await fetch(`${apiBase}/api/reset`, { method: "POST" });
+          if (res.ok) {
+            await fetchAnalytics(false);
+            notify("🗑️ Đã xóa lịch sử xem thử và đặt bộ đếm về 0!");
+          }
+        } catch (_) {
+          notify("⚠️ Không thể kết nối máy chủ, vui lòng thử lại.");
+        }
+      });
+
       document.getElementById("btn-generate").addEventListener("click", buildRows);
       langSelect.addEventListener("change", buildRows);
       if (modeSelect) modeSelect.addEventListener("change", buildRows);
@@ -355,11 +741,11 @@ Gia đình Cô Chú Minh
 
       document.getElementById("btn-export-csv").addEventListener("click", () => {
         const rows = buildRows();
-        const header = ["STT", "Ten Khach Moi", "Ngon Ngu", "Link Thiep", "Tin Nhan Moi Mau"];
+        const header = ["STT", "Ten Khach Moi", "Trang Thai Xem", "Ngon Ngu", "Link Thiep", "Tin Nhan Moi Mau"];
         const csvLines = [
           header.join(","),
           ...rows.map((r) =>
-            [r.idx, r.name, r.effectiveLang, r.fullUrl, r.inviteMsg.replace(/\n/g, " ")]
+            [r.idx, r.name, r.status, r.effectiveLang, r.fullUrl, r.inviteMsg.replace(/\n/g, " ")]
               .map((v) => `"${String(v).replace(/"/g, '""')}"`)
               .join(",")
           )
@@ -375,6 +761,10 @@ Gia đình Cô Chú Minh
       });
 
       buildRows();
+      fetchAnalytics(false);
+      setInterval(() => {
+        if (!document.hidden) fetchAnalytics(false);
+      }, 15000);
     })();
   </script>
 </body>

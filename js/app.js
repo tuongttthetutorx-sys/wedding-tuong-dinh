@@ -129,6 +129,44 @@
   let toastTimeout = null;
   let syncTopbarNavUI = null;
 
+  /* Real-time Guest Visit & Envelope Open Tracker (Cloudflare Edge /api/track) */
+  function getVisitorId() {
+    try {
+      let vid = localStorage.getItem("td_wedding_vid");
+      if (!vid) {
+        vid = "v_" + Math.random().toString(36).slice(2, 10) + "_" + Date.now().toString(36);
+        localStorage.setItem("td_wedding_vid", vid);
+      }
+      return vid;
+    } catch (_) {
+      return "v_anon";
+    }
+  }
+
+  function trackGuestActivity(eventType) {
+    try {
+      if (params.get("notrack") === "1" || params.get("debug_env")) return;
+      const cfg = window.WEDDING_CONFIG || {};
+      const isThankYou =
+        cfg.thankYouMode === true ||
+        params.get("mode") === "thankyou" ||
+        params.get("thankyou") === "1";
+      const payload = JSON.stringify({
+        event: eventType || "view",
+        guest: guestName || "",
+        lang: currentLang,
+        mode: isThankYou ? "thankyou" : "invite",
+        vid: getVisitorId()
+      });
+      fetch("/api/track", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+        keepalive: true
+      }).catch(() => {});
+    } catch (_) {}
+  }
+
   /* Auto-fit long Guest Names cleanly inside Envelope & Card 1 dotted lines on narrow mobile screens */
   function fitGuestNameElement(textEl, slotEl, minPx) {
     if (!textEl) return;
@@ -1000,6 +1038,7 @@
       isFlipping = true;
       flipStartedAt = Date.now();
       envelopeFlipped = true;
+      trackGuestActivity("flip_back");
 
       stage.style.setProperty("--flip-dir", String(dir >= 0 ? 1 : -1));
       stage.classList.remove(
@@ -1056,6 +1095,7 @@
       clearFlipTimer();
       clearHandoffState();
       isFlipping = false;
+      trackGuestActivity("open_envelope");
 
       const prefersReducedMotion =
         window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -2152,6 +2192,10 @@
     });
 
     applyLanguage(currentLang);
+    trackGuestActivity("view");
+    if (envelopeOpened) {
+      trackGuestActivity("open_envelope");
+    }
 
     // Re-fit Guest Names once Google Fonts (Dancing Script / Noto Serif TC) finish swapping AND on viewport resize
     if (document.fonts && document.fonts.ready) {
