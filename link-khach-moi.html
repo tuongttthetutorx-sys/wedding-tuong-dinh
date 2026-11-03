@@ -1073,7 +1073,7 @@
                   ✨ Dàn Trang A4 Thông Minh: Ghép Chung "Khách Có QR Riêng" + "Khách Dùng QR Chung"
                 </div>
                 <div style="font-size:12.5px; color:var(--adm-muted); margin-bottom:10px; line-height:1.5;">
-                  Mỗi chiếc Bookmark đều in đồng bộ <strong>Tường &amp; Dinh · 06.01.2027</strong> và <strong>Thiệp Online &amp; Bản Đồ</strong>. Với những khách có QR riêng, hệ thống sẽ tạo đúng <strong>Mã QR cá nhân hóa</strong> của khách đó kèm dòng ghi chú tên khách ở mép gập để bạn bỏ đúng vào thiệp của từng người!
+                  Mỗi chiếc Bookmark đều in đồng bộ <strong>Tường &amp; Dinh · 06.01.2027</strong> và <strong>Thiệp &amp; Bản Đồ</strong>. Với những khách có QR riêng, hệ thống sẽ tạo đúng <strong>Mã QR cá nhân hóa</strong> của khách đó kèm dòng ghi chú tên khách ở mép gập để bạn bỏ đúng vào thiệp của từng người!
                 </div>
                 <div style="display:grid; grid-template-columns: 1.2fr 0.8fr; gap:12px; align-items:start;">
                   <div>
@@ -2133,27 +2133,27 @@
           ctx.fillText("囍", sealCx, sealCy + 1.5);
           ctx.textBaseline = "alphabetic";
 
-          // Crisp, Easy-to-Read Concise Footer Caption below QR ("THIỆP ONLINE & BẢN ĐỒ")
+          // Crisp, Easy-to-Read Concise Footer Caption below QR ("THIỆP & BẢN ĐỒ")
           ctx.textAlign = "center";
           ctx.fillStyle = "#681115";
           if (capMode === "zh") {
             ctx.font = '700 24px "Noto Serif TC", serif';
-            ctx.fillText("電子喜帖 ＆ 婚宴地圖", W / 2, 1188);
+            ctx.fillText("喜 帖 ＆ 婚 宴 地 圖", W / 2, 1188);
             ctx.fillStyle = "#7a3b0c";
             ctx.font = '600 19.5px "Noto Serif TC", serif';
             ctx.fillText("掃碼開啟導航 · 06.01.2027", W / 2, 1226);
           } else if (capMode === "vi") {
-            ctx.font = '700 23.5px "Be Vietnam Pro", sans-serif';
-            ctx.fillText("THIỆP ONLINE & BẢN ĐỒ", W / 2, 1188);
+            ctx.font = '700 24.5px "Cormorant Garamond", "Be Vietnam Pro", serif';
+            ctx.fillText("T H I Ệ P   &   B Ả N   Đ Ồ", W / 2, 1188);
             ctx.fillStyle = "#7a3b0c";
             ctx.font = '600 19px "Be Vietnam Pro", sans-serif';
             ctx.fillText("Quét mã xem thiệp & chỉ đường", W / 2, 1226);
           } else {
-            ctx.font = '700 23.5px "Be Vietnam Pro", sans-serif';
-            ctx.fillText("THIỆP ONLINE & BẢN ĐỒ", W / 2, 1186);
+            ctx.font = '700 24.5px "Cormorant Garamond", "Be Vietnam Pro", serif';
+            ctx.fillText("T H I Ệ P   &   B Ả N   Đ Ồ", W / 2, 1186);
             ctx.fillStyle = "#7a3b0c";
             ctx.font = '600 20px "Noto Serif TC", serif';
-            ctx.fillText("掃碼看電子喜帖與導航", W / 2, 1224);
+            ctx.fillText("喜 帖 與 婚 宴 地 圖 導 航", W / 2, 1224);
           }
 
           ctx.fillStyle = "#6e4b4b";
