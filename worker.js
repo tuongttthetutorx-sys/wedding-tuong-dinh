@@ -1,5 +1,5 @@
 /**
- * Cloudflare Worker + Global SQLite Durable Object for Wedding Invitation Analytics
+ * Cloudflare Worker + Global SQLite Durable Object for Wedding Invitation Analytics (v57)
  * - Level 2A: Summary KPIs (Total Opens, Unique Guests, Envelope Unseals, Country Breakdown VN/TW)
  * - Level 2B (Detailed Unmerged Session Log): Every single open / device session is recorded
  *   individually with detailed Device Model + OS + Browser/App (Zalo, LINE, Safari, Chrome...) + City + Timestamp.
