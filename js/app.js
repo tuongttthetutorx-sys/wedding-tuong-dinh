@@ -251,6 +251,7 @@
     syncPulloutCardPreview();
     indexCard2BorderGlyphs();
     bindCard1EasterEggs();
+    bindCard3EasterEggs();
   }
 
   /* Group Card 2's 248 handwritten border strokes into their exact 50 English words (--wi: 0..49)
@@ -697,6 +698,38 @@
           if (rightGuests) spawnGuestHearts(rightGuests, null);
         }, 220);
       }, 300);
+    }
+  }
+
+  function bindCard3EasterEggs() {
+    const svgWrap3 = document.getElementById("svg-card-3");
+    if (!svgWrap3) return;
+    const crane = svgWrap3.querySelector(".c3-crane");
+    const xi = svgWrap3.querySelector(".c3-xi-emblem");
+
+    const triggerCraneBlessing = (anchor, ev) => {
+      const isZh = currentLang === "zh";
+      const phrase = isZh
+        ? { ornament: "囍", speaker: "仙鶴獻瑞", words: "百年好合 · 永結同心 ♥" }
+        : { ornament: "囍", speaker: "Hạc Tiên Chúc Phúc", words: "Trăm năm hạnh phúc · Vĩnh kết đồng tâm ♥" };
+      spawnFloatingWhisper(anchor, ev, phrase, false, 3.8);
+      spawnGuestHearts(anchor, ev, 8);
+    };
+
+    if (crane) {
+      crane.addEventListener("click", (e) => {
+        e.stopPropagation();
+        svgWrap3.classList.remove("is-playing-entrance");
+        void crane.offsetWidth;
+        svgWrap3.classList.add("is-playing-entrance");
+        triggerCraneBlessing(crane, e);
+      });
+    }
+    if (xi) {
+      xi.addEventListener("click", (e) => {
+        e.stopPropagation();
+        triggerCraneBlessing(xi, e);
+      });
     }
   }
 
@@ -1335,9 +1368,9 @@
 
         // Beat 4b (+1370ms, exact landing on toRect): Seamless 0.0px handoff to real scrollable card + show scroll cue
         queueHandoff(() => {
-          firstCard.dataset.revealed = "1";
           firstCard.classList.remove("will-reveal", "is-handoff-target");
           firstCard.classList.add("is-visible", "is-revealed-done");
+          revealCard(firstCard);
           triggerScrollRevealCheck();
 
           flyingCard.classList.add("is-fading-handoff");
@@ -1482,6 +1515,16 @@
         envelopeFlipped = false;
         envelopeOpened = false;
         hasPlayedWelcomeGreeting = false;
+        document.querySelectorAll(".card-svg-stage").forEach((s) => {
+          delete s.dataset.entrancePlayed;
+          s.classList.remove("is-playing-entrance");
+          if (s.id === "svg-card-2" || s.id === "svg-card-3") {
+            s.classList.add("is-awaiting-entrance");
+          }
+        });
+        document.querySelectorAll(".stationery-card").forEach((c) => {
+          delete c.dataset.revealed;
+        });
         if (scrollCueBtn) scrollCueBtn.classList.remove("is-visible");
         if (flapStage) flapStage.classList.remove("is-behind");
         if (topFlap) topFlap.classList.remove("is-behind");
@@ -1525,10 +1568,27 @@
     document.addEventListener("click", unlockOnce, { passive: true });
   }
 
-  /* 6. Scroll Reveal Observer for Stationery Cards & Card 2 Handwritten Border Secret */
+  /* 6. Scroll Reveal Observer for Stationery Cards & First-Open Artwork Entrance Choreography */
   let cardObserver = null;
   function revealCard(card) {
-    if (!card || card.dataset.revealed === "1") return;
+    if (!card) return;
+    const svgStage = card.querySelector(".card-svg-stage");
+    if (svgStage && !svgStage.dataset.entrancePlayed) {
+      svgStage.dataset.entrancePlayed = "1";
+      svgStage.classList.remove("is-awaiting-entrance");
+      svgStage.classList.add("is-playing-entrance");
+
+      // When Card 3 (Chinese Traditional Card) first enters view and the Crane flies in, release auspicious hearts!
+      if (svgStage.id === "svg-card-3") {
+        setTimeout(() => {
+          const craneEl = svgStage.querySelector(".c3-crane");
+          if (craneEl) {
+            spawnGuestHearts(craneEl, null, 10);
+          }
+        }, 1150);
+      }
+    }
+    if (card.dataset.revealed === "1") return;
     card.dataset.revealed = "1";
     card.classList.add("is-visible");
     setTimeout(() => {
@@ -1539,6 +1599,11 @@
 
   function setupScrollReveal() {
     const cards = document.querySelectorAll(".stationery-card");
+    const svg2 = document.getElementById("svg-card-2");
+    const svg3 = document.getElementById("svg-card-3");
+    if (svg2) svg2.classList.add("is-awaiting-entrance");
+    if (svg3) svg3.classList.add("is-awaiting-entrance");
+
     if (!("IntersectionObserver" in window)) {
       cards.forEach((c) => {
         c.classList.add("is-visible", "is-revealed-done");
@@ -1548,15 +1613,17 @@
     cards.forEach((c) => c.classList.add("will-reveal"));
     cardObserver = new IntersectionObserver(
       (entries) => {
+        if (!envelopeOpened || document.body.classList.contains("is-table-preparing")) return;
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             revealCard(entry.target);
           }
         });
       },
-      { threshold: 0.08 }
+      { threshold: 0.14 }
     );
     cards.forEach((c) => cardObserver.observe(c));
+    window.addEventListener("scroll", triggerScrollRevealCheck, { passive: true });
   }
 
   /* 6b. Card 2 Quiet-Luxury Fountain-Pen Handwriting, Hot-Foil Glint & Editorial Epigraph
@@ -1619,14 +1686,36 @@
         (entries) => {
           entries.forEach((entry) => {
             card2.classList.toggle("is-in-view", entry.isIntersecting);
-            if (entry.isIntersecting && entry.intersectionRatio >= 0.32) {
+            if (
+              envelopeOpened &&
+              !document.body.classList.contains("is-table-preparing") &&
+              entry.isIntersecting &&
+              entry.intersectionRatio >= 0.25
+            ) {
               startPenWrite();
             }
           });
         },
-        { threshold: [0.05, 0.32] }
+        { threshold: [0.05, 0.25] }
       );
       penObserver.observe(card2);
+      window.addEventListener(
+        "scroll",
+        () => {
+          if (
+            !penStarted &&
+            envelopeOpened &&
+            !document.body.classList.contains("is-table-preparing")
+          ) {
+            const r = card2.getBoundingClientRect();
+            const vh = window.innerHeight || 800;
+            if (r.top < vh * 0.72 && r.bottom > vh * 0.25) {
+              startPenWrite();
+            }
+          }
+        },
+        { passive: true }
+      );
     }
 
     function focusEdge(edge, pauseMs) {
@@ -1749,10 +1838,11 @@
   }
 
   function triggerScrollRevealCheck() {
+    if (!envelopeOpened || document.body.classList.contains("is-table-preparing")) return;
     const vh = window.innerHeight || 900;
     document.querySelectorAll(".stationery-card").forEach((card) => {
       const rect = card.getBoundingClientRect();
-      if (rect.top < vh * 0.98 && rect.bottom > -50) {
+      if (rect.top < vh * 0.78 && rect.bottom > 40) {
         revealCard(card);
       }
     });
