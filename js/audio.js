@@ -32,7 +32,7 @@
       let el = document.getElementById("wedding-bgm");
       const cfgSrc = (
         (window.WEDDING_CONFIG && window.WEDDING_CONFIG.customAudioSrc) ||
-        "assets/wedding-canon.mp3"
+        "assets/tang-em-doa-hoa-hong.mp3?v=43"
       ).trim();
 
       if (!el) {
@@ -41,7 +41,7 @@
         el.preload = "auto";
         el.setAttribute("playsinline", "");
         el.setAttribute("webkit-playsinline", "");
-      } else if (cfgSrc && !el.getAttribute("src")) {
+      } else if (cfgSrc && el.getAttribute("src") !== cfgSrc) {
         el.src = cfgSrc;
       }
 

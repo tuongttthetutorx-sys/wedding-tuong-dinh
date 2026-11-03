@@ -25,9 +25,9 @@ window.WEDDING_CONFIG = {
     googleMapsEmbed: "https://maps.google.com/maps?q=Riverside%20Palace%20360D%20B%E1%BA%BFn%20V%C3%A2n%20%C4%90%E1%BB%93n%20H%E1%BB%93%20Ch%C3%AD%20Minh&t=&z=16&ie=UTF8&iwloc=&output=embed"
   },
 
-  /* Nhạc nền mặc định: Bản hòa tấu Acoustic Grand Piano, Harp & Strings — Canon in D (assets/wedding-canon.mp3).
+  /* Nhạc nền mặc định: Tặng Em Đoá Hoa Hồng (assets/tang-em-doa-hoa-hong.mp3).
      Nếu muốn đổi sang bài MP3 khác, chỉ cần chép file vào thư mục assets/ và sửa tên file bên dưới: */
-  customAudioSrc: "assets/wedding-canon.mp3",
+  customAudioSrc: "assets/tang-em-doa-hoa-hong.mp3?v=43",
 
   /* ==========================================================================
      QUẢN LÝ TRUY CẬP & CHẾ ĐỘ THIỆP CẢM ƠN SAU NGÀY CƯỚI (06.01.2027)
