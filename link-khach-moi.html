@@ -1978,14 +1978,19 @@
 
         const isPinterestStrip = layoutMode === "pinterest_strip";
         // Exact A4-filling ratio: 6 cols x 3 rows inside 197mm x 284mm (6.5mm safe printer margin on all 4 sides of A4)
-        // Each Bookmark is ~3.28cm wide x 9.46cm tall (W=460, H=1326)
+        // Logical size: W=460, H=1326. Rendered at 3x Super-Sampling (1380 x 3978 px = ~1,060 DPI Ultra-HD Print Quality!)
         const W = isPinterestStrip ? 460 : 900;
         const H = isPinterestStrip ? 1326 : 1120;
-        if (qrCanvas.width !== W) qrCanvas.width = W;
-        if (qrCanvas.height !== H) qrCanvas.height = H;
+        const SCALE = 3;
+        const physW = W * SCALE;
+        const physH = H * SCALE;
+        if (qrCanvas.width !== physW) qrCanvas.width = physW;
+        if (qrCanvas.height !== physH) qrCanvas.height = physH;
 
         const ctx = qrCanvas.getContext("2d");
-        ctx.clearRect(0, 0, W, H);
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, physW, physH);
+        ctx.scale(SCALE, SCALE);
 
         // Generate QR Matrix (Error Correction Level H for 30% redundancy around center 囍 seal)
         const qr = window.qrcode(0, "H");
@@ -2011,6 +2016,12 @@
             ctx.fill();
           } else {
             ctx.fillRect(0, 0, W, H);
+            // Crisp outer cut guide border directly on the 1,060-DPI canvas so it is 100% visible in PDF & Print
+            ctx.save();
+            ctx.strokeStyle = "#b07b72";
+            ctx.lineWidth = 1.6;
+            ctx.strokeRect(0.8, 0.8, W - 1.6, H - 1.6);
+            ctx.restore();
           }
 
           // Clear dashed fold line (-------------) across the width with 2mm safe inner margin at both ends
@@ -2515,12 +2526,12 @@
       display: grid;
       grid-template-columns: repeat(${cols}, 1fr);
       gap: 0;
-      border-top: 0.15mm solid rgba(125, 21, 24, 0.24);
-      border-left: 0.15mm solid rgba(125, 21, 24, 0.24);
+      border-top: 0.25mm solid #b07b72;
+      border-left: 0.25mm solid #b07b72;
     }
     .sticker-cell {
-      border-right: 0.15mm solid rgba(125, 21, 24, 0.22);
-      border-bottom: 0.15mm solid rgba(125, 21, 24, 0.22);
+      border-right: 0.25mm solid #b07b72;
+      border-bottom: 0.25mm solid #b07b72;
       padding: ${isPinterestStrip ? "0" : "1.8mm 2.2mm"};
       display: flex;
       align-items: center;
@@ -2652,12 +2663,12 @@
       display: grid;
       grid-template-columns: repeat(${cols}, 1fr);
       gap: 0;
-      border-top: 0.15mm solid rgba(125, 21, 24, 0.24);
-      border-left: 0.15mm solid rgba(125, 21, 24, 0.24);
+      border-top: 0.25mm solid #b07b72;
+      border-left: 0.25mm solid #b07b72;
     }
     .sticker-cell {
-      border-right: 0.15mm solid rgba(125, 21, 24, 0.22);
-      border-bottom: 0.15mm solid rgba(125, 21, 24, 0.22);
+      border-right: 0.25mm solid #b07b72;
+      border-bottom: 0.25mm solid #b07b72;
       padding: ${isPinterestStrip ? "0" : "1.8mm 2.2mm"};
       display: flex;
       align-items: center;
