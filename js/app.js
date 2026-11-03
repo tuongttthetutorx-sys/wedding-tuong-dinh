@@ -130,6 +130,9 @@
   let syncTopbarNavUI = null;
 
   /* Real-time Guest Visit & Envelope Open Tracker (Cloudflare Edge /api/track) */
+  const VISIT_SESSION_ID =
+    "s_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 9);
+
   function getVisitorId() {
     try {
       let vid = localStorage.getItem("td_wedding_vid");
@@ -151,12 +154,18 @@
         cfg.thankYouMode === true ||
         params.get("mode") === "thankyou" ||
         params.get("thankyou") === "1";
+      const screenStr =
+        window.screen && window.screen.width && window.screen.height
+          ? `${window.screen.width}×${window.screen.height}`
+          : "";
       const payload = JSON.stringify({
         event: eventType || "view",
         guest: guestName || "",
         lang: currentLang,
         mode: isThankYou ? "thankyou" : "invite",
-        vid: getVisitorId()
+        vid: getVisitorId(),
+        sid: VISIT_SESSION_ID,
+        screen: screenStr
       });
       fetch("/api/track", {
         method: "POST",

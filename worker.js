@@ -1,17 +1,85 @@
 /**
  * Cloudflare Worker + Global SQLite Durable Object for Wedding Invitation Analytics
- * Tracks both Level 2A (Total Views, Unique Visitors, Envelope Opens, Country Breakdown VN/TW)
- * and Level 2B (Per-Guest real-time activity log: Guest Name, Open Status, Device, Location, Time).
+ * - Level 2A: Summary KPIs (Total Opens, Unique Guests, Envelope Unseals, Country Breakdown VN/TW)
+ * - Level 2B (Detailed Unmerged Session Log): Every single open / device session is recorded
+ *   individually with detailed Device Model + OS + Browser/App (Zalo, LINE, Safari, Chrome...) + City + Timestamp.
+ * - Permanent Server-Side Saved Guest List: Remembers all generated guest links across reloads & devices.
  */
 
-function parseDeviceLabel(ua = "") {
+function parseDetailedDevice(ua = "", screen = "") {
   const s = String(ua);
-  if (/iPhone/i.test(s)) return "iPhone";
-  if (/iPad/i.test(s)) return "iPad";
-  if (/Android/i.test(s)) return "Android";
-  if (/Macintosh|Mac OS X/i.test(s)) return "Mac";
-  if (/Windows/i.test(s)) return "Windows PC";
-  return "Thiết bị khác";
+
+  // 1. Detect In-App Browser or Standalone Browser
+  let appOrBrowser = "Trình duyệt Web";
+  if (/Zalo/i.test(s)) {
+    appOrBrowser = "App Zalo";
+  } else if (/\bLine\//i.test(s)) {
+    appOrBrowser = "App LINE";
+  } else if (/FBAN|FBAV|FB_IAB|Messenger/i.test(s)) {
+    appOrBrowser = /Messenger/i.test(s) ? "App Messenger" : "App Facebook";
+  } else if (/Instagram/i.test(s)) {
+    appOrBrowser = "App Instagram";
+  } else if (/MicroMessenger/i.test(s)) {
+    appOrBrowser = "App WeChat";
+  } else if (/TikTok|BytedanceWebview/i.test(s)) {
+    appOrBrowser = "App TikTok";
+  } else if (/CocCoc|coc_coc_browser/i.test(s)) {
+    appOrBrowser = "Cốc Cốc";
+  } else if (/SamsungBrowser/i.test(s)) {
+    appOrBrowser = "Samsung Internet";
+  } else if (/Edg\/|EdgiOS|EdgA/i.test(s)) {
+    appOrBrowser = "Microsoft Edge";
+  } else if (/CriOS|Chrome\//i.test(s) && !/Edg/i.test(s)) {
+    appOrBrowser = "Chrome";
+  } else if (/FxiOS|Firefox\//i.test(s)) {
+    appOrBrowser = "Firefox";
+  } else if (/Safari\//i.test(s) && /Version\//i.test(s)) {
+    appOrBrowser = "Safari";
+  } else if (/iPhone|iPad/i.test(s)) {
+    appOrBrowser = "Safari / WebKit";
+  }
+
+  // 2. Detect Device Hardware & OS Version
+  let deviceHardware = "Thiết bị khác";
+  if (/iPhone/i.test(s)) {
+    const iosMatch = s.match(/OS (\d+)[._](\d+)/);
+    const iosVer = iosMatch ? `iOS ${iosMatch[1]}.${iosMatch[2]}` : "iOS";
+    deviceHardware = `📱 iPhone (${iosVer})`;
+  } else if (/iPad/i.test(s)) {
+    const iosMatch = s.match(/OS (\d+)[._](\d+)/);
+    const iosVer = iosMatch ? `iPadOS ${iosMatch[1]}.${iosMatch[2]}` : "iPadOS";
+    deviceHardware = `📱 iPad (${iosVer})`;
+  } else if (/Android/i.test(s)) {
+    const verMatch = s.match(/Android\s+([0-9.]+)/i);
+    const andVer = verMatch ? `Android ${verMatch[1]}` : "Android";
+    let model = "";
+    const modelMatch = s.match(/Android[^;)]*;\s*([^;)]+?)(?:\s+Build\/|\))/i);
+    if (modelMatch && modelMatch[1]) {
+      const rawModel = modelMatch[1].trim();
+      if (rawModel && !/^K$/i.test(rawModel) && !/wv/i.test(rawModel)) {
+        model = rawModel;
+      }
+    }
+    if (!model) {
+      if (/Samsung|SM-/i.test(s)) model = "Samsung";
+      else if (/Xiaomi|Redmi|POCO/i.test(s)) model = "Xiaomi";
+      else if (/OPPO|CPH/i.test(s)) model = "OPPO";
+      else if (/Vivo/i.test(s)) model = "Vivo";
+      else if (/Pixel/i.test(s)) model = "Google Pixel";
+    }
+    deviceHardware = model ? `📱 ${model} (${andVer})` : `📱 Điện thoại ${andVer}`;
+  } else if (/Macintosh|Mac OS X/i.test(s)) {
+    deviceHardware = "💻 Máy tính Mac (macOS)";
+  } else if (/Windows NT 10\.0/i.test(s)) {
+    deviceHardware = "💻 Máy tính Windows 10/11";
+  } else if (/Windows/i.test(s)) {
+    deviceHardware = "💻 Máy tính Windows";
+  } else if (/Linux/i.test(s)) {
+    deviceHardware = "💻 Máy tính Linux";
+  }
+
+  const screenNote = screen ? ` [${screen}]` : "";
+  return `${deviceHardware} • ${appOrBrowser}${screenNote}`;
 }
 
 function isBotUserAgent(ua = "") {
@@ -20,20 +88,28 @@ function isBotUserAgent(ua = "") {
   );
 }
 
+function normalizeGuestKey(name = "") {
+  return String(name || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
+}
+
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type"
 };
 
-function defaultState() {
+function defaultState(existingSavedGuests = []) {
   return {
     totalViews: 0,
     openedEnvelopeTotal: 0,
     flippedBackTotal: 0,
     countries: {},
-    visitors: {}, // key -> guest/visitor record
-    recentEvents: [], // latest 250 guest records sorted by lastSeenAt
+    visitors: {}, // key -> aggregated guest summary
+    visitLogs: [], // unmerged array of every individual visit/device session
+    savedGuests: Array.isArray(existingSavedGuests) ? existingSavedGuests : [],
     updatedAt: new Date().toISOString()
   };
 }
@@ -46,7 +122,49 @@ export class WeddingAnalytics {
 
   async loadData() {
     const stored = await this.state.storage.get("analytics_v1");
-    return stored && typeof stored === "object" ? stored : defaultState();
+    if (!stored || typeof stored !== "object") {
+      return defaultState();
+    }
+    if (!Array.isArray(stored.visitLogs)) {
+      stored.visitLogs = [];
+      // Backfill visitLogs from existing visitors if upgrading from v1
+      const existingVisitors = Object.values(stored.visitors || {});
+      existingVisitors.forEach((v) => {
+        stored.visitLogs.push({
+          sid: "legacy_" + v.key,
+          guestName: v.guestName,
+          hasCustomName: Boolean(v.hasCustomName),
+          lang: v.lang || "vi",
+          mode: v.mode || "invite",
+          country: v.country || "VN",
+          city: v.city || "",
+          deviceDetail: v.deviceDetail || v.device || "Thiết bị di động",
+          openedEnvelope: Boolean(v.openedEnvelope),
+          flippedBack: Boolean(v.flippedBack),
+          openedAt: v.lastSeenAt || v.firstSeenAt || new Date().toISOString(),
+          lastActionAt: v.lastSeenAt || new Date().toISOString()
+        });
+      });
+    }
+    if (!Array.isArray(stored.savedGuests)) {
+      stored.savedGuests = [];
+      // Automatically preserve any named guest already seen in visitors
+      Object.values(stored.visitors || {}).forEach((v) => {
+        if (v && v.hasCustomName && v.guestName) {
+          const k = normalizeGuestKey(v.guestName);
+          if (!stored.savedGuests.some((g) => normalizeGuestKey(g.name) === k)) {
+            stored.savedGuests.push({
+              name: v.guestName,
+              lang: v.lang || "vi",
+              mode: v.mode || "invite",
+              driveUrl: "",
+              createdAt: v.firstSeenAt || new Date().toISOString()
+            });
+          }
+        }
+      });
+    }
+    return stored;
   }
 
   async saveData(data) {
@@ -61,12 +179,67 @@ export class WeddingAnalytics {
       return new Response(null, { status: 204, headers: CORS_HEADERS });
     }
 
+    // Reset analytics counters & logs (keeps savedGuests intact unless clearGuests=true)
     if (url.pathname === "/api/reset" && request.method === "POST") {
-      const fresh = defaultState();
+      const current = await this.loadData();
+      const fresh = defaultState(current.savedGuests || []);
       await this.saveData(fresh);
       return Response.json({ ok: true, stats: this.formatStats(fresh) }, { headers: CORS_HEADERS });
     }
 
+    // Manage permanent saved guest list on server
+    if (url.pathname === "/api/guests" && request.method === "POST") {
+      let body = {};
+      try {
+        body = await request.json();
+      } catch (_) {}
+
+      const data = await this.loadData();
+      const action = String(body.action || "add");
+
+      if (action === "add" && Array.isArray(body.guests)) {
+        body.guests.forEach((item) => {
+          const name = String(item && item.name ? item.name : "").trim();
+          if (!name) return;
+          const k = normalizeGuestKey(name);
+          const existingIdx = data.savedGuests.findIndex(
+            (g) => normalizeGuestKey(g.name) === k
+          );
+          const record = {
+            name,
+            lang: item.lang === "zh" ? "zh" : "vi",
+            mode: item.mode === "thankyou" ? "thankyou" : "invite",
+            driveUrl: String(item.driveUrl || "").trim(),
+            createdAt:
+              existingIdx >= 0 && data.savedGuests[existingIdx].createdAt
+                ? data.savedGuests[existingIdx].createdAt
+                : new Date().toISOString()
+          };
+          if (existingIdx >= 0) {
+            data.savedGuests[existingIdx] = record;
+          } else {
+            data.savedGuests.push(record);
+          }
+        });
+      } else if (action === "remove") {
+        const targetKey = normalizeGuestKey(body.name || "");
+        if (targetKey) {
+          data.savedGuests = data.savedGuests.filter(
+            (g) => normalizeGuestKey(g.name) !== targetKey
+          );
+        }
+      } else if (action === "clear") {
+        data.savedGuests = [];
+      }
+
+      await this.saveData(data);
+      return Response.json(
+        { ok: true, savedGuests: data.savedGuests, stats: this.formatStats(data) },
+        { headers: CORS_HEADERS }
+      );
+    }
+
+    // Track guest open & envelope interaction (unmerged per session + aggregated per guest)
     if (url.pathname === "/api/track" && request.method === "POST") {
       let body = {};
       try {
@@ -82,20 +255,81 @@ export class WeddingAnalytics {
       const rawGuest = String(body.guest || "").trim();
       const guestName = rawGuest || "Khách mở link chung (không kèm tên)";
       const vid = String(body.vid || "anon").slice(0, 64);
+      const sid = String(body.sid || `${vid}_${Date.now()}`).slice(0, 80);
+      const screen = String(body.screen || "").slice(0, 24);
       const lang = body.lang === "zh" ? "zh" : "vi";
       const mode = body.mode === "thankyou" ? "thankyou" : "invite";
       const country = String(body.country || "VN").toUpperCase();
       const city = String(body.city || "").trim();
-      const device = parseDeviceLabel(ua);
+      const deviceDetail = parseDetailedDevice(ua, screen);
       const now = new Date().toISOString();
 
       const data = await this.loadData();
 
-      // Group key: if guest has a specific name (?to=...), group by normalized guest name; otherwise by visitor ID
-      const key = rawGuest
-        ? "guest:" + rawGuest.toLowerCase().replace(/\s+/g, " ")
-        : "anon:" + vid;
+      // Auto-register named guest in savedGuests if not already saved
+      if (rawGuest) {
+        const gk = normalizeGuestKey(rawGuest);
+        if (!data.savedGuests.some((g) => normalizeGuestKey(g.name) === gk)) {
+          data.savedGuests.push({
+            name: rawGuest,
+            lang,
+            mode,
+            driveUrl: "",
+            createdAt: now
+          });
+        }
+      }
 
+      // 1. Update Individual Unmerged Session Log (data.visitLogs)
+      let sessionEntry = data.visitLogs.find((item) => item.sid === sid);
+      if (!sessionEntry) {
+        sessionEntry = {
+          sid,
+          vid,
+          guestName,
+          hasCustomName: Boolean(rawGuest),
+          lang,
+          mode,
+          country,
+          city,
+          deviceDetail,
+          openedEnvelope: false,
+          flippedBack: false,
+          openedAt: now,
+          lastActionAt: now
+        };
+        data.visitLogs.unshift(sessionEntry);
+        if (eventType !== "view") {
+          // In case open_envelope arrived without prior view event
+          data.totalViews = (data.totalViews || 0) + 1;
+          data.countries[country] = (data.countries[country] || 0) + 1;
+        }
+      }
+
+      sessionEntry.guestName = guestName;
+      sessionEntry.lang = lang;
+      sessionEntry.mode = mode;
+      if (country) sessionEntry.country = country;
+      if (city) sessionEntry.city = city;
+      if (deviceDetail) sessionEntry.deviceDetail = deviceDetail;
+      sessionEntry.lastActionAt = now;
+
+      if (eventType === "view") {
+        data.totalViews = (data.totalViews || 0) + 1;
+        data.countries[country] = (data.countries[country] || 0) + 1;
+      } else if (eventType === "open_envelope") {
+        sessionEntry.openedEnvelope = true;
+      } else if (eventType === "flip_back") {
+        sessionEntry.flippedBack = true;
+      }
+
+      // Keep latest 500 detailed session logs
+      if (data.visitLogs.length > 500) {
+        data.visitLogs = data.visitLogs.slice(0, 500);
+      }
+
+      // 2. Also maintain per-guest summary for unique guest KPI & quick lookup
+      const key = rawGuest ? "guest:" + normalizeGuestKey(rawGuest) : "anon:" + vid;
       let rec = data.visitors[key];
       if (!rec) {
         rec = {
@@ -107,7 +341,7 @@ export class WeddingAnalytics {
           mode,
           country,
           city,
-          device,
+          device: deviceDetail,
           views: 0,
           openedEnvelope: false,
           flippedBack: false,
@@ -122,13 +356,11 @@ export class WeddingAnalytics {
       rec.mode = mode;
       if (country) rec.country = country;
       if (city) rec.city = city;
-      if (device) rec.device = device;
+      if (deviceDetail) rec.device = deviceDetail;
       rec.lastSeenAt = now;
 
       if (eventType === "view") {
-        data.totalViews = (data.totalViews || 0) + 1;
         rec.views = (rec.views || 0) + 1;
-        data.countries[country] = (data.countries[country] || 0) + 1;
       } else if (eventType === "open_envelope") {
         if (!rec.openedEnvelope) {
           rec.openedEnvelope = true;
@@ -139,19 +371,6 @@ export class WeddingAnalytics {
           rec.flippedBack = true;
           data.flippedBackTotal = (data.flippedBackTotal || 0) + 1;
         }
-      }
-
-      // Keep max 400 visitor records so storage stays fast and compact
-      const allKeys = Object.keys(data.visitors);
-      if (allKeys.length > 400) {
-        const sorted = allKeys
-          .map((k) => data.visitors[k])
-          .sort((a, b) => String(b.lastSeenAt).localeCompare(String(a.lastSeenAt)));
-        const nextMap = {};
-        sorted.slice(0, 350).forEach((item) => {
-          nextMap[item.key] = item;
-        });
-        data.visitors = nextMap;
       }
 
       await this.saveData(data);
@@ -175,20 +394,23 @@ export class WeddingAnalytics {
   }
 
   formatStats(data) {
-    const list = Object.values(data.visitors || {}).sort((a, b) =>
+    const visitorsList = Object.values(data.visitors || {}).sort((a, b) =>
       String(b.lastSeenAt || "").localeCompare(String(a.lastSeenAt || ""))
     );
-    const uniqueVisitors = list.length;
-    const openedEnvelopeCount = list.filter((r) => r.openedEnvelope).length;
-    const flippedBackCount = list.filter((r) => r.flippedBack).length;
+    const visitLogs = Array.isArray(data.visitLogs) ? data.visitLogs : [];
+    const uniqueVisitors = visitorsList.length;
+    const openedEnvelopeCount = visitLogs.filter((r) => r.openedEnvelope).length;
+    const flippedBackCount = visitLogs.filter((r) => r.flippedBack).length;
 
     return {
-      totalViews: data.totalViews || 0,
+      totalViews: data.totalViews || visitLogs.length || 0,
       uniqueVisitors,
       openedEnvelopeCount,
       flippedBackCount,
       countries: data.countries || {},
-      guests: list.slice(0, 200),
+      visitLogs: visitLogs.slice(0, 300),
+      guests: visitorsList.slice(0, 200),
+      savedGuests: Array.isArray(data.savedGuests) ? data.savedGuests : [],
       updatedAt: data.updatedAt || new Date().toISOString()
     };
   }

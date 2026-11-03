@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Quản Lý Link Khách Mời &amp; Thống Kê Lượt Xem — Thuận Tường &amp; Tiểu Dinh</title>
+  <title>Quản Lý Link Khách Mời &amp; Thống Kê Chi Tiết Thiết Bị — Thuận Tường &amp; Tiểu Dinh</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Cormorant+Garamond:wght@600;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=40" />
+  <link rel="stylesheet" href="css/styles.css?v=41" />
   <style>
     body { overflow: auto; height: auto; }
-    .builder-wrap { max-width: 980px; margin: 0 auto; padding: 34px 16px calc(64px + env(safe-area-inset-bottom, 0px)); }
+    .builder-wrap { max-width: 1020px; margin: 0 auto; padding: 34px 16px calc(64px + env(safe-area-inset-bottom, 0px)); }
     .builder-header { text-align: center; margin-bottom: 26px; }
     .builder-header h1 {
       margin: 6px 0;
@@ -52,7 +52,7 @@
       opacity: 0.92;
     }
 
-    /* LIVE ANALYTICS DASHBOARD (LEVEL 2A + 2B) */
+    /* LIVE ANALYTICS DASHBOARD (LEVEL 2A + 2B UNMERGED) */
     .analytics-sheet {
       margin-bottom: 24px;
     }
@@ -120,11 +120,11 @@
       margin-bottom: 6px;
     }
     .kpi-value {
-      font-family: var(--font-serif);
-      font-size: clamp(26px, 3.6vw, 34px);
+      font-family: var(--font-sans);
+      font-size: clamp(24px, 3.2vw, 30px);
       font-weight: 700;
       color: var(--crimson-ink);
-      line-height: 1.05;
+      line-height: 1.1;
     }
     .kpi-foot {
       margin-top: 6px;
@@ -172,6 +172,34 @@
       background: rgba(120, 110, 110, 0.09);
       color: #6e6262;
       border: 1px solid rgba(120, 110, 110, 0.2);
+    }
+    .device-chip {
+      display: inline-block;
+      margin-top: 3px;
+      padding: 3px 8px;
+      border-radius: 5px;
+      background: rgba(132, 21, 23, 0.06);
+      border: 1px solid rgba(132, 21, 23, 0.14);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--crimson-ink);
+    }
+    .per-guest-device-list {
+      margin-top: 6px;
+      padding: 6px 8px;
+      border-radius: 6px;
+      background: rgba(132, 21, 23, 0.04);
+      border: 1px dashed rgba(132, 21, 23, 0.18);
+      font-size: 11.6px;
+      line-height: 1.5;
+      color: var(--text-main);
+    }
+    .per-guest-device-item {
+      padding: 2px 0;
+      border-bottom: 1px dotted rgba(132, 21, 23, 0.1);
+    }
+    .per-guest-device-item:last-child {
+      border-bottom: none;
     }
     .log-empty {
       padding: 20px;
@@ -225,7 +253,7 @@
       padding: 11px 12px;
       text-align: left;
       border-bottom: 1px solid rgba(132, 21, 23, 0.12);
-      vertical-align: middle;
+      vertical-align: top;
     }
     .guest-table th {
       background: rgba(132, 21, 23, 0.08);
@@ -237,7 +265,7 @@
       font-size: 11.8px;
       color: var(--text-muted);
       word-break: break-all;
-      max-width: 280px;
+      max-width: 260px;
     }
     .row-actions { display: flex; flex-wrap: wrap; gap: 6px; }
     .btn-mini {
@@ -262,6 +290,11 @@
     .btn-mini.primary {
       background: var(--crimson-ink);
       color: var(--ivory-ink);
+    }
+    .btn-mini.danger {
+      border-color: rgba(180, 35, 35, 0.35);
+      color: #a11b1b;
+      background: rgba(255, 245, 245, 0.9);
     }
     .btn-mini:hover { opacity: 0.88; transform: translateY(-1px); }
 
@@ -297,9 +330,9 @@
   <div class="builder-wrap">
     <div class="builder-header">
       <a href="index.html?notrack=1" class="footer-tools-link">← Quay lại xem Thiệp Cưới (Chế độ Cô Dâu &amp; Chú Rể)</a>
-      <h1>囍 Quản Lý Khách Mời &amp; Theo Dõi Lượt Mở Thiệp</h1>
-      <p style="color:var(--text-muted); max-width:640px; margin:0 auto; font-size:14px;">
-        Theo dõi trực tiếp tổng lượt xem thiệp (Việt Nam &amp; Đài Loan), biết chính xác <strong>khách mời nào đã mở thiệp</strong> và tạo link mời cá nhân hóa cho từng khách.
+      <h1>囍 Quản Lý Khách Mời &amp; Nhật Ký Mở Thiệp Chi Tiết</h1>
+      <p style="color:var(--text-muted); max-width:680px; margin:0 auto; font-size:14px;">
+        Ghi nhớ vĩnh viễn danh sách khách mời đã tạo trên máy chủ và theo dõi <strong>chi tiết từng lần mở thiệp, trên từng thiết bị cụ thể (không gộp)</strong>.
       </p>
     </div>
 
@@ -307,31 +340,31 @@
     <section class="paper-sheet analytics-sheet" aria-label="Thống kê lượt mở thiệp trực tiếp">
       <div class="analytics-top-bar">
         <div class="analytics-title-group">
-          <h2><span class="live-dot" aria-hidden="true"></span> Thống Kê Lượt Xem Thiệp (Thời Gian Thực)</h2>
+          <h2><span class="live-dot" aria-hidden="true"></span> Nhật Ký Mở Thiệp &amp; Thiết Bị (Thời Gian Thực)</h2>
           <p class="analytics-sub" id="stats-updated-label">Đang tải dữ liệu từ máy chủ thuantuongtieudinh.io.vn...</p>
         </div>
         <div class="analytics-actions">
           <button type="button" id="btn-refresh-stats" class="btn-mini primary">🔄 Làm mới ngay</button>
-          <button type="button" id="btn-reset-stats" class="btn-mini">🗑️ Xóa lịch sử test (Reset về 0)</button>
+          <button type="button" id="btn-reset-stats" class="btn-mini">🗑️ Reset lượt xem về 0 (Giữ nguyên DS khách)</button>
         </div>
       </div>
 
       <!-- MỨC 2A: 4 Ô TỔNG QUAN -->
       <div class="stats-kpi-grid">
         <div class="kpi-box">
-          <span class="kpi-label">Tổng lượt mở trang thiệp</span>
+          <span class="kpi-label">Tổng số lần mở thiệp</span>
           <span class="kpi-value" id="kpi-total-views">0</span>
-          <span class="kpi-foot">Tính mọi lần khách mở thiệp</span>
+          <span class="kpi-foot">Mỗi lần mở là 1 dòng nhật ký</span>
         </div>
         <div class="kpi-box">
           <span class="kpi-label">Số khách / gia đình đã xem</span>
           <span class="kpi-value" id="kpi-unique-guests">0</span>
-          <span class="kpi-foot">Gộp trùng theo tên khách mời</span>
+          <span class="kpi-foot">Số khách mời đã mở thiệp</span>
         </div>
         <div class="kpi-box">
-          <span class="kpi-label">Đã chạm mở nắp phong bì</span>
+          <span class="kpi-label">Số lần chạm mở phong bì</span>
           <span class="kpi-value" id="kpi-opened-env">0</span>
-          <span class="kpi-foot" id="kpi-flipped-back">0 khách đã lật xem mặt sau</span>
+          <span class="kpi-foot" id="kpi-flipped-back">0 lần đã lật xem mặt sau</span>
         </div>
         <div class="kpi-box">
           <span class="kpi-label">Khu vực mở thiệp (VN / Đài Loan)</span>
@@ -343,24 +376,24 @@
         </div>
       </div>
 
-      <!-- MỨC 2B: NHẬT KÝ CHI TIẾT TỪNG KHÁCH MỜI ĐÃ XEM -->
+      <!-- MỨC 2B: NHẬT KÝ CHI TIẾT TỪNG LẦN MỞ & TỪNG THIẾT BỊ (KHÔNG GỘP) -->
       <div>
-        <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px;">
-          <strong style="color:var(--crimson-ink); font-size:14.2px;">📋 Nhật ký khách mời đã mở thiệp gần nhất:</strong>
-          <span style="font-size:12px; color:var(--text-muted);">Tự động cập nhật mỗi 15 giây</span>
+        <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px;">
+          <strong style="color:var(--crimson-ink); font-size:14.2px;">📋 Nhật ký chi tiết từng lần mở thiệp &amp; từng thiết bị (Không gộp):</strong>
+          <span style="font-size:12px; color:var(--text-muted);">Hiển thị riêng từng lần mở • Tự động cập nhật mỗi 15 giây</span>
         </div>
         <div id="guest-activity-empty" class="log-empty">
-          Chưa có lượt mở thiệp nào được ghi nhận (hoặc bạn vừa Reset bộ đếm). Khi khách bấm vào link thiệp, tên khách và thời gian mở sẽ hiện ngay tại đây!
+          Chưa có lượt mở thiệp nào được ghi nhận. Khi khách bấm vào link thiệp trên điện thoại hay máy tính, từng lần mở và tên thiết bị cụ thể sẽ hiện chi tiết từng dòng tại đây!
         </div>
         <div class="builder-table-wrap" id="guest-activity-table-wrap" style="display:none; margin-top:8px;">
           <table class="guest-table">
             <thead>
               <tr>
-                <th>#</th>
+                <th>Lượt</th>
                 <th>Tên khách mời</th>
-                <th>Trạng thái xem thiệp</th>
-                <th>Khu vực &amp; Thiết bị</th>
-                <th>Số lần &amp; Thời gian mở</th>
+                <th>Hành động trong lần mở này</th>
+                <th>Thiết bị &amp; Ứng dụng mở thiệp</th>
+                <th>Khu vực &amp; Thời gian mở chính xác</th>
               </tr>
             </thead>
             <tbody id="guest-activity-tbody"></tbody>
@@ -369,7 +402,7 @@
       </div>
     </section>
 
-    <!-- CÔNG CỤ TẠO LINK KHÁCH MỜI -->
+    <!-- CÔNG CỤ TẠO & LƯU DANH SÁCH LINK KHÁCH MỜI -->
     <section class="paper-sheet">
       <div class="field-row-2" style="margin-bottom:14px;">
         <div class="field-group">
@@ -405,12 +438,13 @@
       </div>
 
       <div class="field-group">
-        <label for="guest-list">Danh sách tên khách mời (mỗi dòng 1 khách / gia đình — tự động lưu trên máy của bạn)</label>
-        <textarea id="guest-list" class="rsvp-textarea" style="min-height:140px;">Anh Tuấn & Chị Thảo
-Gia đình Cô Chú Minh
-陳伯父 闔府
-林志明先生 賢伉儷
-王雅婷 小姐</textarea>
+        <label for="guest-list">Nhập thêm tên khách mời mới (mỗi dòng 1 khách / gia đình — bấm nút Tạo sẽ tự động LƯU CỘNG DỒN vào danh sách bên dưới)</label>
+        <textarea
+          id="guest-list"
+          class="rsvp-textarea"
+          style="min-height:115px;"
+          placeholder="Nhập tên khách mời (mỗi dòng 1 tên), ví dụ:&#10;Anh Tuấn & Chị Thảo&#10;Gia đình Cô Chú Minh&#10;陳伯父 闔府&#10;林志明先生 賢伉儷"
+        ></textarea>
       </div>
 
       <div class="tw-guide-box">
@@ -423,9 +457,21 @@ Gia đình Cô Chú Minh
         </div>
       </div>
 
-      <div style="margin-top:14px; display:flex; flex-wrap:wrap; gap:10px;">
-        <button type="button" id="btn-generate" class="btn-crimson">✨ Tạo Danh Sách Link Mời</button>
-        <button type="button" id="btn-export-csv" class="btn-outline-crimson">📥 Tải File Excel (.CSV)</button>
+      <div style="margin-top:14px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px;">
+        <div style="display:flex; flex-wrap:wrap; gap:10px;">
+          <button type="button" id="btn-generate" class="btn-crimson">✨ Tạo &amp; Lưu Vào Danh Sách Khách Mời</button>
+          <button type="button" id="btn-export-csv" class="btn-outline-crimson">📥 Tải File Excel (.CSV)</button>
+        </div>
+        <button type="button" id="btn-clear-guests" class="btn-mini danger" title="Xóa toàn bộ danh sách khách mời đã lưu">🗑️ Xóa hết danh sách khách</button>
+      </div>
+
+      <div style="margin-top:20px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px;">
+        <strong style="color:var(--crimson-ink); font-size:15px;">
+          📌 Danh sách link khách mời đã tạo &amp; lưu (<span id="saved-guest-count">0</span> khách):
+        </strong>
+        <span style="font-size:12px; color:var(--text-muted);">
+          Tự động đồng bộ trên máy chủ — mở trên điện thoại hay máy tính đều thấy danh sách này
+        </span>
       </div>
 
       <div class="builder-table-wrap">
@@ -433,7 +479,7 @@ Gia đình Cô Chú Minh
           <thead>
             <tr>
               <th>#</th>
-              <th>Tên hiển thị &amp; Trạng thái xem</th>
+              <th>Tên khách mời &amp; Chi tiết thiết bị đã mở</th>
               <th>Link cá nhân hóa</th>
               <th>Thao tác nhanh (LINE / Zalo / Messenger)</th>
             </tr>
@@ -448,15 +494,19 @@ Gia đình Cô Chú Minh
 
   <script>
     (function () {
+      const STORAGE_SAVED_GUESTS = "td_saved_guests_v2";
       const baseInput = document.getElementById("base-url");
       const langSelect = document.getElementById("default-lang");
       const modeSelect = document.getElementById("card-mode");
       const driveInput = document.getElementById("drive-url");
       const listArea = document.getElementById("guest-list");
       const tbody = document.getElementById("guest-tbody");
+      const savedCountEl = document.getElementById("saved-guest-count");
       const toast = document.getElementById("puppy-toast");
       let timer = null;
-      let latestGuestMap = {}; // normalized guest name -> stats record
+
+      let savedGuests = []; // [{ name, lang, mode, driveUrl, createdAt }]
+      let visitLogsByGuest = {}; // normalizedName -> array of unmerged visit session logs
 
       const isLocal = /^(file:|https?:\/\/(localhost|127\.0\.0\.1))/i.test(window.location.href);
       const detectedBase = isLocal
@@ -466,25 +516,66 @@ Gia đình Cô Chú Minh
 
       const apiBase = isLocal ? "https://thuantuongtieudinh.io.vn" : "";
 
-      // Restore saved guest list from localStorage if available
+      function normalizeNameKey(name) {
+        return String(name || "").trim().toLowerCase().replace(/\s+/g, " ");
+      }
+
+      // Load local cached guest list first for instant render before server responds
       try {
-        const savedList = localStorage.getItem("td_saved_guest_list");
-        if (savedList && savedList.trim()) {
-          listArea.value = savedList;
+        const rawV2 = localStorage.getItem(STORAGE_SAVED_GUESTS);
+        if (rawV2) {
+          const parsed = JSON.parse(rawV2);
+          if (Array.isArray(parsed)) savedGuests = parsed;
+        } else {
+          // Migrate from v1 string if present
+          const legacyText = localStorage.getItem("td_saved_guest_list");
+          if (legacyText && legacyText.trim()) {
+            legacyText
+              .split(/\r?\n/)
+              .map((s) => s.trim())
+              .filter(Boolean)
+              .forEach((name) => {
+                savedGuests.push({
+                  name,
+                  lang: /[\u4e00-\u9fff]/.test(name) ? "zh" : "vi",
+                  mode: "invite",
+                  driveUrl: ""
+                });
+              });
+          }
         }
       } catch (_) {}
 
-      listArea.addEventListener("input", () => {
+      function persistLocalGuests() {
         try {
-          localStorage.setItem("td_saved_guest_list", listArea.value);
+          localStorage.setItem(STORAGE_SAVED_GUESTS, JSON.stringify(savedGuests));
         } catch (_) {}
-      });
+      }
+
+      function mergeServerGuests(serverList) {
+        if (!Array.isArray(serverList)) return;
+        const map = new Map();
+        serverList.forEach((g) => {
+          if (g && g.name) {
+            map.set(normalizeNameKey(g.name), g);
+          }
+        });
+        // Also keep any local guest not yet pushed
+        savedGuests.forEach((g) => {
+          if (g && g.name) {
+            const k = normalizeNameKey(g.name);
+            if (!map.has(k)) map.set(k, g);
+          }
+        });
+        savedGuests = Array.from(map.values());
+        persistLocalGuests();
+      }
 
       function notify(msg) {
         toast.textContent = msg;
         toast.classList.add("is-shown");
         clearTimeout(timer);
-        timer = setTimeout(() => toast.classList.remove("is-shown"), 2600);
+        timer = setTimeout(() => toast.classList.remove("is-shown"), 2800);
       }
 
       async function copyText(str, okMsg) {
@@ -501,10 +592,6 @@ Gia đình Cô Chú Minh
         notify(okMsg);
       }
 
-      function normalizeNameKey(name) {
-        return String(name || "").trim().toLowerCase().replace(/\s+/g, " ");
-      }
-
       function formatCountryFlag(code) {
         const c = String(code || "VN").toUpperCase();
         if (c === "VN") return "🇻🇳 Việt Nam";
@@ -518,49 +605,94 @@ Gia đình Cô Chú Minh
         return "🌍 " + c;
       }
 
-      function formatRelativeTime(iso) {
+      function formatExactAndRelativeTime(iso) {
         if (!iso) return "";
         const d = new Date(iso);
         if (isNaN(d.getTime())) return "";
         const diffSec = Math.max(0, Math.floor((Date.now() - d.getTime()) / 1000));
-        const timeStr = d.toLocaleString("vi-VN", {
+        const exactStr = d.toLocaleString("vi-VN", {
           hour: "2-digit",
           minute: "2-digit",
+          second: "2-digit",
           day: "2-digit",
-          month: "2-digit"
+          month: "2-digit",
+          year: "numeric"
         });
-        if (diffSec < 45) return `Vừa xong (${timeStr})`;
-        if (diffSec < 3600) return `${Math.floor(diffSec / 60)} phút trước (${timeStr})`;
-        if (diffSec < 86400) return `${Math.floor(diffSec / 3600)} giờ trước (${timeStr})`;
-        return `${Math.floor(diffSec / 86400)} ngày trước (${timeStr})`;
+        let rel = "";
+        if (diffSec < 45) rel = "Vừa xong";
+        else if (diffSec < 3600) rel = `${Math.floor(diffSec / 60)} phút trước`;
+        else if (diffSec < 86400) rel = `${Math.floor(diffSec / 3600)} giờ trước`;
+        else rel = `${Math.floor(diffSec / 86400)} ngày trước`;
+        return `${exactStr} (${rel})`;
       }
 
-      function renderGuestStatusBadge(rec) {
-        if (!rec) {
-          return `<span class="status-badge is-pending">⏳ Chưa mở</span>`;
+      function renderGuestSessionsSummary(name) {
+        const key = normalizeNameKey(name);
+        const sessions = visitLogsByGuest[key] || [];
+        if (!sessions.length) {
+          return `<div style="margin-top:4px;"><span class="status-badge is-pending">⏳ Chưa mở thiệp</span></div>`;
         }
-        if (rec.openedEnvelope) {
-          return `<span class="status-badge is-opened">✨ Đã mở phong bì (${rec.views || 1} lần)</span>`;
-        }
-        return `<span class="status-badge is-viewed">👀 Đã mở link (${rec.views || 1} lần)</span>`;
+        const anyOpenedEnv = sessions.some((s) => s.openedEnvelope);
+        const badgeHtml = anyOpenedEnv
+          ? `<span class="status-badge is-opened">✨ Đã mở phong bì (Tổng ${sessions.length} lần mở)</span>`
+          : `<span class="status-badge is-viewed">👀 Đã mở link (Tổng ${sessions.length} lần mở)</span>`;
+
+        const itemsHtml = sessions
+          .map((s, idx) => {
+            const num = sessions.length - idx;
+            const act = s.openedEnvelope
+              ? "✨ Đã mở phong bì"
+              : "👀 Đã mở link";
+            const flip = s.flippedBack ? " + ↺ Lật mặt sau" : "";
+            const loc = s.city ? ` • ${s.city}` : "";
+            return `<div class="per-guest-device-item">
+              <strong>Lần ${num}:</strong> <span class="js-dev-text"></span> — ${act}${flip} <span style="color:var(--text-muted);">(${formatExactAndRelativeTime(s.lastActionAt || s.openedAt)}${loc})</span>
+            </div>`;
+          })
+          .join("");
+
+        return `<div style="margin-top:4px;">${badgeHtml}</div><div class="per-guest-device-list">${itemsHtml}</div>`;
+      }
+
+      async function removeGuestFromList(name) {
+        const key = normalizeNameKey(name);
+        savedGuests = savedGuests.filter((g) => normalizeNameKey(g.name) !== key);
+        persistLocalGuests();
+        buildRows();
+        try {
+          await fetch(`${apiBase}/api/guests`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "remove", name })
+          });
+        } catch (_) {}
+        notify(`🗑️ Đã xóa "${name}" khỏi danh sách đã lưu.`);
       }
 
       function buildRows() {
         const base = (baseInput.value || "index.html").trim().replace(/\?.*$/, "");
-        const lang = langSelect.value;
-        const mode = modeSelect ? modeSelect.value : "invite";
-        const driveUrl = driveInput ? driveInput.value.trim() : "";
-        const names = (listArea.value || "")
-          .split(/\r?\n/)
-          .map((s) => s.trim())
-          .filter(Boolean);
-
         tbody.innerHTML = "";
+        savedCountEl.textContent = String(savedGuests.length);
         const rowsData = [];
 
-        names.forEach((name, idx) => {
+        if (!savedGuests.length) {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td colspan="4" style="text-align:center; padding:22px; color:var(--text-muted);">
+              Danh sách đang trống. Hãy nhập tên khách mời vào ô phía trên và bấm <strong>"✨ Tạo &amp; Lưu Vào Danh Sách Khách Mời"</strong> nhé!
+            </td>
+          `;
+          tbody.appendChild(tr);
+          return rowsData;
+        }
+
+        savedGuests.forEach((guestObj, idx) => {
+          const name = guestObj.name;
           const hasHanzi = /[\u4e00-\u9fff]/.test(name);
-          const effectiveLang = lang === "zh" || hasHanzi ? "zh" : "vi";
+          const effectiveLang = guestObj.lang === "zh" || hasHanzi ? "zh" : "vi";
+          const mode = guestObj.mode || (modeSelect ? modeSelect.value : "invite");
+          const driveUrl = guestObj.driveUrl || (driveInput ? driveInput.value.trim() : "");
+
           const qs = new URLSearchParams();
           qs.set("to", name);
           if (effectiveLang === "zh") qs.set("lang", "zh");
@@ -580,18 +712,19 @@ Gia đình Cô Chú Minh
                 ? `囍 婚禮喜帖敬邀｜${name} 您好：\n順祥與小瑩謹訂於 2027 年 1 月 6 日（星期三）晚間六時，於越南胡志明市 RIVERSIDE PALACE（Seine 宴會廳）敬備喜筵。\n誠摯邀請您開啟專屬電子喜帖，與我們分享這份喜悅：\n${fullUrl}`
                 : `💌 Trân trọng kính mời ${name},\nThuận Tường & Tiểu Dinh rất hạnh phúc được mời ${name} đến dự buổi tiệc cưới chung vui vào lúc 18:00 Thứ Tư, 06.01.2027 tại Riverside Palace (Sảnh Seine).\nMời xem thiệp cưới dành riêng cho ${name} tại đây nhé:\n${fullUrl}`;
 
-          const rec = latestGuestMap[normalizeNameKey(name)] || null;
+          const sessions = visitLogsByGuest[normalizeNameKey(name)] || [];
+          const devicesSummary = sessions.length
+            ? sessions.map((s) => s.deviceDetail || "Thiết bị").join(" | ")
+            : "Chưa mở";
+
           rowsData.push({
             idx: idx + 1,
             name,
             effectiveLang,
             fullUrl,
             inviteMsg,
-            status: rec
-              ? rec.openedEnvelope
-                ? `Đã mở phong bì (${rec.views || 1} lần)`
-                : `Đã mở link (${rec.views || 1} lần)`
-              : "Chưa mở"
+            openCount: sessions.length,
+            devicesSummary
           });
 
           const tr = document.createElement("tr");
@@ -600,10 +733,10 @@ Gia đình Cô Chú Minh
             <td>${idx + 1}</td>
             <td>
               <div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px;">
-                <strong class="js-guest-name"></strong>
+                <strong class="js-guest-name" style="font-size:14.5px;"></strong>
                 <span style="font-size:11px; color:var(--text-muted);">(${effectiveLang === "zh" ? "繁體中文" : "VI"})</span>
               </div>
-              <div style="margin-top:4px;">${renderGuestStatusBadge(rec)}</div>
+              <div class="js-guest-sessions-box">${renderGuestSessionsSummary(name)}</div>
             </td>
             <td class="url-preview"></td>
             <td>
@@ -611,10 +744,18 @@ Gia đình Cô Chú Minh
                 <button type="button" class="btn-mini primary js-copy-link">📋 Copy Link</button>
                 <button type="button" class="btn-mini js-copy-msg">${msgBtnLabel}</button>
                 <a class="btn-mini js-preview" target="_blank" rel="noopener" title="Xem thử không tính vào bộ đếm">👁️ Xem thử</a>
+                <button type="button" class="btn-mini danger js-remove-guest" title="Xóa khách này khỏi danh sách">✕</button>
               </div>
             </td>
           `;
           tr.querySelector(".js-guest-name").textContent = name;
+          // Safely populate device text in per-guest session items
+          const devSpans = tr.querySelectorAll(".js-dev-text");
+          sessions.forEach((s, sIdx) => {
+            if (devSpans[sIdx]) {
+              devSpans[sIdx].textContent = s.deviceDetail || "Thiết bị di động";
+            }
+          });
           tr.querySelector(".url-preview").textContent = fullUrl;
           tr.querySelector(".js-preview").href = previewUrl;
           tr.querySelector(".js-copy-link").addEventListener("click", () =>
@@ -623,10 +764,72 @@ Gia đình Cô Chú Minh
           tr.querySelector(".js-copy-msg").addEventListener("click", () =>
             copyText(inviteMsg, `💌 Đã copy trọn bộ lời mời + link cho "${name}"!`)
           );
+          tr.querySelector(".js-remove-guest").addEventListener("click", () =>
+            removeGuestFromList(name)
+          );
           tbody.appendChild(tr);
         });
 
         return rowsData;
+      }
+
+      async function handleAddGuests() {
+        const lang = langSelect.value;
+        const mode = modeSelect ? modeSelect.value : "invite";
+        const driveUrl = driveInput ? driveInput.value.trim() : "";
+        const names = (listArea.value || "")
+          .split(/\r?\n/)
+          .map((s) => s.trim())
+          .filter(Boolean);
+
+        if (!names.length) {
+          notify("⚠️ Bạn hãy nhập ít nhất 1 tên khách mời vào ô trống nhé!");
+          listArea.focus();
+          return;
+        }
+
+        const newItems = [];
+        names.forEach((name) => {
+          const hasHanzi = /[\u4e00-\u9fff]/.test(name);
+          const effectiveLang = lang === "zh" || hasHanzi ? "zh" : "vi";
+          const record = {
+            name,
+            lang: effectiveLang,
+            mode,
+            driveUrl,
+            createdAt: new Date().toISOString()
+          };
+          newItems.push(record);
+
+          const key = normalizeNameKey(name);
+          const existingIdx = savedGuests.findIndex((g) => normalizeNameKey(g.name) === key);
+          if (existingIdx >= 0) {
+            savedGuests[existingIdx] = record;
+          } else {
+            savedGuests.push(record);
+          }
+        });
+
+        persistLocalGuests();
+        listArea.value = "";
+        buildRows();
+
+        try {
+          const res = await fetch(`${apiBase}/api/guests`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "add", guests: newItems })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (Array.isArray(data.savedGuests)) {
+              mergeServerGuests(data.savedGuests);
+              buildRows();
+            }
+          }
+        } catch (_) {}
+
+        notify(`✨ Đã tạo & lưu vĩnh viễn ${newItems.length} khách mời vào danh sách!`);
       }
 
       async function fetchAnalytics(showToast) {
@@ -641,7 +844,7 @@ Gia đình Cô Chú Minh
           document.getElementById("kpi-total-views").textContent = String(st.totalViews || 0);
           document.getElementById("kpi-unique-guests").textContent = String(st.uniqueVisitors || 0);
           document.getElementById("kpi-opened-env").textContent = String(st.openedEnvelopeCount || 0);
-          document.getElementById("kpi-flipped-back").textContent = `${st.flippedBackCount || 0} khách đã lật xem mặt sau`;
+          document.getElementById("kpi-flipped-back").textContent = `${st.flippedBackCount || 0} lần đã lật xem mặt sau`;
 
           const countries = st.countries || {};
           const vnCount = countries.VN || 0;
@@ -657,11 +860,26 @@ Gia đình Cô Chú Minh
             ${otherCount > 0 ? `<span class="country-pill">🌍 Khác: ${otherCount}</span>` : ""}
           `;
 
-          const guests = Array.isArray(st.guests) ? st.guests : [];
-          latestGuestMap = {};
-          guests.forEach((g) => {
-            if (g && g.hasCustomName && g.guestName) {
-              latestGuestMap[normalizeNameKey(g.guestName)] = g;
+          // Sync savedGuests from server
+          if (Array.isArray(st.savedGuests) && st.savedGuests.length > 0) {
+            mergeServerGuests(st.savedGuests);
+          } else if (savedGuests.length > 0) {
+            // Push local savedGuests to server so server remembers them too
+            fetch(`${apiBase}/api/guests`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ action: "add", guests: savedGuests })
+            }).catch(() => {});
+          }
+
+          // Group unmerged visitLogs by guest for the bottom table, and render EVERY row in the top table
+          const visitLogs = Array.isArray(st.visitLogs) ? st.visitLogs : [];
+          visitLogsByGuest = {};
+          visitLogs.forEach((log) => {
+            if (log && log.guestName) {
+              const k = normalizeNameKey(log.guestName);
+              if (!visitLogsByGuest[k]) visitLogsByGuest[k] = [];
+              visitLogsByGuest[k].push(log);
             }
           });
 
@@ -669,7 +887,7 @@ Gia đình Cô Chú Minh
           const tableWrap = document.getElementById("guest-activity-table-wrap");
           const actTbody = document.getElementById("guest-activity-tbody");
 
-          if (!guests.length) {
+          if (!visitLogs.length) {
             emptyEl.style.display = "block";
             tableWrap.style.display = "none";
             actTbody.innerHTML = "";
@@ -677,38 +895,44 @@ Gia đình Cô Chú Minh
             emptyEl.style.display = "none";
             tableWrap.style.display = "block";
             actTbody.innerHTML = "";
-            guests.forEach((g, i) => {
+            visitLogs.forEach((log, i) => {
               const tr = document.createElement("tr");
-              const statusHtml = g.openedEnvelope
+              const statusHtml = log.openedEnvelope
                 ? `<span class="status-badge is-opened">✨ Đã mở phong bì</span>`
                 : `<span class="status-badge is-viewed">👀 Đã mở link</span>`;
-              const flipNote = g.flippedBack
-                ? `<div style="font-size:11.2px; color:var(--text-muted); margin-top:3px;">↺ Đã lật xem mặt sau bao thư</div>`
+              const flipNote = log.flippedBack
+                ? `<div style="font-size:11.3px; color:var(--text-muted); margin-top:4px;">↺ Đã lật xem mặt sau bao thư</div>`
                 : "";
-              const locStr = formatCountryFlag(g.country) + (g.city ? ` (${g.city})` : "");
-              const devStr = `${g.device || "Điện thoại"} · ${g.lang === "zh" ? "繁體中文" : "Tiếng Việt"}`;
+              const locStr = formatCountryFlag(log.country) + (log.city ? ` (${log.city})` : "");
+              const langLabel = log.lang === "zh" ? "Bản 繁體中文" : "Bản Tiếng Việt";
+              const openOrderNumber = visitLogs.length - i;
 
               tr.innerHTML = `
-                <td>${i + 1}</td>
-                <td><strong class="js-log-guest"></strong></td>
+                <td><strong>#${openOrderNumber}</strong></td>
+                <td>
+                  <strong class="js-log-guest" style="font-size:14px;"></strong>
+                  <div style="font-size:11.2px; color:var(--text-muted); margin-top:2px;">${langLabel}</div>
+                </td>
                 <td>${statusHtml}${flipNote}</td>
                 <td>
-                  <div>${locStr}</div>
-                  <div style="font-size:11.5px; color:var(--text-muted);">${devStr}</div>
+                  <div class="device-chip js-log-device"></div>
                 </td>
                 <td>
-                  <div><strong>${g.views || 1} lần mở</strong></div>
-                  <div style="font-size:11.5px; color:var(--text-muted);">${formatRelativeTime(g.lastSeenAt)}</div>
+                  <div><strong>${locStr}</strong></div>
+                  <div style="font-size:11.6px; color:var(--text-muted); margin-top:2px;">${formatExactAndRelativeTime(log.lastActionAt || log.openedAt)}</div>
                 </td>
               `;
-              tr.querySelector(".js-log-guest").textContent = g.guestName || "Khách mời";
+              tr.querySelector(".js-log-guest").textContent = log.guestName || "Khách mời";
+              tr.querySelector(".js-log-device").textContent =
+                log.deviceDetail || log.device || "Thiết bị di động";
               actTbody.appendChild(tr);
             });
           }
 
           buildRows();
-          subLabel.textContent = "Đang kết nối trực tiếp • Cập nhật lúc " + new Date().toLocaleTimeString("vi-VN");
-          if (showToast) notify("✅ Đã cập nhật số liệu lượt xem mới nhất!");
+          subLabel.textContent =
+            "Đang kết nối trực tiếp • Cập nhật lúc " + new Date().toLocaleTimeString("vi-VN");
+          if (showToast) notify("✅ Đã làm mới nhật ký thiết bị & lượt mở thiệp!");
         } catch (err) {
           subLabel.textContent = "Đang đồng bộ máy chủ thống kê...";
         }
@@ -719,38 +943,75 @@ Gia đình Cô Chú Minh
       });
 
       document.getElementById("btn-reset-stats").addEventListener("click", async () => {
-        if (!window.confirm("Bạn có chắc muốn xóa toàn bộ lịch sử xem thử để đặt bộ đếm về 0 trước khi gửi thiệp cho khách không?")) {
+        if (
+          !window.confirm(
+            "Bạn muốn xóa lịch sử lượt xem thử về 0? (Danh sách tên khách mời bạn đã tạo bên dưới vẫn được giữ nguyên!)"
+          )
+        ) {
           return;
         }
         try {
           const res = await fetch(`${apiBase}/api/reset`, { method: "POST" });
           if (res.ok) {
             await fetchAnalytics(false);
-            notify("🗑️ Đã xóa lịch sử xem thử và đặt bộ đếm về 0!");
+            notify("🗑️ Đã đặt bộ đếm lượt xem về 0 (Danh sách khách mời vẫn giữ nguyên)!");
           }
         } catch (_) {
           notify("⚠️ Không thể kết nối máy chủ, vui lòng thử lại.");
         }
       });
 
-      document.getElementById("btn-generate").addEventListener("click", buildRows);
-      langSelect.addEventListener("change", buildRows);
-      if (modeSelect) modeSelect.addEventListener("change", buildRows);
-      if (driveInput) driveInput.addEventListener("input", buildRows);
+      document.getElementById("btn-clear-guests").addEventListener("click", async () => {
+        if (!savedGuests.length) return;
+        if (!window.confirm("Bạn có chắc muốn xóa toàn bộ danh sách khách mời đã lưu không?")) {
+          return;
+        }
+        savedGuests = [];
+        persistLocalGuests();
+        buildRows();
+        try {
+          await fetch(`${apiBase}/api/guests`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "clear" })
+          });
+        } catch (_) {}
+        notify("🗑️ Đã xóa trống danh sách khách mời.");
+      });
+
+      document.getElementById("btn-generate").addEventListener("click", handleAddGuests);
       baseInput.addEventListener("input", buildRows);
 
       document.getElementById("btn-export-csv").addEventListener("click", () => {
         const rows = buildRows();
-        const header = ["STT", "Ten Khach Moi", "Trang Thai Xem", "Ngon Ngu", "Link Thiep", "Tin Nhan Moi Mau"];
+        const header = [
+          "STT",
+          "Ten Khach Moi",
+          "So Lan Mo",
+          "Chi Tiet Thiet Bi Da Mo",
+          "Ngon Ngu",
+          "Link Thiep",
+          "Tin Nhan Moi Mau"
+        ];
         const csvLines = [
           header.join(","),
           ...rows.map((r) =>
-            [r.idx, r.name, r.status, r.effectiveLang, r.fullUrl, r.inviteMsg.replace(/\n/g, " ")]
+            [
+              r.idx,
+              r.name,
+              r.openCount,
+              r.devicesSummary,
+              r.effectiveLang,
+              r.fullUrl,
+              r.inviteMsg.replace(/\n/g, " ")
+            ]
               .map((v) => `"${String(v).replace(/"/g, '""')}"`)
               .join(",")
           )
         ];
-        const blob = new Blob(["\uFEFF" + csvLines.join("\r\n")], { type: "text/csv;charset=utf-8" });
+        const blob = new Blob(["\uFEFF" + csvLines.join("\r\n")], {
+          type: "text/csv;charset=utf-8"
+        });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
