@@ -2216,25 +2216,24 @@ body.lang-zh .card1-guest-text,
 
 .floating-whisper {
   position: absolute;
-  z-index: 76;
+  z-index: 85;
   pointer-events: none;
   user-select: none;
   -webkit-user-select: none;
   white-space: nowrap;
   display: inline-flex;
-  align-items: baseline;
-  gap: 5.5px;
-  padding: 0;
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  text-shadow:
-    0 0 6px rgba(250, 246, 238, 0.99),
-    0 0 13px rgba(250, 246, 238, 0.97),
-    0 0 22px rgba(250, 246, 238, 0.92),
-    0 1px 2px rgba(250, 246, 238, 1);
+  align-items: center;
+  gap: 7px;
+  padding: 8px 18px 9px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(118, 17, 23, 0.96) 0%, rgba(78, 10, 15, 0.96) 100%);
+  border: 1.5px solid #e6c17a;
+  box-shadow:
+    0 12px 28px rgba(61, 6, 14, 0.34),
+    0 0 0 3px rgba(255, 250, 240, 0.92);
+  text-shadow: 0 1px 2px rgba(30, 2, 6, 0.55);
   will-change: transform, opacity;
-  animation: whisperFloatUp var(--dur, 3.15s) cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+  animation: whisperFloatUp var(--dur, 4.2s) cubic-bezier(0.2, 0.68, 0.32, 1) forwards;
 }
 
 .floating-whisper.is-retiring {
@@ -2244,38 +2243,35 @@ body.lang-zh .card1-guest-text,
 }
 
 .floating-whisper .fw-ornament {
-  font-size: 11.5px;
-  color: #c67d08;
+  font-size: 14px;
+  color: #ffd98e;
   line-height: 1;
-  transform: translateY(-0.5px);
 }
 
 .floating-whisper .fw-speaker {
   font-family: var(--font-serif);
   font-style: normal;
   font-weight: 700;
-  font-size: 14.8px;
+  font-size: 15.5px;
   letter-spacing: 0.03em;
-  color: #985704;
-  paint-order: stroke fill;
-  -webkit-text-stroke: 3.4px rgba(250, 246, 238, 0.96);
+  color: #ffe2a6;
+  -webkit-text-stroke: 0 transparent;
 }
 
 .floating-whisper .fw-dot {
   font-family: var(--font-serif);
-  font-size: 14px;
-  color: #c67d08;
+  font-size: 15px;
+  color: #e6c17a;
 }
 
 .floating-whisper .fw-words {
   font-family: var(--font-serif);
   font-style: italic;
   font-weight: 700;
-  font-size: 18.2px;
+  font-size: 18.5px;
   letter-spacing: 0.015em;
-  color: #a46005;
-  paint-order: stroke fill;
-  -webkit-text-stroke: 3.6px rgba(250, 246, 238, 0.96);
+  color: #ffffff;
+  -webkit-text-stroke: 0 transparent;
 }
 
 body.lang-zh .floating-whisper .fw-speaker,
@@ -3467,23 +3463,33 @@ body.lang-zh .day-schedule-badge {
     width: 18px;
   }
 
+  .floating-whisper {
+    padding: 7px 14px 8px;
+    max-width: calc(100vw - 24px);
+    white-space: normal;
+    text-align: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    row-gap: 2px;
+  }
+
   .floating-whisper .fw-ornament {
-    font-size: 10.5px;
+    font-size: 12px;
   }
 
   .floating-whisper .fw-speaker {
-    font-size: 13px;
-    -webkit-text-stroke: 2.8px rgba(250, 246, 238, 0.96);
+    font-size: 13.5px;
+    -webkit-text-stroke: 0 transparent;
   }
 
   .floating-whisper .fw-words {
-    font-size: 15.5px;
-    -webkit-text-stroke: 3px rgba(250, 246, 238, 0.96);
+    font-size: 15.8px;
+    -webkit-text-stroke: 0 transparent;
   }
 
   body.lang-zh .floating-whisper .fw-speaker,
   body.lang-zh .floating-whisper .fw-words {
-    font-size: 13.5px;
+    font-size: 13.8px;
   }
 
   .c2-edge-hit.is-top {

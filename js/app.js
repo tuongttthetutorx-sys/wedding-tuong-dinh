@@ -512,8 +512,8 @@
     const dx2Val = -dir * (5 + Math.random() * 12) + (Math.random() * 10 - 5);
     const dx1 = dx1Val.toFixed(1) + "px";
     const dx2 = dx2Val.toFixed(1) + "px";
-    const rise = -(66 + Math.random() * 22).toFixed(1) + "px";
-    const durSec = customDurSec || 3.05 + Math.random() * 0.45;
+    const rise = -(175 + Math.random() * 48).toFixed(1) + "px";
+    const durSec = customDurSec || 3.9 + Math.random() * 0.55;
     const rot1 = (dir * (0.45 + Math.random() * 0.9)).toFixed(2) + "deg";
     const rot2 = (-dir * (0.35 + Math.random() * 0.85)).toFixed(2) + "deg";
 
@@ -542,37 +542,42 @@
     pill.style.left = pageX.toFixed(1) + "px";
     pill.style.top = pageY.toFixed(1) + "px";
 
-    // Two whisper-delicate champagne-gold / crimson motes drifting alongside (no cartoon emojis)
-    const moteGlyphs = phraseObj.ornament === "♡" ? ["♡", "✦"] : ["✦", "♡"];
-    for (let i = 0; i < 2; i++) {
+    // Sparkling champagne-gold / crimson heart motes drifting alongside
+    const moteGlyphs = ["♥", "✦", "♡", "♥"];
+    for (let i = 0; i < 4; i++) {
       const m = document.createElement("span");
       m.className = "floating-mote";
       m.setAttribute("aria-hidden", "true");
-      m.textContent = moteGlyphs[i];
-      const mx = pageX + (i === 0 ? -1 : 1) * (18 + Math.random() * 26);
-      const my = pageY + 4 + Math.random() * 10;
+      m.textContent = moteGlyphs[i % moteGlyphs.length];
+      const side = i % 2 === 0 ? -1 : 1;
+      const mx = pageX + side * (22 + Math.random() * 48);
+      const my = pageY + 4 + Math.random() * 12;
       m.style.left = mx.toFixed(1) + "px";
       m.style.top = my.toFixed(1) + "px";
-      m.style.setProperty("--dx", ((i === 0 ? -1 : 1) * (12 + Math.random() * 20)).toFixed(1) + "px");
-      m.style.setProperty("--dy", -(98 + Math.random() * 42).toFixed(1) + "px");
-      m.style.setProperty("--dur", (2.6 + Math.random() * 0.6).toFixed(2) + "s");
-      m.style.setProperty("--sz", (10 + Math.random() * 2.5).toFixed(1) + "px");
-      m.style.setProperty("--clr", i === 0 ? "#c8923b" : "rgba(132, 21, 23, 0.52)");
+      m.style.setProperty("--dx", (side * (16 + Math.random() * 28)).toFixed(1) + "px");
+      m.style.setProperty("--dy", -(185 + Math.random() * 75).toFixed(1) + "px");
+      m.style.setProperty("--dur", (3.2 + Math.random() * 0.8).toFixed(2) + "s");
+      m.style.setProperty("--sz", (13 + Math.random() * 4).toFixed(1) + "px");
+      m.style.setProperty("--clr", i % 2 === 0 ? "#d42232" : "#c8923b");
       document.body.appendChild(m);
-      setTimeout(() => m.remove(), 3400);
+      setTimeout(() => m.remove(), 4200);
     }
 
     setTimeout(() => pill.remove(), Math.ceil(durSec * 1000) + 120);
   }
 
-  /* Bespoke Hand-Sketched Calligraphic Hearts for Background Banquet Guests ("thả tim") */
+  /* Bespoke Hand-Sketched Calligraphic Hearts for Bride, Groom & Banquet Guests ("thả tim") */
   const HAND_DRAWN_HEART_SVGS = [
-    // 1. Velvet crimson hand-drawn filled heart
-    '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#8c171c" d="M12.1 20.6c-.3 0-.6-.1-.8-.3C7.2 16.9 3.4 13.4 3.1 9.1 2.9 6.2 5.1 4 7.8 4c1.7 0 3.3.9 4.2 2.3C12.9 4.9 14.5 4 16.2 4c2.8 0 4.9 2.2 4.7 5.1-.3 4.3-4.1 7.8-8 11.2-.2.2-.5.3-.8.3z"/></svg>',
-    // 2. Warm rose-claret sketched heart
-    '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#b2383d" d="M12 20.4C7.9 17 3.8 13.5 3.5 9.2 3.3 6.5 5.3 4.4 7.9 4.4c1.7 0 3.2.9 4.1 2.3.9-1.4 2.4-2.3 4.1-2.3 2.6 0 4.6 2.1 4.4 4.8-.3 4.3-4.4 7.8-8.5 11.2z"/></svg>',
-    // 3. Champagne-gold calligraphic outline heart
-    '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="rgba(250,246,238,0.55)" stroke="#c28322" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M12 20.1C8 16.8 4 13.4 3.7 9.2 3.5 6.5 5.5 4.5 8 4.5c1.7 0 3.1.9 4 2.3.9-1.4 2.3-2.3 4-2.3 2.5 0 4.5 2 4.3 4.7-.3 4.2-4.3 7.6-8.3 10.9z"/></svg>'
+    // 1. Vibrant Ruby-Crimson Filled Heart
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#c81922" d="M12.1 20.6c-.3 0-.6-.1-.8-.3C7.2 16.9 3.4 13.4 3.1 9.1 2.9 6.2 5.1 4 7.8 4c1.7 0 3.3.9 4.2 2.3C12.9 4.9 14.5 4 16.2 4c2.8 0 4.9 2.2 4.7 5.1-.3 4.3-4.1 7.8-8 11.2-.2.2-.5.3-.8.3z"/></svg>',
+    // 2. Deep Velvet Burgundy Heart
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#8c141b" d="M12 20.4C7.9 17 3.8 13.5 3.5 9.2 3.3 6.5 5.3 4.4 7.9 4.4c1.7 0 3.2.9 4.1 2.3.9-1.4 2.4-2.3 4.1-2.3 2.6 0 4.6 2.1 4.4 4.8-.3 4.3-4.4 7.8-8.5 11.2z"/></svg>',
+    // 3. Romantic Rose-Coral Heart
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#e04352" d="M12 20.4C7.9 17 3.8 13.5 3.5 9.2 3.3 6.5 5.3 4.4 7.9 4.4c1.7 0 3.2.9 4.1 2.3.9-1.4 2.4-2.3 4.1-2.3 2.6 0 4.6 2.1 4.4 4.8-.3 4.3-4.4 7.8-8.5 11.2z"/></svg>',
+    // 4. 24K Champagne-Gold Filled Heart
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#d69428" d="M12 20.4C7.9 17 3.8 13.5 3.5 9.2 3.3 6.5 5.3 4.4 7.9 4.4c1.7 0 3.2.9 4.1 2.3.9-1.4 2.4-2.3 4.1-2.3 2.6 0 4.6 2.1 4.4 4.8-.3 4.3-4.4 7.8-8.5 11.2z"/></svg>',
+    // 5. Champagne-Gold Calligraphic Outline Heart
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="rgba(255,246,232,0.75)" stroke="#c28322" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="M12 20.1C8 16.8 4 13.4 3.7 9.2 3.5 6.5 5.5 4.5 8 4.5c1.7 0 3.1.9 4 2.3.9-1.4 2.3-2.3 4-2.3 2.5 0 4.5 2 4.3 4.7-.3 4.2-4.3 7.6-8.3 10.9z"/></svg>'
   ];
 
   function spawnGuestHearts(anchorEl, e, customCount) {
@@ -587,12 +592,12 @@
       e && e.clientY
         ? Math.min(e.clientY - 10, rect ? rect.top + rect.height * 0.22 : e.clientY - 10)
         : rect
-          ? rect.top + rect.height * 0.14
+          ? rect.top + rect.height * 0.16
           : 340;
 
     const basePageX = baseClientX + window.scrollX;
     const basePageY = baseClientY + window.scrollY;
-    const count = customCount || 8;
+    const count = customCount || 16;
 
     for (let i = 0; i < count; i++) {
       const heart = document.createElement("span");
@@ -600,17 +605,19 @@
       heart.setAttribute("aria-hidden", "true");
       heart.innerHTML = HAND_DRAWN_HEART_SVGS[i % HAND_DRAWN_HEART_SVGS.length];
 
-      const spreadX = (i - (count - 1) / 2) * 8.5 + (Math.random() * 14 - 7);
-      const spreadY = Math.random() * 12 - 6;
-      const dir = (i % 2 === 0 ? 1 : -1) * (Math.random() < 0.25 ? -1 : 1);
-      const dx1 = (dir * (10 + Math.random() * 20)).toFixed(1) + "px";
-      const dx2 = (-dir * (7 + Math.random() * 20) + (Math.random() * 14 - 7)).toFixed(1) + "px";
-      const rise = -(108 + Math.random() * 62).toFixed(1) + "px";
-      const dur = (2.25 + Math.random() * 0.85).toFixed(2) + "s";
-      const delay = (i * 0.06 + Math.random() * 0.05).toFixed(2) + "s";
-      const sz = (14 + (i % 3) * 3.2 + Math.random() * 2.5).toFixed(1) + "px";
-      const rot1 = (dir * (6 + Math.random() * 10)).toFixed(1) + "deg";
-      const rot2 = (-dir * (5 + Math.random() * 11)).toFixed(1) + "deg";
+      const spreadRange = Math.min(220, Math.max(90, count * 9));
+      const spreadX =
+        ((i / Math.max(1, count - 1)) - 0.5) * spreadRange + (Math.random() * 26 - 13);
+      const spreadY = Math.random() * 24 - 12;
+      const dir = (i % 2 === 0 ? 1 : -1) * (Math.random() < 0.28 ? -1 : 1);
+      const dx1 = (dir * (16 + Math.random() * 34)).toFixed(1) + "px";
+      const dx2 = (-dir * (12 + Math.random() * 32) + (Math.random() * 20 - 10)).toFixed(1) + "px";
+      const rise = -(195 + Math.random() * 145).toFixed(1) + "px";
+      const dur = (2.85 + Math.random() * 1.25).toFixed(2) + "s";
+      const delay = (i * 0.045 + Math.random() * 0.08).toFixed(2) + "s";
+      const sz = (16 + (i % 4) * 3.2 + Math.random() * 3.5).toFixed(1) + "px";
+      const rot1 = (dir * (7 + Math.random() * 12)).toFixed(1) + "deg";
+      const rot2 = (-dir * (6 + Math.random() * 14)).toFixed(1) + "deg";
 
       heart.style.left = (basePageX + spreadX).toFixed(1) + "px";
       heart.style.top = (basePageY + spreadY).toFixed(1) + "px";
@@ -624,7 +631,7 @@
       heart.style.setProperty("--rot2", rot2);
 
       document.body.appendChild(heart);
-      setTimeout(() => heart.remove(), 3800);
+      setTimeout(() => heart.remove(), 4800);
     }
   }
 
@@ -657,7 +664,7 @@
         rect.setAttribute("rx", "6");
         rect.addEventListener("click", (e) => {
           e.stopPropagation();
-          spawnGuestHearts(rect, e);
+          spawnGuestHearts(rect, e, 16);
         });
         hitLayer.appendChild(rect);
       });
@@ -673,6 +680,7 @@
       xiuxiu.addEventListener("click", (e) => {
         e.stopPropagation();
         spawnFloatingWhisper(xiuxiu, e, pickXiu(), false);
+        spawnGuestHearts(xiuxiu, e, 12);
       });
     }
 
@@ -680,6 +688,7 @@
       rightDogs.addEventListener("click", (e) => {
         e.stopPropagation();
         spawnFloatingWhisper(rightDogs, e, pickRight(), false);
+        spawnGuestHearts(rightDogs, e, 14);
       });
     }
 
@@ -687,11 +696,11 @@
       couple.addEventListener("click", (e) => {
         e.stopPropagation();
         spawnFloatingWhisper(couple, e, pickCouple(), true);
-        spawnGuestHearts(couple, e, 9);
+        spawnGuestHearts(couple, e, 26);
       });
     }
 
-    // One-time Welcome Thank-You Whisper & Heart Shower from Bride & Groom right when viewer enters
+    // One-time Welcome Thank-You Whisper & Lush Heart Shower from Bride & Groom right when viewer enters
     triggerWelcomeGreetingIfReady = function () {
       if (hasPlayedWelcomeGreeting || !envelopeOpened) return;
       if (document.body.classList.contains("is-table-preparing")) return;
@@ -718,18 +727,23 @@
               : "Cảm ơn bạn đã ghé xem thiệp cưới của tụi mình nhé ♥"
           };
 
-      spawnFloatingWhisper(couple, null, welcomePhrase, true, 4.6);
-      spawnGuestHearts(couple, null, 12);
+      spawnFloatingWhisper(couple, null, welcomePhrase, true, 5.2);
+      spawnGuestHearts(couple, null, 24);
 
       const leftGuests = svgWrap.querySelector('.c1-guest-hit[data-table="left"]');
       const rightGuests = svgWrap.querySelector('.c1-guest-hit[data-table="right"]');
       setTimeout(() => {
-        if (leftGuests) spawnGuestHearts(leftGuests, null, 6);
-        if (rightGuests) spawnGuestHearts(rightGuests, null, 6);
-      }, 360);
+        if (leftGuests) spawnGuestHearts(leftGuests, null, 14);
+        if (rightGuests) spawnGuestHearts(rightGuests, null, 14);
+      }, 340);
       setTimeout(() => {
-        if (couple) spawnGuestHearts(couple, null, 8);
-      }, 760);
+        if (couple) spawnGuestHearts(couple, null, 20);
+        if (xiuxiu) spawnGuestHearts(xiuxiu, null, 8);
+        if (rightDogs) spawnGuestHearts(rightDogs, null, 8);
+      }, 780);
+      setTimeout(() => {
+        if (couple) spawnGuestHearts(couple, null, 18);
+      }, 1350);
     };
 
     window.addEventListener(
