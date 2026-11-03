@@ -725,9 +725,11 @@
       gap: 12px;
     }
     #qr-studio-canvas {
-      width: min(100%, 310px);
+      max-width: min(100%, 310px);
+      max-height: 470px;
+      width: auto;
       height: auto;
-      border-radius: 10px;
+      border-radius: 8px;
       box-shadow: 0 12px 30px rgba(78, 12, 16, 0.14);
       background: #fbf7ef;
     }
@@ -1009,8 +1011,9 @@
                 <div>
                   <label for="qr-layout-style" style="display:block; font-size:12.5px; font-weight:600; margin-bottom:5px;">1. Kiểu Thẻ Phụ QR (Không cần mua ghim kẹp):</label>
                   <select id="qr-layout-style" class="adm-select">
-                    <option value="frameless">✨ Thẻ Phụ Rời Không Khung (Đặt trên tờ thiệp số 1 • 0đ ghim)</option>
-                    <option value="fold_tab">🔖 Thẻ Có Nếp Gấp Máng Đầu Thiệp (Gập mép 1.2cm cài lên thiệp • 0đ ghim)</option>
+                    <option value="pinterest_strip" selected>🔖 Dải Bookmark Dọc Kiểu Pinterest (Gập xuống máng đầu thiệp • 15 dải/tờ A4)</option>
+                    <option value="frameless">✨ Thẻ Phụ Vuông Không Khung (Đặt trên tờ thiệp số 1 • 20 thẻ/tờ A4)</option>
+                    <option value="fold_tab">📐 Thẻ Vuông Có Nếp Gấp Máng Đầu Thiệp (20 thẻ/tờ A4)</option>
                     <option value="flap_seal">💌 Tem Dán Mặt Trong Nắp Phong Bì Đỏ</option>
                   </select>
                 </div>
@@ -1888,23 +1891,182 @@
 
       function renderLuxuryWeddingQR(forPrintTransparent = false) {
         if (!qrCanvas || typeof window.qrcode !== "function") return;
-        const ctx = qrCanvas.getContext("2d");
-        const W = qrCanvas.width; // 900
-        const H = qrCanvas.height; // 1120
-
-        const layoutMode = (qrLayoutStyle && qrLayoutStyle.value) || "frameless";
+        const layoutMode = (qrLayoutStyle && qrLayoutStyle.value) || "pinterest_strip";
         const targetUrl =
           (qrUrlInput && qrUrlInput.value.trim()) ||
           "https://thuantuongtieudinh.io.vn/?mode=directions";
         const capMode = (qrCaptionStyle && qrCaptionStyle.value) || "bilingual";
         const guestText = (qrGuestBadge && qrGuestBadge.value.trim()) || "";
 
+        const isPinterestStrip = layoutMode === "pinterest_strip";
+        const W = isPinterestStrip ? 540 : 900;
+        const H = isPinterestStrip ? 1320 : 1120;
+        if (qrCanvas.width !== W) qrCanvas.width = W;
+        if (qrCanvas.height !== H) qrCanvas.height = H;
+
+        const ctx = qrCanvas.getContext("2d");
+        ctx.clearRect(0, 0, W, H);
+
+        // Generate QR Matrix (Error Correction Level H for 30% redundancy around center 囍 seal)
+        const qr = window.qrcode(0, "H");
+        qr.addData(targetUrl);
+        qr.make();
+        const count = qr.getModuleCount();
+        const centerMin = count * 0.39;
+        const centerMax = count * 0.61;
+        const eyeHoleFill = forPrintTransparent ? "transparent" : "#fbf7ef";
+
+        // =====================================================================
+        // MODE A: PINTEREST SLENDER VERTICAL BOOKMARK STRIP (3.8cm x 9.3cm)
+        // =====================================================================
+        if (isPinterestStrip) {
+          if (!forPrintTransparent) {
+            ctx.fillStyle = "#fbf7ef";
+            drawRoundedRect(ctx, 0, 0, W, H, 14);
+            ctx.fill();
+
+            // Subtle shaded preview of the 1.5cm top fold-over tab
+            ctx.fillStyle = "rgba(154, 99, 22, 0.055)";
+            ctx.fillRect(0, 0, W, 210);
+
+            ctx.save();
+            ctx.strokeStyle = "rgba(110, 20, 20, 0.34)";
+            ctx.lineWidth = 1.6;
+            ctx.setLineDash([8, 8]);
+            ctx.beginPath();
+            ctx.moveTo(24, 210);
+            ctx.lineTo(W - 24, 210);
+            ctx.stroke();
+            ctx.restore();
+
+            ctx.textAlign = "center";
+            ctx.fillStyle = "rgba(110, 20, 20, 0.55)";
+            ctx.font = '600 15px "Be Vietnam Pro", sans-serif';
+            ctx.fillText("▴ PHẦN GẬP RA SAU (1.5CM) ▴", W / 2, 96);
+            ctx.font = '400 13.5px "Be Vietnam Pro", sans-serif';
+            ctx.fillText("Gập xuống máng vô cạnh trên tờ thiệp", W / 2, 124);
+          } else {
+            // When printing on Vellum/Cream paper: keep the top flap 100% blank!
+            // Only draw 2 tiny 12px edge ticks at y=210 so user knows where to fold.
+            ctx.strokeStyle = "rgba(110, 20, 20, 0.32)";
+            ctx.lineWidth = 1.4;
+            ctx.beginPath();
+            ctx.moveTo(0, 210);
+            ctx.lineTo(14, 210);
+            ctx.moveTo(W - 14, 210);
+            ctx.lineTo(W, 210);
+            ctx.stroke();
+          }
+
+          // Upper Body (y = 235..755): Vertical Spaced-Out Editorial Typography (like Pinterest BRIDE / GROOM tag)
+          ctx.save();
+          ctx.translate(W / 2, 505);
+          ctx.rotate(-Math.PI / 2);
+          ctx.textAlign = "center";
+
+          ctx.fillStyle = "#6e1414";
+          if (capMode === "zh") {
+            ctx.font = '600 29px "Noto Serif TC", serif';
+            ctx.fillText("趙 順 祥   &   盧 小 瑩", 0, -10);
+          } else {
+            ctx.font = '600 30px "Cormorant Garamond", serif';
+            ctx.fillText("T Ư Ờ N G   &   D I N H", 0, -10);
+          }
+
+          ctx.fillStyle = "#9a6316";
+          ctx.font = '500 16px "Cormorant Garamond", "Be Vietnam Pro", serif';
+          const subVert = guestText
+            ? guestText.toUpperCase().split("").join(" ")
+            : "0 6  .  0 1  .  2 0 2 7   ·   S E I N E";
+          ctx.fillText(subVert, 0, 26);
+          ctx.restore();
+
+          // Lower Body (y = 775..1145): Frameless Minimalist QR Code
+          const qrBoxSize = 370;
+          const qrX = (W - qrBoxSize) / 2;
+          const qrY = 775;
+          const pad = 12;
+          const innerQrSize = qrBoxSize - pad * 2;
+          const cellSize = innerQrSize / count;
+          const startX = qrX + pad;
+          const startY = qrY + pad;
+
+          drawFinderEye(ctx, startX, startY, cellSize, eyeHoleFill);
+          drawFinderEye(ctx, startX + (count - 7) * cellSize, startY, cellSize, eyeHoleFill);
+          drawFinderEye(ctx, startX, startY + (count - 7) * cellSize, cellSize, eyeHoleFill);
+
+          ctx.fillStyle = "#6e1414";
+          for (let r = 0; r < count; r++) {
+            for (let c = 0; c < count; c++) {
+              if (isFinderPattern(r, c, count)) continue;
+              if (r > centerMin && r < centerMax && c > centerMin && c < centerMax) continue;
+              if (qr.isDark(r, c)) {
+                const cx = startX + (c + 0.5) * cellSize;
+                const cy = startY + (r + 0.5) * cellSize;
+                ctx.beginPath();
+                ctx.arc(cx, cy, cellSize * 0.43, 0, Math.PI * 2);
+                ctx.fill();
+              }
+            }
+          }
+
+          // Small 囍 Center Medallion
+          const sealCx = qrX + qrBoxSize / 2;
+          const sealCy = qrY + qrBoxSize / 2;
+          const sealR = qrBoxSize * 0.095;
+          if (!forPrintTransparent) {
+            ctx.fillStyle = "#fbf7ef";
+            ctx.beginPath();
+            ctx.arc(sealCx, sealCy, sealR + 4, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.fillStyle = "#6e1414";
+          ctx.beginPath();
+          ctx.arc(sealCx, sealCy, sealR, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = "#e5be77";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(sealCx, sealCy, sealR - 3, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.fillStyle = "#ffdf9e";
+          ctx.textAlign = "center";
+          ctx.font = `700 ${Math.round(sealR * 1.1)}px "Noto Serif TC", serif`;
+          ctx.textBaseline = "middle";
+          ctx.fillText("囍", sealCx, sealCy + 1.5);
+          ctx.textBaseline = "alphabetic";
+
+          // Minimalist Footer Caption below QR
+          ctx.textAlign = "center";
+          ctx.fillStyle = "#6e1414";
+          if (capMode === "zh") {
+            ctx.font = '600 18px "Noto Serif TC", serif';
+            ctx.fillText("掃 碼 開 啟 婚 宴 導 航", W / 2, 1185);
+          } else if (capMode === "vi") {
+            ctx.font = '600 17px "Cormorant Garamond", "Be Vietnam Pro", serif';
+            ctx.fillText("Q U É T   M Ã   C H Ỉ   Đ Ư Ờ N G", W / 2, 1185);
+          } else {
+            ctx.font = '600 16.5px "Cormorant Garamond", "Noto Serif TC", serif';
+            ctx.fillText("C H Ỉ   Đ Ư Ờ N G   ·   導 航", W / 2, 1185);
+          }
+
+          ctx.fillStyle = "#7a5252";
+          ctx.font = '400 15px "Cormorant Garamond", "Be Vietnam Pro", serif';
+          ctx.fillText("Riverside Palace · 360D Bến Vân Đồn", W / 2, 1218);
+
+          ctx.fillStyle = "#9a7b7b";
+          ctx.font = '400 14px "Cormorant Garamond", serif';
+          ctx.fillText("thuantuongtieudinh.io.vn", W / 2, 1246);
+          return;
+        }
+
+        // =====================================================================
+        // MODE B: WIDE MINI INSERT CARD (4.8cm x 5.6cm)
+        // =====================================================================
         const isFoldTab = layoutMode === "fold_tab";
         const isFlapSeal = layoutMode === "flap_seal";
         const shiftY = isFoldTab ? 78 : 0;
 
-        // 1. Background (Transparent when printing onto Vellum / Cream cardstock; soft preview on screen)
-        ctx.clearRect(0, 0, W, H);
         if (!forPrintTransparent) {
           ctx.fillStyle = "#fbf7ef";
           drawRoundedRect(ctx, 0, 0, W, H, 24);
@@ -2136,8 +2298,11 @@
           const printDataUrl = qrCanvas.toDataURL("image/png");
           renderLuxuryWeddingQR(false);
 
-          const layoutMode = (qrLayoutStyle && qrLayoutStyle.value) || "frameless";
+          const layoutMode = (qrLayoutStyle && qrLayoutStyle.value) || "pinterest_strip";
+          const isPinterestStrip = layoutMode === "pinterest_strip";
           const isFoldTab = layoutMode === "fold_tab";
+          const cols = isPinterestStrip ? 5 : 4;
+          const totalItems = isPinterestStrip ? 15 : 20;
 
           const win = window.open("", "_blank");
           if (!win) {
@@ -2145,14 +2310,14 @@
             return;
           }
           let stickersHtml = "";
-          for (let i = 0; i < 20; i++) {
+          for (let i = 0; i < totalItems; i++) {
             stickersHtml += `<div class="sticker-cell"><img src="${printDataUrl}" alt="Thẻ Phụ QR Thiệp Cưới" /></div>`;
           }
           win.document.write(`<!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <title>In Tờ A4 (20 Thẻ Phụ QR Không Khung — Giấy Vellum / Giấy Kem) — Thuận Tường & Tiểu Dinh</title>
+  <title>In Tờ A4 (${totalItems} ${isPinterestStrip ? "Dải Bookmark Dọc Kiểu Pinterest" : "Thẻ Phụ QR Không Khung"}) — Thuận Tường & Tiểu Dinh</title>
   <style>
     @page { size: A4 portrait; margin: 6mm; }
     * { box-sizing: border-box; }
@@ -2185,13 +2350,12 @@
       cursor: pointer;
       white-space: nowrap;
     }
-    /* Tight guillotine-ready 4x5 matrix (48.5mm x 56.5mm per card) with ultra-faint hairline cut marks */
     .a4-sheet {
       width: 194mm;
       margin: 0 auto 20px;
       background: transparent;
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(${cols}, 1fr);
       gap: 0;
       border-top: 0.15mm solid rgba(125, 21, 24, 0.18);
       border-left: 0.15mm solid rgba(125, 21, 24, 0.18);
@@ -2199,7 +2363,7 @@
     .sticker-cell {
       border-right: 0.15mm solid rgba(125, 21, 24, 0.18);
       border-bottom: 0.15mm solid rgba(125, 21, 24, 0.18);
-      padding: 1.8mm 2.2mm;
+      padding: ${isPinterestStrip ? "0.8mm 1.2mm" : "1.8mm 2.2mm"};
       display: flex;
       align-items: center;
       justify-content: center;
@@ -2226,10 +2390,18 @@
 <body>
   <div class="print-toolbar">
     <div>
-      <strong>🖨️ Tờ A4 Gồm 20 Thẻ Phụ QR Không Khung (4 cột × 5 hàng • Cỡ chuẩn ~4.8cm × 5.6cm/thẻ)</strong>
+      <strong>🖨️ ${isPinterestStrip
+        ? "Tờ A4 Gồm 15 Dải Bookmark Dọc Kiểu Pinterest (5 cột × 3 hàng • Rộng ~3.8cm × Dài 9.3cm/dải)"
+        : "Tờ A4 Gồm 20 Thẻ Phụ QR Không Khung (4 cột × 5 hàng • Cỡ chuẩn ~4.8cm × 5.6cm/thẻ)"
+      }</strong>
       <div style="font-size:12.5px; color:#5c4747; margin-top:4px; line-height:1.5;">
-        • <strong>Chất liệu sang nhất:</strong> Đem file PDF này ra tiệm in nhanh bảo <em>"In giúp em trên <strong>Giấy Can Mờ (Vellum 150gsm–180gsm)</strong> hoặc <strong>Giấy Mỹ Thuật Kem 250gsm</strong> rồi đưa lên bàn cắt giấy xén dọc theo 3 đường kẻ mảnh"</em>.<br/>
-        • <strong>Tốn 0đ tiền ghim kẹp:</strong> ${isFoldTab ? "Đã có sẵn <strong>nếp gấp 1.2cm ở đầu mỗi thẻ</strong> — bạn chỉ cần miết gập mép trên ra sau để máng lên cạnh trên tờ thiệp số 1!" : "Khi xén rời xong, thẻ hoàn toàn <strong>không có khung viền</strong>. Bạn chỉ cần đặt thẻ nằm ngay trên mặt tờ thiệp số 1 rồi đút vào phong bì (phong bì ôm khít không cần ghim kẹp)!"}
+        • <strong>Chất liệu sang nhất:</strong> Đem file PDF này ra tiệm in nhanh bảo <em>"In giúp em trên <strong>Giấy Can Mờ (Vellum 150gsm–180gsm)</strong> hoặc <strong>Giấy Mỹ Thuật Kem 250gsm</strong> rồi đưa lên bàn cắt giấy xén dọc theo các đường kẻ mảnh"</em>.<br/>
+        • <strong>Cách gập xuống máng vô thiệp (0đ tiền ghim):</strong> ${isPinterestStrip
+          ? "Ở cách đỉnh mỗi dải <strong>1.5cm</strong> có sẵn 2 vạch chấm nhỏ ở 2 mép ➔ bạn chỉ việc <strong>gập cái đầu 1.5cm đó ra phía sau rồi máng/ngoắc thẳng vô cạnh trên tờ thiệp số 1</strong> (giống hệt ảnh mẫu Pinterest mà không tốn tiền mua ghim kẹp)!"
+          : isFoldTab
+          ? "Đã có sẵn <strong>nếp gấp 1.2cm ở đầu mỗi thẻ</strong> — bạn chỉ cần miết gập mép trên ra sau để máng lên cạnh trên tờ thiệp số 1!"
+          : "Khi xén rời xong, thẻ hoàn toàn <strong>không có khung viền</strong>. Bạn chỉ cần đặt thẻ nằm ngay trên mặt tờ thiệp số 1 rồi đút vào phong bì!"
+        }
       </div>
     </div>
     <button class="print-btn" onclick="window.print()">🖨️ In Ngay / Lưu File PDF</button>
