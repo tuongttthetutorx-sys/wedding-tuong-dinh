@@ -3,133 +3,149 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Quản Lý Link Khách Mời &amp; Thống Kê Chi Tiết Thiết Bị — Thuận Tường &amp; Tiểu Dinh</title>
+  <title>Quản Lý Thiệp Cưới &amp; Theo Dõi Khách Mời — Thuận Tường &amp; Tiểu Dinh</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Cormorant+Garamond:wght@600;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=41" />
+  <link rel="stylesheet" href="css/styles.css?v=44" />
   <style>
-    body { overflow: auto; height: auto; }
-    .builder-wrap { max-width: 1020px; margin: 0 auto; padding: 34px 16px calc(64px + env(safe-area-inset-bottom, 0px)); }
-    .builder-header { text-align: center; margin-bottom: 26px; }
-    .builder-header h1 {
-      margin: 6px 0;
-      font-family: var(--font-serif);
-      font-size: clamp(26px, 4.5vw, 40px);
-      color: var(--crimson-ink);
-      text-wrap: balance;
-    }
-    .btn-crimson,
-    .btn-outline-crimson {
-      appearance: none;
-      min-height: 44px;
-      padding: 10px 18px;
-      border-radius: 8px;
-      font-family: inherit;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      -webkit-tap-highlight-color: transparent;
-      transition: transform 0.18s ease, opacity 0.18s ease, background 0.18s ease;
-    }
-    .btn-crimson {
-      border: 1.5px solid var(--crimson-ink);
-      background: var(--crimson-ink);
-      color: var(--ivory-ink);
-      box-shadow: 0 6px 18px rgba(132, 21, 23, 0.2);
-    }
-    .btn-outline-crimson {
-      border: 1.5px solid rgba(132, 21, 23, 0.35);
-      background: rgba(255, 255, 255, 0.85);
-      color: var(--crimson-ink);
-    }
-    .btn-crimson:hover,
-    .btn-outline-crimson:hover {
-      opacity: 0.92;
+    :root {
+      --adm-bg: #f8f3eb;
+      --adm-card: #fffdf9;
+      --adm-border: rgba(132, 21, 23, 0.14);
+      --adm-border-strong: rgba(132, 21, 23, 0.28);
+      --adm-crimson: #7d1518;
+      --adm-crimson-dark: #5e0e10;
+      --adm-crimson-soft: rgba(125, 21, 24, 0.07);
+      --adm-gold: #b8893a;
+      --adm-text: #2c1e1e;
+      --adm-muted: #766565;
+      --adm-green-bg: #ebf8f0;
+      --adm-green-text: #116939;
+      --adm-green-border: rgba(17, 105, 57, 0.25);
+      --adm-amber-bg: #fef6e6;
+      --adm-amber-text: #8c5208;
+      --adm-amber-border: rgba(140, 82, 8, 0.25);
     }
 
-    /* LIVE ANALYTICS DASHBOARD (LEVEL 2A + 2B UNMERGED) */
-    .analytics-sheet {
-      margin-bottom: 24px;
+    * { box-sizing: border-box; }
+    body {
+      overflow-x: hidden;
+      overflow-y: auto;
+      height: auto;
+      background: var(--adm-bg);
+      color: var(--adm-text);
+      font-family: "Be Vietnam Pro", -apple-system, BlinkMacSystemFont, sans-serif;
+      margin: 0;
     }
-    .analytics-top-bar {
+
+    .adm-shell {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 24px 16px calc(72px + env(safe-area-inset-bottom, 0px));
+    }
+
+    /* 1. TOP HEADER BAR */
+    .adm-topbar {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid rgba(132, 21, 23, 0.14);
+      padding-bottom: 18px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--adm-border);
     }
-    .analytics-title-group h2 {
-      margin: 0;
-      font-family: var(--font-serif);
-      font-size: clamp(21px, 3.2vw, 27px);
-      color: var(--crimson-ink);
+    .adm-brand {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
+    }
+    .adm-seal {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--adm-crimson);
+      color: #fff8ec;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(125, 21, 24, 0.22);
+      flex-shrink: 0;
+    }
+    .adm-brand-text h1 {
+      margin: 0;
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(22px, 3.2vw, 30px);
+      font-weight: 700;
+      color: var(--adm-crimson);
+      line-height: 1.15;
+    }
+    .adm-brand-sub {
+      margin: 2px 0 0;
+      font-size: 12.5px;
+      color: var(--adm-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
     }
     .live-dot {
-      width: 9px;
-      height: 9px;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
       background: #16a34a;
-      box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.18);
+      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.18);
       display: inline-block;
       animation: livePulse 2s infinite;
     }
     @keyframes livePulse {
       0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.18); opacity: 0.72; }
+      50% { transform: scale(1.2); opacity: 0.7; }
     }
-    .analytics-sub {
-      margin: 3px 0 0;
-      font-size: 12.8px;
-      color: var(--text-muted);
-    }
-    .analytics-actions {
+
+    .adm-top-actions {
       display: flex;
       flex-wrap: wrap;
+      align-items: center;
       gap: 8px;
     }
-    .stats-kpi-grid {
+
+    /* 2. KPI SUMMARY STRIP */
+    .adm-kpi-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 12px;
-      margin-bottom: 18px;
+      margin-bottom: 22px;
     }
-    .kpi-box {
-      padding: 14px 15px;
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.82);
-      border: 1px solid rgba(132, 21, 23, 0.16);
+    .adm-kpi-card {
+      background: var(--adm-card);
+      border: 1px solid var(--adm-border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      box-shadow: 0 2px 10px rgba(60, 20, 20, 0.03);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
     }
-    .kpi-label {
-      font-size: 12.2px;
+    .adm-kpi-label {
+      font-size: 12px;
       font-weight: 600;
-      color: var(--text-muted);
+      color: var(--adm-muted);
       margin-bottom: 6px;
     }
-    .kpi-value {
-      font-family: var(--font-sans);
-      font-size: clamp(24px, 3.2vw, 30px);
+    .adm-kpi-val {
+      font-size: clamp(24px, 3vw, 30px);
       font-weight: 700;
-      color: var(--crimson-ink);
+      color: var(--adm-crimson);
       line-height: 1.1;
     }
-    .kpi-foot {
+    .adm-kpi-foot {
       margin-top: 6px;
-      font-size: 11.8px;
-      color: var(--text-muted);
+      font-size: 11.5px;
+      color: var(--adm-muted);
     }
     .country-pills {
       display: flex;
@@ -141,13 +157,299 @@
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      padding: 3px 8px;
+      padding: 3px 9px;
       border-radius: 6px;
-      background: rgba(132, 21, 23, 0.08);
-      color: var(--crimson-ink);
+      background: var(--adm-crimson-soft);
+      color: var(--adm-crimson);
       font-size: 12px;
       font-weight: 600;
     }
+
+    /* 3. NAVIGATION TABS */
+    .adm-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--adm-border);
+      padding-bottom: 12px;
+    }
+    .adm-tab-btn {
+      appearance: none;
+      border: 1px solid var(--adm-border);
+      background: rgba(255, 255, 255, 0.7);
+      color: var(--adm-text);
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 600;
+      min-height: 42px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.16s ease;
+    }
+    .adm-tab-btn:hover {
+      border-color: var(--adm-crimson);
+      background: #fff;
+    }
+    .adm-tab-btn.is-active {
+      background: var(--adm-crimson);
+      color: #fff;
+      border-color: var(--adm-crimson);
+      box-shadow: 0 4px 12px rgba(125, 21, 24, 0.18);
+    }
+    .adm-tab-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 22px;
+      height: 20px;
+      padding: 0 6px;
+      border-radius: 5px;
+      font-size: 11.5px;
+      font-weight: 700;
+      background: rgba(125, 21, 24, 0.1);
+      color: var(--adm-crimson);
+    }
+    .adm-tab-btn.is-active .adm-tab-badge {
+      background: rgba(255, 255, 255, 0.22);
+      color: #fff;
+    }
+
+    .adm-panel { display: none; }
+    .adm-panel.is-active { display: block; }
+
+    /* 4. CARDS & CONTAINERS */
+    .adm-box {
+      background: var(--adm-card);
+      border: 1px solid var(--adm-border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 4px 18px rgba(60, 20, 20, 0.04);
+    }
+    .adm-box-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .adm-box-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--adm-crimson);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .adm-box-desc {
+      margin: 3px 0 0;
+      font-size: 12.8px;
+      color: var(--adm-muted);
+    }
+
+    /* QUICK ADD GUEST BAR */
+    .add-guest-grid {
+      display: grid;
+      grid-template-columns: 1fr 240px;
+      gap: 14px;
+      align-items: stretch;
+    }
+    .adm-textarea {
+      width: 100%;
+      min-height: 92px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1.5px solid var(--adm-border-strong);
+      background: #fff;
+      color: var(--adm-text);
+      font-family: inherit;
+      font-size: 14.5px;
+      line-height: 1.5;
+      resize: vertical;
+    }
+    .adm-textarea:focus, .adm-input:focus, .adm-select:focus {
+      outline: none;
+      border-color: var(--adm-crimson);
+      box-shadow: 0 0 0 3px rgba(125, 21, 24, 0.1);
+    }
+    .add-side-controls {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .adm-select, .adm-input {
+      width: 100%;
+      height: 44px;
+      padding: 0 12px;
+      border-radius: 8px;
+      border: 1.5px solid var(--adm-border-strong);
+      background: #fff;
+      color: var(--adm-text);
+      font-family: inherit;
+      font-size: 13.5px;
+    }
+
+    /* COLLAPSIBLE TAIWAN GUIDE */
+    details.tw-details {
+      margin-top: 12px;
+      border-radius: 8px;
+      background: rgba(125, 21, 24, 0.035);
+      border: 1px dashed var(--adm-border-strong);
+      padding: 9px 14px;
+      font-size: 13px;
+    }
+    details.tw-details summary {
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--adm-crimson);
+      user-select: none;
+    }
+    .tw-guide-grid {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 8px 16px;
+      line-height: 1.6;
+    }
+    .tw-code {
+      font-family: "Noto Serif TC", serif;
+      font-weight: 700;
+      color: var(--adm-crimson);
+      background: #fff;
+      border: 1px solid var(--adm-border);
+      padding: 2px 7px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-block;
+      margin: 1px 0;
+    }
+    .tw-code:hover {
+      background: var(--adm-crimson);
+      color: #fff;
+    }
+
+    /* TOOLBAR: SEARCH + FILTER CHIPS */
+    .guest-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--adm-border);
+    }
+    .filter-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .filter-chip {
+      appearance: none;
+      border: 1px solid var(--adm-border);
+      background: #fff;
+      color: var(--adm-text);
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 600;
+      height: 36px;
+      padding: 0 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .filter-chip.is-active {
+      background: var(--adm-crimson-soft);
+      border-color: var(--adm-crimson);
+      color: var(--adm-crimson);
+    }
+    .search-box {
+      flex: 1 1 220px;
+      max-width: 280px;
+      height: 36px;
+      padding: 0 12px;
+      border-radius: 6px;
+      border: 1px solid var(--adm-border-strong);
+      font-family: inherit;
+      font-size: 13px;
+    }
+
+    /* GUEST LIST ITEM CARDS (CLEAN, ZERO MESSY WRAPPING) */
+    .guest-list-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .guest-item-card {
+      background: #fff;
+      border: 1px solid var(--adm-border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: start;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .guest-item-card:hover {
+      border-color: var(--adm-border-strong);
+      box-shadow: 0 3px 12px rgba(125, 21, 24, 0.06);
+    }
+    .guest-main-info {
+      min-width: 0;
+    }
+    .guest-title-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+    .guest-idx {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 24px;
+      height: 24px;
+      padding: 0 6px;
+      border-radius: 6px;
+      background: var(--adm-crimson-soft);
+      color: var(--adm-crimson);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .guest-name-text {
+      font-size: 15.5px;
+      font-weight: 700;
+      color: var(--adm-text);
+    }
+    .lang-tag {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.05);
+      color: var(--adm-muted);
+    }
+    .guest-url-line {
+      margin-top: 4px;
+      font-family: monospace;
+      font-size: 12px;
+      color: var(--adm-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 540px;
+    }
+
+    /* STATUS BADGES */
     .status-badge {
       display: inline-flex;
       align-items: center;
@@ -159,241 +461,373 @@
       white-space: nowrap;
     }
     .status-badge.is-opened {
-      background: rgba(22, 130, 72, 0.12);
-      color: #116939;
-      border: 1px solid rgba(22, 130, 72, 0.28);
+      background: var(--adm-green-bg);
+      color: var(--adm-green-text);
+      border: 1px solid var(--adm-green-border);
     }
     .status-badge.is-viewed {
-      background: rgba(180, 110, 18, 0.12);
-      color: #8c5208;
-      border: 1px solid rgba(180, 110, 18, 0.28);
+      background: var(--adm-amber-bg);
+      color: var(--adm-amber-text);
+      border: 1px solid var(--adm-amber-border);
     }
     .status-badge.is-pending {
-      background: rgba(120, 110, 110, 0.09);
+      background: #f3f1ef;
       color: #6e6262;
-      border: 1px solid rgba(120, 110, 110, 0.2);
-    }
-    .device-chip {
-      display: inline-block;
-      margin-top: 3px;
-      padding: 3px 8px;
-      border-radius: 5px;
-      background: rgba(132, 21, 23, 0.06);
-      border: 1px solid rgba(132, 21, 23, 0.14);
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--crimson-ink);
-    }
-    .per-guest-device-list {
-      margin-top: 6px;
-      padding: 6px 8px;
-      border-radius: 6px;
-      background: rgba(132, 21, 23, 0.04);
-      border: 1px dashed rgba(132, 21, 23, 0.18);
-      font-size: 11.6px;
-      line-height: 1.5;
-      color: var(--text-main);
-    }
-    .per-guest-device-item {
-      padding: 2px 0;
-      border-bottom: 1px dotted rgba(132, 21, 23, 0.1);
-    }
-    .per-guest-device-item:last-child {
-      border-bottom: none;
-    }
-    .log-empty {
-      padding: 20px;
-      text-align: center;
-      color: var(--text-muted);
-      font-size: 13.5px;
-      background: rgba(255, 255, 255, 0.6);
-      border-radius: 8px;
-      border: 1px dashed rgba(132, 21, 23, 0.2);
+      border: 1px solid rgba(110, 98, 98, 0.2);
     }
 
-    .tw-guide-box {
-      margin-top: 14px;
-      padding: 14px 16px;
-      border-radius: 8px;
-      background: rgba(132, 21, 23, 0.045);
-      border: 1px dashed rgba(132, 21, 23, 0.25);
-      font-size: 13.2px;
-      line-height: 1.65;
-      color: var(--text-main);
+    /* COMPACT SESSION LOG PILLS UNDER EACH GUEST */
+    .guest-sessions-wrap {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
-    .tw-guide-box strong.tw-head {
-      display: block;
-      color: var(--crimson-ink);
-      font-size: 13.8px;
-      margin-bottom: 6px;
-    }
-    .tw-guide-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 6px 18px;
-    }
-    .tw-code {
-      font-family: "Noto Serif TC", serif;
-      font-weight: 700;
-      color: var(--crimson-ink);
-      background: rgba(255, 255, 255, 0.78);
-      padding: 1px 6px;
-      border-radius: 4px;
-    }
-    .builder-table-wrap { overflow-x: auto; margin-top: 16px; }
-    table.guest-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13.5px;
-      background: rgba(255, 255, 255, 0.76);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    .guest-table th, .guest-table td {
-      padding: 11px 12px;
-      text-align: left;
-      border-bottom: 1px solid rgba(132, 21, 23, 0.12);
-      vertical-align: top;
-    }
-    .guest-table th {
-      background: rgba(132, 21, 23, 0.08);
-      color: var(--crimson-ink);
-      font-weight: 700;
-    }
-    .url-preview {
-      font-family: monospace;
-      font-size: 11.8px;
-      color: var(--text-muted);
-      word-break: break-all;
-      max-width: 260px;
-    }
-    .row-actions { display: flex; flex-wrap: wrap; gap: 6px; }
-    .btn-mini {
-      appearance: none;
-      border: 1px solid var(--crimson-ink);
-      background: #fff;
-      color: var(--crimson-ink);
-      font-family: inherit;
-      font-size: 12.5px;
-      font-weight: 600;
-      min-height: 36px;
-      padding: 6px 11px;
+    .session-row-pill {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px 10px;
+      padding: 5px 10px;
       border-radius: 6px;
+      background: #faf6f0;
+      border: 1px solid rgba(125, 21, 24, 0.1);
+      font-size: 12px;
+      color: var(--adm-text);
+    }
+    .session-num {
+      font-weight: 700;
+      color: var(--adm-crimson);
+    }
+    .session-dev {
+      font-weight: 600;
+    }
+    .session-act {
+      color: var(--adm-green-text);
+      font-weight: 600;
+    }
+    .session-time {
+      color: var(--adm-muted);
+      font-size: 11.5px;
+      margin-left: auto;
+    }
+
+    /* RIGHT SIDE ACTIONS ON GUEST CARD */
+    .guest-actions-col {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .guest-btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* MODE SEGMENTED SWITCH (THIỆP MỜI vs LỜI CẢM ƠN) */
+    .mode-switch-pill {
+      display: inline-flex;
+      background: #f3eee6;
+      border: 1px solid var(--adm-border);
+      border-radius: 7px;
+      padding: 2px;
+      gap: 2px;
+    }
+    .mode-switch-btn {
+      appearance: none;
+      border: none;
+      background: transparent;
+      color: var(--adm-muted);
+      font-family: inherit;
+      font-size: 11.8px;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .mode-switch-btn.is-active-invite {
+      background: #fff;
+      color: var(--adm-crimson);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    }
+    .mode-switch-btn.is-active-ty {
+      background: #116939;
+      color: #fff;
+      box-shadow: 0 1px 4px rgba(17, 105, 57, 0.25);
+    }
+
+    /* BUTTONS */
+    .btn-adm {
+      appearance: none;
+      border: 1px solid var(--adm-border-strong);
+      background: #fff;
+      color: var(--adm-crimson);
+      font-family: inherit;
+      font-size: 12.8px;
+      font-weight: 600;
+      height: 36px;
+      padding: 0 12px;
+      border-radius: 7px;
       cursor: pointer;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      -webkit-tap-highlight-color: transparent;
-      transition: all 0.18s ease;
+      gap: 5px;
+      white-space: nowrap;
+      transition: all 0.15s ease;
     }
-    .btn-mini.primary {
-      background: var(--crimson-ink);
-      color: var(--ivory-ink);
+    .btn-adm:hover {
+      border-color: var(--adm-crimson);
+      background: var(--adm-crimson-soft);
     }
-    .btn-mini.danger {
-      border-color: rgba(180, 35, 35, 0.35);
-      color: #a11b1b;
-      background: rgba(255, 245, 245, 0.9);
+    .btn-adm.primary {
+      background: var(--adm-crimson);
+      border-color: var(--adm-crimson);
+      color: #fff;
     }
-    .btn-mini:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn-adm.primary:hover {
+      background: var(--adm-crimson-dark);
+    }
+    .btn-adm.lg {
+      height: 44px;
+      padding: 0 18px;
+      font-size: 14px;
+    }
+    .btn-adm.danger {
+      color: #b42318;
+      border-color: rgba(180, 35, 24, 0.25);
+      background: #fff8f7;
+    }
+    .btn-adm.danger:hover {
+      background: #fee4e2;
+    }
 
-    @media (max-width: 780px) {
-      .stats-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    /* DETAILED ACTIVITY LOG TABLE (TAB 2) */
+    .table-scroll { overflow-x: auto; }
+    table.adm-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.2px;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--adm-border);
     }
-    @media (max-width: 640px) {
-      .builder-wrap { padding: 24px 12px calc(56px + env(safe-area-inset-bottom, 0px)); }
-      .tw-guide-grid { grid-template-columns: 1fr; }
-      .btn-crimson, .btn-outline-crimson { flex: 1 1 100%; width: 100%; }
-      .guest-table thead { display: none; }
-      .guest-table, .guest-table tbody, .guest-table tr, .guest-table td { display: block; width: 100%; }
-      .guest-table { background: transparent; }
-      .guest-table tr {
-        background: rgba(255, 255, 255, 0.82);
-        border: 1px solid rgba(132, 21, 23, 0.16);
-        border-radius: 8px;
-        padding: 12px;
-        margin-bottom: 10px;
+    .adm-table th, .adm-table td {
+      padding: 12px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--adm-border);
+      vertical-align: middle;
+    }
+    .adm-table th {
+      background: #f9f4ec;
+      color: var(--adm-crimson);
+      font-weight: 700;
+      font-size: 12.5px;
+    }
+    .device-badge {
+      display: inline-block;
+      padding: 4px 9px;
+      border-radius: 6px;
+      background: #faf5ed;
+      border: 1px solid var(--adm-border);
+      font-weight: 600;
+      font-size: 12.2px;
+      color: var(--adm-text);
+    }
+
+    .empty-state {
+      padding: 28px 18px;
+      text-align: center;
+      color: var(--adm-muted);
+      font-size: 13.5px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 10px;
+      border: 1px dashed var(--adm-border-strong);
+    }
+
+    @media (max-width: 820px) {
+      .adm-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .add-guest-grid { grid-template-columns: 1fr; }
+      .guest-item-card { grid-template-columns: 1fr; }
+      .guest-actions-col {
+        align-items: stretch;
+        border-top: 1px dashed var(--adm-border);
+        padding-top: 10px;
       }
-      .guest-table td {
-        padding: 4px 0;
-        border-bottom: none;
-      }
-      .guest-table td:first-child { display: none; }
-      .url-preview { max-width: 100%; margin: 2px 0 6px; }
-      .row-actions { gap: 8px; }
-      .row-actions .btn-mini { flex: 1 1 auto; }
+      .guest-btn-group { justify-content: flex-start; }
+      .session-time { margin-left: 0; width: 100%; }
     }
   </style>
 </head>
 <body>
-  <div class="builder-wrap">
-    <div class="builder-header">
-      <a href="index.html?notrack=1" class="footer-tools-link">← Quay lại xem Thiệp Cưới (Chế độ Cô Dâu &amp; Chú Rể)</a>
-      <h1>囍 Quản Lý Khách Mời &amp; Nhật Ký Mở Thiệp Chi Tiết</h1>
-      <p style="color:var(--text-muted); max-width:680px; margin:0 auto; font-size:14px;">
-        Ghi nhớ vĩnh viễn danh sách khách mời đã tạo trên máy chủ và theo dõi <strong>chi tiết từng lần mở thiệp, trên từng thiết bị cụ thể (không gộp)</strong>.
-      </p>
-    </div>
-
-    <!-- MỨC 2A & 2B: BẢNG THỐNG KÊ TRỰC TIẾP LƯỢT MỞ THIỆP -->
-    <section class="paper-sheet analytics-sheet" aria-label="Thống kê lượt mở thiệp trực tiếp">
-      <div class="analytics-top-bar">
-        <div class="analytics-title-group">
-          <h2><span class="live-dot" aria-hidden="true"></span> Nhật Ký Mở Thiệp &amp; Thiết Bị (Thời Gian Thực)</h2>
-          <p class="analytics-sub" id="stats-updated-label">Đang tải dữ liệu từ máy chủ thuantuongtieudinh.io.vn...</p>
-        </div>
-        <div class="analytics-actions">
-          <button type="button" id="btn-refresh-stats" class="btn-mini primary">🔄 Làm mới ngay</button>
-          <button type="button" id="btn-reset-stats" class="btn-mini">🗑️ Reset lượt xem về 0 (Giữ nguyên DS khách)</button>
+  <div class="adm-shell">
+    <!-- 1. HEADER -->
+    <header class="adm-topbar">
+      <div class="adm-brand">
+        <div class="adm-seal" aria-hidden="true">囍</div>
+        <div class="adm-brand-text">
+          <h1>Quản Lý Thiệp Cưới — Thuận Tường &amp; Tiểu Dinh</h1>
+          <p class="adm-brand-sub">
+            <span class="live-dot" aria-hidden="true"></span>
+            <span id="stats-updated-label">Đang kết nối trực tiếp máy chủ...</span>
+          </p>
         </div>
       </div>
+      <div class="adm-top-actions">
+        <a href="index.html?notrack=1" class="btn-adm">← Mở xem Thiệp Cưới</a>
+        <button type="button" id="btn-refresh-stats" class="btn-adm primary">🔄 Làm mới</button>
+        <button type="button" id="btn-reset-stats" class="btn-adm danger" title="Xóa lịch sử lượt xem thử về 0 (Giữ nguyên danh sách khách)">🗑️ Reset lượt xem</button>
+      </div>
+    </header>
 
-      <!-- MỨC 2A: 4 Ô TỔNG QUAN -->
-      <div class="stats-kpi-grid">
-        <div class="kpi-box">
-          <span class="kpi-label">Tổng số lần mở thiệp</span>
-          <span class="kpi-value" id="kpi-total-views">0</span>
-          <span class="kpi-foot">Mỗi lần mở là 1 dòng nhật ký</span>
+    <!-- 2. 4 KPI CARDS (MỨC 2A) -->
+    <section class="adm-kpi-grid" aria-label="Thống kê tổng quan">
+      <div class="adm-kpi-card">
+        <span class="adm-kpi-label">Tổng số lần mở thiệp</span>
+        <span class="adm-kpi-val" id="kpi-total-views">0</span>
+        <span class="adm-kpi-foot">Mỗi lần mở được ghi 1 dòng riêng</span>
+      </div>
+      <div class="adm-kpi-card">
+        <span class="adm-kpi-label">Khách / Gia đình đã xem</span>
+        <span class="adm-kpi-val" id="kpi-unique-guests">0</span>
+        <span class="adm-kpi-foot" id="kpi-guest-ratio">Trên tổng số khách đã tạo</span>
+      </div>
+      <div class="adm-kpi-card">
+        <span class="adm-kpi-label">Lượt chạm mở phong bì 3D</span>
+        <span class="adm-kpi-val" id="kpi-opened-env">0</span>
+        <span class="adm-kpi-foot" id="kpi-flipped-back">0 lần lật xem mặt sau</span>
+      </div>
+      <div class="adm-kpi-card">
+        <span class="adm-kpi-label">Quốc gia truy cập</span>
+        <div class="country-pills" id="kpi-countries">
+          <span class="country-pill">🇻🇳 VN: 0</span>
+          <span class="country-pill">🇹🇼 TW: 0</span>
         </div>
-        <div class="kpi-box">
-          <span class="kpi-label">Số khách / gia đình đã xem</span>
-          <span class="kpi-value" id="kpi-unique-guests">0</span>
-          <span class="kpi-foot">Số khách mời đã mở thiệp</span>
-        </div>
-        <div class="kpi-box">
-          <span class="kpi-label">Số lần chạm mở phong bì</span>
-          <span class="kpi-value" id="kpi-opened-env">0</span>
-          <span class="kpi-foot" id="kpi-flipped-back">0 lần đã lật xem mặt sau</span>
-        </div>
-        <div class="kpi-box">
-          <span class="kpi-label">Khu vực mở thiệp (VN / Đài Loan)</span>
-          <div class="country-pills" id="kpi-countries">
-            <span class="country-pill">🇻🇳 VN: 0</span>
-            <span class="country-pill">🇹🇼 TW: 0</span>
+        <span class="adm-kpi-foot">Tự động định vị theo mạng</span>
+      </div>
+    </section>
+
+    <!-- 3. CLEAN NAVIGATION TABS -->
+    <nav class="adm-tabs" role="tablist" aria-label="Các mục quản lý">
+      <button type="button" class="adm-tab-btn is-active" data-tab="tab-guests">
+        👥 Danh Sách Khách &amp; Tạo Link
+        <span class="adm-tab-badge" id="badge-saved-count">0</span>
+      </button>
+      <button type="button" class="adm-tab-btn" data-tab="tab-logs">
+        📱 Nhật Ký Chi Tiết Từng Thiết Bị (Không gộp)
+        <span class="adm-tab-badge" id="badge-logs-count">0</span>
+      </button>
+      <button type="button" class="adm-tab-btn" data-tab="tab-thankyou">
+        💝 Cài Đặt Lời Cảm Ơn &amp; Kho Ảnh (Cho Link Đã Gửi)
+      </button>
+    </nav>
+
+    <!-- =====================================================================
+         TAB 1: DANH SÁCH KHÁCH MỜI & TẠO LINK (MẶC ĐỊNH)
+         ===================================================================== -->
+    <section id="tab-guests" class="adm-panel is-active">
+      <!-- KHUNG THÊM KHÁCH MỜI MỚI (GỌN ĐẸP) -->
+      <div class="adm-box">
+        <div class="adm-box-head">
+          <div>
+            <h2 class="adm-box-title">✨ Thêm Khách Mời Vào Danh Sách</h2>
+            <p class="adm-box-desc">Nhập 1 hoặc nhiều tên khách (mỗi dòng 1 tên). Hệ thống tự động lưu cộng dồn lên máy chủ, không bao giờ mất khách cũ.</p>
           </div>
-          <span class="kpi-foot">Tự động nhận diện theo mạng</span>
         </div>
+
+        <div class="add-guest-grid">
+          <div>
+            <textarea
+              id="guest-list"
+              class="adm-textarea"
+              placeholder="Gõ tên khách mời vào đây (mỗi dòng 1 khách / gia đình)...&#10;Ví dụ:&#10;Anh Tuấn & Chị Thảo&#10;陳伯父 闔府"
+            ></textarea>
+          </div>
+          <div class="add-side-controls">
+            <div>
+              <label for="default-lang" style="display:block; font-size:12px; font-weight:600; color:var(--adm-muted); margin-bottom:5px;">Ngôn ngữ mở thiệp:</label>
+              <select id="default-lang" class="adm-select">
+                <option value="vi">🇻🇳 Tiếng Việt (Tự bật 中文 nếu tên chữ Hoa)</option>
+                <option value="zh">🧧 繁體中文 (Khách Đài Loan)</option>
+              </select>
+            </div>
+            <button type="button" id="btn-generate" class="btn-adm primary lg" style="width:100%;">
+              ✨ Tạo &amp; Lưu Vào Danh Sách
+            </button>
+          </div>
+        </div>
+
+        <details class="tw-details">
+          <summary>🧧 Xem cẩm nang cách ghi tên Khách Đài Loan chuẩn lễ nghi (Bấm vào chữ Hoa để chép nhanh)</summary>
+          <div class="tw-guide-grid">
+            <div>• <strong>Mời cả gia đình (cô chú bác):</strong> <span class="tw-code" data-insert="陳伯父 闔府">陳伯父 闔府</span> <span class="tw-code" data-insert="林叔叔 闔府">林叔叔 闔府</span></div>
+            <div>• <strong>Mời cặp vợ chồng:</strong> <span class="tw-code" data-insert="林志明先生 賢伉儷">林志明先生 賢伉儷</span></div>
+            <div>• <strong>Bạn Nam đi lẻ:</strong> <span class="tw-code" data-insert="王大明 先生">王大明 先生</span> <span class="tw-code" data-insert="陳建宏 學長">陳建宏 學長</span></div>
+            <div>• <strong>Bạn Nữ đi lẻ:</strong> <span class="tw-code" data-insert="王雅婷 小姐">王雅婷 小姐</span> <span class="tw-code" data-insert="陳淑芬 女士">陳淑芬 女士</span></div>
+          </div>
+        </details>
       </div>
 
-      <!-- MỨC 2B: NHẬT KÝ CHI TIẾT TỪNG LẦN MỞ & TỪNG THIẾT BỊ (KHÔNG GỘP) -->
-      <div>
-        <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px;">
-          <strong style="color:var(--crimson-ink); font-size:14.2px;">📋 Nhật ký chi tiết từng lần mở thiệp &amp; từng thiết bị (Không gộp):</strong>
-          <span style="font-size:12px; color:var(--text-muted);">Hiển thị riêng từng lần mở • Tự động cập nhật mỗi 15 giây</span>
+      <!-- DANH SÁCH KHÁCH ĐÃ LƯU -->
+      <div class="adm-box">
+        <div class="adm-box-head">
+          <div>
+            <h2 class="adm-box-title">📌 Danh Sách Khách Mời Đã Tạo (<span id="saved-guest-count">0</span> khách)</h2>
+            <p class="adm-box-desc">Bấm <strong>Copy Link</strong> hoặc <strong>Copy Lời Mời</strong> để gửi qua Zalo / LINE. Bạn có thể bật <strong>📸 Lời Cảm Ơn</strong> ngay trên từng khách bất kỳ lúc nào.</p>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:8px;">
+            <button type="button" id="btn-export-csv" class="btn-adm">📥 Tải File Excel (.CSV)</button>
+            <button type="button" id="btn-clear-guests" class="btn-adm danger">🗑️ Xóa hết DS</button>
+          </div>
         </div>
-        <div id="guest-activity-empty" class="log-empty">
-          Chưa có lượt mở thiệp nào được ghi nhận. Khi khách bấm vào link thiệp trên điện thoại hay máy tính, từng lần mở và tên thiết bị cụ thể sẽ hiện chi tiết từng dòng tại đây!
+
+        <!-- THANH LỌC & TÌM KIẾM -->
+        <div class="guest-toolbar">
+          <div class="filter-chips" id="guest-filter-chips">
+            <button type="button" class="filter-chip is-active" data-filter="all">Tất cả</button>
+            <button type="button" class="filter-chip" data-filter="opened">✨ Đã xem thiệp</button>
+            <button type="button" class="filter-chip" data-filter="pending">⏳ Chưa mở</button>
+            <button type="button" class="filter-chip" data-filter="thankyou">📸 Đang bật Lời Cảm Ơn</button>
+          </div>
+          <input type="search" id="guest-search-input" class="search-box" placeholder="🔍 Tìm nhanh tên khách mời..." />
         </div>
-        <div class="builder-table-wrap" id="guest-activity-table-wrap" style="display:none; margin-top:8px;">
-          <table class="guest-table">
+
+        <div id="guest-cards-container" class="guest-list-cards"></div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         TAB 2: NHẬT KÝ CHI TIẾT TỪNG LẦN MỞ & TỪNG THIẾT BỊ (KHÔNG GỘP)
+         ===================================================================== -->
+    <section id="tab-logs" class="adm-panel">
+      <div class="adm-box">
+        <div class="adm-box-head">
+          <div>
+            <h2 class="adm-box-title">📱 Nhật Ký Chi Tiết Từng Lần Mở Thiệp &amp; Thiết Bị (Không Gộp)</h2>
+            <p class="adm-box-desc">Mỗi lần khách bấm mở thiệp trên bất kỳ thiết bị nào đều được ghi thành 1 dòng riêng biệt, hiển thị rõ dòng máy, ứng dụng (Zalo / LINE / Safari / Chrome) và vị trí.</p>
+          </div>
+        </div>
+
+        <div id="guest-activity-empty" class="empty-state">
+          Chưa có lượt mở thiệp nào được ghi nhận. Khi khách bấm vào link thiệp, từng lần mở và tên thiết bị cụ thể sẽ hiện chi tiết từng dòng tại đây!
+        </div>
+
+        <div class="table-scroll" id="guest-activity-table-wrap" style="display:none;">
+          <table class="adm-table">
             <thead>
               <tr>
                 <th>Lượt</th>
                 <th>Tên khách mời</th>
-                <th>Hành động trong lần mở này</th>
-                <th>Thiết bị &amp; Ứng dụng mở thiệp</th>
-                <th>Khu vực &amp; Thời gian mở chính xác</th>
+                <th>Trạng thái tương tác</th>
+                <th>Chi tiết Thiết bị &amp; Ứng dụng mở</th>
+                <th>Khu vực &amp; Thời gian mở</th>
               </tr>
             </thead>
             <tbody id="guest-activity-tbody"></tbody>
@@ -402,151 +836,64 @@
       </div>
     </section>
 
-    <!-- CÔNG TẮC CẬP NHẬT LỜI CẢM ƠN CHO CÁC LINK ĐÃ GỬI (KHÔNG CẦN GỬI LẠI LINK MỚI) -->
-    <section class="paper-sheet analytics-sheet" aria-label="Cập nhật Thiệp Cảm Ơn cho các link đã gửi">
-      <div class="analytics-top-bar" style="margin-bottom:12px;">
-        <div class="analytics-title-group">
-          <h2>💝 Cập Nhật Lời Cảm Ơn &amp; Kho Ảnh Cho Các Link Đã Gửi</h2>
-          <p class="analytics-sub">
-            Dành cho lúc sau đám cưới (hoặc khi muốn bật lời cảm ơn): Khách bấm lại vào <strong>đúng đường link cũ đã gửi trong Zalo / LINE</strong> sẽ tự động thấy thêm <strong>Thiệp Cảm Ơn &amp; Nút Mở Album Ảnh Google Drive</strong> mà hai bạn không cần gửi lại link mới!
-          </p>
+    <!-- =====================================================================
+         TAB 3: CÀI ĐẶT THIỆP CẢM ƠN & KHO ẢNH CHO CÁC LINK ĐÃ GỬI
+         ===================================================================== -->
+    <section id="tab-thankyou" class="adm-panel">
+      <div class="adm-box">
+        <div class="adm-box-head">
+          <div>
+            <h2 class="adm-box-title">💝 Cập Nhật Lời Cảm Ơn &amp; Kho Ảnh Cho Các Link Đã Gửi</h2>
+            <p class="adm-box-desc">
+              Không cần gửi lại link mới! Khi bật chế độ này (hoặc bật nút <strong>📸 Cảm Ơn</strong> trên từng khách), khách bấm lại vào <strong>đúng đường link cũ trong Zalo / LINE</strong> sẽ thấy ngay Thiệp Cảm Ơn mang tên mình &amp; nút mở Album Ảnh Google Drive.
+            </p>
+          </div>
         </div>
-      </div>
 
-      <div class="field-row-2" style="margin-bottom:12px;">
-        <div class="field-group">
-          <label for="global-thankyou-select">Chế độ hiển thị của tất cả các link đã gửi</label>
-          <select id="global-thankyou-select" class="rsvp-select">
-            <option value="off">💌 Giữ mặc định theo từng khách (Thiệp Mời trước ngày cưới)</option>
-            <option value="on">📸 BẬT ĐỒNG LOẠT: Hiện thêm Thiệp Cảm Ơn + Kho Ảnh trên TẤT CẢ link cũ đã gửi!</option>
-          </select>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:14px; margin-bottom:14px;">
+          <div>
+            <label for="global-thankyou-select" style="display:block; font-size:12.5px; font-weight:600; margin-bottom:6px;">Chế độ áp dụng cho toàn bộ link đã gửi:</label>
+            <select id="global-thankyou-select" class="adm-select">
+              <option value="off">💌 Theo từng khách (Mặc định là Thiệp Mời trước đám cưới)</option>
+              <option value="on">📸 BẬT ĐỒNG LOẠT: Hiện Thiệp Cảm Ơn trên TẤT CẢ các link đã gửi!</option>
+            </select>
+          </div>
+          <div>
+            <label for="global-drive-url" style="display:block; font-size:12.5px; font-weight:600; margin-bottom:6px;">Link thư mục Ảnh / Video Google Drive (nút xem ảnh trên thiệp):</label>
+            <input
+              type="url"
+              id="global-drive-url"
+              class="adm-input"
+              placeholder="https://drive.google.com/drive/folders/..."
+            />
+          </div>
         </div>
-        <div class="field-group">
-          <label for="global-drive-url">Link thư mục Ảnh / Video Google Drive (tự động gắn vào các link cũ)</label>
-          <input
-            type="url"
-            id="global-drive-url"
-            class="rsvp-input"
-            placeholder="https://drive.google.com/drive/folders/..."
-          />
-        </div>
-      </div>
 
-      <div class="field-row-2" style="margin-bottom:12px;">
-        <div class="field-group">
-          <label for="global-ty-vi">Lời Cảm Ơn Tiếng Việt (để trống sẽ dùng lời cảm ơn trang trọng mặc định)</label>
-          <textarea
-            id="global-ty-vi"
-            class="rsvp-textarea"
-            style="min-height:76px;"
-            placeholder="Sự hiện diện, lời chúc phúc và tình cảm nồng ấm của Quý Khách trong ngày chung đôi 06.01.2027 là niềm vinh hạnh và món quà vô giá đối với gia đình chúng tôi..."
-          ></textarea>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:14px; margin-bottom:16px;">
+          <div>
+            <label for="global-ty-vi" style="display:block; font-size:12.5px; font-weight:600; margin-bottom:6px;">Nội dung Lời Cảm Ơn Tiếng Việt (chữ "Quý Khách" sẽ tự đổi thành tên khách):</label>
+            <textarea
+              id="global-ty-vi"
+              class="adm-textarea"
+              placeholder="Sự hiện diện, lời chúc phúc và tình cảm nồng ấm của Quý Khách trong ngày chung đôi 06.01.2027 là niềm vinh hạnh và món quà vô giá đối với gia đình chúng tôi..."
+            ></textarea>
+          </div>
+          <div>
+            <label for="global-ty-zh" style="display:block; font-size:12.5px; font-weight:600; margin-bottom:6px;">Nội dung Lời Cảm Ơn Tiếng Trung 繁體中文:</label>
+            <textarea
+              id="global-ty-zh"
+              class="adm-textarea"
+              placeholder="誠摯感謝您於 2027 年 1 月 6 日蒞臨參與我們的婚禮，您的祝福與陪伴是我們最珍貴的禮物。順祥 & 小瑩 謹致上最深切的謝意..."
+            ></textarea>
+          </div>
         </div>
-        <div class="field-group">
-          <label for="global-ty-zh">Lời Cảm Ơn Tiếng Trung 繁體中文 (dành cho khách Đài Loan)</label>
-          <textarea
-            id="global-ty-zh"
-            class="rsvp-textarea"
-            style="min-height:76px;"
-            placeholder="誠摯感謝您於 2027 年 1 月 6 日蒞臨參與我們的婚禮，您的祝福與陪伴是我們最珍貴的禮物。順祥 & 小瑩 謹致上最深切的謝意..."
-          ></textarea>
+
+        <div style="display:flex; flex-wrap:wrap; align-items:center; gap:12px;">
+          <button type="button" id="btn-save-global-config" class="btn-adm primary lg">
+            💾 Lưu &amp; Áp Dụng Ngay
+          </button>
+          <span id="global-config-status" style="font-size:13px; color:var(--adm-muted);"></span>
         </div>
-      </div>
-
-      <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px;">
-        <button type="button" id="btn-save-global-config" class="btn-crimson">
-          💾 Lưu &amp; Áp Dụng Ngay Cho Các Link Đã Gửi
-        </button>
-        <span id="global-config-status" style="font-size:12.8px; color:var(--text-muted);">
-          Mẹo: Bạn cũng có thể bật/tắt Lời Cảm Ơn cho riêng từng khách bằng nút ở từng dòng bên dưới!
-        </span>
-      </div>
-    </section>
-
-    <!-- CÔNG CỤ TẠO & LƯU DANH SÁCH LINK KHÁCH MỜI -->
-    <section class="paper-sheet">
-      <div class="field-row-2" style="margin-bottom:14px;">
-        <div class="field-group">
-          <label for="base-url">Đường dẫn gốc Website</label>
-          <input type="text" id="base-url" class="rsvp-input" />
-        </div>
-        <div class="field-group">
-          <label for="default-lang">Ngôn ngữ mở thiệp mặc định cho nhóm khách này</label>
-          <select id="default-lang" class="rsvp-select">
-            <option value="vi">🇻🇳 Tiếng Việt (Mặc định — tự chuyển 中文 nếu tên có chữ Hoa)</option>
-            <option value="zh">🧧 繁體中文 Chuẩn Đài Loan (Đưa tờ Hỷ Thiếp chữ Hoa lên đầu)</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="field-row-2" style="margin-bottom:14px;">
-        <div class="field-group">
-          <label for="card-mode">Chế độ gửi thiệp (Trước đám cưới / Sau đám cưới)</label>
-          <select id="card-mode" class="rsvp-select">
-            <option value="invite">💌 Thiệp Mời Tiệc Cưới (Mặc định trước 06.01.2027)</option>
-            <option value="thankyou">📸 Thiệp Cảm Ơn + Gửi Kho Ảnh Google Drive (Sau tiệc cưới)</option>
-          </select>
-        </div>
-        <div class="field-group" id="drive-url-group">
-          <label for="drive-url">Link thư mục Ảnh/Video Google Drive (kèm vào Thiệp Cảm Ơn)</label>
-          <input
-            type="url"
-            id="drive-url"
-            class="rsvp-input"
-            placeholder="https://drive.google.com/drive/folders/..."
-          />
-        </div>
-      </div>
-
-      <div class="field-group">
-        <label for="guest-list">Nhập thêm tên khách mời mới (mỗi dòng 1 khách / gia đình — bấm nút Tạo sẽ tự động LƯU CỘNG DỒN vào danh sách bên dưới)</label>
-        <textarea
-          id="guest-list"
-          class="rsvp-textarea"
-          style="min-height:115px;"
-          placeholder="Nhập tên khách mời (mỗi dòng 1 tên), ví dụ:&#10;Anh Tuấn & Chị Thảo&#10;Gia đình Cô Chú Minh&#10;陳伯父 闔府&#10;林志明先生 賢伉儷"
-        ></textarea>
-      </div>
-
-      <div class="tw-guide-box">
-        <strong class="tw-head">🧧 Cẩm nang ghi tên Khách Đài Loan chuẩn lễ nghi (台灣喜帖稱謂指南 — dùng 100% chữ Phồn Thể):</strong>
-        <div class="tw-guide-grid">
-          <div>• <strong>Mời cả gia đình (trưởng bối / cô chú bác):</strong> <span class="tw-code">陳伯父 闔府</span>, <span class="tw-code">林叔叔 闔府</span>, <span class="tw-code">張文豪先生 闔府</span></div>
-          <div>• <strong>Mời cặp vợ chồng (bạn bè / anh chị đã cưới):</strong> <span class="tw-code">林志明先生 賢伉儷</span> (chuẩn lịch sự nhất Đài Loan)</div>
-          <div>• <strong>Bạn bè / đồng nghiệp Nam đi lẻ:</strong> <span class="tw-code">王大明 先生</span> (hoặc <span class="tw-code">陳建宏 學長</span>)</div>
-          <div>• <strong>Bạn bè / đồng nghiệp Nữ đi lẻ:</strong> <span class="tw-code">王雅婷 小姐</span> (nữ trưởng bối lớn tuổi kính trọng: <span class="tw-code">陳淑芬 女士</span>)</div>
-        </div>
-      </div>
-
-      <div style="margin-top:14px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px;">
-        <div style="display:flex; flex-wrap:wrap; gap:10px;">
-          <button type="button" id="btn-generate" class="btn-crimson">✨ Tạo &amp; Lưu Vào Danh Sách Khách Mời</button>
-          <button type="button" id="btn-export-csv" class="btn-outline-crimson">📥 Tải File Excel (.CSV)</button>
-        </div>
-        <button type="button" id="btn-clear-guests" class="btn-mini danger" title="Xóa toàn bộ danh sách khách mời đã lưu">🗑️ Xóa hết danh sách khách</button>
-      </div>
-
-      <div style="margin-top:20px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px;">
-        <strong style="color:var(--crimson-ink); font-size:15px;">
-          📌 Danh sách link khách mời đã tạo &amp; lưu (<span id="saved-guest-count">0</span> khách):
-        </strong>
-        <span style="font-size:12px; color:var(--text-muted);">
-          Tự động đồng bộ trên máy chủ — mở trên điện thoại hay máy tính đều thấy danh sách này
-        </span>
-      </div>
-
-      <div class="builder-table-wrap">
-        <table class="guest-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Tên khách mời &amp; Chi tiết thiết bị đã mở</th>
-              <th>Link cá nhân hóa</th>
-              <th>Thao tác nhanh (LINE / Zalo / Messenger)</th>
-            </tr>
-          </thead>
-          <tbody id="guest-tbody"></tbody>
-        </table>
       </div>
     </section>
   </div>
@@ -556,18 +903,19 @@
   <script>
     (function () {
       const STORAGE_SAVED_GUESTS = "td_saved_guests_v2";
-      const baseInput = document.getElementById("base-url");
       const langSelect = document.getElementById("default-lang");
-      const modeSelect = document.getElementById("card-mode");
-      const driveInput = document.getElementById("drive-url");
       const listArea = document.getElementById("guest-list");
-      const tbody = document.getElementById("guest-tbody");
+      const cardsContainer = document.getElementById("guest-cards-container");
       const savedCountEl = document.getElementById("saved-guest-count");
+      const badgeSavedEl = document.getElementById("badge-saved-count");
+      const badgeLogsEl = document.getElementById("badge-logs-count");
+      const searchInput = document.getElementById("guest-search-input");
       const toast = document.getElementById("puppy-toast");
       let timer = null;
 
-      let savedGuests = []; // [{ name, lang, mode, driveUrl, createdAt }]
-      let visitLogsByGuest = {}; // normalizedName -> array of unmerged visit session logs
+      let savedGuests = [];
+      let visitLogsByGuest = {};
+      let currentFilter = "all";
       let globalSiteConfig = {
         globalThankYou: false,
         driveUrl: "",
@@ -583,40 +931,54 @@
       const globalStatusEl = document.getElementById("global-config-status");
 
       const isLocal = /^(file:|https?:\/\/(localhost|127\.0\.0\.1))/i.test(window.location.href);
-      const detectedBase = isLocal
+      const baseOrigin = isLocal
         ? "https://thuantuongtieudinh.io.vn/"
         : window.location.href.replace(/link-khach-moi(\.html)?.*$/i, "");
-      baseInput.value = detectedBase;
-
       const apiBase = isLocal ? "https://thuantuongtieudinh.io.vn" : "";
+
+      // TAB SWITCHING
+      document.querySelectorAll(".adm-tab-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const targetId = btn.dataset.tab;
+          document.querySelectorAll(".adm-tab-btn").forEach((b) => b.classList.toggle("is-active", b === btn));
+          document.querySelectorAll(".adm-panel").forEach((p) => p.classList.toggle("is-active", p.id === targetId));
+        });
+      });
+
+      // QUICK INSERT TAIWAN SAMPLE NAMES
+      document.querySelectorAll("[data-insert]").forEach((el) => {
+        el.addEventListener("click", () => {
+          const sample = el.getAttribute("data-insert");
+          const cur = listArea.value.trim();
+          listArea.value = cur ? cur + "\n" + sample : sample;
+          listArea.focus();
+          notify(`📋 Đã chép mẫu "${sample}" vào ô nhập!`);
+        });
+      });
+
+      // FILTER CHIPS & SEARCH
+      document.querySelectorAll("#guest-filter-chips .filter-chip").forEach((chip) => {
+        chip.addEventListener("click", () => {
+          currentFilter = chip.dataset.filter || "all";
+          document.querySelectorAll("#guest-filter-chips .filter-chip").forEach((c) =>
+            c.classList.toggle("is-active", c === chip)
+          );
+          buildRows();
+        });
+      });
+      if (searchInput) {
+        searchInput.addEventListener("input", buildRows);
+      }
 
       function normalizeNameKey(name) {
         return String(name || "").trim().toLowerCase().replace(/\s+/g, " ");
       }
 
-      // Load local cached guest list first for instant render before server responds
       try {
         const rawV2 = localStorage.getItem(STORAGE_SAVED_GUESTS);
         if (rawV2) {
           const parsed = JSON.parse(rawV2);
           if (Array.isArray(parsed)) savedGuests = parsed;
-        } else {
-          // Migrate from v1 string if present
-          const legacyText = localStorage.getItem("td_saved_guest_list");
-          if (legacyText && legacyText.trim()) {
-            legacyText
-              .split(/\r?\n/)
-              .map((s) => s.trim())
-              .filter(Boolean)
-              .forEach((name) => {
-                savedGuests.push({
-                  name,
-                  lang: /[\u4e00-\u9fff]/.test(name) ? "zh" : "vi",
-                  mode: "invite",
-                  driveUrl: ""
-                });
-              });
-          }
         }
       } catch (_) {}
 
@@ -630,11 +992,8 @@
         if (!Array.isArray(serverList)) return;
         const map = new Map();
         serverList.forEach((g) => {
-          if (g && g.name) {
-            map.set(normalizeNameKey(g.name), g);
-          }
+          if (g && g.name) map.set(normalizeNameKey(g.name), g);
         });
-        // Also keep any local guest not yet pushed
         savedGuests.forEach((g) => {
           if (g && g.name) {
             const k = normalizeNameKey(g.name);
@@ -649,7 +1008,7 @@
         toast.textContent = msg;
         toast.classList.add("is-shown");
         clearTimeout(timer);
-        timer = setTimeout(() => toast.classList.remove("is-shown"), 2800);
+        timer = setTimeout(() => toast.classList.remove("is-shown"), 2600);
       }
 
       async function copyText(str, okMsg) {
@@ -675,7 +1034,6 @@
         if (c === "AU") return "🇦🇺 Úc";
         if (c === "JP") return "🇯🇵 Nhật Bản";
         if (c === "KR") return "🇰🇷 Hàn Quốc";
-        if (c === "HK") return "🇭🇰 Hồng Kông";
         return "🌍 " + c;
       }
 
@@ -689,8 +1047,7 @@
           minute: "2-digit",
           second: "2-digit",
           day: "2-digit",
-          month: "2-digit",
-          year: "numeric"
+          month: "2-digit"
         });
         let rel = "";
         if (diffSec < 45) rel = "Vừa xong";
@@ -700,41 +1057,9 @@
         return `${exactStr} (${rel})`;
       }
 
-      function renderGuestSessionsSummary(name) {
+      async function setGuestModeOnServer(name, nextMode) {
         const key = normalizeNameKey(name);
-        const sessions = visitLogsByGuest[key] || [];
-        if (!sessions.length) {
-          return `<div style="margin-top:4px;"><span class="status-badge is-pending">⏳ Chưa mở thiệp</span></div>`;
-        }
-        const anyOpenedEnv = sessions.some((s) => s.openedEnvelope);
-        const badgeHtml = anyOpenedEnv
-          ? `<span class="status-badge is-opened">✨ Đã mở phong bì (Tổng ${sessions.length} lần mở)</span>`
-          : `<span class="status-badge is-viewed">👀 Đã mở link (Tổng ${sessions.length} lần mở)</span>`;
-
-        const itemsHtml = sessions
-          .map((s, idx) => {
-            const num = sessions.length - idx;
-            const act = s.openedEnvelope
-              ? "✨ Đã mở phong bì"
-              : "👀 Đã mở link";
-            const flip = s.flippedBack ? " + ↺ Lật mặt sau" : "";
-            const loc = s.city ? ` • ${s.city}` : "";
-            return `<div class="per-guest-device-item">
-              <strong>Lần ${num}:</strong> <span class="js-dev-text"></span> — ${act}${flip} <span style="color:var(--text-muted);">(${formatExactAndRelativeTime(s.lastActionAt || s.openedAt)}${loc})</span>
-            </div>`;
-          })
-          .join("");
-
-        return `<div style="margin-top:4px;">${badgeHtml}</div><div class="per-guest-device-list">${itemsHtml}</div>`;
-      }
-
-      async function toggleGuestModeOnServer(name, currentMode) {
-        const nextMode = currentMode === "thankyou" ? "invite" : "thankyou";
-        const key = normalizeNameKey(name);
-        const driveVal =
-          (globalDriveInput && globalDriveInput.value.trim()) ||
-          (driveInput && driveInput.value.trim()) ||
-          "";
+        const driveVal = (globalDriveInput && globalDriveInput.value.trim()) || "";
         savedGuests = savedGuests.map((g) => {
           if (normalizeNameKey(g.name) === key) {
             return { ...g, mode: nextMode, driveUrl: driveVal || g.driveUrl || "" };
@@ -757,7 +1082,7 @@
         } catch (_) {}
         notify(
           nextMode === "thankyou"
-            ? `📸 Đã bật "Thiệp Cảm Ơn" trực tiếp trên link cũ đã gửi cho "${name}"!`
+            ? `📸 Đã bật "Thiệp Cảm Ơn" cho link của "${name}"!`
             : `💌 Đã chuyển link của "${name}" về chế độ Thiệp Mời!`
         );
       }
@@ -774,45 +1099,49 @@
             body: JSON.stringify({ action: "remove", name })
           });
         } catch (_) {}
-        notify(`🗑️ Đã xóa "${name}" khỏi danh sách đã lưu.`);
+        notify(`🗑️ Đã xóa "${name}" khỏi danh sách.`);
       }
 
       function buildRows() {
-        const base = (baseInput.value || "index.html").trim().replace(/\?.*$/, "");
-        tbody.innerHTML = "";
+        const base = baseOrigin.replace(/\?.*$/, "");
+        cardsContainer.innerHTML = "";
         savedCountEl.textContent = String(savedGuests.length);
+        badgeSavedEl.textContent = String(savedGuests.length);
+
+        const q = (searchInput ? searchInput.value : "").trim().toLowerCase();
         const rowsData = [];
 
         if (!savedGuests.length) {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td colspan="4" style="text-align:center; padding:22px; color:var(--text-muted);">
-              Danh sách đang trống. Hãy nhập tên khách mời vào ô phía trên và bấm <strong>"✨ Tạo &amp; Lưu Vào Danh Sách Khách Mời"</strong> nhé!
-            </td>
+          cardsContainer.innerHTML = `
+            <div class="empty-state">
+              Danh sách khách mời đang trống. Hãy nhập tên khách vào ô phía trên và bấm <strong>"✨ Tạo &amp; Lưu Vào Danh Sách"</strong> nhé!
+            </div>
           `;
-          tbody.appendChild(tr);
           return rowsData;
         }
 
+        let visibleCount = 0;
+
         savedGuests.forEach((guestObj, idx) => {
           const name = guestObj.name;
+          const key = normalizeNameKey(name);
+          const sessions = visitLogsByGuest[key] || [];
+          const hasOpened = sessions.length > 0;
+          const anyOpenedEnv = sessions.some((s) => s.openedEnvelope);
           const hasHanzi = /[\u4e00-\u9fff]/.test(name);
           const effectiveLang = guestObj.lang === "zh" || hasHanzi ? "zh" : "vi";
-          const mode = guestObj.mode || (modeSelect ? modeSelect.value : "invite");
-          const driveUrl = guestObj.driveUrl || (driveInput ? driveInput.value.trim() : "");
+          const mode = guestObj.mode || "invite";
+          const isTyEffective = Boolean(globalSiteConfig.globalThankYou || mode === "thankyou");
+          const driveUrl = guestObj.driveUrl || globalSiteConfig.driveUrl || "";
 
           const qs = new URLSearchParams();
           qs.set("to", name);
           if (effectiveLang === "zh") qs.set("lang", "zh");
-          if (mode === "thankyou") {
-            qs.set("mode", "thankyou");
-            if (driveUrl) qs.set("drive", driveUrl);
-          }
           const fullUrl = `${base}?${qs.toString()}`;
           const previewUrl = `${fullUrl}&notrack=1`;
 
           const inviteMsg =
-            mode === "thankyou"
+            isTyEffective
               ? effectiveLang === "zh"
                 ? `囍 婚禮感謝卡與現場相簿｜${name} 您好：\n誠摯感謝您蒞臨參與順祥與小瑩的婚禮！我們已整理好婚禮現場高畫質照片與紀錄（Google Drive），歡迎點擊專屬感謝卡瀏覽與下載：\n${fullUrl}`
                 : `📸 Thiệp Cảm Ơn & Album Ảnh Cưới｜Trân trọng cảm ơn ${name},\nThuận Tường & Tiểu Dinh xin gửi lời cảm ơn chân thành nhất đến ${name} đã đến chung vui cùng gia đình. Mời ${name} mở Thiệp Cảm Ơn và xem / tải ảnh kỷ niệm buổi tiệc trên Google Drive tại đây nhé:\n${fullUrl}`
@@ -820,7 +1149,6 @@
                 ? `囍 婚禮喜帖敬邀｜${name} 您好：\n順祥與小瑩謹訂於 2027 年 1 月 6 日（星期三）晚間六時，於越南胡志明市 RIVERSIDE PALACE（Seine 宴會廳）敬備喜筵。\n誠摯邀請您開啟專屬電子喜帖，與我們分享這份喜悅：\n${fullUrl}`
                 : `💌 Trân trọng kính mời ${name},\nThuận Tường & Tiểu Dinh rất hạnh phúc được mời ${name} đến dự buổi tiệc cưới chung vui vào lúc 18:00 Thứ Tư, 06.01.2027 tại Riverside Palace (Sảnh Seine).\nMời xem thiệp cưới dành riêng cho ${name} tại đây nhé:\n${fullUrl}`;
 
-          const sessions = visitLogsByGuest[normalizeNameKey(name)] || [];
           const devicesSummary = sessions.length
             ? sessions.map((s) => s.deviceDetail || "Thiết bị").join(" | ")
             : "Chưa mở";
@@ -835,64 +1163,109 @@
             devicesSummary
           });
 
-          const tr = document.createElement("tr");
+          // Apply UI Filter & Search
+          if (q && !name.toLowerCase().includes(q)) return;
+          if (currentFilter === "opened" && !hasOpened) return;
+          if (currentFilter === "pending" && hasOpened) return;
+          if (currentFilter === "thankyou" && !isTyEffective) return;
+
+          visibleCount++;
+
+          const statusBadgeHtml = !hasOpened
+            ? `<span class="status-badge is-pending">⏳ Chưa mở thiệp</span>`
+            : anyOpenedEnv
+              ? `<span class="status-badge is-opened">✨ Đã mở phong bì (${sessions.length} lần)</span>`
+              : `<span class="status-badge is-viewed">👀 Đã mở link (${sessions.length} lần)</span>`;
+
+          const card = document.createElement("div");
+          card.className = "guest-item-card";
           const msgBtnLabel = effectiveLang === "zh" ? "💬 Copy lời mời LINE" : "💬 Copy lời mời Zalo";
-          const isTyRow = Boolean(globalSiteConfig.globalThankYou || mode === "thankyou");
-          const toggleModeLabel = isTyRow
-            ? "📸 Đang bật: Lời Cảm Ơn (Bấm đổi về Thiệp Mời)"
-            : "💌 Đang là: Thiệp Mời (Bấm bật Lời Cảm Ơn)";
-          tr.innerHTML = `
-            <td>${idx + 1}</td>
-            <td>
-              <div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px;">
-                <strong class="js-guest-name" style="font-size:14.5px;"></strong>
-                <span style="font-size:11px; color:var(--text-muted);">(${effectiveLang === "zh" ? "繁體中文" : "VI"})</span>
+
+          card.innerHTML = `
+            <div class="guest-main-info">
+              <div class="guest-title-row">
+                <span class="guest-idx">#${idx + 1}</span>
+                <span class="guest-name-text js-guest-name"></span>
+                <span class="lang-tag">${effectiveLang === "zh" ? "繁體中文" : "VI"}</span>
+                ${statusBadgeHtml}
               </div>
-              <div class="js-guest-sessions-box">${renderGuestSessionsSummary(name)}</div>
-            </td>
-            <td class="url-preview"></td>
-            <td>
-              <div class="row-actions">
-                <button type="button" class="btn-mini primary js-copy-link">📋 Copy Link</button>
-                <button type="button" class="btn-mini js-copy-msg">${msgBtnLabel}</button>
-                <button type="button" class="btn-mini js-toggle-mode" title="Cập nhật chế độ Thiệp Cảm Ơn ngay trên link cũ đã gửi mà không cần gửi lại link mới">${toggleModeLabel}</button>
-                <a class="btn-mini js-preview" target="_blank" rel="noopener" title="Xem thử không tính vào bộ đếm">👁️ Xem thử</a>
-                <button type="button" class="btn-mini danger js-remove-guest" title="Xóa khách này khỏi danh sách">✕</button>
+              <div class="guest-url-line js-url-preview"></div>
+              <div class="guest-sessions-wrap js-sessions-wrap"></div>
+            </div>
+
+            <div class="guest-actions-col">
+              <div class="guest-btn-group">
+                <div class="mode-switch-pill" title="Chuyển đổi giữa Thiệp Mời và Thiệp Cảm Ơn ngay trên link cũ đã gửi">
+                  <button type="button" class="mode-switch-btn js-mode-invite ${!isTyEffective ? "is-active-invite" : ""}">💌 Thiệp Mời</button>
+                  <button type="button" class="mode-switch-btn js-mode-ty ${isTyEffective ? "is-active-ty" : ""}">📸 Cảm Ơn</button>
+                </div>
+                <button type="button" class="btn-adm primary js-copy-link">📋 Copy Link</button>
+                <button type="button" class="btn-adm js-copy-msg">${msgBtnLabel}</button>
+                <a class="btn-adm js-preview" target="_blank" rel="noopener" title="Mở xem thử (Không tính vào lượt xem)">👁️ Xem thử</a>
+                <button type="button" class="btn-adm danger js-remove-guest" title="Xóa khách này khỏi danh sách">✕</button>
               </div>
-            </td>
+            </div>
           `;
-          tr.querySelector(".js-guest-name").textContent = name;
-          // Safely populate device text in per-guest session items
-          const devSpans = tr.querySelectorAll(".js-dev-text");
-          sessions.forEach((s, sIdx) => {
-            if (devSpans[sIdx]) {
-              devSpans[sIdx].textContent = s.deviceDetail || "Thiết bị di động";
-            }
+
+          card.querySelector(".js-guest-name").textContent = name;
+          card.querySelector(".js-url-preview").textContent = fullUrl;
+          card.querySelector(".js-preview").href = previewUrl;
+
+          const sessionsWrap = card.querySelector(".js-sessions-wrap");
+          if (!sessions.length) {
+            sessionsWrap.style.display = "none";
+          } else {
+            sessions.forEach((s, sIdx) => {
+              const num = sessions.length - sIdx;
+              const pill = document.createElement("div");
+              pill.className = "session-row-pill";
+              const actText =
+                (s.openedEnvelope ? "✨ Đã mở phong bì" : "👀 Đã mở link") +
+                (s.flippedBack ? " · ↺ Đã lật mặt sau" : "");
+              const locText = s.city ? ` • ${s.city}` : "";
+              pill.innerHTML = `
+                <span class="session-num">Lần ${num}:</span>
+                <span class="session-dev js-s-dev"></span>
+                <span class="session-act">${actText}</span>
+                <span class="session-time">${formatExactAndRelativeTime(s.lastActionAt || s.openedAt)}${locText}</span>
+              `;
+              pill.querySelector(".js-s-dev").textContent = s.deviceDetail || "Thiết bị di động";
+              sessionsWrap.appendChild(pill);
+            });
+          }
+
+          card.querySelector(".js-mode-invite").addEventListener("click", () => {
+            if (isTyEffective) setGuestModeOnServer(name, "invite");
           });
-          tr.querySelector(".url-preview").textContent = fullUrl;
-          tr.querySelector(".js-preview").href = previewUrl;
-          tr.querySelector(".js-copy-link").addEventListener("click", () =>
+          card.querySelector(".js-mode-ty").addEventListener("click", () => {
+            if (!isTyEffective) setGuestModeOnServer(name, "thankyou");
+          });
+          card.querySelector(".js-copy-link").addEventListener("click", () =>
             copyText(fullUrl, `✅ Đã copy link thiệp của "${name}"!`)
           );
-          tr.querySelector(".js-copy-msg").addEventListener("click", () =>
-            copyText(inviteMsg, `💌 Đã copy trọn bộ lời mời + link cho "${name}"!`)
+          card.querySelector(".js-copy-msg").addEventListener("click", () =>
+            copyText(inviteMsg, `💌 Đã copy lời mời + link cho "${name}"!`)
           );
-          tr.querySelector(".js-toggle-mode").addEventListener("click", () =>
-            toggleGuestModeOnServer(name, mode)
-          );
-          tr.querySelector(".js-remove-guest").addEventListener("click", () =>
+          card.querySelector(".js-remove-guest").addEventListener("click", () =>
             removeGuestFromList(name)
           );
-          tbody.appendChild(tr);
+
+          cardsContainer.appendChild(card);
         });
+
+        if (visibleCount === 0) {
+          cardsContainer.innerHTML = `
+            <div class="empty-state">
+              Không tìm thấy khách mời nào khớp với bộ lọc hiện tại.
+            </div>
+          `;
+        }
 
         return rowsData;
       }
 
       async function handleAddGuests() {
         const lang = langSelect.value;
-        const mode = modeSelect ? modeSelect.value : "invite";
-        const driveUrl = driveInput ? driveInput.value.trim() : "";
         const names = (listArea.value || "")
           .split(/\r?\n/)
           .map((s) => s.trim())
@@ -911,8 +1284,8 @@
           const record = {
             name,
             lang: effectiveLang,
-            mode,
-            driveUrl,
+            mode: "invite",
+            driveUrl: "",
             createdAt: new Date().toISOString()
           };
           newItems.push(record);
@@ -945,7 +1318,7 @@
           }
         } catch (_) {}
 
-        notify(`✨ Đã tạo & lưu vĩnh viễn ${newItems.length} khách mời vào danh sách!`);
+        notify(`✨ Đã tạo & lưu ${newItems.length} khách mời vào danh sách!`);
       }
 
       async function fetchAnalytics(showToast) {
@@ -957,8 +1330,48 @@
           if (!data || !data.stats) throw new Error("Invalid stats");
           const st = data.stats;
 
-          document.getElementById("kpi-total-views").textContent = String(st.totalViews || 0);
+          if (st.siteConfig && typeof st.siteConfig === "object") {
+            globalSiteConfig = st.siteConfig;
+            if (!globalConfigLoadedOnce) {
+              globalConfigLoadedOnce = true;
+              if (globalTySelect) globalTySelect.value = globalSiteConfig.globalThankYou ? "on" : "off";
+              if (globalDriveInput && globalSiteConfig.driveUrl) globalDriveInput.value = globalSiteConfig.driveUrl;
+              if (globalTyViInput && globalSiteConfig.thankYouVI) globalTyViInput.value = globalSiteConfig.thankYouVI;
+              if (globalTyZhInput && globalSiteConfig.thankYouZH) globalTyZhInput.value = globalSiteConfig.thankYouZH;
+            }
+            if (globalStatusEl) {
+              globalStatusEl.textContent = globalSiteConfig.globalThankYou
+                ? "✅ Đang bật Thiệp Cảm Ơn đồng loạt trên TẤT CẢ link đã gửi!"
+                : "💌 Đang ở chế độ Thiệp Mời mặc định (hoặc bật riêng từng khách ở Tab 1).";
+            }
+          }
+
+          if (Array.isArray(st.savedGuests) && st.savedGuests.length > 0) {
+            mergeServerGuests(st.savedGuests);
+          } else if (savedGuests.length > 0) {
+            fetch(`${apiBase}/api/guests`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ action: "add", guests: savedGuests })
+            }).catch(() => {});
+          }
+
+          const visitLogs = Array.isArray(st.visitLogs) ? st.visitLogs : [];
+          badgeLogsEl.textContent = String(visitLogs.length);
+
+          visitLogsByGuest = {};
+          visitLogs.forEach((log) => {
+            if (log && log.guestName) {
+              const k = normalizeNameKey(log.guestName);
+              if (!visitLogsByGuest[k]) visitLogsByGuest[k] = [];
+              visitLogsByGuest[k].push(log);
+            }
+          });
+
+          document.getElementById("kpi-total-views").textContent = String(st.totalViews || visitLogs.length || 0);
           document.getElementById("kpi-unique-guests").textContent = String(st.uniqueVisitors || 0);
+          document.getElementById("kpi-guest-ratio").textContent =
+            `Trên tổng số ${savedGuests.length} khách đã tạo`;
           document.getElementById("kpi-opened-env").textContent = String(st.openedEnvelopeCount || 0);
           document.getElementById("kpi-flipped-back").textContent = `${st.flippedBackCount || 0} lần đã lật xem mặt sau`;
 
@@ -969,60 +1382,11 @@
             .filter((k) => k !== "VN" && k !== "TW")
             .reduce((acc, k) => acc + (countries[k] || 0), 0);
 
-          const countryWrap = document.getElementById("kpi-countries");
-          countryWrap.innerHTML = `
+          document.getElementById("kpi-countries").innerHTML = `
             <span class="country-pill">🇻🇳 VN: ${vnCount}</span>
             <span class="country-pill">🇹🇼 TW: ${twCount}</span>
             ${otherCount > 0 ? `<span class="country-pill">🌍 Khác: ${otherCount}</span>` : ""}
           `;
-
-          // Sync global Thank-You siteConfig from server
-          if (st.siteConfig && typeof st.siteConfig === "object") {
-            globalSiteConfig = st.siteConfig;
-            if (!globalConfigLoadedOnce) {
-              globalConfigLoadedOnce = true;
-              if (globalTySelect) {
-                globalTySelect.value = globalSiteConfig.globalThankYou ? "on" : "off";
-              }
-              if (globalDriveInput && globalSiteConfig.driveUrl) {
-                globalDriveInput.value = globalSiteConfig.driveUrl;
-              }
-              if (globalTyViInput && globalSiteConfig.thankYouVI) {
-                globalTyViInput.value = globalSiteConfig.thankYouVI;
-              }
-              if (globalTyZhInput && globalSiteConfig.thankYouZH) {
-                globalTyZhInput.value = globalSiteConfig.thankYouZH;
-              }
-            }
-            if (globalStatusEl) {
-              globalStatusEl.textContent = globalSiteConfig.globalThankYou
-                ? "📸 Trạng thái hiện tại: ĐANG BẬT Thiệp Cảm Ơn trên TẤT CẢ các link cũ đã gửi!"
-                : "💌 Trạng thái hiện tại: Đang ở chế độ Thiệp Mời mặc định (hoặc bật riêng từng khách bên dưới).";
-            }
-          }
-
-          // Sync savedGuests from server
-          if (Array.isArray(st.savedGuests) && st.savedGuests.length > 0) {
-            mergeServerGuests(st.savedGuests);
-          } else if (savedGuests.length > 0) {
-            // Push local savedGuests to server so server remembers them too
-            fetch(`${apiBase}/api/guests`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ action: "add", guests: savedGuests })
-            }).catch(() => {});
-          }
-
-          // Group unmerged visitLogs by guest for the bottom table, and render EVERY row in the top table
-          const visitLogs = Array.isArray(st.visitLogs) ? st.visitLogs : [];
-          visitLogsByGuest = {};
-          visitLogs.forEach((log) => {
-            if (log && log.guestName) {
-              const k = normalizeNameKey(log.guestName);
-              if (!visitLogsByGuest[k]) visitLogsByGuest[k] = [];
-              visitLogsByGuest[k].push(log);
-            }
-          });
 
           const emptyEl = document.getElementById("guest-activity-empty");
           const tableWrap = document.getElementById("guest-activity-table-wrap");
@@ -1042,7 +1406,7 @@
                 ? `<span class="status-badge is-opened">✨ Đã mở phong bì</span>`
                 : `<span class="status-badge is-viewed">👀 Đã mở link</span>`;
               const flipNote = log.flippedBack
-                ? `<div style="font-size:11.3px; color:var(--text-muted); margin-top:4px;">↺ Đã lật xem mặt sau bao thư</div>`
+                ? `<div style="font-size:11.5px; color:var(--adm-muted); margin-top:4px;">↺ Đã lật xem mặt sau bao thư</div>`
                 : "";
               const locStr = formatCountryFlag(log.country) + (log.city ? ` (${log.city})` : "");
               const langLabel = log.lang === "zh" ? "Bản 繁體中文" : "Bản Tiếng Việt";
@@ -1052,15 +1416,13 @@
                 <td><strong>#${openOrderNumber}</strong></td>
                 <td>
                   <strong class="js-log-guest" style="font-size:14px;"></strong>
-                  <div style="font-size:11.2px; color:var(--text-muted); margin-top:2px;">${langLabel}</div>
+                  <div style="font-size:11.2px; color:var(--adm-muted); margin-top:2px;">${langLabel}</div>
                 </td>
                 <td>${statusHtml}${flipNote}</td>
-                <td>
-                  <div class="device-chip js-log-device"></div>
-                </td>
+                <td><span class="device-badge js-log-device"></span></td>
                 <td>
                   <div><strong>${locStr}</strong></div>
-                  <div style="font-size:11.6px; color:var(--text-muted); margin-top:2px;">${formatExactAndRelativeTime(log.lastActionAt || log.openedAt)}</div>
+                  <div style="font-size:11.6px; color:var(--adm-muted); margin-top:2px;">${formatExactAndRelativeTime(log.lastActionAt || log.openedAt)}</div>
                 </td>
               `;
               tr.querySelector(".js-log-guest").textContent = log.guestName || "Khách mời";
@@ -1072,21 +1434,19 @@
 
           buildRows();
           subLabel.textContent =
-            "Đang kết nối trực tiếp • Cập nhật lúc " + new Date().toLocaleTimeString("vi-VN");
-          if (showToast) notify("✅ Đã làm mới nhật ký thiết bị & lượt mở thiệp!");
-        } catch (err) {
-          subLabel.textContent = "Đang đồng bộ máy chủ thống kê...";
+            "Đang đồng bộ trực tiếp • Cập nhật lúc " + new Date().toLocaleTimeString("vi-VN");
+          if (showToast) notify("✅ Đã cập nhật số liệu mới nhất!");
+        } catch (_) {
+          subLabel.textContent = "Đang đồng bộ dữ liệu máy chủ...";
         }
       }
 
-      document.getElementById("btn-refresh-stats").addEventListener("click", () => {
-        fetchAnalytics(true);
-      });
+      document.getElementById("btn-refresh-stats").addEventListener("click", () => fetchAnalytics(true));
 
       document.getElementById("btn-reset-stats").addEventListener("click", async () => {
         if (
           !window.confirm(
-            "Bạn muốn xóa lịch sử lượt xem thử về 0? (Danh sách tên khách mời bạn đã tạo bên dưới vẫn được giữ nguyên!)"
+            "Xóa lịch sử lượt xem thử về 0? (Danh sách khách mời đã tạo vẫn được giữ nguyên!)"
           )
         ) {
           return;
@@ -1095,7 +1455,7 @@
           const res = await fetch(`${apiBase}/api/reset`, { method: "POST" });
           if (res.ok) {
             await fetchAnalytics(false);
-            notify("🗑️ Đã đặt bộ đếm lượt xem về 0 (Danh sách khách mời vẫn giữ nguyên)!");
+            notify("🗑️ Đã đặt bộ đếm lượt xem về 0!");
           }
         } catch (_) {
           notify("⚠️ Không thể kết nối máy chủ, vui lòng thử lại.");
@@ -1104,9 +1464,7 @@
 
       document.getElementById("btn-clear-guests").addEventListener("click", async () => {
         if (!savedGuests.length) return;
-        if (!window.confirm("Bạn có chắc muốn xóa toàn bộ danh sách khách mời đã lưu không?")) {
-          return;
-        }
+        if (!window.confirm("Bạn có chắc muốn xóa toàn bộ danh sách khách mời đã lưu không?")) return;
         savedGuests = [];
         persistLocalGuests();
         buildRows();
@@ -1138,7 +1496,7 @@
             await fetchAnalytics(false);
             notify(
               payload.globalThankYou
-                ? "📸 Đã bật Lời Cảm Ơn & Kho Ảnh trên TẤT CẢ các link đã gửi!"
+                ? "📸 Đã bật Lời Cảm Ơn trên TẤT CẢ các link đã gửi!"
                 : "💾 Đã lưu cài đặt Lời Cảm Ơn & Kho Ảnh!"
             );
           }
@@ -1148,7 +1506,6 @@
       });
 
       document.getElementById("btn-generate").addEventListener("click", handleAddGuests);
-      baseInput.addEventListener("input", buildRows);
 
       document.getElementById("btn-export-csv").addEventListener("click", () => {
         const rows = buildRows();
