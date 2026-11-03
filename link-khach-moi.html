@@ -1112,11 +1112,11 @@
                     </div>
                     <div>
                       <label for="qr-batch-name-pos" style="display:block; font-size:12px; font-weight:600; color:var(--adm-text); margin-bottom:4px;">
-                        Cách hiển thị tên khách có QR riêng:
+                        Vị trí ghi tên khách có QR riêng:
                       </label>
                       <select id="qr-batch-name-pos" class="adm-select" style="font-size:12.2px;">
-                        <option value="flap_and_front">Hiện cả trên thân Bookmark &amp; mép gập</option>
-                        <option value="flap_only">Chỉ ghi nhỏ ở mép gập sau (Mặt trước giống hệt nhau)</option>
+                        <option value="flap_only" selected>Chỉ in TO ở phần gập phía sau (Mặt trước tối giản)</option>
+                        <option value="flap_and_front">Hiện cả trên thân trước &amp; phần gập sau</option>
                       </select>
                     </div>
                     <button type="button" id="btn-print-mixed-a4" class="btn-adm primary" style="height:40px; width:100%; font-size:13px;">
@@ -1974,7 +1974,7 @@
         const namePosMode =
           (overrideOpts && overrideOpts.namePosMode) ||
           (qrBatchNamePos && qrBatchNamePos.value) ||
-          "flap_and_front";
+          "flap_only";
 
         const isPinterestStrip = layoutMode === "pinterest_strip";
         // Exact A4-filling ratio: 6 cols x 3 rows inside 197mm x 284mm (6.5mm safe printer margin on all 4 sides of A4)
@@ -2030,24 +2030,28 @@
             ctx.fillRect(0, 0, W, foldY);
 
             ctx.textAlign = "center";
-            ctx.fillStyle = "rgba(110, 20, 20, 0.65)";
-            ctx.font = '600 14.5px "Be Vietnam Pro", sans-serif';
-            ctx.fillText("▴ NẾP GẬP RA SAU (~1.9CM) ▴", W / 2, 110);
-            ctx.font = '400 13px "Be Vietnam Pro", sans-serif';
-            ctx.fillText(
-              guestText
-                ? `QR riêng: ${guestText}`
-                : "Gập theo đường  - - - - -  máng vô đầu thiệp",
-              W / 2,
-              140
-            );
+            if (guestText) {
+              ctx.fillStyle = "#681115";
+              ctx.font = '700 27px "Be Vietnam Pro", "Noto Serif TC", sans-serif';
+              ctx.fillText(guestText, W / 2, 125);
+              ctx.fillStyle = "rgba(110, 20, 20, 0.55)";
+              ctx.font = '500 13px "Be Vietnam Pro", sans-serif';
+              ctx.fillText("(Phần gập ra sau lưng thiệp)", W / 2, 165);
+            } else {
+              ctx.fillStyle = "rgba(110, 20, 20, 0.65)";
+              ctx.font = '600 14.5px "Be Vietnam Pro", sans-serif';
+              ctx.fillText("▴ NẾP GẬP RA SAU (~1.9CM) ▴", W / 2, 115);
+              ctx.font = '400 13px "Be Vietnam Pro", sans-serif';
+              ctx.fillText("Gập theo đường  - - - - -  máng vô đầu thiệp", W / 2, 145);
+            }
           } else {
-            // If this strip has a personalized guest QR, print a clear guest label on the back-folded flap
+            // If this strip has a personalized guest QR, print a BIG, CLEAR guest label on the back-folded flap
             if (guestText) {
               ctx.textAlign = "center";
-              ctx.fillStyle = "rgba(110, 20, 20, 0.75)";
-              ctx.font = '600 19.5px "Be Vietnam Pro", "Noto Serif TC", sans-serif';
-              ctx.fillText(`‹ ${guestText} ›`, W / 2, 136);
+              ctx.fillStyle = "#681115";
+              const flapFontSize = guestText.length > 18 ? 22 : guestText.length > 13 ? 25 : 28;
+              ctx.font = `700 ${flapFontSize}px "Be Vietnam Pro", "Noto Serif TC", sans-serif`;
+              ctx.fillText(guestText, W / 2, 142);
             }
           }
 
@@ -2058,8 +2062,8 @@
           ctx.textAlign = "center";
 
           const hasFrontGuest = Boolean(guestText && namePosMode === "flap_and_front");
-          const mainLineOffsetY = hasFrontGuest ? -32 : -15;
-          const dateLineOffsetY = hasFrontGuest ? 14 : 28;
+          const mainLineOffsetY = hasFrontGuest ? -32 : -12;
+          const dateLineOffsetY = hasFrontGuest ? 14 : 32;
 
           ctx.fillStyle = "#681115";
           if (capMode === "zh") {
@@ -2394,7 +2398,7 @@
           const isPinterestStrip = layoutMode === "pinterest_strip";
           const cols = isPinterestStrip ? 6 : 4;
           const capMode = (qrCaptionStyle && qrCaptionStyle.value) || "bilingual";
-          const namePosMode = (qrBatchNamePos && qrBatchNamePos.value) || "flap_and_front";
+          const namePosMode = (qrBatchNamePos && qrBatchNamePos.value) || "flap_only";
           const presetVal = (qrPresetSelect && qrPresetSelect.value) || "directions";
 
           const rawNames = (qrBatchGuests && qrBatchGuests.value) || "";
