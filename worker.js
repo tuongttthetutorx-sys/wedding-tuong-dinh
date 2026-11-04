@@ -301,14 +301,16 @@ export class WeddingAnalytics {
           const existingIdx = data.savedGuests.findIndex(
             (g) => normalizeGuestKey(g.name) === k
           );
+          const existing = existingIdx >= 0 ? data.savedGuests[existingIdx] : null;
           const record = {
             name,
             lang: item.lang === "zh" ? "zh" : "vi",
-            mode: validModes.includes(item.mode) ? item.mode : "invite",
-            driveUrl: String(item.driveUrl || "").trim(),
+            mode: validModes.includes(item.mode) ? item.mode : existing?.mode || "invite",
+            driveUrl: String(item.driveUrl ?? existing?.driveUrl ?? "").trim(),
+            note: String(item.note !== undefined ? item.note : existing?.note || "").trim(),
             createdAt:
-              existingIdx >= 0 && data.savedGuests[existingIdx].createdAt
-                ? data.savedGuests[existingIdx].createdAt
+              existing && existing.createdAt
+                ? existing.createdAt
                 : new Date().toISOString()
           };
           if (existingIdx >= 0) {
@@ -317,6 +319,16 @@ export class WeddingAnalytics {
             data.savedGuests.push(record);
           }
         });
+      } else if (action === "update_note") {
+        const targetKey = normalizeGuestKey(body.name || "");
+        if (targetKey) {
+          const idx = data.savedGuests.findIndex(
+            (g) => normalizeGuestKey(g.name) === targetKey
+          );
+          if (idx >= 0) {
+            data.savedGuests[idx].note = String(body.note || "").trim();
+          }
+        }
       } else if (action === "toggle_mode") {
         const targetKey = normalizeGuestKey(body.name || "");
         if (targetKey) {

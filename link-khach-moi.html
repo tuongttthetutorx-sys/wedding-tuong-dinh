@@ -461,6 +461,64 @@
       max-width: 520px;
     }
 
+    /* PRIVATE NOTE PILL ON EACH GUEST CARD (100% PRIVATE FOR BRIDE & GROOM) */
+    .guest-private-note-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 9px;
+      border-radius: 6px;
+      background: #fdf9f0;
+      border: 1px dashed rgba(164, 90, 4, 0.36);
+      transition: all 0.15s ease;
+      max-width: 100%;
+    }
+    .guest-private-note-wrap.has-note {
+      background: #fff7e6;
+      border: 1px solid rgba(164, 90, 4, 0.48);
+    }
+    .guest-private-note-wrap:focus-within {
+      background: #fffdf8;
+      border: 1px solid var(--adm-crimson);
+      box-shadow: 0 0 0 2px rgba(125, 21, 24, 0.08);
+    }
+    .guest-private-note-icon {
+      font-size: 12px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .guest-private-note-input {
+      appearance: none;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 12.4px;
+      font-weight: 600;
+      color: #7c3f06;
+      min-width: 175px;
+      width: 220px;
+      max-width: 100%;
+      padding: 1px 0;
+    }
+    .guest-private-note-input::placeholder {
+      font-weight: 400;
+      color: #9e8872;
+    }
+    .log-private-note-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: 6px;
+      padding: 2px 7px;
+      border-radius: 5px;
+      background: #fff7e6;
+      border: 1px solid rgba(164, 90, 4, 0.38);
+      color: #7c3f06;
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+
     /* STATUS BADGES */
     .status-badge {
       display: inline-flex;
@@ -833,7 +891,7 @@
         <div class="adm-box-head">
           <div>
             <h2 class="adm-box-title">✨ Thêm Khách Mời Vào Danh Sách</h2>
-            <p class="adm-box-desc">Nhập 1 hoặc nhiều tên khách (mỗi dòng 1 tên). Hệ thống tự động lưu cộng dồn lên máy chủ, không bao giờ mất khách cũ.</p>
+            <p class="adm-box-desc">Nhập 1 hoặc nhiều tên khách (mỗi dòng 1 tên). Có thể ghi kèm <strong>| Ghi chú riêng</strong> (VD: <code>林子惟 | Con trai dì Ý</code>) hoặc gõ ghi chú trực tiếp trên từng thẻ khách bên dưới (khách mời không thấy ghi chú này).</p>
           </div>
         </div>
 
@@ -842,7 +900,7 @@
             <textarea
               id="guest-list"
               class="adm-textarea"
-              placeholder="Gõ tên khách mời vào đây (mỗi dòng 1 khách / gia đình)...&#10;Ví dụ:&#10;Anh Tuấn & Chị Thảo&#10;陳伯父 闔府"
+              placeholder="Gõ tên khách mời vào đây (mỗi dòng 1 khách / gia đình)...&#10;Ví dụ:&#10;Anh Tuấn & Chị Thảo&#10;林子惟 | Con trai dì Ý bên Đài"
             ></textarea>
           </div>
           <div class="add-side-controls">
@@ -892,7 +950,7 @@
             <button type="button" class="filter-chip" data-filter="directions">📍 Đang bật Chỉ Đường</button>
             <button type="button" class="filter-chip" data-filter="thankyou">📸 Đang bật Lời Cảm Ơn</button>
           </div>
-          <input type="search" id="guest-search-input" class="search-box" placeholder="🔍 Tìm nhanh tên khách mời..." />
+          <input type="search" id="guest-search-input" class="search-box" placeholder="🔍 Tìm nhanh tên khách hoặc ghi chú riêng..." />
         </div>
 
         <div id="guest-cards-container" class="guest-list-cards"></div>
@@ -1221,38 +1279,132 @@
         searchInput.addEventListener("input", buildRows);
       }
 
+      const STORAGE_GUEST_NOTES = "td_guest_notes_v1";
+      let guestNotesMap = {};
+
       function normalizeNameKey(name) {
         return String(name || "").trim().toLowerCase().replace(/\s+/g, " ");
       }
 
       try {
+        const rawNotes = localStorage.getItem(STORAGE_GUEST_NOTES);
+        if (rawNotes) {
+          const parsedNotes = JSON.parse(rawNotes);
+          if (parsedNotes && typeof parsedNotes === "object") {
+            guestNotesMap = parsedNotes;
+          }
+        }
+      } catch (_) {}
+
+      try {
         const rawV2 = localStorage.getItem(STORAGE_SAVED_GUESTS);
         if (rawV2) {
           const parsed = JSON.parse(rawV2);
-          if (Array.isArray(parsed)) savedGuests = parsed;
+          if (Array.isArray(parsed)) {
+            savedGuests = parsed.map((g) => {
+              const k = normalizeNameKey(g && g.name);
+              const noteVal = String((g && g.note) || guestNotesMap[k] || "").trim();
+              if (k && noteVal) guestNotesMap[k] = noteVal;
+              return { ...g, note: noteVal };
+            });
+          }
         }
       } catch (_) {}
 
       function persistLocalGuests() {
         try {
+          savedGuests.forEach((g) => {
+            if (g && g.name) {
+              const k = normalizeNameKey(g.name);
+              if (g.note) guestNotesMap[k] = String(g.note).trim();
+            }
+          });
+          localStorage.setItem(STORAGE_GUEST_NOTES, JSON.stringify(guestNotesMap));
           localStorage.setItem(STORAGE_SAVED_GUESTS, JSON.stringify(savedGuests));
         } catch (_) {}
       }
 
       function mergeServerGuests(serverList) {
         if (!Array.isArray(serverList)) return;
+        const localByKey = new Map();
+        savedGuests.forEach((g) => {
+          if (g && g.name) localByKey.set(normalizeNameKey(g.name), g);
+        });
         const map = new Map();
         serverList.forEach((g) => {
-          if (g && g.name) map.set(normalizeNameKey(g.name), g);
+          if (g && g.name) {
+            const k = normalizeNameKey(g.name);
+            const loc = localByKey.get(k);
+            const mergedNote = String(g.note || (loc && loc.note) || guestNotesMap[k] || "").trim();
+            if (mergedNote) guestNotesMap[k] = mergedNote;
+            map.set(k, { ...g, note: mergedNote });
+          }
         });
         savedGuests.forEach((g) => {
           if (g && g.name) {
             const k = normalizeNameKey(g.name);
-            if (!map.has(k)) map.set(k, g);
+            if (!map.has(k)) {
+              const mergedNote = String(g.note || guestNotesMap[k] || "").trim();
+              if (mergedNote) guestNotesMap[k] = mergedNote;
+              map.set(k, { ...g, note: mergedNote });
+            }
           }
         });
         savedGuests = Array.from(map.values());
         persistLocalGuests();
+      }
+
+      let noteSaveTimers = {};
+      function saveGuestPrivateNote(name, noteValue, showToastNow = false) {
+        const key = normalizeNameKey(name);
+        const cleanNote = String(noteValue || "").trim();
+        if (cleanNote) {
+          guestNotesMap[key] = cleanNote;
+        } else {
+          delete guestNotesMap[key];
+        }
+        let targetRecord = null;
+        savedGuests = savedGuests.map((g) => {
+          if (normalizeNameKey(g.name) === key) {
+            targetRecord = { ...g, note: cleanNote };
+            return targetRecord;
+          }
+          return g;
+        });
+        persistLocalGuests();
+
+        clearTimeout(noteSaveTimers[key]);
+        noteSaveTimers[key] = setTimeout(async () => {
+          try {
+            await fetch(`${apiBase}/api/guests`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                action: "update_note",
+                name,
+                note: cleanNote
+              })
+            });
+            if (targetRecord) {
+              await fetch(`${apiBase}/api/guests`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  action: "add",
+                  guests: [targetRecord]
+                })
+              });
+            }
+          } catch (_) {}
+        }, showToastNow ? 50 : 450);
+
+        if (showToastNow) {
+          notify(
+            cleanNote
+              ? `📝 Đã lưu ghi chú riêng cho "${name}": ${cleanNote}`
+              : `📝 Đã xóa ghi chú riêng của "${name}".`
+          );
+        }
       }
 
       function notify(msg) {
@@ -1419,10 +1571,12 @@
           const devicesSummary = sessions.length
             ? sessions.map((s) => s.deviceDetail || "Thiết bị").join(" | ")
             : "Chưa mở";
+          const privateNote = String(guestObj.note || guestNotesMap[key] || "").trim();
 
           rowsData.push({
             idx: idx + 1,
             name,
+            privateNote,
             effectiveLang,
             fullUrl,
             inviteMsg,
@@ -1430,8 +1584,14 @@
             devicesSummary
           });
 
-          // Apply UI Filter & Search
-          if (q && !name.toLowerCase().includes(q)) return;
+          // Apply UI Filter & Search (search matches both Guest Name AND Private Note!)
+          if (
+            q &&
+            !name.toLowerCase().includes(q) &&
+            !privateNote.toLowerCase().includes(q)
+          ) {
+            return;
+          }
           if (currentFilter === "opened" && !hasOpened) return;
           if (currentFilter === "pending" && hasOpened) return;
           if (currentFilter === "directions" && !isDirEffective) return;
@@ -1457,6 +1617,14 @@
                   <span class="guest-name-text js-guest-name"></span>
                   <span class="lang-tag">${effectiveLang === "zh" ? "繁體中文" : "VI"}</span>
                   ${statusBadgeHtml}
+                  <label class="guest-private-note-wrap ${privateNote ? "has-note" : ""}" title="Ghi chú riêng cho Cô Dâu & Chú Rể (Khách mời tuyệt đối KHÔNG thấy ghi chú này)">
+                    <span class="guest-private-note-icon">📝</span>
+                    <input
+                      type="text"
+                      class="guest-private-note-input js-guest-note-input"
+                      placeholder="Ghi chú riêng (VD: Con dì Ý, bạn ĐH...)"
+                    />
+                  </label>
                 </div>
                 <div class="guest-url-line js-url-preview"></div>
               </div>
@@ -1482,6 +1650,25 @@
           card.querySelector(".js-guest-name").textContent = name;
           card.querySelector(".js-url-preview").textContent = fullUrl;
           card.querySelector(".js-preview").href = previewUrl;
+          const noteInputEl = card.querySelector(".js-guest-note-input");
+          const noteWrapEl = card.querySelector(".guest-private-note-wrap");
+          if (noteInputEl) {
+            noteInputEl.value = privateNote;
+            noteInputEl.addEventListener("input", () => {
+              const v = noteInputEl.value;
+              if (noteWrapEl) noteWrapEl.classList.toggle("has-note", Boolean(v.trim()));
+              saveGuestPrivateNote(name, v, false);
+            });
+            noteInputEl.addEventListener("change", () => {
+              saveGuestPrivateNote(name, noteInputEl.value, true);
+            });
+            noteInputEl.addEventListener("keydown", (ev) => {
+              if (ev.key === "Enter") {
+                ev.preventDefault();
+                noteInputEl.blur();
+              }
+            });
+          }
 
           const sessionsWrap = card.querySelector(".js-sessions-wrap");
           if (!sessions.length) {
@@ -1580,20 +1767,37 @@
         }
 
         const newItems = [];
-        names.forEach((name) => {
+        names.forEach((rawLine) => {
+          let name = rawLine;
+          let inlineNote = "";
+          if (rawLine.includes("|")) {
+            const parts = rawLine.split("|");
+            name = parts[0].trim();
+            inlineNote = parts.slice(1).join("|").trim();
+          } else if (rawLine.includes("//")) {
+            const parts = rawLine.split("//");
+            name = parts[0].trim();
+            inlineNote = parts.slice(1).join("//").trim();
+          }
+          if (!name) return;
+
+          const key = normalizeNameKey(name);
+          const existingIdx = savedGuests.findIndex((g) => normalizeNameKey(g.name) === key);
+          const finalNote = inlineNote || (existingIdx >= 0 ? savedGuests[existingIdx].note : "") || guestNotesMap[key] || "";
+          if (finalNote) guestNotesMap[key] = finalNote;
+
           const hasHanzi = /[\u4e00-\u9fff]/.test(name);
           const effectiveLang = lang === "zh" || hasHanzi ? "zh" : "vi";
           const record = {
             name,
             lang: effectiveLang,
-            mode: "invite",
-            driveUrl: "",
-            createdAt: new Date().toISOString()
+            mode: existingIdx >= 0 && savedGuests[existingIdx].mode ? savedGuests[existingIdx].mode : "invite",
+            driveUrl: existingIdx >= 0 && savedGuests[existingIdx].driveUrl ? savedGuests[existingIdx].driveUrl : "",
+            note: finalNote,
+            createdAt: existingIdx >= 0 && savedGuests[existingIdx].createdAt ? savedGuests[existingIdx].createdAt : new Date().toISOString()
           };
           newItems.push(record);
 
-          const key = normalizeNameKey(name);
-          const existingIdx = savedGuests.findIndex((g) => normalizeNameKey(g.name) === key);
           if (existingIdx >= 0) {
             savedGuests[existingIdx] = record;
           } else {
@@ -1723,11 +1927,17 @@
               const locStr = formatCountryFlag(log.country) + (log.city ? ` (${log.city})` : "");
               const langLabel = log.lang === "zh" ? "Bản 繁體中文" : "Bản Tiếng Việt";
               const openOrderNumber = visitLogs.length - i;
+              const logKey = normalizeNameKey(log.guestName || "");
+              const matchedGuest = savedGuests.find((g) => normalizeNameKey(g.name) === logKey);
+              const logNote = String((matchedGuest && matchedGuest.note) || guestNotesMap[logKey] || "").trim();
 
               tr.innerHTML = `
                 <td><strong>#${openOrderNumber}</strong></td>
                 <td>
-                  <strong class="js-log-guest" style="font-size:14px;"></strong>
+                  <div style="display:flex; flex-wrap:wrap; align-items:center; gap:4px;">
+                    <strong class="js-log-guest" style="font-size:14px;"></strong>
+                    <span class="log-private-note-tag js-log-note" style="display:none;"></span>
+                  </div>
                   <div style="font-size:11.2px; color:var(--adm-muted); margin-top:2px;">${langLabel}</div>
                 </td>
                 <td>${statusHtml}${flipNote}</td>
@@ -1738,13 +1948,23 @@
                 </td>
               `;
               tr.querySelector(".js-log-guest").textContent = log.guestName || "Khách mời";
+              const logNoteEl = tr.querySelector(".js-log-note");
+              if (logNote && logNoteEl) {
+                logNoteEl.textContent = `📝 ${logNote}`;
+                logNoteEl.style.display = "inline-flex";
+              }
               tr.querySelector(".js-log-device").textContent =
                 log.deviceDetail || log.device || "Thiết bị di động";
               actTbody.appendChild(tr);
             });
           }
 
-          buildRows();
+          // Do not rebuild guest cards while user is actively typing a private note
+          const activeEl = document.activeElement;
+          const isTypingNote = activeEl && activeEl.classList && activeEl.classList.contains("js-guest-note-input");
+          if (!isTypingNote || showToast) {
+            buildRows();
+          }
           subLabel.textContent =
             "Đang đồng bộ trực tiếp • Cập nhật lúc " + new Date().toLocaleTimeString("vi-VN");
           if (showToast) notify("✅ Đã cập nhật số liệu mới nhất!");
@@ -1829,6 +2049,7 @@
         const header = [
           "STT",
           "Ten Khach Moi",
+          "Ghi Chu Rieng (Co Dau Chu Re)",
           "So Lan Mo",
           "Chi Tiet Thiet Bi Da Mo",
           "Ngon Ngu",
@@ -1841,6 +2062,7 @@
             [
               r.idx,
               r.name,
+              r.privateNote || "",
               r.openCount,
               r.devicesSummary,
               r.effectiveLang,
