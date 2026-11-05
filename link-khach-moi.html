@@ -1302,10 +1302,10 @@
         <div class="adm-box-head">
           <div>
             <h2 class="adm-box-title">
-              📌 Danh Sách Tổng 414 Thiệp Mời (✅ Đã có tên: <span id="saved-guest-count">0</span> • 🔢 Chưa có tên: <span id="unnamed-slot-count">414</span>)
+              📌 Danh Sách Thiệp Mời (<span id="saved-guest-count">0</span> đã có tên • <span id="unnamed-slot-count">414</span> chưa gán tên)
             </h2>
             <p class="adm-box-desc">
-              <strong>Ai đã có tên sẽ tự động nằm ở trên cao</strong>, các <strong>Mã QR đánh số chưa có tên nằm ở phía dưới</strong> cho đủ tổng <strong>414 thiệp</strong>. Khi bạn gõ tên vào bất kỳ QR số nào ở dưới và bấm <strong>💾 Lưu tên (hoặc Enter)</strong>, khách đó sẽ lập tức nhảy lên danh sách Đã có tên ở trên!
+              Bấm <strong>Copy Link</strong> hoặc <strong>Copy Lời Mời</strong> để gửi qua Zalo / LINE. Bạn có thể bật <strong>📍 Chỉ Đường</strong> hoặc <strong>📸 Lời Cảm Ơn</strong> ngay trên từng khách.
             </p>
           </div>
           <div style="display:flex; flex-wrap:wrap; gap:8px;">
@@ -2626,17 +2626,6 @@
           bulkTableSel.value = prevVal;
         }
 
-        if (savedGuests.length > 0 && currentFilter !== "unnamed") {
-          const namedHeader = document.createElement("div");
-          namedHeader.style.cssText =
-            "padding:10px 14px; margin-bottom:10px; border-radius:9px; background:#f7ebe8; border:1.5px solid var(--adm-crimson); color:var(--adm-crimson); font-weight:700; font-size:13.2px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;";
-          namedHeader.innerHTML = `
-            <span>✅ PHẦN 1 (Ở TRÊN CAO): KHÁCH MỜI ĐÃ CÓ TÊN (${savedGuests.length} / ${TOTAL_INVITE_TARGET} thiệp)</span>
-            <span style="font-size:11.8px; font-weight:600; color:#6d4c3d;">Ai đã có tên sẽ luôn nằm ở phần trên cùng này</span>
-          `;
-          frag.appendChild(namedHeader);
-        }
-
         savedGuests.forEach((guestObj, idx) => {
           const name = guestObj.name;
           const key = normalizeNameKey(name);
@@ -2961,15 +2950,6 @@
             }
             candidateN++;
           }
-
-          const unnamedHeader = document.createElement("div");
-          unnamedHeader.style.cssText =
-            "padding:10px 14px; margin:14px 0 10px; border-radius:9px; background:#fff6ea; border:1.5px solid #c98a3b; color:#7d1518; font-weight:700; font-size:13.2px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;";
-          unnamedHeader.innerHTML = `
-            <span>🔢 PHẦN 2 (Ở PHÍA DƯỚI): ${unnamedSlotNumbers.length} MÃ QR ĐÁNH SỐ CHƯA CÓ TÊN (Bù đủ tổng ${TOTAL_INVITE_TARGET} thiệp)</span>
-            <span style="font-size:11.8px; font-weight:600; color:#5a3e2b;">Gõ tên khách trực tiếp trên từng dòng rồi bấm Lưu (hoặc Enter) là tự động nhảy lên Phần 1 ở trên!</span>
-          `;
-          frag.appendChild(unnamedHeader);
 
           const globalMode =
             globalSiteConfig.globalMode ||
@@ -5003,16 +4983,6 @@
 
         for (let idxOrder = 0; idxOrder < orderedNums.length; idxOrder++) {
           const n = orderedNums[idxOrder];
-          if (idxOrder === 0 && assignedNums.length > 0 && !q) {
-            const sepTr = document.createElement("tr");
-            sepTr.innerHTML = `<td colspan="7" style="background:#f7ebe8; color:var(--adm-crimson); font-weight:700; font-size:12.5px; padding:8px 12px;">✅ CÁC SỐ QR ĐÃ CÓ TÊN KHÁCH (${assignedNums.length} số) — HIỆN Ở TRÊN CAO</td>`;
-            frag.appendChild(sepTr);
-          }
-          if (idxOrder === assignedNums.length && unassignedNums.length > 0 && !q) {
-            const sepTr = document.createElement("tr");
-            sepTr.innerHTML = `<td colspan="7" style="background:#fff6ea; color:#7d1518; font-weight:700; font-size:12.5px; padding:8px 12px;">🔢 CÁC SỐ QR CHƯA GÁN TÊN (${unassignedNums.length} số) — HIỆN Ở PHÍA DƯỚI</td>`;
-            frag.appendChild(sepTr);
-          }
           const code = makeSlotCode(n);
           const slotObj = serverSlots[code] || null;
           const assignedName = slotObj && slotObj.name ? String(slotObj.name).trim() : "";
