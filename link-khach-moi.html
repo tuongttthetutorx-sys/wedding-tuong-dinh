@@ -1166,6 +1166,89 @@
       margin-bottom: 6px;
       font-size: 12.8px;
     }
+
+    /* Floating Bulk Action Dock (Slides up and travels along as user scrolls when items are selected) */
+    .bulk-floating-dock {
+      position: fixed;
+      bottom: 22px;
+      left: 50%;
+      transform: translate(-50%, calc(100% + 50px));
+      z-index: 9999;
+      width: min(96vw, 980px);
+      background: rgba(255, 253, 248, 0.96);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1.5px solid #c98a3b;
+      border-radius: 14px;
+      padding: 10px 14px;
+      box-shadow: 0 16px 42px rgba(90, 20, 24, 0.22), 0 2px 10px rgba(0, 0, 0, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.32s cubic-bezier(0.18, 0.89, 0.32, 1.15), opacity 0.26s ease;
+    }
+    .bulk-floating-dock.is-visible {
+      transform: translate(-50%, 0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .bulk-dock-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #7d1518;
+      color: #fff;
+      font-size: 12.5px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 8px;
+      white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(125, 21, 24, 0.25);
+    }
+    .bulk-dock-actions {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .bulk-dock-actions select {
+      height: 34px;
+      font-size: 12px;
+      padding: 0 8px;
+      border-radius: 8px;
+      background: #fff;
+      border: 1px solid var(--adm-border);
+      color: var(--adm-text);
+      max-width: 190px;
+    }
+    .puppy-toast {
+      z-index: 100000 !important;
+      bottom: 84px !important;
+    }
+    @media (max-width: 768px) {
+      .bulk-floating-dock {
+        bottom: 12px;
+        padding: 8px 10px;
+        border-radius: 12px;
+        width: 95vw;
+        gap: 6px;
+      }
+      .bulk-dock-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+      .bulk-dock-actions select {
+        flex: 1 1 120px;
+        max-width: none;
+      }
+      .bulk-dock-actions button {
+        flex: 1 1 100%;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1925,6 +2008,40 @@
     </section>
   </div>
 
+  <!-- THANH TÁC VỤ HÀNG LOẠT NỔI CHẠY THEO CUỘN TRANG (KHI BẮT ĐẦU TÍCH CHỌN) -->
+  <div id="bulk-floating-dock" class="bulk-floating-dock" role="region" aria-label="Thao tác phân nhóm và xếp bàn hàng loạt">
+    <div style="display:flex; align-items:center; gap:8px;">
+      <span class="bulk-dock-pill" id="bulk-float-badge">⚡ Đã chọn: 0 mục</span>
+      <button type="button" id="btn-float-clear" class="btn-adm" style="height:32px; padding:0 10px; font-size:11.8px; background:#fff;" title="Bỏ tích chọn toàn bộ">
+        ✕ Bỏ chọn
+      </button>
+    </div>
+    <div class="bulk-dock-actions">
+      <select id="bulk-float-group" title="Gán nhóm khách">
+        <option value="__keep__">-- Giữ nguyên Nhóm khách --</option>
+        <option value="groom_family">👑 Gia đình Nhà Trai</option>
+        <option value="bride_family">👑 Gia đình Nhà Gái</option>
+        <option value="groom_relatives">🏮 Họ hàng Nhà Trai</option>
+        <option value="bride_relatives">🏮 Họ hàng Nhà Gái</option>
+        <option value="friends_colleagues">🥂 Bạn bè &amp; Đồng nghiệp</option>
+        <option value="honored_guests">✨ Khách mời / Khách quý</option>
+        <option value="">⚪ Xóa phân nhóm (Về trống)</option>
+      </select>
+      <select id="bulk-float-table" title="Gán bàn tiệc">
+        <option value="__keep__">-- Giữ nguyên Bàn --</option>
+      </select>
+      <select id="bulk-float-mode" title="Đổi loại thiệp">
+        <option value="__keep__">-- Giữ nguyên Loại thiệp --</option>
+        <option value="invite">💌 Thiệp Mời</option>
+        <option value="directions">📍 Chỉ Đường</option>
+        <option value="thankyou">📸 Lời Cảm Ơn</option>
+      </select>
+      <button type="button" id="btn-float-apply" class="btn-adm primary" style="height:34px; padding:0 14px; font-size:12.5px; font-weight:700;">
+        ⚡ Áp Dụng
+      </button>
+    </div>
+  </div>
+
   <div id="puppy-toast" class="puppy-toast" role="status" aria-live="polite"></div>
 
   <script>
@@ -2140,6 +2257,23 @@
       const btnBulkClearSel = document.getElementById("btn-bulk-clear-selection");
       const btnApplyBulkAssign = document.getElementById("btn-apply-bulk-assign");
 
+      // Floating Bulk Action Dock Elements
+      const bulkFloatBadge = document.getElementById("bulk-float-badge");
+      const bulkFloatingDock = document.getElementById("bulk-floating-dock");
+      const btnFloatApply = document.getElementById("btn-float-apply");
+      const btnFloatClear = document.getElementById("btn-float-clear");
+      const bulkFloatGroup = document.getElementById("bulk-float-group");
+      const bulkFloatTable = document.getElementById("bulk-float-table");
+      const bulkFloatMode = document.getElementById("bulk-float-mode");
+
+      function updateBulkBadgeUI() {
+        const count = (window._bulkSelectedSet && window._bulkSelectedSet.size) || 0;
+        const b = document.getElementById("bulk-selected-badge");
+        if (b) b.textContent = `Đã tích: ${count} mục`;
+        if (bulkFloatBadge) bulkFloatBadge.textContent = `⚡ Đã chọn: ${count} mục`;
+        if (bulkFloatingDock) bulkFloatingDock.classList.toggle("is-visible", count > 0);
+      }
+
       if (btnBulkSelectVisible) {
         btnBulkSelectVisible.addEventListener("click", () => {
           window._bulkSelectedSet = window._bulkSelectedSet || new Set();
@@ -2169,9 +2303,151 @@
           notify("✕ Đã bỏ tích chọn toàn bộ.");
         });
       }
+      if (btnFloatClear) {
+        btnFloatClear.addEventListener("click", () => {
+          window._bulkSelectedSet = new Set();
+          const rFrom = document.getElementById("bulk-range-from");
+          const rTo = document.getElementById("bulk-range-to");
+          if (rFrom) rFrom.value = "";
+          if (rTo) rTo.value = "";
+          buildRows();
+          notify("✕ Đã bỏ tích chọn toàn bộ.");
+        });
+      }
+
+      // Sync selections between Top Bulk Bar and Floating Dock
+      const bulkAssignGrp = document.getElementById("bulk-assign-group");
+      const bulkAssignTbl = document.getElementById("bulk-assign-table");
+      const bulkAssignMod = document.getElementById("bulk-assign-mode");
+
+      if (bulkAssignGrp && bulkFloatGroup) {
+        bulkAssignGrp.addEventListener("change", () => { bulkFloatGroup.value = bulkAssignGrp.value; });
+        bulkFloatGroup.addEventListener("change", () => { bulkAssignGrp.value = bulkFloatGroup.value; });
+      }
+      if (bulkAssignTbl && bulkFloatTable) {
+        bulkAssignTbl.addEventListener("change", () => { bulkFloatTable.value = bulkAssignTbl.value; });
+        bulkFloatTable.addEventListener("change", () => { bulkAssignTbl.value = bulkFloatTable.value; });
+      }
+      if (bulkAssignMod && bulkFloatMode) {
+        bulkAssignMod.addEventListener("change", () => { bulkFloatMode.value = bulkAssignMod.value; });
+        bulkFloatMode.addEventListener("change", () => { bulkAssignMod.value = bulkFloatMode.value; });
+      }
+
+      async function executeBulkAssignment({ grpVal, tblVal, modeVal, fromNum, toNum, rangeMode }) {
+        if (grpVal === "__keep__" && tblVal === "__keep__" && modeVal === "__keep__") {
+          notify("⚠️ Hãy chọn ít nhất 1 mục cần gán (Nhóm khách, Bàn tiệc hoặc Loại thiệp)!");
+          return false;
+        }
+
+        const targetGuestKeys = new Set();
+        const targetSlotNums = new Set();
+
+        if (fromNum >= 1 && toNum >= fromNum) {
+          if (rangeMode === "slot") {
+            for (let s = fromNum; s <= Math.min(9999, toNum); s++) {
+              targetSlotNums.add(s);
+            }
+          } else {
+            (window._visibleBulkItems || []).forEach((it) => {
+              if (it.orderIdx >= fromNum && it.orderIdx <= toNum) {
+                if (it.type === "guest") targetGuestKeys.add(it.key);
+                else if (it.slotNum) targetSlotNums.add(it.slotNum);
+              }
+            });
+          }
+        }
+
+        window._bulkSelectedSet = window._bulkSelectedSet || new Set();
+        window._bulkSelectedSet.forEach((tok) => {
+          if (tok.startsWith("guest:")) targetGuestKeys.add(tok.slice(6));
+          else if (tok.startsWith("slot:")) {
+            const sn = parseInt(tok.slice(5), 10);
+            if (sn >= 1) targetSlotNums.add(sn);
+          }
+        });
+
+        const totalSelected = targetGuestKeys.size + targetSlotNums.size;
+        if (totalSelected === 0) {
+          notify("⚠️ Hãy tích chọn ít nhất 1 dòng bên dưới hoặc nhập khoảng số (Từ → Đến) nhé!");
+          return false;
+        }
+
+        const nextGroup = grpVal === "__keep__" ? undefined : grpVal;
+        const nextTable = tblVal === "__keep__" ? undefined : tblVal;
+        const nextMode = modeVal === "__keep__" ? undefined : modeVal;
+
+        const guestNamesToUpdate = [];
+        savedGuests = savedGuests.map((g) => {
+          const k = normalizeNameKey(g.name);
+          const matchedByGuest = targetGuestKeys.has(k);
+          const matchedBySlot = g.slot && targetSlotNums.has(Number(g.slot));
+          if (!matchedByGuest && !matchedBySlot) return g;
+          guestNamesToUpdate.push(g.name);
+          const updated = { ...g };
+          if (nextGroup !== undefined) updated.group = nextGroup;
+          if (nextTable !== undefined) updated.table = nextTable;
+          if (nextMode !== undefined) updated.mode = nextMode;
+          if (g.slotCode && serverSlots[g.slotCode]) {
+            if (nextGroup !== undefined) serverSlots[g.slotCode].group = nextGroup;
+            if (nextTable !== undefined) serverSlots[g.slotCode].table = nextTable;
+            if (nextMode !== undefined) serverSlots[g.slotCode].mode = nextMode;
+          }
+          return updated;
+        });
+
+        const slotItemsToUpdate = [];
+        targetSlotNums.forEach((n) => {
+          const code = makeSlotCode(n);
+          const prev = serverSlots[code] || {
+            num: n,
+            name: "",
+            lang: "vi",
+            mode: "invite",
+            group: "",
+            table: "",
+            pax: 1,
+            assignedAt: new Date().toISOString()
+          };
+          if (nextGroup !== undefined) prev.group = nextGroup;
+          if (nextTable !== undefined) prev.table = nextTable;
+          if (nextMode !== undefined) prev.mode = nextMode;
+          serverSlots[code] = prev;
+          slotItemsToUpdate.push({ code, num: n });
+        });
+
+        window._bulkSelectedSet.clear();
+        const rFrom = document.getElementById("bulk-range-from");
+        const rTo = document.getElementById("bulk-range-to");
+        if (rFrom) rFrom.value = "";
+        if (rTo) rTo.value = "";
+
+        persistLocalGuests();
+        if (typeof persistLocalSlots === "function") persistLocalSlots();
+        buildRows();
+        if (typeof renderSlotsTable === "function") renderSlotsTable();
+        if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
+
+        try {
+          await fetch(`${apiBase}/api/seating`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "bulk_assign",
+              guestNames: guestNamesToUpdate,
+              slotItems: slotItemsToUpdate,
+              ...(nextGroup !== undefined ? { group: nextGroup } : {}),
+              ...(nextTable !== undefined ? { table: nextTable } : {}),
+              ...(nextMode !== undefined ? { mode: nextMode } : {})
+            })
+          });
+        } catch (_) {}
+
+        notify(`⚡ Đã áp dụng hàng loạt cho ${totalSelected} mục thành công!`);
+        return true;
+      }
 
       if (btnApplyBulkAssign) {
-        btnApplyBulkAssign.addEventListener("click", async () => {
+        btnApplyBulkAssign.addEventListener("click", () => {
           const grpSel = document.getElementById("bulk-assign-group");
           const tblSel = document.getElementById("bulk-assign-table");
           const modeSel = document.getElementById("bulk-assign-mode");
@@ -2182,114 +2458,20 @@
           const grpVal = grpSel ? grpSel.value : "__keep__";
           const tblVal = tblSel ? tblSel.value : "__keep__";
           const modeVal = modeSel ? modeSel.value : "__keep__";
-
-          if (grpVal === "__keep__" && tblVal === "__keep__" && modeVal === "__keep__") {
-            notify("⚠️ Hãy chọn ít nhất 1 mục cần gán (Nhóm khách, Bàn tiệc hoặc Loại thiệp)!");
-            return;
-          }
-
-          const targetGuestKeys = new Set();
-          const targetSlotNums = new Set();
-
           const fromNum = parseInt(rangeFromEl ? rangeFromEl.value : "", 10);
           const toNum = parseInt(rangeToEl ? rangeToEl.value : "", 10);
           const rangeMode = rangeTypeEl ? rangeTypeEl.value : "order";
 
-          if (fromNum >= 1 && toNum >= fromNum) {
-            if (rangeMode === "slot") {
-              for (let s = fromNum; s <= Math.min(9999, toNum); s++) {
-                targetSlotNums.add(s);
-              }
-            } else {
-              (window._visibleBulkItems || []).forEach((it) => {
-                if (it.orderIdx >= fromNum && it.orderIdx <= toNum) {
-                  if (it.type === "guest") targetGuestKeys.add(it.key);
-                  else if (it.slotNum) targetSlotNums.add(it.slotNum);
-                }
-              });
-            }
-          }
+          executeBulkAssignment({ grpVal, tblVal, modeVal, fromNum, toNum, rangeMode });
+        });
+      }
 
-          window._bulkSelectedSet = window._bulkSelectedSet || new Set();
-          window._bulkSelectedSet.forEach((tok) => {
-            if (tok.startsWith("guest:")) targetGuestKeys.add(tok.slice(6));
-            else if (tok.startsWith("slot:")) {
-              const sn = parseInt(tok.slice(5), 10);
-              if (sn >= 1) targetSlotNums.add(sn);
-            }
-          });
-
-          const totalSelected = targetGuestKeys.size + targetSlotNums.size;
-          if (totalSelected === 0) {
-            notify("⚠️ Hãy tích chọn ít nhất 1 dòng bên dưới hoặc nhập khoảng số (Từ → Đến) nhé!");
-            return;
-          }
-
-          const nextGroup = grpVal === "__keep__" ? undefined : grpVal;
-          const nextTable = tblVal === "__keep__" ? undefined : tblVal;
-          const nextMode = modeVal === "__keep__" ? undefined : modeVal;
-
-          const guestNamesToUpdate = [];
-          savedGuests = savedGuests.map((g) => {
-            const k = normalizeNameKey(g.name);
-            const matchedByGuest = targetGuestKeys.has(k);
-            const matchedBySlot = g.slot && targetSlotNums.has(Number(g.slot));
-            if (!matchedByGuest && !matchedBySlot) return g;
-            guestNamesToUpdate.push(g.name);
-            const updated = { ...g };
-            if (nextGroup !== undefined) updated.group = nextGroup;
-            if (nextTable !== undefined) updated.table = nextTable;
-            if (nextMode !== undefined) updated.mode = nextMode;
-            if (g.slotCode && serverSlots[g.slotCode]) {
-              if (nextGroup !== undefined) serverSlots[g.slotCode].group = nextGroup;
-              if (nextTable !== undefined) serverSlots[g.slotCode].table = nextTable;
-              if (nextMode !== undefined) serverSlots[g.slotCode].mode = nextMode;
-            }
-            return updated;
-          });
-
-          const slotItemsToUpdate = [];
-          targetSlotNums.forEach((n) => {
-            const code = makeSlotCode(n);
-            const prev = serverSlots[code] || {
-              num: n,
-              name: "",
-              lang: "vi",
-              mode: "invite",
-              group: "",
-              table: "",
-              pax: 1,
-              assignedAt: new Date().toISOString()
-            };
-            if (nextGroup !== undefined) prev.group = nextGroup;
-            if (nextTable !== undefined) prev.table = nextTable;
-            if (nextMode !== undefined) prev.mode = nextMode;
-            serverSlots[code] = prev;
-            slotItemsToUpdate.push({ code, num: n });
-          });
-
-          persistLocalGuests();
-          if (typeof persistLocalSlots === "function") persistLocalSlots();
-          buildRows();
-          if (typeof renderSlotsTable === "function") renderSlotsTable();
-          if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
-
-          try {
-            await fetch(`${apiBase}/api/seating`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                action: "bulk_assign",
-                guestNames: guestNamesToUpdate,
-                slotItems: slotItemsToUpdate,
-                ...(nextGroup !== undefined ? { group: nextGroup } : {}),
-                ...(nextTable !== undefined ? { table: nextTable } : {}),
-                ...(nextMode !== undefined ? { mode: nextMode } : {})
-              })
-            });
-          } catch (_) {}
-
-          notify(`⚡ Đã áp dụng hàng loạt cho ${totalSelected} mục thành công!`);
+      if (btnFloatApply) {
+        btnFloatApply.addEventListener("click", () => {
+          const grpVal = bulkFloatGroup ? bulkFloatGroup.value : "__keep__";
+          const tblVal = bulkFloatTable ? bulkFloatTable.value : "__keep__";
+          const modeVal = bulkFloatMode ? bulkFloatMode.value : "__keep__";
+          executeBulkAssignment({ grpVal, tblVal, modeVal, fromNum: NaN, toNum: NaN, rangeMode: "order" });
         });
       }
 
@@ -2601,14 +2783,15 @@
         window._bulkSelectedSet = window._bulkSelectedSet || new Set();
         window._visibleBulkItems = [];
         const updateBulkBadge = () => {
-          const b = document.getElementById("bulk-selected-badge");
-          if (b) b.textContent = `Đã tích: ${window._bulkSelectedSet.size} mục`;
+          updateBulkBadgeUI();
         };
         updateBulkBadge();
 
         const bulkTableSel = document.getElementById("bulk-assign-table");
-        if (bulkTableSel) {
-          const prevVal = bulkTableSel.value || "__keep__";
+        const bulkFloatTableSel = document.getElementById("bulk-float-table");
+        if (bulkTableSel || bulkFloatTableSel) {
+          const prevVal = bulkTableSel ? bulkTableSel.value || "__keep__" : "__keep__";
+          const prevFloatVal = bulkFloatTableSel ? bulkFloatTableSel.value || "__keep__" : "__keep__";
           const total = seatingConfig.totalTables || 40;
           const cap = seatingConfig.seatsPerTable || 10;
           const opts = [
@@ -2622,8 +2805,15 @@
               `<option value="${tKey}">🪑 Xếp vào Bàn ${String(i).padStart(2, "0")} (${used}/${cap})</option>`
             );
           }
-          bulkTableSel.innerHTML = opts.join("");
-          bulkTableSel.value = prevVal;
+          const htmlOpts = opts.join("");
+          if (bulkTableSel) {
+            bulkTableSel.innerHTML = htmlOpts;
+            bulkTableSel.value = prevVal;
+          }
+          if (bulkFloatTableSel) {
+            bulkFloatTableSel.innerHTML = htmlOpts;
+            bulkFloatTableSel.value = prevFloatVal;
+          }
         }
 
         savedGuests.forEach((guestObj, idx) => {
