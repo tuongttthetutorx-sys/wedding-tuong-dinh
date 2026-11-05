@@ -95,6 +95,15 @@ function normalizeGuestKey(name = "") {
     .replace(/\s+/g, " ");
 }
 
+// Pre-printed numbered QR bookmark codes look like "7-k3x9" (number + 4-char checksum)
+function isValidSlotCode(code = "") {
+  return /^\d{1,4}-[a-z0-9]{4}$/.test(String(code));
+}
+
+function slotNumFromCode(code = "") {
+  return parseInt(String(code).split("-")[0], 10) || 0;
+}
+
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
@@ -185,6 +194,9 @@ export class WeddingAnalytics {
         thankYouZH: ""
       };
     }
+    if (!stored.slots || typeof stored.slots !== "object") {
+      stored.slots = {};
+    }
     return stored;
   }
 
@@ -229,12 +241,108 @@ export class WeddingAnalytics {
       return new Response(null, { status: 204, headers: CORS_HEADERS });
     }
 
-    // Reset analytics counters & logs (keeps savedGuests & siteConfig intact)
+    // Reset analytics counters & logs (keeps savedGuests, siteConfig & pre-printed QR slots intact)
     if (url.pathname === "/api/reset" && request.method === "POST") {
       const current = await this.loadData();
       const fresh = defaultState(current.savedGuests || [], current.siteConfig || null);
+      fresh.slots = current.slots || {};
       await this.saveData(fresh);
       return Response.json({ ok: true, stats: this.formatStats(fresh) }, { headers: CORS_HEADERS });
+    }
+
+    // Public lookup for a pre-printed numbered QR bookmark (?s=7-ab3x) -> assigned guest name (if any)
+    if (url.pathname === "/api/slot" && request.method === "GET") {
+      const code = String(url.searchParams.get("code") || "").trim().toLowerCase();
+      const data = await this.loadData();
+      const slot = isValidSlotCode(code) ? (data.slots || {})[code] : null;
+      return Response.json(
+        {
+          ok: true,
+          slot: slot && slot.name ? { num: slot.num, name: slot.name, lang: slot.lang || "vi" } : null
+        },
+        {
+          headers: {
+            ...CORS_HEADERS,
+            "Cache-Control": "no-store, no-cache, must-revalidate"
+          }
+        }
+      );
+    }
+
+    // Assign / clear the guest name of a pre-printed numbered QR bookmark
+    if (url.pathname === "/api/slots" && request.method === "POST") {
+      let body = {};
+      try {
+        body = await request.json();
+      } catch (_) {}
+      const code = String(body.code || "").trim().toLowerCase();
+      if (!isValidSlotCode(code)) {
+        return Response.json(
+          { ok: false, error: "Invalid slot code" },
+          { status: 400, headers: CORS_HEADERS }
+        );
+      }
+      const num = slotNumFromCode(code);
+      const data = await this.loadData();
+      const prev = data.slots[code] || null;
+      const name = String(body.name || "").trim().slice(0, 120);
+      const action = String(body.action || "assign");
+
+      // Drop the slot link from the previously assigned guest record
+      const detachPrevGuest = () => {
+        if (!prev || !prev.name) return;
+        const pk = normalizeGuestKey(prev.name);
+        data.savedGuests.forEach((g) => {
+          if (normalizeGuestKey(g.name) === pk && g.slotCode === code) {
+            delete g.slot;
+            delete g.slotCode;
+          }
+        });
+      };
+
+      if (action === "clear" || !name) {
+        detachPrevGuest();
+        delete data.slots[code];
+      } else {
+        if (prev && prev.name && normalizeGuestKey(prev.name) !== normalizeGuestKey(name)) {
+          detachPrevGuest();
+        }
+        const lang = body.lang === "zh" || /[\u4e00-\u9fff]/.test(name) ? "zh" : "vi";
+        const note = String(body.note || "").trim().slice(0, 200);
+        data.slots[code] = {
+          num,
+          name,
+          lang,
+          assignedAt: new Date().toISOString()
+        };
+        // Upsert into the permanent guest list so tracking / mode switches / notes work as usual
+        const k = normalizeGuestKey(name);
+        const idx = data.savedGuests.findIndex((g) => normalizeGuestKey(g.name) === k);
+        if (idx >= 0) {
+          const g = data.savedGuests[idx];
+          g.slot = num;
+          g.slotCode = code;
+          g.lang = lang;
+          if (note) g.note = note;
+        } else {
+          data.savedGuests.push({
+            name,
+            lang,
+            mode: "invite",
+            driveUrl: "",
+            note,
+            slot: num,
+            slotCode: code,
+            createdAt: new Date().toISOString()
+          });
+        }
+      }
+
+      await this.saveData(data);
+      return Response.json(
+        { ok: true, slots: data.slots, savedGuests: data.savedGuests, stats: this.formatStats(data) },
+        { headers: CORS_HEADERS }
+      );
     }
 
     // Update global Mode (Invite / Wedding-Day Directions / Thank-You) & Google Drive settings for already-sent links
@@ -308,6 +416,9 @@ export class WeddingAnalytics {
             mode: validModes.includes(item.mode) ? item.mode : existing?.mode || "invite",
             driveUrl: String(item.driveUrl ?? existing?.driveUrl ?? "").trim(),
             note: String(item.note !== undefined ? item.note : existing?.note || "").trim(),
+            ...(existing && existing.slotCode
+              ? { slot: existing.slot, slotCode: existing.slotCode }
+              : {}),
             createdAt:
               existing && existing.createdAt
                 ? existing.createdAt
@@ -378,7 +489,12 @@ export class WeddingAnalytics {
 
       const eventType = String(body.event || "view");
       const rawGuest = String(body.guest || "").trim();
-      const guestName = rawGuest || "Khách mở link chung (không kèm tên)";
+      const slotCode = String(body.slot || "").trim().toLowerCase();
+      const guestName =
+        rawGuest ||
+        (isValidSlotCode(slotCode)
+          ? `QR số ${slotNumFromCode(slotCode)} (chưa gán tên)`
+          : "Khách mở link chung (không kèm tên)");
       const vid = String(body.vid || "anon").slice(0, 64);
       const sid = String(body.sid || `${vid}_${Date.now()}`).slice(0, 80);
       const screen = String(body.screen || "").slice(0, 24);
@@ -536,6 +652,7 @@ export class WeddingAnalytics {
       visitLogs: visitLogs.slice(0, 300),
       guests: visitorsList.slice(0, 200),
       savedGuests: Array.isArray(data.savedGuests) ? data.savedGuests : [],
+      slots: data.slots && typeof data.slots === "object" ? data.slots : {},
       siteConfig: data.siteConfig || {
         globalThankYou: false,
         driveUrl: "",

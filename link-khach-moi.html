@@ -814,6 +814,106 @@
         grid-template-columns: 1fr;
       }
     }
+
+    /* NUMBERED QR SLOTS (PRINT FIRST, ASSIGN GUEST NAME LATER) */
+    .slot-step-title {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 22px 0 10px;
+      padding-top: 16px;
+      border-top: 1px solid var(--adm-border);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--adm-crimson);
+    }
+    .slot-step-title:first-of-type {
+      margin-top: 6px;
+      padding-top: 0;
+      border-top: none;
+    }
+    .slot-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--adm-muted);
+      margin-bottom: 5px;
+    }
+    .slot-print-row,
+    .slot-assign-row {
+      display: grid;
+      gap: 10px;
+      align-items: end;
+    }
+    .slot-print-row {
+      grid-template-columns: 140px 140px auto;
+      justify-content: start;
+    }
+    .slot-assign-row {
+      grid-template-columns: 120px minmax(0, 1fr) minmax(0, 1fr) auto;
+    }
+    .slot-hint {
+      margin: 8px 0 0;
+      font-size: 12.5px;
+      color: var(--adm-muted);
+    }
+    .slot-hint.is-taken {
+      color: #a45a04;
+      font-weight: 600;
+    }
+    .slot-num-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 44px;
+      height: 28px;
+      padding: 0 8px;
+      border-radius: 6px;
+      background: var(--adm-crimson-soft);
+      color: var(--adm-crimson);
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .slot-table .slot-inline-input {
+      width: 100%;
+      min-width: 150px;
+      height: 34px;
+      padding: 0 9px;
+      border: 1px solid var(--adm-border-strong);
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 13.5px;
+      background: #fff;
+      color: var(--adm-text);
+    }
+    .slot-table .slot-inline-input:focus {
+      outline: none;
+      border-color: var(--adm-crimson);
+    }
+    .slot-table td.slot-actions {
+      white-space: nowrap;
+      text-align: right;
+    }
+    .slot-table td.slot-actions .btn-adm {
+      height: 32px;
+      padding: 0 10px;
+      font-size: 12px;
+    }
+    .slot-table tr.is-empty-slot td {
+      color: var(--adm-muted);
+    }
+    @media (max-width: 820px) {
+      .slot-print-row,
+      .slot-assign-row {
+        grid-template-columns: 1fr 1fr;
+      }
+      .slot-print-row .btn-adm,
+      .slot-assign-row .btn-adm {
+        grid-column: 1 / -1;
+      }
+    }
   </style>
 </head>
 <body>
@@ -879,6 +979,10 @@
       </button>
       <button type="button" class="adm-tab-btn" data-tab="tab-qr">
         🖨️ Tạo Thẻ Phụ QR (Vellum / Giấy Kem) &amp; In A4
+      </button>
+      <button type="button" class="adm-tab-btn" data-tab="tab-slots">
+        🔢 QR Đánh Số (In Trước, Gán Tên Sau)
+        <span class="adm-tab-badge" id="badge-slots-count">0</span>
       </button>
     </nav>
 
@@ -1129,6 +1233,21 @@
                 </button>
               </div>
 
+              <!-- KHỐI MỚI: IN TRƯỚC QR ĐÁNH SỐ (SỐ 1, SỐ 2...) — ĐIỀN TÊN KHÁCH SAU -->
+              <div style="margin-top:8px; padding:14px 16px; border-radius:10px; background:#fff6ea; border:1.5px solid #c98a3b; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px;">
+                <div style="flex:1 1 280px;">
+                  <div style="font-weight:700; font-size:14px; color:#7d1518; margin-bottom:4px;">
+                    🔢 MỚI: In Trước Bookmark Đánh Số (Số 1, Số 2...) — Điền Tên Khách Sau!
+                  </div>
+                  <div style="font-size:12.5px; color:#5a3e2b; line-height:1.45;">
+                    Không cần đợi có đủ danh sách tên khách mới in! In sẵn tờ A4 đánh số <strong>Số 1 → Số 18</strong> ở mép gập sau, bỏ số mấy vào phong bì của ai thì lên web gõ tên người đó vào số tương ứng.
+                  </div>
+                </div>
+                <button type="button" id="btn-jump-to-slots" class="btn-adm primary" style="height:40px; padding:0 16px; font-size:13px;">
+                  🔢 Mở mục In QR Đánh Số &amp; Gán Tên →
+                </button>
+              </div>
+
               <!-- KHỐI DÀN TRANG A4 KẾT HỢP: KHÁCH CÓ QR RIÊNG + KHÁCH DÙNG QR CHUNG -->
               <div style="margin-top:8px; padding:14px 16px; border-radius:10px; background:#fbf6ee; border:1px solid var(--adm-border-strong);">
                 <div style="font-weight:700; font-size:13.8px; color:var(--adm-crimson); margin-bottom:6px;">
@@ -1203,6 +1322,74 @@
         </div>
       </div>
     </section>
+
+    <!-- =====================================================================
+         TAB 5: QR ĐÁNH SỐ — IN TRƯỚC HÀNG LOẠT, GÁN TÊN KHÁCH SAU
+         ===================================================================== -->
+    <section id="tab-slots" class="adm-panel">
+      <div class="adm-box">
+        <div class="adm-box-head">
+          <div>
+            <h2 class="adm-box-title">🔢 QR Đánh Số: In Trước Hàng Loạt, Gán Tên Khách Sau</h2>
+            <p class="adm-box-desc">
+              Mỗi Bookmark có <strong>1 mã QR riêng</strong> và <strong>số thứ tự in to ở phần gập phía sau</strong>. Bỏ Bookmark số mấy vào phong bì của ai thì vào đây gõ số đó + tên khách là xong. Khách quét QR sẽ thấy thiệp có tên mình ngay, không cần in lại.
+              Bookmark chưa gán tên thì khách quét vẫn mở thiệp chung bình thường.
+            </p>
+          </div>
+        </div>
+
+        <div class="slot-step-title">Bước 1 · In Bookmark đánh số (18 chiếc / tờ A4)</div>
+        <div class="slot-print-row">
+          <div>
+            <label for="slot-print-from" class="slot-label">Từ số</label>
+            <input type="number" id="slot-print-from" class="adm-input" min="1" max="9999" value="1" />
+          </div>
+          <div>
+            <label for="slot-print-to" class="slot-label">Đến số</label>
+            <input type="number" id="slot-print-to" class="adm-input" min="1" max="9999" value="18" />
+          </div>
+          <button type="button" id="btn-print-slots" class="btn-adm primary lg">🖨️ Xuất tờ A4 QR đánh số</button>
+        </div>
+        <p class="slot-hint" id="slot-print-hint">1 tờ A4 = 18 chiếc. Lần in sau bắt đầu từ số tiếp theo (VD: 19 → 36) để không bị trùng số.</p>
+
+        <div class="slot-step-title">Bước 2 · Gán tên khách cho số QR</div>
+        <div class="slot-assign-row">
+          <div>
+            <label for="slot-assign-num" class="slot-label">Số QR</label>
+            <input type="number" id="slot-assign-num" class="adm-input" min="1" max="9999" placeholder="VD: 1" />
+          </div>
+          <div>
+            <label for="slot-assign-name" class="slot-label">Tên khách (hiện trên thiệp)</label>
+            <input type="text" id="slot-assign-name" class="adm-input" placeholder="VD: Gia Đình Dì Ý hoặc 林子惟" />
+          </div>
+          <div>
+            <label for="slot-assign-note" class="slot-label">Ghi chú riêng (khách không thấy)</label>
+            <input type="text" id="slot-assign-note" class="adm-input" placeholder="VD: Con trai dì Ý bên Đài" />
+          </div>
+          <button type="button" id="btn-assign-slot" class="btn-adm primary lg">💾 Gán tên</button>
+        </div>
+        <p class="slot-hint" id="slot-assign-preview">Gõ số QR để xem số đó đang gán cho ai.</p>
+
+        <div class="slot-step-title">
+          Danh sách QR đã in
+          <input type="search" id="slot-search-input" class="search-box" placeholder="🔍 Tìm theo số, tên hoặc ghi chú..." />
+        </div>
+        <div class="table-scroll">
+          <table class="adm-table slot-table">
+            <thead>
+              <tr>
+                <th>Số QR</th>
+                <th>Tên khách</th>
+                <th>Ghi chú riêng</th>
+                <th>Trạng thái</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="slot-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
   </div>
 
   <div id="puppy-toast" class="puppy-toast" role="status" aria-live="polite"></div>
@@ -1223,6 +1410,13 @@
       let savedGuests = [];
       let visitLogsByGuest = {};
       let currentFilter = "all";
+      // Numbered QR bookmarks (print first, assign guest later): code -> { num, name, lang, assignedAt }
+      let serverSlots = {};
+      const STORAGE_SLOT_MAX_PRINTED = "td_slot_max_printed_v1";
+      let slotMaxPrinted = 0;
+      try {
+        slotMaxPrinted = parseInt(localStorage.getItem(STORAGE_SLOT_MAX_PRINTED) || "0", 10) || 0;
+      } catch (_) {}
       let globalSiteConfig = {
         globalMode: "invite",
         globalThankYou: false,
@@ -1616,6 +1810,7 @@
                   <span class="guest-idx">#${idx + 1}</span>
                   <span class="guest-name-text js-guest-name"></span>
                   <span class="lang-tag">${effectiveLang === "zh" ? "繁體中文" : "VI"}</span>
+                  ${guestObj.slot ? `<span class="lang-tag" title="Khách này dùng Bookmark QR đánh số">🔢 QR số ${Number(guestObj.slot) || ""}</span>` : ""}
                   ${statusBadgeHtml}
                   <label class="guest-private-note-wrap ${privateNote ? "has-note" : ""}" title="Ghi chú riêng cho Cô Dâu & Chú Rể (Khách mời tuyệt đối KHÔNG thấy ghi chú này)">
                     <span class="guest-private-note-icon">📝</span>
@@ -1872,6 +2067,10 @@
             }).catch(() => {});
           }
 
+          if (st.slots && typeof st.slots === "object") {
+            mergeServerSlots(st.slots);
+          }
+
           const visitLogs = Array.isArray(st.visitLogs) ? st.visitLogs : [];
           badgeLogsEl.textContent = String(visitLogs.length);
 
@@ -1959,11 +2158,15 @@
             });
           }
 
-          // Do not rebuild guest cards while user is actively typing a private note
+          // Do not rebuild guest cards while user is actively typing a private note or slot input
           const activeEl = document.activeElement;
           const isTypingNote = activeEl && activeEl.classList && activeEl.classList.contains("js-guest-note-input");
+          const isTypingSlot = activeEl && activeEl.classList && activeEl.classList.contains("slot-inline-input");
           if (!isTypingNote || showToast) {
             buildRows();
+          }
+          if (!isTypingSlot || showToast) {
+            renderSlotsTable();
           }
           subLabel.textContent =
             "Đang đồng bộ trực tiếp • Cập nhật lúc " + new Date().toLocaleTimeString("vi-VN");
@@ -2197,6 +2400,7 @@
           (overrideOpts && overrideOpts.namePosMode) ||
           (qrBatchNamePos && qrBatchNamePos.value) ||
           "flap_only";
+        const slotNum = overrideOpts && overrideOpts.slotNum ? overrideOpts.slotNum : 0;
 
         const isPinterestStrip = layoutMode === "pinterest_strip";
         // Exact A4-filling ratio: 6 cols x 3 rows inside 197mm x 284mm (6.5mm safe printer margin on all 4 sides of A4)
@@ -2257,7 +2461,26 @@
           ctx.stroke();
           ctx.restore();
 
-          if (!forPrintTransparent) {
+          if (slotNum) {
+            // Numbered QR bookmark: print the number BIG on the back-folded flap, once upright and once
+            // rotated 180° (playing-card style) so it reads correctly whichever way the flap is folded / viewed.
+            if (!forPrintTransparent) {
+              ctx.fillStyle = "rgba(110, 20, 20, 0.045)";
+              ctx.fillRect(0, 0, W, foldY);
+            }
+            const slotLabel = `Số ${slotNum}`;
+            const slotFontSize = String(slotNum).length >= 4 ? 50 : String(slotNum).length === 3 ? 56 : 62;
+            ctx.save();
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillStyle = "#681115";
+            ctx.font = `700 ${slotFontSize}px "Be Vietnam Pro", sans-serif`;
+            ctx.fillText(slotLabel, W / 2, 78);
+            ctx.translate(W / 2, 186);
+            ctx.rotate(Math.PI);
+            ctx.fillText(slotLabel, 0, 0);
+            ctx.restore();
+          } else if (!forPrintTransparent) {
             // Subtle shaded preview of the 1.9cm top fold-over tab on screen
             ctx.fillStyle = "rgba(110, 20, 20, 0.045)";
             ctx.fillRect(0, 0, W, foldY);
@@ -2942,6 +3165,549 @@
           win.document.close();
         });
       }
+
+      // =======================================================================
+      // NUMBERED QR BOOKMARKS (PRINT FIRST, ASSIGN GUEST NAME LATER)
+      // =======================================================================
+      const STORAGE_SAVED_SLOTS = "td_saved_slots_v1";
+      const badgeSlotsEl = document.getElementById("badge-slots-count");
+      const slotPrintFromInput = document.getElementById("slot-print-from");
+      const slotPrintToInput = document.getElementById("slot-print-to");
+      const btnPrintSlots = document.getElementById("btn-print-slots");
+      const slotAssignNumInput = document.getElementById("slot-assign-num");
+      const slotAssignNameInput = document.getElementById("slot-assign-name");
+      const slotAssignNoteInput = document.getElementById("slot-assign-note");
+      const btnAssignSlot = document.getElementById("btn-assign-slot");
+      const slotAssignPreview = document.getElementById("slot-assign-preview");
+      const slotSearchInput = document.getElementById("slot-search-input");
+      const slotTableBody = document.getElementById("slot-table-body");
+      const btnJumpToSlots = document.getElementById("btn-jump-to-slots");
+
+      // Deterministic 4-char alphanumeric code for slot number N (e.g. 1 -> "1-k3x9")
+      function makeSlotCode(num) {
+        const n = Math.max(1, Math.min(9999, parseInt(num, 10) || 1));
+        let h = (n * 2654435761) ^ 0x5a3c9e17;
+        h = Math.imul(h ^ (h >>> 15), 2246822507);
+        h = Math.imul(h ^ (h >>> 13), 3266489909);
+        const unsigned = (h ^ (h >>> 16)) >>> 0;
+        const hash4 = unsigned.toString(36).padStart(4, "0").slice(0, 4).toLowerCase();
+        return `${n}-${hash4}`;
+      }
+
+      try {
+        const rawSlots = localStorage.getItem(STORAGE_SAVED_SLOTS);
+        if (rawSlots) {
+          const parsedSlots = JSON.parse(rawSlots);
+          if (parsedSlots && typeof parsedSlots === "object") {
+            serverSlots = parsedSlots;
+          }
+        }
+      } catch (_) {}
+
+      function persistLocalSlots() {
+        try {
+          localStorage.setItem(STORAGE_SAVED_SLOTS, JSON.stringify(serverSlots));
+          localStorage.setItem(STORAGE_SLOT_MAX_PRINTED, String(slotMaxPrinted));
+        } catch (_) {}
+      }
+
+      function mergeServerSlots(remoteSlots) {
+        if (!remoteSlots || typeof remoteSlots !== "object") return;
+        const merged = { ...serverSlots };
+        Object.keys(remoteSlots).forEach((code) => {
+          const r = remoteSlots[code];
+          if (r && r.name) {
+            merged[code] = r;
+            const n = parseInt(r.num, 10) || parseInt(code.split("-")[0], 10) || 0;
+            if (n > slotMaxPrinted) slotMaxPrinted = n;
+          }
+        });
+        serverSlots = merged;
+        persistLocalSlots();
+      }
+
+      // Advance default print range if already printed earlier
+      if (slotMaxPrinted > 0 && slotPrintFromInput && slotPrintToInput) {
+        const nextStart = slotMaxPrinted + 1;
+        slotPrintFromInput.value = String(nextStart);
+        slotPrintToInput.value = String(nextStart + 17);
+      }
+
+      function getSlotUrl(num) {
+        const code = makeSlotCode(num);
+        const base = baseOrigin.replace(/\?.*$/, "");
+        return `${base}?s=${encodeURIComponent(code)}&mode=directions`;
+      }
+
+      async function assignSlotByNumber(num, rawName, rawNote, showToast = true) {
+        const n = parseInt(num, 10);
+        if (!n || n < 1 || n > 9999) {
+          notify("⚠️ Số QR không hợp lệ (hãy nhập từ 1 đến 9999).");
+          return;
+        }
+        const code = makeSlotCode(n);
+        const name = String(rawName || "").trim();
+        const note = String(rawNote || "").trim();
+        const prevSlot = serverSlots[code];
+
+        if (!name) {
+          // Clear slot assignment
+          if (prevSlot && prevSlot.name) {
+            const pk = normalizeNameKey(prevSlot.name);
+            savedGuests = savedGuests.map((g) => {
+              if (normalizeNameKey(g.name) === pk && g.slotCode === code) {
+                const copy = { ...g };
+                delete copy.slot;
+                delete copy.slotCode;
+                return copy;
+              }
+              return g;
+            });
+          }
+          delete serverSlots[code];
+          persistLocalSlots();
+          persistLocalGuests();
+          renderSlotsTable();
+          buildRows();
+          try {
+            await fetch(`${apiBase}/api/slots`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ action: "clear", code })
+            });
+          } catch (_) {}
+          if (showToast) notify(`🗑️ Đã xóa tên khách khỏi QR Số ${n}.`);
+          return;
+        }
+
+        if (n > slotMaxPrinted) slotMaxPrinted = n;
+        const hasHanzi = /[\u4e00-\u9fff]/.test(name);
+        const lang = hasHanzi ? "zh" : "vi";
+
+        // Detach old guest if reassigned to someone else
+        if (prevSlot && prevSlot.name && normalizeNameKey(prevSlot.name) !== normalizeNameKey(name)) {
+          const pk = normalizeNameKey(prevSlot.name);
+          savedGuests = savedGuests.map((g) => {
+            if (normalizeNameKey(g.name) === pk && g.slotCode === code) {
+              const copy = { ...g };
+              delete copy.slot;
+              delete copy.slotCode;
+              return copy;
+            }
+            return g;
+          });
+        }
+
+        serverSlots[code] = {
+          num: n,
+          name,
+          lang,
+          assignedAt: new Date().toISOString()
+        };
+
+        const key = normalizeNameKey(name);
+        if (note) guestNotesMap[key] = note;
+        const existingIdx = savedGuests.findIndex((g) => normalizeNameKey(g.name) === key);
+        const finalNote = note || (existingIdx >= 0 ? savedGuests[existingIdx].note : "") || guestNotesMap[key] || "";
+        const guestRecord = {
+          name,
+          lang,
+          mode: existingIdx >= 0 && savedGuests[existingIdx].mode ? savedGuests[existingIdx].mode : "invite",
+          driveUrl: existingIdx >= 0 && savedGuests[existingIdx].driveUrl ? savedGuests[existingIdx].driveUrl : "",
+          note: finalNote,
+          slot: n,
+          slotCode: code,
+          createdAt:
+            existingIdx >= 0 && savedGuests[existingIdx].createdAt
+              ? savedGuests[existingIdx].createdAt
+              : new Date().toISOString()
+        };
+        if (existingIdx >= 0) {
+          savedGuests[existingIdx] = guestRecord;
+        } else {
+          savedGuests.push(guestRecord);
+        }
+
+        persistLocalSlots();
+        persistLocalGuests();
+        renderSlotsTable();
+        buildRows();
+        updateSlotAssignPreview();
+
+        try {
+          const res = await fetch(`${apiBase}/api/slots`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "assign",
+              code,
+              name,
+              note: finalNote,
+              lang
+            })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.slots) mergeServerSlots(data.slots);
+            if (Array.isArray(data.savedGuests)) mergeServerGuests(data.savedGuests);
+            renderSlotsTable();
+            buildRows();
+          }
+        } catch (_) {}
+
+        if (showToast) {
+          notify(`✅ Đã gán QR Số ${n} cho khách "${name}"!`);
+        }
+      }
+
+      function updateSlotAssignPreview() {
+        if (!slotAssignPreview || !slotAssignNumInput) return;
+        const n = parseInt(slotAssignNumInput.value, 10);
+        if (!n || n < 1) {
+          slotAssignPreview.textContent = "Gõ số QR (VD: 1, 2, 3...) để xem số đó đang trống hay đã gán cho ai.";
+          slotAssignPreview.classList.remove("is-taken");
+          return;
+        }
+        const code = makeSlotCode(n);
+        const existing = serverSlots[code];
+        if (existing && existing.name) {
+          const k = normalizeNameKey(existing.name);
+          const noteStr = guestNotesMap[k] || "";
+          slotAssignPreview.textContent = `⚠️ QR Số ${n} hiện đang gán cho "${existing.name}"${noteStr ? ` (${noteStr})` : ""}. Nhập tên mới để đổi người khác.`;
+          slotAssignPreview.classList.add("is-taken");
+        } else {
+          slotAssignPreview.textContent = `✨ QR Số ${n} đang trống — sẵn sàng gán tên khách!`;
+          slotAssignPreview.classList.remove("is-taken");
+        }
+      }
+
+      function renderSlotsTable() {
+        if (!slotTableBody) return;
+        const assignedCount = Object.values(serverSlots).filter((s) => s && s.name).length;
+        if (badgeSlotsEl) badgeSlotsEl.textContent = String(assignedCount);
+
+        let maxN = Math.max(18, slotMaxPrinted);
+        Object.keys(serverSlots).forEach((code) => {
+          const n = parseInt(code.split("-")[0], 10) || 0;
+          if (n > maxN) maxN = n;
+        });
+
+        const q = (slotSearchInput ? slotSearchInput.value : "").trim().toLowerCase();
+        slotTableBody.innerHTML = "";
+
+        for (let n = 1; n <= maxN; n++) {
+          const code = makeSlotCode(n);
+          const slotObj = serverSlots[code] || null;
+          const assignedName = slotObj && slotObj.name ? String(slotObj.name).trim() : "";
+          const nameKey = assignedName ? normalizeNameKey(assignedName) : "";
+          const matchedGuest = nameKey
+            ? savedGuests.find((g) => normalizeNameKey(g.name) === nameKey)
+            : null;
+          const privateNote = String(
+            (matchedGuest && matchedGuest.note) || (nameKey ? guestNotesMap[nameKey] : "") || ""
+          ).trim();
+
+          if (q) {
+            const numMatch = String(n) === q || `số ${n}`.includes(q) || `#${n}` === q;
+            const nameMatch = assignedName.toLowerCase().includes(q);
+            const noteMatch = privateNote.toLowerCase().includes(q);
+            if (!numMatch && !nameMatch && !noteMatch) continue;
+          }
+
+          const unassignedLogKey = normalizeNameKey(`QR số ${n} (chưa gán tên)`);
+          const sessions = nameKey
+            ? (visitLogsByGuest[nameKey] || []).concat(visitLogsByGuest[unassignedLogKey] || [])
+            : visitLogsByGuest[unassignedLogKey] || [];
+          const hasOpened = sessions.length > 0;
+          const anyOpenedEnv = sessions.some((s) => s.openedEnvelope);
+
+          let statusHtml = `<span class="status-badge is-pending">⚪ Chưa gán tên</span>`;
+          if (assignedName) {
+            if (!hasOpened) {
+              statusHtml = `<span class="status-badge is-pending">⏳ Đã gán • Chờ mở</span>`;
+            } else if (anyOpenedEnv) {
+              statusHtml = `<span class="status-badge is-opened">✨ Đã mở phong bì (${sessions.length} lần)</span>`;
+            } else {
+              statusHtml = `<span class="status-badge is-viewed">👀 Đã mở link (${sessions.length} lần)</span>`;
+            }
+          } else if (hasOpened) {
+            statusHtml = `<span class="status-badge is-viewed">👀 Đã quét (${sessions.length} lần • Chưa gán tên)</span>`;
+          }
+
+          const slotUrl = getSlotUrl(n);
+          const previewUrl = `${slotUrl}&notrack=1`;
+
+          const tr = document.createElement("tr");
+          if (!assignedName) tr.className = "is-empty-slot";
+          tr.innerHTML = `
+            <td><span class="slot-num-pill">Số ${n}</span></td>
+            <td>
+              <input
+                type="text"
+                class="slot-inline-input js-slot-row-name"
+                placeholder="Gõ tên khách cho QR Số ${n}..."
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                class="slot-inline-input js-slot-row-note"
+                placeholder="Ghi chú riêng (VD: Bạn ĐH, cô chú...)"
+              />
+            </td>
+            <td>${statusHtml}</td>
+            <td class="slot-actions">
+              <div style="display:inline-flex; gap:5px; align-items:center;">
+                <button type="button" class="btn-adm primary js-slot-save" title="Lưu tên khách cho Số ${n}">💾 Lưu</button>
+                <button type="button" class="btn-adm js-slot-copy" title="Copy link của QR Số ${n}">📋 Link</button>
+                <a class="btn-adm js-slot-preview" target="_blank" rel="noopener" title="Xem thử QR Số ${n}">👁️</a>
+                ${assignedName ? `<button type="button" class="btn-adm danger js-slot-clear" title="Xóa tên khỏi Số ${n}">✕</button>` : ""}
+              </div>
+            </td>
+          `;
+
+          const nameInput = tr.querySelector(".js-slot-row-name");
+          const noteInput = tr.querySelector(".js-slot-row-note");
+          nameInput.value = assignedName;
+          noteInput.value = privateNote;
+          tr.querySelector(".js-slot-preview").href = previewUrl;
+
+          const triggerSaveRow = () => {
+            assignSlotByNumber(n, nameInput.value, noteInput.value, true);
+          };
+
+          tr.querySelector(".js-slot-save").addEventListener("click", triggerSaveRow);
+          nameInput.addEventListener("keydown", (ev) => {
+            if (ev.key === "Enter") {
+              ev.preventDefault();
+              triggerSaveRow();
+            }
+          });
+          noteInput.addEventListener("keydown", (ev) => {
+            if (ev.key === "Enter") {
+              ev.preventDefault();
+              triggerSaveRow();
+            }
+          });
+          tr.querySelector(".js-slot-copy").addEventListener("click", () => {
+            copyText(slotUrl, `📋 Đã copy link của QR Số ${n}!`);
+          });
+          const clearBtn = tr.querySelector(".js-slot-clear");
+          if (clearBtn) {
+            clearBtn.addEventListener("click", () => {
+              assignSlotByNumber(n, "", "", true);
+            });
+          }
+
+          slotTableBody.appendChild(tr);
+        }
+      }
+
+      if (btnJumpToSlots) {
+        btnJumpToSlots.addEventListener("click", () => {
+          const tabBtn = document.querySelector('.adm-tab-btn[data-tab="tab-slots"]');
+          if (tabBtn) tabBtn.click();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+      }
+
+      if (slotAssignNumInput) {
+        slotAssignNumInput.addEventListener("input", () => {
+          updateSlotAssignPreview();
+          const n = parseInt(slotAssignNumInput.value, 10);
+          if (n >= 1) {
+            const code = makeSlotCode(n);
+            const existing = serverSlots[code];
+            if (existing && existing.name && slotAssignNameInput && !slotAssignNameInput.value) {
+              slotAssignNameInput.placeholder = `Đang gán: ${existing.name}`;
+            } else if (slotAssignNameInput) {
+              slotAssignNameInput.placeholder = "VD: Gia Đình Dì Ý hoặc 林子惟";
+            }
+          }
+        });
+      }
+
+      if (btnAssignSlot) {
+        btnAssignSlot.addEventListener("click", () => {
+          const n = parseInt(slotAssignNumInput ? slotAssignNumInput.value : "0", 10);
+          const name = slotAssignNameInput ? slotAssignNameInput.value.trim() : "";
+          const note = slotAssignNoteInput ? slotAssignNoteInput.value.trim() : "";
+          if (!n || n < 1) {
+            notify("⚠️ Hãy nhập Số QR (VD: 1, 2, 3...)!");
+            if (slotAssignNumInput) slotAssignNumInput.focus();
+            return;
+          }
+          if (!name) {
+            notify("⚠️ Hãy nhập Tên khách mời cần gán cho QR Số " + n + "!");
+            if (slotAssignNameInput) slotAssignNameInput.focus();
+            return;
+          }
+          assignSlotByNumber(n, name, note, true);
+          // Advance to next number automatically for fast batch entry!
+          if (slotAssignNumInput) slotAssignNumInput.value = String(n + 1);
+          if (slotAssignNameInput) slotAssignNameInput.value = "";
+          if (slotAssignNoteInput) slotAssignNoteInput.value = "";
+          updateSlotAssignPreview();
+          if (slotAssignNameInput) slotAssignNameInput.focus();
+        });
+      }
+
+      [slotAssignNumInput, slotAssignNameInput, slotAssignNoteInput].forEach((inp) => {
+        if (!inp) return;
+        inp.addEventListener("keydown", (ev) => {
+          if (ev.key === "Enter" && btnAssignSlot) {
+            ev.preventDefault();
+            btnAssignSlot.click();
+          }
+        });
+      });
+
+      if (slotSearchInput) {
+        slotSearchInput.addEventListener("input", renderSlotsTable);
+      }
+
+      if (btnPrintSlots) {
+        btnPrintSlots.addEventListener("click", () => {
+          const fromN = Math.max(1, parseInt(slotPrintFromInput ? slotPrintFromInput.value : "1", 10) || 1);
+          const toN = Math.max(fromN, Math.min(fromN + 179, parseInt(slotPrintToInput ? slotPrintToInput.value : String(fromN + 17), 10) || fromN + 17));
+          const capMode = (qrCaptionStyle && qrCaptionStyle.value) || "bilingual";
+
+          const win = window.open("", "_blank");
+          if (!win) {
+            notify("⚠️ Trình duyệt chặn cửa sổ bật lên. Hãy cho phép Popup để mở trang in A4 nhé!");
+            return;
+          }
+
+          const itemsHtml = [];
+          for (let n = fromN; n <= toN; n++) {
+            const slotUrl = getSlotUrl(n);
+            renderLuxuryWeddingQR(true, {
+              layoutMode: "pinterest_strip",
+              targetUrl: slotUrl,
+              capMode,
+              guestText: "",
+              slotNum: n
+            });
+            const dUrl = qrCanvas.toDataURL("image/png");
+            itemsHtml.push(
+              `<div class="sticker-cell"><img src="${dUrl}" alt="Bookmark QR Số ${n}" /></div>`
+            );
+          }
+
+          // Restore preview canvas
+          renderLuxuryWeddingQR(false);
+
+          if (toN > slotMaxPrinted) {
+            slotMaxPrinted = toN;
+            persistLocalSlots();
+            renderSlotsTable();
+          }
+          if (slotPrintFromInput && slotPrintToInput) {
+            slotPrintFromInput.value = String(toN + 1);
+            slotPrintToInput.value = String(toN + 18);
+          }
+
+          const totalCount = itemsHtml.length;
+          win.document.write(`<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>In Tờ A4 Bookmark QR Đánh Số (Số ${fromN} → Số ${toN}) — Thuận Tường & Tiểu Dinh</title>
+  <style>
+    @page { size: A4 portrait; margin: 6.5mm; }
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f4efe6;
+      color: #2c1e1e;
+    }
+    .print-toolbar {
+      max-width: 210mm;
+      margin: 12px auto;
+      padding: 14px 18px;
+      background: #fff;
+      border: 1px solid #d9c3a3;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+    .print-btn {
+      background: #7d1518;
+      color: #fff;
+      border: none;
+      padding: 11px 20px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .a4-sheet {
+      width: 197mm;
+      margin: 0 auto 20px;
+      background: transparent;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0;
+      border-top: 0.25mm solid #b07b72;
+      border-left: 0.25mm solid #b07b72;
+    }
+    .sticker-cell {
+      border-right: 0.25mm solid #b07b72;
+      border-bottom: 0.25mm solid #b07b72;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #faf8f4;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+    .sticker-cell img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    @media screen {
+      .a4-sheet {
+        background: transparent;
+        box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+      }
+    }
+    @media print {
+      body { background: transparent; }
+      .print-toolbar { display: none !important; }
+      .a4-sheet { width: 100%; margin: 0; padding: 0; box-shadow: none; background: transparent !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="print-toolbar">
+    <div>
+      <strong>🖨️ Tờ A4 Bookmark QR Đánh Số: Từ Số ${fromN} → Số ${toN} (${totalCount} chiếc • 1.060 DPI)</strong>
+      <div style="font-size:12.5px; color:#5c4747; margin-top:4px; line-height:1.5;">
+        • Ở phần gập phía sau của mỗi Bookmark đã in sẵn <strong>Số ${fromN}, Số ${fromN + 1}...</strong> (in 2 chiều để gập xuống vẫn đọc được ngay).<br/>
+        • Bạn cứ in hàng loạt trước, sau này bỏ <strong>Số mấy</strong> vào phong bì của ai thì mở mục <strong>🔢 QR Đánh Số</strong> gõ tên người đó vào là xong!
+      </div>
+    </div>
+    <button class="print-btn" onclick="window.print()">🖨️ In Ngay / Lưu File PDF</button>
+  </div>
+  <div class="a4-sheet">${itemsHtml.join("")}</div>
+</body>
+</html>`);
+          win.document.close();
+        });
+      }
+
+      renderSlotsTable();
+      updateSlotAssignPreview();
 
       setTimeout(renderLuxuryWeddingQR, 250);
       if (document.fonts && document.fonts.ready) {

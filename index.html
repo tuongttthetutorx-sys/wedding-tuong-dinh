@@ -31,6 +31,68 @@
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,500;1,600&family=Dancing+Script:wght@600;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="css/styles.css?v=56" />
+
+  <!-- Pre-printed numbered QR bookmark (?s=7-k3x9): look up the guest name assigned later in the admin page -->
+  <style>html.td-slot-resolving body { visibility: hidden; }</style>
+  <script>
+    (function () {
+      try {
+        var p = new URLSearchParams(window.location.search);
+        var code = (p.get("s") || "").trim().toLowerCase();
+        if (!code || p.get("to")) return;
+        var applySlotRedirect = function (slotObj) {
+          if (!slotObj || !slotObj.name) return false;
+          p.set("to", slotObj.name);
+          if (slotObj.lang === "zh" || /[\u4e00-\u9fff]/.test(slotObj.name)) p.set("lang", "zh");
+          window.location.replace(window.location.pathname + "?" + p.toString() + window.location.hash);
+          return true;
+        };
+        try {
+          var localRaw = localStorage.getItem("td_saved_slots_v1");
+          if (localRaw) {
+            var localMap = JSON.parse(localRaw);
+            if (localMap && localMap[code] && localMap[code].name) {
+              if (applySlotRedirect(localMap[code])) return;
+            }
+          }
+        } catch (_) {}
+        window.__TD_SLOT_CODE = code;
+        window.__TD_SLOT_PENDING = true;
+        document.documentElement.classList.add("td-slot-resolving");
+        var finished = false;
+        var reveal = function () {
+          if (finished) return;
+          finished = true;
+          window.__TD_SLOT_PENDING = false;
+          document.documentElement.classList.remove("td-slot-resolving");
+          if (typeof window.__TD_SLOT_READY === "function") window.__TD_SLOT_READY();
+        };
+        var fallbackTimer = setTimeout(reveal, 3500);
+        var isLoc = /^(file:|https?:\/\/(localhost|127\.0\.0\.1))/i.test(window.location.href);
+        var apiOrigin = isLoc ? "https://thuantuongtieudinh.io.vn" : "";
+        fetch(apiOrigin + "/api/slot?code=" + encodeURIComponent(code), { cache: "no-store" })
+          .then(function (r) { return r.json(); })
+          .then(function (d) {
+            if (finished) return;
+            if (d && d.slot && d.slot.name) {
+              clearTimeout(fallbackTimer);
+              finished = true;
+              applySlotRedirect(d.slot);
+            } else {
+              clearTimeout(fallbackTimer);
+              reveal();
+            }
+          })
+          .catch(function () {
+            clearTimeout(fallbackTimer);
+            reveal();
+          });
+      } catch (_) {
+        document.documentElement.classList.remove("td-slot-resolving");
+        window.__TD_SLOT_PENDING = false;
+      }
+    })();
+  </script>
 </head>
 <body class="envelope-locked">
   <!-- Ambient Floating Dust & Petals -->
@@ -527,6 +589,6 @@
   <script src="js/config.js?v=56"></script>
   <script src="js/artwork.js?v=56"></script>
   <script src="js/audio.js?v=56"></script>
-  <script src="js/app.js?v=56"></script>
+  <script src="js/app.js?v=57"></script>
 </body>
 </html>

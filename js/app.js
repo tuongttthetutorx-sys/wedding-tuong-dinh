@@ -215,6 +215,7 @@
       const payload = JSON.stringify({
         event: eventType || "view",
         guest: guestName || "",
+        slot: params.get("s") || "",
         lang: currentLang,
         mode: isThankYou ? "thankyou" : "invite",
         vid: getVisitorId(),
@@ -2772,9 +2773,17 @@
 
     applyLanguage(currentLang);
     fetchRemoteGuestConfig();
-    trackGuestActivity("view");
-    if (envelopeOpened) {
-      trackGuestActivity("open_envelope");
+    const startVisitTracking = () => {
+      trackGuestActivity("view");
+      if (envelopeOpened) {
+        trackGuestActivity("open_envelope");
+      }
+    };
+    // Numbered QR bookmark still resolving its assigned guest name -> wait (page may redirect to ?to=Name)
+    if (window.__TD_SLOT_PENDING) {
+      window.__TD_SLOT_READY = startVisitTracking;
+    } else {
+      startVisitTracking();
     }
 
     // Re-fit Guest Names once Google Fonts (Dancing Script / Noto Serif TC) finish swapping AND on viewport resize
