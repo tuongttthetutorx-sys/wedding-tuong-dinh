@@ -2495,31 +2495,39 @@
             const paddedNum = String(slotNum).padStart(2, "0");
             ctx.fillText(`#${paddedNum}`, 26, 46);
 
-            // Center of the back-folded flap (y = 138) — solid ink for crisp print reproduction
+            // Center of the back-folded flap (y = 144) — larger, prominent couture ornament in solid ink
+            const cy = 144;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             if (flapCenterMode === "xi_emblem") {
-              // Symmetric ornamental lines + ✦ 囍 ✦ (solid ink so lines never drop out in print)
+              // Symmetric ornamental wings + ✦ 囍 ✦ (looks balanced both upright and upside-down when folded!)
               ctx.strokeStyle = "#8c4a27";
-              ctx.lineWidth = 1.6;
+              ctx.lineWidth = 2.0;
               ctx.beginPath();
-              ctx.moveTo(W / 2 - 102, 138);
-              ctx.lineTo(W / 2 - 48, 138);
-              ctx.moveTo(W / 2 + 48, 138);
-              ctx.lineTo(W / 2 + 102, 138);
+              ctx.moveTo(W / 2 - 148, cy);
+              ctx.lineTo(W / 2 - 66, cy);
+              ctx.moveTo(W / 2 + 66, cy);
+              ctx.lineTo(W / 2 + 148, cy);
               ctx.stroke();
 
+              // Flanking 4-point stars
+              ctx.fillStyle = "#7a3b0c";
+              ctx.font = '700 21px "Noto Serif TC", "Cormorant Garamond", serif';
+              ctx.fillText("✦", W / 2 - 44, cy);
+              ctx.fillText("✦", W / 2 + 44, cy);
+
+              // Prominent Double Happiness 囍 centerpiece
               ctx.fillStyle = "#681115";
-              ctx.font = '700 22px "Noto Serif TC", "Cormorant Garamond", serif';
-              ctx.fillText("✦   囍   ✦", W / 2, 138);
+              ctx.font = '700 34px "Noto Serif TC", "Cormorant Garamond", serif';
+              ctx.fillText("囍", W / 2, cy + 1);
             } else if (flapCenterMode === "with_love") {
               ctx.fillStyle = "#681115";
-              ctx.font = 'italic 600 22px "Cormorant Garamond", serif';
-              ctx.fillText("✦   With Love  ·  T & D   ✦", W / 2, 138);
+              ctx.font = 'italic 600 28px "Cormorant Garamond", serif';
+              ctx.fillText("✦   With Love  ·  T & D   ✦", W / 2, cy);
             } else if (flapCenterMode === "monogram_date") {
               ctx.fillStyle = "#681115";
-              ctx.font = '700 20px "Cormorant Garamond", "Be Vietnam Pro", serif';
-              ctx.fillText("✦   Tường & Dinh  ·  06.01.2027   ✦", W / 2, 138);
+              ctx.font = '700 25px "Cormorant Garamond", "Be Vietnam Pro", serif';
+              ctx.fillText("✦   Tường & Dinh  ·  06.01.2027   ✦", W / 2, cy);
             }
             ctx.restore();
           } else if (!forPrintTransparent) {
