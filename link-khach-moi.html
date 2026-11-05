@@ -1765,6 +1765,29 @@
               <span id="seine-insp-badge" class="status-badge is-opened">0 / 10 ghế</span>
             </div>
 
+            <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;">
+              <a
+                id="btn-preview-seine-table"
+                href="./index.html?to=Gia+%C4%90%C3%ACnh+Anh+Minh+%26+Ch%E1%BB%8B+Lan&table=1&group=groom_family&pax=2&mode=directions&notrack=1"
+                target="_blank"
+                rel="noopener"
+                class="btn-adm primary"
+                style="flex:1; justify-content:center; height:34px; font-size:12px;"
+                title="Mở xem thử giao diện Thiệp + Vị trí Bàn tiệc + Bản đồ chỉ đường mà khách ngồi bàn này sẽ thấy khi quét QR"
+              >
+                👁️ Xem thử Bàn này + Chỉ đường
+              </a>
+              <button
+                type="button"
+                id="btn-copy-seine-table-link"
+                class="btn-adm"
+                style="height:34px; padding:0 10px; font-size:12px;"
+                title="Copy link demo của Bàn đang chọn"
+              >
+                📋 Copy Link Demo
+              </button>
+            </div>
+
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:12px;">
               <div>
                 <label class="slot-label" for="seine-insp-group">Khu vực / Nhóm của bàn này:</label>
@@ -2367,8 +2390,18 @@
           const qs = new URLSearchParams();
           qs.set("to", name);
           if (effectiveLang === "zh") qs.set("lang", "zh");
+          if (guestTable) {
+            qs.set("table", guestTable);
+            if (guestGroup) qs.set("group", guestGroup);
+            if (guestPax > 1) qs.set("pax", String(guestPax));
+          }
           const fullUrl = `${base}?${qs.toString()}`;
-          const previewUrl = `${fullUrl}&notrack=1`;
+          const previewQs = new URLSearchParams(qs);
+          if (effectiveMode === "directions" || effectiveMode === "thankyou") {
+            previewQs.set("mode", effectiveMode);
+          }
+          previewQs.set("notrack", "1");
+          const previewUrl = `${base}?${previewQs.toString()}`;
 
           const inviteMsg =
             isTyEffective
@@ -4461,10 +4494,19 @@
                 : "invite";
           const isDirEffective = effectiveMode === "directions";
           const isTyEffective = effectiveMode === "thankyou";
-          const previewUrl =
-            effectiveMode === "directions" || effectiveMode === "thankyou"
-              ? `${slotUrl}&mode=${effectiveMode}&notrack=1`
-              : `${slotUrl}&notrack=1`;
+          const slotPreviewParams = new URLSearchParams();
+          slotPreviewParams.set("s", code);
+          if (assignedName) slotPreviewParams.set("to", assignedName);
+          if (rowTable) {
+            slotPreviewParams.set("table", rowTable);
+            if (rowGroup) slotPreviewParams.set("group", rowGroup);
+            if (rowPax > 1) slotPreviewParams.set("pax", String(rowPax));
+          }
+          if (effectiveMode === "directions" || effectiveMode === "thankyou") {
+            slotPreviewParams.set("mode", effectiveMode);
+          }
+          slotPreviewParams.set("notrack", "1");
+          const previewUrl = `${(baseUrlInput.value || "").trim().replace(/\/+$/, "")}/?${slotPreviewParams.toString()}`;
 
           const tr = document.createElement("tr");
           if (!assignedName) tr.className = "is-empty-slot";
@@ -4966,6 +5008,39 @@
         }
         if (seineInspCount) {
           seineInspCount.textContent = `${seatedArr.length} khách • ${used} ghế`;
+        }
+
+        const btnPreviewTable = document.getElementById("btn-preview-seine-table");
+        const btnCopyTableLink = document.getElementById("btn-copy-seine-table-link");
+        const sampleGuestName =
+          (seatedArr[0] && seatedArr[0].name) || "Anh Minh & Chị Lan (Khách Demo)";
+        const sampleGroup =
+          (seatedArr[0] && seatedArr[0].group) || meta.group || "friends_colleagues";
+        const samplePax = (seatedArr[0] && seatedArr[0].pax) || 2;
+        const baseClean = (baseUrlInput.value || "").trim().replace(/\/+$/, "");
+        const demoParams = new URLSearchParams();
+        demoParams.set("to", sampleGuestName);
+        demoParams.set("table", tKey);
+        if (sampleGroup) demoParams.set("group", sampleGroup);
+        demoParams.set("pax", String(samplePax));
+        demoParams.set("mode", "directions");
+        const liveTableDemoUrl = `${baseClean}/?${demoParams.toString()}`;
+        const localTableDemoUrl = `./index.html?${demoParams.toString()}&notrack=1`;
+
+        if (btnPreviewTable) {
+          btnPreviewTable.href =
+            window.location.protocol === "file:"
+              ? localTableDemoUrl
+              : `${liveTableDemoUrl}&notrack=1`;
+          btnPreviewTable.textContent = `👁️ Xem thử Bàn ${String(tKey).padStart(2, "0")} + Chỉ đường`;
+        }
+        if (btnCopyTableLink) {
+          btnCopyTableLink.onclick = () => {
+            copyText(
+              liveTableDemoUrl,
+              `✅ Đã copy link demo Bàn ${String(tKey).padStart(2, "0")} kèm Chỉ đường!`
+            );
+          };
         }
 
         if (seineInspSeatedList) {

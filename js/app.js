@@ -839,7 +839,6 @@
     const dict = I18N[currentLang];
     const displayGuest = guestName || dict.defaultGuest;
 
-    syncGuestSeatingUI();
     const phrase = isZh
       ? {
           ornament: "♡",
@@ -1023,7 +1022,6 @@
     const dict = I18N[currentLang];
     const displayGuest = guestName || dict.defaultGuest;
 
-    syncGuestSeatingUI();
     const tNum = parseInt(tableStr, 10) || 1;
     const padded = String(tNum).padStart(2, "0");
     const isLeftWing = tNum % 2 === 1;
@@ -1063,13 +1061,13 @@
         : `${isLeftWing ? "Cánh Trái Sân Khấu" : "Cánh Phải Sân Khấu"} • Hàng thứ ${rowNum}`;
     }
 
-    const grpKey = rCfg.group || "honored_guests";
+    const grpKey = params.get("group") || rCfg.group || "honored_guests";
     const zInfo = SEAT_ZONE_I18N[grpKey] || SEAT_ZONE_I18N.honored_guests;
     const customLabel = rCfg.tableLabel ? ` (${rCfg.tableLabel})` : "";
     if (zoneBadgeEl) {
       zoneBadgeEl.textContent = (isZh ? zInfo.zh : zInfo.vi) + customLabel;
     }
-    const pax = Math.max(1, parseInt(rCfg.pax || "1", 10) || 1);
+    const pax = Math.max(1, parseInt(params.get("pax") || rCfg.pax || "1", 10) || 1);
     if (paxBadgeEl) {
       paxBadgeEl.textContent = isZh ? `預留 ${pax} 席位` : `Đã xếp ${pax} ghế (Bàn 10 người)`;
     }
