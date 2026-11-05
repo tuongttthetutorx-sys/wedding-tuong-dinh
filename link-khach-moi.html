@@ -1269,19 +1269,19 @@
                 </div>
               </div>
 
-              <!-- KHỐI 2: DÀN TRANG A4 KẾT HỢP: KHÁCH CÓ QR RIÊNG + KHÁCH DÙNG QR CHUNG -->
-              <div style="margin-top:8px; padding:14px 16px; border-radius:10px; background:#fbf6ee; border:1px solid var(--adm-border-strong);">
-                <div style="font-weight:700; font-size:13.8px; color:var(--adm-crimson); margin-bottom:6px;">
-                  ✨ Dàn Trang A4 Thông Minh: Ghép Chung "Khách Có QR Riêng" + "Khách Dùng QR Chung"
+              <!-- KHỐI 2: DÀN TRANG A4 KẾT HỢP ĐỦ TỔNG SỐ LƯỢNG (VD: 414 CHIẾC = 23 TỜ A4): KHÁCH ĐÃ CÓ TÊN + QR ĐÁNH SỐ -->
+              <div style="margin-top:8px; padding:14px 16px; border-radius:10px; background:#fbf6ee; border:1.5px solid var(--adm-crimson);">
+                <div style="font-weight:700; font-size:14px; color:var(--adm-crimson); margin-bottom:5px;">
+                  ✨ In Gộp Đủ Tổng Số Lượng (Mặc Định 414 Chiếc = 23 Tờ A4): Ghép "Khách Đã Có Tên" + "QR Đánh Số"
                 </div>
                 <div style="font-size:12.5px; color:var(--adm-muted); margin-bottom:10px; line-height:1.5;">
-                  Mỗi chiếc Bookmark đều in đồng bộ <strong>Tường &amp; Dinh · 06.01.2027</strong> và <strong>Thiệp &amp; Bản Đồ</strong>. Với những khách có QR riêng, hệ thống sẽ tạo đúng <strong>Mã QR cá nhân hóa</strong> của khách đó kèm dòng ghi chú tên khách ở mép gập để bạn bỏ đúng vào thiệp của từng người!
+                  Bạn chỉ cần điền những khách <strong>đã có tên</strong> vào khung bên trái, và chọn <strong>Tổng số lượng muốn in (VD: 414 cái)</strong>. Hệ thống sẽ in các khách đã có tên trước, rồi <strong>tự động bù phần còn thiếu bằng Bookmark QR Đánh Số (<code>#01, #02...</code>)</strong> cho đủ đúng <strong>414 chiếc (23 tờ A4 khít rạt)</strong>!
                 </div>
-                <div style="display:grid; grid-template-columns: 1.2fr 0.8fr; gap:12px; align-items:start;">
+                <div style="display:grid; grid-template-columns: 1.15fr 0.85fr; gap:12px; align-items:start;">
                   <div>
                     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
                       <label for="qr-batch-guests" style="font-size:12px; font-weight:600; color:var(--adm-text);">
-                        Danh sách khách cần Mã QR Riêng (mỗi dòng 1 tên):
+                        1. Danh sách khách ĐÃ CÓ TÊN (<span id="qr-batch-named-count">0</span> khách):
                       </label>
                       <button type="button" id="btn-fill-saved-guests-qr" class="btn-adm" style="height:26px; padding:0 8px; font-size:11.5px;">
                         📥 Lấy từ DS Khách Đã Lưu
@@ -1290,38 +1290,70 @@
                     <textarea
                       id="qr-batch-guests"
                       class="adm-textarea"
-                      style="min-height:88px; font-size:12.8px;"
-                      placeholder="Gõ hoặc bấm nút lấy danh sách những khách cần QR riêng (mỗi dòng 1 khách)...&#10;VD:&#10;Anh Tuấn & Chị Thảo&#10;林子惟"
+                      style="min-height:122px; font-size:12.8px;"
+                      placeholder="Gõ hoặc bấm nút lấy danh sách những khách đã có tên (mỗi dòng 1 khách)...&#10;VD:&#10;Gia Đình Dì Ý&#10;林子惟"
                     ></textarea>
                   </div>
                   <div style="display:flex; flex-direction:column; gap:8px;">
+                    <div style="display:grid; grid-template-columns: 1fr 110px; gap:8px;">
+                      <div>
+                        <label for="qr-batch-generic-count" style="display:block; font-size:12px; font-weight:600; color:var(--adm-text); margin-bottom:4px;">
+                          2. Tổng SL Bookmark cần in:
+                        </label>
+                        <input
+                          type="number"
+                          id="qr-batch-generic-count"
+                          class="adm-input"
+                          min="1"
+                          max="2000"
+                          value="414"
+                        />
+                      </div>
+                      <div>
+                        <label for="qr-batch-slot-start" style="display:block; font-size:12px; font-weight:600; color:var(--adm-text); margin-bottom:4px;">
+                          Đánh số từ:
+                        </label>
+                        <input
+                          type="number"
+                          id="qr-batch-slot-start"
+                          class="adm-input"
+                          min="1"
+                          max="9999"
+                          value="1"
+                        />
+                      </div>
+                    </div>
+                    <div style="display:flex; flex-wrap:wrap; gap:5px;">
+                      <button type="button" class="btn-adm js-batch-total-preset" data-total="414" style="height:24px; padding:0 8px; font-size:11px;">414 cái (23 tờ A4)</button>
+                      <button type="button" class="btn-adm js-batch-total-preset" data-total="396" style="height:24px; padding:0 8px; font-size:11px;">396 cái (22 tờ A4)</button>
+                      <button type="button" class="btn-adm js-batch-total-preset" data-total="432" style="height:24px; padding:0 8px; font-size:11px;">432 cái (24 tờ A4)</button>
+                    </div>
                     <div>
-                      <label for="qr-batch-generic-count" style="display:block; font-size:12px; font-weight:600; color:var(--adm-text); margin-bottom:4px;">
-                        Số lượng Bookmark QR Chung in kèm:
+                      <label for="qr-batch-fill-mode" style="display:block; font-size:12px; font-weight:600; color:var(--adm-text); margin-bottom:4px;">
+                        3. Phần còn thiếu sẽ tự bù bằng:
                       </label>
-                      <input
-                        type="number"
-                        id="qr-batch-generic-count"
-                        class="adm-input"
-                        min="0"
-                        max="300"
-                        value="13"
-                      />
+                      <select id="qr-batch-fill-mode" class="adm-select" style="font-size:12.2px;">
+                        <option value="numbered" selected>🔢 Bookmark QR Đánh Số (#01, #02... + 囍) để gán tên sau</option>
+                        <option value="generic">🌐 Bookmark QR Chung (Không đánh số)</option>
+                      </select>
                     </div>
                     <div>
                       <label for="qr-batch-name-pos" style="display:block; font-size:12px; font-weight:600; color:var(--adm-text); margin-bottom:4px;">
-                        Vị trí ghi tên khách có QR riêng:
+                        4. Vị trí in tên của những khách đã có tên:
                       </label>
                       <select id="qr-batch-name-pos" class="adm-select" style="font-size:12.2px;">
                         <option value="flap_only" selected>Chỉ in TO ở phần gập phía sau (Mặt trước tối giản)</option>
                         <option value="flap_and_front">Hiện cả trên thân trước &amp; phần gập sau</option>
                       </select>
                     </div>
-                    <button type="button" id="btn-print-mixed-a4" class="btn-adm primary" style="height:40px; width:100%; font-size:13px;">
-                      🖨️ Xuất Tờ A4 Gộp (QR Riêng + QR Chung)
-                    </button>
                   </div>
                 </div>
+                <div id="qr-batch-live-summary" style="margin-top:10px; padding:9px 12px; border-radius:8px; background:#f4ead8; border:1px solid #d9c3a3; font-size:12.6px; color:#5a2424; font-weight:600;">
+                  📊 Tổng cộng: 414 chiếc (23 tờ A4)
+                </div>
+                <button type="button" id="btn-print-mixed-a4" class="btn-adm primary lg" style="margin-top:10px; height:44px; width:100%; font-size:13.8px;">
+                  🖨️ Xuất Đủ 414 Bookmark Ra 23 Tờ A4 (Khách Đã Có Tên + QR Đánh Số)
+                </button>
               </div>
             </div>
 
@@ -1548,6 +1580,11 @@
         });
         savedGuests = Array.from(map.values());
         persistLocalGuests();
+        const batchTa = document.getElementById("qr-batch-guests");
+        if (batchTa && !batchTa.value.trim() && savedGuests.length > 0) {
+          batchTa.value = savedGuests.map((g) => g.name).filter(Boolean).join("\n");
+          if (typeof updateBatchLiveSummary === "function") updateBatchLiveSummary();
+        }
       }
 
       let noteSaveTimers = {};
@@ -2886,6 +2923,73 @@
       if (qrGuestBadge) qrGuestBadge.addEventListener("input", () => renderLuxuryWeddingQR(false));
       if (qrBatchNamePos) qrBatchNamePos.addEventListener("change", () => renderLuxuryWeddingQR(false));
 
+      const qrBatchSlotStart = document.getElementById("qr-batch-slot-start");
+      const qrBatchFillMode = document.getElementById("qr-batch-fill-mode");
+      const qrBatchNamedCount = document.getElementById("qr-batch-named-count");
+      const qrBatchLiveSummary = document.getElementById("qr-batch-live-summary");
+
+      function getBatchNamedList() {
+        const rawNames = (qrBatchGuests && qrBatchGuests.value) || "";
+        return rawNames
+          .split(/\r?\n/)
+          .map((s) => s.trim())
+          .filter(Boolean);
+      }
+
+      function updateBatchLiveSummary() {
+        const names = getBatchNamedList();
+        const namedCount = names.length;
+        if (qrBatchNamedCount) qrBatchNamedCount.textContent = String(namedCount);
+
+        const targetTotal = Math.max(
+          namedCount,
+          parseInt((qrBatchGenericCount && qrBatchGenericCount.value) || "414", 10) || 414
+        );
+        const startSlot = Math.max(
+          1,
+          parseInt((qrBatchSlotStart && qrBatchSlotStart.value) || "1", 10) || 1
+        );
+        const fillMode = (qrBatchFillMode && qrBatchFillMode.value) || "numbered";
+        const remainder = Math.max(0, targetTotal - namedCount);
+        const sheets = Math.ceil(targetTotal / 18);
+        const endSlot = remainder > 0 ? startSlot + remainder - 1 : startSlot;
+
+        if (qrBatchLiveSummary) {
+          if (fillMode === "numbered") {
+            qrBatchLiveSummary.innerHTML =
+              remainder > 0
+                ? `📊 <strong>Tổng in: ${targetTotal} chiếc (${sheets} tờ A4)</strong> = <strong>${namedCount} chiếc Đã Có Tên</strong> + <strong>${remainder} chiếc QR Đánh Số (từ <code>#${String(startSlot).padStart(2, "0")}</code> → <code>#${String(endSlot).padStart(2, "0")}</code>)</strong>`
+                : `📊 <strong>Tổng in: ${targetTotal} chiếc (${sheets} tờ A4)</strong> = <strong>${namedCount} chiếc Đã Có Tên</strong> (Đã đủ số lượng, không cần bù thêm)`;
+          } else {
+            qrBatchLiveSummary.innerHTML = `📊 <strong>Tổng in: ${targetTotal} chiếc (${sheets} tờ A4)</strong> = <strong>${namedCount} chiếc Đã Có Tên</strong> + <strong>${remainder} chiếc QR Chung</strong>`;
+          }
+        }
+        if (btnPrintMixedA4) {
+          btnPrintMixedA4.textContent =
+            fillMode === "numbered" && remainder > 0
+              ? `🖨️ Xuất Đủ ${targetTotal} Bookmark Ra ${sheets} Tờ A4 (${namedCount} Có Tên + ${remainder} QR Đánh Số #${String(startSlot).padStart(2, "0")}→#${String(endSlot).padStart(2, "0")})`
+              : `🖨️ Xuất Đủ ${targetTotal} Bookmark Ra ${sheets} Tờ A4 (${namedCount} Có Tên + ${remainder} QR Chung)`;
+        }
+      }
+
+      if (qrBatchGuests && !qrBatchGuests.value.trim() && Array.isArray(savedGuests) && savedGuests.length > 0) {
+        qrBatchGuests.value = savedGuests.map((g) => g.name).filter(Boolean).join("\n");
+      }
+      updateBatchLiveSummary();
+
+      if (qrBatchGuests) qrBatchGuests.addEventListener("input", updateBatchLiveSummary);
+      if (qrBatchGenericCount) qrBatchGenericCount.addEventListener("input", updateBatchLiveSummary);
+      if (qrBatchSlotStart) qrBatchSlotStart.addEventListener("input", updateBatchLiveSummary);
+      if (qrBatchFillMode) qrBatchFillMode.addEventListener("change", updateBatchLiveSummary);
+
+      document.querySelectorAll(".js-batch-total-preset").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const total = parseInt(btn.getAttribute("data-total") || "414", 10) || 414;
+          if (qrBatchGenericCount) qrBatchGenericCount.value = String(total);
+          updateBatchLiveSummary();
+        });
+      });
+
       if (btnFillSavedGuestsQr) {
         btnFillSavedGuestsQr.addEventListener("click", () => {
           if (!savedGuests || savedGuests.length === 0) {
@@ -2894,6 +2998,7 @@
           }
           const lines = savedGuests.map((g) => g.name).filter(Boolean);
           if (qrBatchGuests) qrBatchGuests.value = lines.join("\n");
+          updateBatchLiveSummary();
           notify(`📥 Đã điền ${lines.length} khách từ Danh Sách Khách Mời!`);
         });
       }
@@ -2903,22 +3008,27 @@
           const layoutMode = (qrLayoutStyle && qrLayoutStyle.value) || "pinterest_strip";
           const isPinterestStrip = layoutMode === "pinterest_strip";
           const cols = isPinterestStrip ? 6 : 4;
+          const itemsPerSheet = isPinterestStrip ? 18 : 20;
           const capMode = (qrCaptionStyle && qrCaptionStyle.value) || "bilingual";
           const namePosMode = (qrBatchNamePos && qrBatchNamePos.value) || "flap_only";
           const presetVal = (qrPresetSelect && qrPresetSelect.value) || "directions";
-
-          const rawNames = (qrBatchGuests && qrBatchGuests.value) || "";
-          const personalNames = rawNames
-            .split(/\r?\n/)
-            .map((s) => s.trim())
-            .filter(Boolean);
-          const genericCount = Math.max(
-            0,
-            parseInt((qrBatchGenericCount && qrBatchGenericCount.value) || "0", 10) || 0
+          const fillMode = (qrBatchFillMode && qrBatchFillMode.value) || "numbered";
+          const startSlot = Math.max(
+            1,
+            parseInt((qrBatchSlotStart && qrBatchSlotStart.value) || "1", 10) || 1
           );
+          const flapStyleEl = document.getElementById("slot-flap-center-style");
+          const flapCenterMode = (flapStyleEl && flapStyleEl.value) || "xi_emblem";
 
-          if (personalNames.length === 0 && genericCount === 0) {
-            notify("⚠️ Hãy nhập ít nhất 1 tên khách cần QR riêng hoặc số lượng Bookmark QR chung!");
+          const personalNames = getBatchNamedList();
+          const targetTotal = Math.max(
+            personalNames.length,
+            parseInt((qrBatchGenericCount && qrBatchGenericCount.value) || "414", 10) || 414
+          );
+          const remainderCount = Math.max(0, targetTotal - personalNames.length);
+
+          if (personalNames.length === 0 && remainderCount === 0) {
+            notify("⚠️ Hãy nhập tổng số lượng Bookmark muốn in!");
             return;
           }
 
@@ -2928,56 +3038,110 @@
             return;
           }
 
-          const itemsHtml = [];
+          win.document.write(
+            `<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><title>Đang dàn trang ${targetTotal} Bookmark...</title></head><body style="font-family:sans-serif;padding:40px;text-align:center;background:#f4efe6;color:#5a1818;"><h2>⏳ Đang tạo ${targetTotal} Bookmark độ nét cao 1.060 DPI (${Math.ceil(targetTotal / itemsPerSheet)} tờ A4)...</h2><p>Chỉ mất khoảng 1 giây, vui lòng đợi xíu nhé!</p></body></html>`
+          );
 
-          // 1. Render Personalized Bookmarks for each specific guest
-          personalNames.forEach((gName) => {
-            const hasCjk = /[\u4e00-\u9fff]/.test(gName);
-            const gLang = hasCjk ? "zh" : capMode === "zh" ? "zh" : "vi";
-            let gUrl = `${baseOrigin}?to=${encodeURIComponent(gName)}`;
-            if (gLang === "zh") gUrl += "&lang=zh";
-            if (presetVal === "directions") gUrl += "&mode=directions";
+          setTimeout(() => {
+            const cells = [];
 
-            renderLuxuryWeddingQR(true, {
-              layoutMode,
-              targetUrl: gUrl,
-              capMode: hasCjk ? "zh" : capMode,
-              guestText: gName,
-              namePosMode
+            // 1. Render Personalized Bookmarks for each named guest
+            personalNames.forEach((gName) => {
+              const hasCjk = /[\u4e00-\u9fff]/.test(gName);
+              const gLang = hasCjk ? "zh" : capMode === "zh" ? "zh" : "vi";
+              let gUrl = `${baseOrigin}?to=${encodeURIComponent(gName)}`;
+              if (gLang === "zh") gUrl += "&lang=zh";
+              if (presetVal === "directions") gUrl += "&mode=directions";
+
+              renderLuxuryWeddingQR(true, {
+                layoutMode,
+                targetUrl: gUrl,
+                capMode: hasCjk ? "zh" : capMode,
+                guestText: gName,
+                namePosMode
+              });
+              const dUrl = isPinterestStrip
+                ? qrCanvas.toDataURL("image/jpeg", 0.95)
+                : qrCanvas.toDataURL("image/png");
+              cells.push(
+                `<div class="sticker-cell"><img src="${dUrl}" alt="Bookmark QR ${gName}" /></div>`
+              );
             });
-            const dUrl = qrCanvas.toDataURL("image/png");
-            itemsHtml.push(
-              `<div class="sticker-cell"><img src="${dUrl}" alt="Bookmark QR ${gName}" /></div>`
-            );
-          });
 
-          // 2. Render Generic Bookmarks for general guests
-          const genericUrl =
-            (qrUrlInput && qrUrlInput.value.trim()) ||
-            "https://thuantuongtieudinh.io.vn/?mode=directions";
-          renderLuxuryWeddingQR(true, {
-            layoutMode,
-            targetUrl: genericUrl,
-            capMode,
-            guestText: "",
-            namePosMode
-          });
-          const genericDataUrl = qrCanvas.toDataURL("image/png");
-          for (let i = 0; i < genericCount; i++) {
-            itemsHtml.push(
-              `<div class="sticker-cell"><img src="${genericDataUrl}" alt="Bookmark QR Chung" /></div>`
-            );
-          }
+            // 2. Fill the remaining slots up to targetTotal (e.g. 414)
+            if (remainderCount > 0) {
+              if (fillMode === "numbered") {
+                const endSlot = startSlot + remainderCount - 1;
+                for (let n = startSlot; n <= endSlot; n++) {
+                  const sUrl = getSlotUrl(n);
+                  renderLuxuryWeddingQR(true, {
+                    layoutMode,
+                    targetUrl: sUrl,
+                    capMode,
+                    slotNum: n,
+                    flapCenterMode
+                  });
+                  const dUrl = isPinterestStrip
+                    ? qrCanvas.toDataURL("image/jpeg", 0.95)
+                    : qrCanvas.toDataURL("image/png");
+                  cells.push(
+                    `<div class="sticker-cell"><img src="${dUrl}" alt="Bookmark QR Số ${n}" /></div>`
+                  );
+                }
+                if (endSlot > slotMaxPrinted) {
+                  slotMaxPrinted = endSlot;
+                  try {
+                    localStorage.setItem(STORAGE_SLOT_MAX_PRINTED, String(slotMaxPrinted));
+                  } catch (_) {}
+                }
+                if (typeof renderSlotsTable === "function") renderSlotsTable();
+              } else {
+                const genericUrl =
+                  (qrUrlInput && qrUrlInput.value.trim()) ||
+                  "https://thuantuongtieudinh.io.vn/?mode=directions";
+                renderLuxuryWeddingQR(true, {
+                  layoutMode,
+                  targetUrl: genericUrl,
+                  capMode,
+                  guestText: "",
+                  namePosMode
+                });
+                const genericDataUrl = isPinterestStrip
+                  ? qrCanvas.toDataURL("image/jpeg", 0.95)
+                  : qrCanvas.toDataURL("image/png");
+                for (let i = 0; i < remainderCount; i++) {
+                  cells.push(
+                    `<div class="sticker-cell"><img src="${genericDataUrl}" alt="Bookmark QR Chung" /></div>`
+                  );
+                }
+              }
+            }
 
-          // Restore normal preview on screen
-          renderLuxuryWeddingQR(false);
+            // Restore normal preview on screen
+            renderLuxuryWeddingQR(false);
 
-          const totalCount = itemsHtml.length;
-          win.document.write(`<!DOCTYPE html>
+            const totalCount = cells.length;
+            const sheetsHtml = [];
+            for (let i = 0; i < totalCount; i += itemsPerSheet) {
+              const chunk = cells.slice(i, i + itemsPerSheet);
+              const isLast = i + itemsPerSheet >= totalCount;
+              sheetsHtml.push(
+                `<div class="a4-sheet${isLast ? "" : " page-break"}">${chunk.join("")}</div>`
+              );
+            }
+
+            const endSlotLabel = startSlot + remainderCount - 1;
+            const remainderDesc =
+              fillMode === "numbered" && remainderCount > 0
+                ? `${remainderCount} QR Đánh Số (#${String(startSlot).padStart(2, "0")} → #${String(endSlotLabel).padStart(2, "0")})`
+                : `${remainderCount} QR Chung`;
+
+            win.document.open();
+            win.document.write(`<!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <title>In Tờ A4 Gộp (${personalNames.length} QR Riêng + ${genericCount} QR Chung = ${totalCount} Bookmark) — Thuận Tường & Tiểu Dinh</title>
+  <title>In Tờ A4 Gộp (${personalNames.length} Có Tên + ${remainderDesc} = ${totalCount} Bookmark) — Thuận Tường & Tiểu Dinh</title>
   <style>
     @page { size: A4 portrait; margin: 6.5mm; }
     * {
@@ -3024,6 +3188,10 @@
       border-top: 0.25mm solid #b07b72;
       border-left: 0.25mm solid #b07b72;
     }
+    .a4-sheet.page-break {
+      page-break-after: always;
+      break-after: page;
+    }
     .sticker-cell {
       border-right: 0.25mm solid #b07b72;
       border-bottom: 0.25mm solid #b07b72;
@@ -3056,18 +3224,19 @@
 <body>
   <div class="print-toolbar">
     <div>
-      <strong>🖨️ Bản Dàn Trang A4 Kết Hợp (Có Lề An Toàn 1.3cm): ${personalNames.length} Bookmark QR Riêng + ${genericCount} Bookmark QR Chung (Tổng ${totalCount} chiếc)</strong>
+      <strong>🖨️ Bản Dàn Trang A4 Đủ Số Lượng: ${personalNames.length} Bookmark Đã Có Tên + ${remainderDesc} = Tổng ${totalCount} chiếc (${sheetsHtml.length} tờ A4)</strong>
       <div style="font-size:12.5px; color:#5c4747; margin-top:4px; line-height:1.5;">
-        • Mỗi tờ A4 xếp chuẩn <strong>${isPinterestStrip ? "18 dải Bookmark thon dài (6 cột × 3 hàng • rộng 3.05cm × dài 8.9cm)" : "20 thẻ (4 cột × 5 hàng)"}</strong>, đã chừa sẵn <strong>lề an toàn 1.2cm–1.3cm ở cả 4 cạnh tờ A4</strong> để mọi máy in đều in trọn vẹn 100% không bao giờ bị mất mép!<br/>
-        • Khi bấm In / Lưu PDF nhớ chọn <strong>Tỷ lệ (Scale): Mặc định / 100% (Fit to Printable Area)</strong>.
+        • Những khách đã có tên được xếp ở các ô đầu tiên (có in tên khách ở mặt gập sau), tiếp nối liền mạch bởi <strong>${remainderDesc}</strong> để không trống 1 ô nào trên cả ${sheetsHtml.length} tờ A4.<br/>
+        • Khi bấm In / Lưu PDF nhớ chọn <strong>Tỷ lệ (Scale): Mặc định / 100%</strong>.
       </div>
     </div>
     <button class="print-btn" onclick="window.print()">🖨️ In Ngay / Lưu File PDF</button>
   </div>
-  <div class="a4-sheet">${itemsHtml.join("")}</div>
+  ${sheetsHtml.join("\n")}
 </body>
 </html>`);
-          win.document.close();
+            win.document.close();
+          }, 50);
         });
       }
 
