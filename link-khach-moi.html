@@ -1326,13 +1326,16 @@
          TAB 1: DANH SÁCH KHÁCH MỜI & TẠO LINK (MẶC ĐỊNH)
          ===================================================================== -->
     <section id="tab-guests" class="adm-panel is-active">
-      <!-- KHUNG THÊM KHÁCH MỜI MỚI (GỌN ĐẸP) -->
+      <!-- KHUNG THÊM KHÁCH MỜI MỚI (TỰ ĐỘNG GÁN VÀO CÁC THẺ QR TIẾP THEO TRONG TỔNG 414) -->
       <div class="adm-box">
         <div class="adm-box-head">
-          <div>
-            <h2 class="adm-box-title">✨ Thêm Khách Mời Vào Danh Sách</h2>
-            <p class="adm-box-desc">Nhập 1 hoặc nhiều tên khách (mỗi dòng 1 tên). Có thể ghi kèm <strong>| Ghi chú riêng</strong> (VD: <code>林子惟 | Con trai dì Ý</code>) hoặc gõ ghi chú trực tiếp trên từng thẻ khách bên dưới (khách mời không thấy ghi chú này).</p>
+          <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px;">
+            <h2 class="adm-box-title" style="margin:0;">✨ Thêm Khách Vào Các Thẻ Tiếp Theo</h2>
+            <span id="add-guest-next-slot-badge" class="lang-tag" style="background:#e3f5ee; color:#1b6b52; font-weight:700;">⚡ Bắt đầu từ số #09</span>
           </div>
+          <p class="adm-box-desc" style="margin-top:4px;">
+            Nhập mỗi dòng 1 khách (kèm <code>| Ghi chú riêng</code> nếu có). Hệ thống sẽ tự động gán lần lượt vào các thẻ QR chưa có tên tiếp theo trong tổng <strong>414 thiệp</strong>.
+          </p>
         </div>
 
         <div class="add-guest-grid">
@@ -1352,20 +1355,19 @@
               </select>
             </div>
             <div>
-              <label for="default-add-group" style="display:block; font-size:12px; font-weight:600; color:var(--adm-muted); margin-bottom:5px;">Phân nhóm sẵn cho đợt nhập này:</label>
+              <label for="default-add-group" style="display:block; font-size:12px; font-weight:600; color:var(--adm-muted); margin-bottom:5px;">Phân nhóm khách:</label>
               <select id="default-add-group" class="adm-select">
                 <option value="">⚪ Chưa phân nhóm (Chọn sau)</option>
-                <option value="groom_family">👑 Gia đình Nhà Trai</option>
-                <option value="bride_family">👑 Gia đình Nhà Gái</option>
-                <option value="groom_relatives">🏮 Họ hàng Nhà Trai</option>
-                <option value="bride_relatives">🏮 Họ hàng Nhà Gái</option>
-                <option value="friends_colleagues">🥂 Bạn bè &amp; Đồng nghiệp</option>
-                <option value="honored_guests">✨ Khách mời / Khách quý</option>
               </select>
             </div>
-            <button type="button" id="btn-generate" class="btn-adm primary lg" style="width:100%;">
-              ✨ Tạo &amp; Lưu Vào Danh Sách
-            </button>
+            <div>
+              <button type="button" id="btn-generate" class="btn-adm primary lg" style="width:100%; height:44px; font-weight:700;">
+                ✨ Lưu &amp; Gán Vào Thẻ QR Tiếp Theo
+              </button>
+              <div id="add-guest-remaining-hint" style="font-size:11.8px; color:var(--adm-muted); text-align:center; margin-top:6px;">
+                Còn 406/414 thẻ QR chưa gán tên
+              </div>
+            </div>
           </div>
         </div>
 
@@ -2220,6 +2222,18 @@
           });
           unassignedFilter.innerHTML = html;
           unassignedFilter.value = p;
+        }
+
+        // 5. default-add-group (Thêm khách mời)
+        const defAddGrp = document.getElementById("default-add-group");
+        if (defAddGrp) {
+          const p = defAddGrp.value || "";
+          let html = `<option value="">⚪ Chưa phân nhóm (Chọn sau)</option>`;
+          groupKeys.forEach((k) => {
+            html += `<option value="${k}">${SEAT_GROUPS[k].label}</option>`;
+          });
+          defAddGrp.innerHTML = html;
+          defAddGrp.value = p;
         }
 
         renderCustomGroupsChips();
@@ -3679,7 +3693,58 @@
           `;
         }
 
+        if (typeof updateAddGuestNextSlotHint === "function") {
+          updateAddGuestNextSlotHint();
+        }
+
         return rowsData;
+      }
+
+      function getAvailableUnnamedSlots(countNeeded = 1) {
+        const usedSlotNums = new Set();
+        savedGuests.forEach((g) => {
+          if (g && g.slot) usedSlotNums.add(Number(g.slot));
+        });
+        Object.keys(serverSlots).forEach((code) => {
+          const s = serverSlots[code];
+          if (s && s.name && String(s.name).trim()) {
+            const n = Number(s.num || (s.slotCode && parseInt(s.slotCode.split("-")[0], 10)));
+            if (n >= 1) usedSlotNums.add(n);
+          }
+        });
+
+        const available = [];
+        let candidate = 1;
+        while (available.length < countNeeded && candidate <= 414) {
+          if (!usedSlotNums.has(candidate)) {
+            available.push(candidate);
+          }
+          candidate++;
+        }
+        while (available.length < countNeeded && candidate <= 9999) {
+          if (!usedSlotNums.has(candidate)) {
+            available.push(candidate);
+          }
+          candidate++;
+        }
+        return available;
+      }
+
+      function updateAddGuestNextSlotHint() {
+        const badgeEl = document.getElementById("add-guest-next-slot-badge");
+        const hintEl = document.getElementById("add-guest-remaining-hint");
+        const avail = getAvailableUnnamedSlots(1);
+        const nextSlot = avail[0] || (savedGuests.length + 1);
+        const totalSlots = 414;
+        const namedCount = savedGuests.filter((g) => g && g.name).length;
+        const remaining = Math.max(0, totalSlots - namedCount);
+
+        if (badgeEl) {
+          badgeEl.textContent = `⚡ Gán từ số #${String(nextSlot).padStart(2, "0")}`;
+        }
+        if (hintEl) {
+          hintEl.textContent = `Còn ${remaining}/${totalSlots} thẻ QR chưa gán tên (Bắt đầu từ #${String(nextSlot).padStart(2, "0")})`;
+        }
       }
 
       async function handleAddGuests() {
@@ -3697,8 +3762,11 @@
           return;
         }
 
-        const newItems = [];
-        names.forEach((rawLine) => {
+        const neededSlots = getAvailableUnnamedSlots(names.length);
+        const newOrUpdatedGuests = [];
+        const slotsToUpdate = [];
+
+        names.forEach((rawLine, idx) => {
           let name = rawLine;
           let inlineNote = "";
           if (rawLine.includes("|")) {
@@ -3714,52 +3782,86 @@
 
           const key = normalizeNameKey(name);
           const existingIdx = savedGuests.findIndex((g) => normalizeNameKey(g.name) === key);
-          const finalNote = inlineNote || (existingIdx >= 0 ? savedGuests[existingIdx].note : "") || guestNotesMap[key] || "";
+          const existing = existingIdx >= 0 ? savedGuests[existingIdx] : null;
+          const finalNote = inlineNote || (existing ? existing.note : "") || guestNotesMap[key] || "";
           if (finalNote) guestNotesMap[key] = finalNote;
 
           const hasHanzi = /[\u4e00-\u9fff]/.test(name);
           const effectiveLang = lang === "zh" || hasHanzi ? "zh" : "vi";
-          const effectiveGrp = batchGroup || (existingIdx >= 0 && savedGuests[existingIdx].group ? savedGuests[existingIdx].group : "");
+          const effectiveGrp = batchGroup || (existing && existing.group ? existing.group : "");
+
+          // Find slot: keep existing slot if already assigned, or assign from next available
+          let slotNum = existing && existing.slot ? existing.slot : neededSlots[idx];
+          let slotCode = slotNum ? makeSlotCode(slotNum) : (existing && existing.slotCode ? existing.slotCode : "");
+
           const record = {
             name,
             lang: effectiveLang,
-            mode: existingIdx >= 0 && savedGuests[existingIdx].mode ? savedGuests[existingIdx].mode : "invite",
-            driveUrl: existingIdx >= 0 && savedGuests[existingIdx].driveUrl ? savedGuests[existingIdx].driveUrl : "",
+            mode: existing && existing.mode ? existing.mode : "invite",
+            driveUrl: existing && existing.driveUrl ? existing.driveUrl : "",
             note: finalNote,
             group: effectiveGrp,
-            table: existingIdx >= 0 && savedGuests[existingIdx].table ? savedGuests[existingIdx].table : "",
-            pax: existingIdx >= 0 && savedGuests[existingIdx].pax ? savedGuests[existingIdx].pax : 1,
-            createdAt: existingIdx >= 0 && savedGuests[existingIdx].createdAt ? savedGuests[existingIdx].createdAt : new Date().toISOString()
+            table: existing && existing.table ? existing.table : "",
+            pax: existing && existing.pax ? existing.pax : 1,
+            slot: slotNum,
+            slotCode: slotCode,
+            createdAt: existing && existing.createdAt ? existing.createdAt : new Date().toISOString()
           };
-          newItems.push(record);
 
           if (existingIdx >= 0) {
             savedGuests[existingIdx] = record;
           } else {
             savedGuests.push(record);
           }
+          newOrUpdatedGuests.push(record);
+
+          if (slotNum && slotCode) {
+            const prevS = serverSlots[slotCode] || {};
+            serverSlots[slotCode] = {
+              num: slotNum,
+              name,
+              lang: effectiveLang,
+              mode: record.mode,
+              group: effectiveGrp,
+              table: record.table,
+              pax: record.pax,
+              assignedAt: prevS.assignedAt || new Date().toISOString()
+            };
+            slotsToUpdate.push({
+              code: slotCode,
+              num: slotNum,
+              name,
+              lang: effectiveLang,
+              note: finalNote,
+              group: effectiveGrp
+            });
+          }
         });
 
         persistLocalGuests();
+        persistLocalSlots();
         listArea.value = "";
         buildRows();
+        if (typeof renderSlotsTable === "function") renderSlotsTable();
+        if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
+        updateAddGuestNextSlotHint();
+
+        notify(`✨ Đã gán tên cho ${newOrUpdatedGuests.length} khách vào các số QR tiếp theo thành công!`);
 
         try {
-          const res = await fetch(`${apiBase}/api/guests`, {
+          await fetch(`${apiBase}/api/guests`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ action: "add", guests: newItems })
+            body: JSON.stringify({ action: "add", guests: newOrUpdatedGuests })
           });
-          if (res.ok) {
-            const data = await res.json();
-            if (Array.isArray(data.savedGuests)) {
-              mergeServerGuests(data.savedGuests);
-              buildRows();
-            }
+          for (const s of slotsToUpdate) {
+            await fetch(`${apiBase}/api/slots`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ action: "set_name", code: s.code, name: s.name, lang: s.lang, note: s.note, group: s.group })
+            }).catch(() => {});
           }
         } catch (_) {}
-
-        notify(`✨ Đã tạo & lưu ${newItems.length} khách mời vào danh sách!`);
       }
 
       async function fetchAnalytics(showToast) {
