@@ -32,18 +32,31 @@
 
   <link rel="stylesheet" href="css/styles.css?v=56" />
 
-  <!-- Pre-printed numbered QR bookmark (?s=7-k3x9): look up the guest name assigned later in the admin page -->
+  <!-- Pre-printed numbered QR bookmark (?s=7-k3x9): look up the guest name & card mode assigned later in the admin page -->
   <style>html.td-slot-resolving body { visibility: hidden; }</style>
   <script>
     (function () {
       try {
         var p = new URLSearchParams(window.location.search);
         var code = (p.get("s") || "").trim().toLowerCase();
-        if (!code || p.get("to")) return;
+        if (!code || p.get("to") || p.get("_sr")) return;
         var applySlotRedirect = function (slotObj) {
-          if (!slotObj || !slotObj.name) return false;
-          p.set("to", slotObj.name);
-          if (slotObj.lang === "zh" || /[\u4e00-\u9fff]/.test(slotObj.name)) p.set("lang", "zh");
+          if (!slotObj) return false;
+          var targetMode = slotObj.mode || "invite";
+          var currentMode = p.get("mode") || "invite";
+          var cleanName = slotObj.name ? String(slotObj.name).trim() : "";
+          if (!cleanName && targetMode === currentMode) return false;
+          if (cleanName) {
+            p.set("to", cleanName);
+            if (slotObj.lang === "zh" || /[\u4e00-\u9fff]/.test(cleanName)) p.set("lang", "zh");
+          } else {
+            p.set("_sr", "1");
+          }
+          if (targetMode === "directions" || targetMode === "thankyou") {
+            p.set("mode", targetMode);
+          } else {
+            p.delete("mode");
+          }
           window.location.replace(window.location.pathname + "?" + p.toString() + window.location.hash);
           return true;
         };
@@ -51,7 +64,7 @@
           var localRaw = localStorage.getItem("td_saved_slots_v1");
           if (localRaw) {
             var localMap = JSON.parse(localRaw);
-            if (localMap && localMap[code] && localMap[code].name) {
+            if (localMap && localMap[code] && (localMap[code].name || localMap[code].mode)) {
               if (applySlotRedirect(localMap[code])) return;
             }
           }
@@ -74,14 +87,12 @@
           .then(function (r) { return r.json(); })
           .then(function (d) {
             if (finished) return;
-            if (d && d.slot && d.slot.name) {
-              clearTimeout(fallbackTimer);
+            clearTimeout(fallbackTimer);
+            if (d && d.slot && applySlotRedirect(d.slot)) {
               finished = true;
-              applySlotRedirect(d.slot);
-            } else {
-              clearTimeout(fallbackTimer);
-              reveal();
+              return;
             }
+            reveal();
           })
           .catch(function () {
             clearTimeout(fallbackTimer);

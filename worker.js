@@ -250,15 +250,30 @@ export class WeddingAnalytics {
       return Response.json({ ok: true, stats: this.formatStats(fresh) }, { headers: CORS_HEADERS });
     }
 
-    // Public lookup for a pre-printed numbered QR bookmark (?s=7-ab3x) -> assigned guest name (if any)
+    // Public lookup for a pre-printed numbered QR bookmark (?s=7-ab3x) -> assigned guest name & mode
     if (url.pathname === "/api/slot" && request.method === "GET") {
       const code = String(url.searchParams.get("code") || "").trim().toLowerCase();
+      const valid = isValidSlotCode(code);
       const data = await this.loadData();
-      const slot = isValidSlotCode(code) ? (data.slots || {})[code] : null;
+      const slot = valid ? (data.slots || {})[code] : null;
+      const cfg = data.siteConfig || {};
+      const globalMode =
+        cfg.globalMode === "thankyou" || cfg.globalThankYou
+          ? "thankyou"
+          : cfg.globalMode === "directions" || cfg.globalDirections
+            ? "directions"
+            : "";
       return Response.json(
         {
           ok: true,
-          slot: slot && slot.name ? { num: slot.num, name: slot.name, lang: slot.lang || "vi" } : null
+          slot: valid
+            ? {
+                num: slot ? slot.num : slotNumFromCode(code),
+                name: (slot && slot.name) || "",
+                lang: (slot && slot.lang) || "vi",
+                mode: globalMode || (slot && slot.mode) || "invite"
+              }
+            : null
         },
         {
           headers: {
@@ -269,7 +284,7 @@ export class WeddingAnalytics {
       );
     }
 
-    // Assign / clear the guest name of a pre-printed numbered QR bookmark
+    // Assign / clear / switch mode of a pre-printed numbered QR bookmark
     if (url.pathname === "/api/slots" && request.method === "POST") {
       let body = {};
       try {
@@ -287,6 +302,10 @@ export class WeddingAnalytics {
       const prev = data.slots[code] || null;
       const name = String(body.name || "").trim().slice(0, 120);
       const action = String(body.action || "assign");
+      const validModes = ["invite", "directions", "thankyou"];
+      const requestedMode = validModes.includes(body.mode)
+        ? body.mode
+        : (prev && prev.mode) || "invite";
 
       // Drop the slot link from the previously assigned guest record
       const detachPrevGuest = () => {
@@ -300,9 +319,34 @@ export class WeddingAnalytics {
         });
       };
 
-      if (action === "clear" || !name) {
+      if (action === "set_mode") {
+        data.slots[code] = {
+          num,
+          name: (prev && prev.name) || "",
+          lang: (prev && prev.lang) || "vi",
+          mode: requestedMode,
+          assignedAt: (prev && prev.assignedAt) || new Date().toISOString()
+        };
+        if (prev && prev.name) {
+          const pk = normalizeGuestKey(prev.name);
+          const idx = data.savedGuests.findIndex((g) => normalizeGuestKey(g.name) === pk);
+          if (idx >= 0) {
+            data.savedGuests[idx].mode = requestedMode;
+          }
+        }
+      } else if (action === "clear" || !name) {
         detachPrevGuest();
-        delete data.slots[code];
+        if (prev && prev.mode && prev.mode !== "invite") {
+          data.slots[code] = {
+            num,
+            name: "",
+            lang: "vi",
+            mode: prev.mode,
+            assignedAt: prev.assignedAt || new Date().toISOString()
+          };
+        } else {
+          delete data.slots[code];
+        }
       } else {
         if (prev && prev.name && normalizeGuestKey(prev.name) !== normalizeGuestKey(name)) {
           detachPrevGuest();
@@ -313,6 +357,7 @@ export class WeddingAnalytics {
           num,
           name,
           lang,
+          mode: requestedMode,
           assignedAt: new Date().toISOString()
         };
         // Upsert into the permanent guest list so tracking / mode switches / notes work as usual
@@ -323,12 +368,13 @@ export class WeddingAnalytics {
           g.slot = num;
           g.slotCode = code;
           g.lang = lang;
+          if (validModes.includes(body.mode)) g.mode = body.mode;
           if (note) g.note = note;
         } else {
           data.savedGuests.push({
             name,
             lang,
-            mode: "invite",
+            mode: requestedMode,
             driveUrl: "",
             note,
             slot: num,
@@ -447,13 +493,18 @@ export class WeddingAnalytics {
             (g) => normalizeGuestKey(g.name) === targetKey
           );
           if (idx >= 0) {
-            data.savedGuests[idx].mode = validModes.includes(body.mode)
+            const nextMode = validModes.includes(body.mode)
               ? body.mode
               : data.savedGuests[idx].mode === "thankyou"
                 ? "invite"
                 : "thankyou";
+            data.savedGuests[idx].mode = nextMode;
             if (body.driveUrl !== undefined) {
               data.savedGuests[idx].driveUrl = String(body.driveUrl || "").trim();
+            }
+            const sc = data.savedGuests[idx].slotCode;
+            if (sc && data.slots && data.slots[sc]) {
+              data.slots[sc].mode = nextMode;
             }
           }
         }

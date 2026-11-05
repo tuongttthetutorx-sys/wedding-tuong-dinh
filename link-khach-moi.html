@@ -1382,6 +1382,7 @@
                 <th>Số QR</th>
                 <th>Tên khách (Hiện trên thiệp)</th>
                 <th>Ghi chú riêng (Chỉ bạn thấy)</th>
+                <th>Loại thiệp khi quét</th>
                 <th>Trạng thái mở thiệp</th>
                 <th>Thao tác</th>
               </tr>
@@ -1658,14 +1659,21 @@
       async function setGuestModeOnServer(name, nextMode) {
         const key = normalizeNameKey(name);
         const driveVal = (globalDriveInput && globalDriveInput.value.trim()) || "";
+        let linkedSlotCode = "";
         savedGuests = savedGuests.map((g) => {
           if (normalizeNameKey(g.name) === key) {
+            if (g.slotCode) linkedSlotCode = g.slotCode;
             return { ...g, mode: nextMode, driveUrl: driveVal || g.driveUrl || "" };
           }
           return g;
         });
+        if (linkedSlotCode && serverSlots[linkedSlotCode]) {
+          serverSlots[linkedSlotCode].mode = nextMode;
+          persistLocalSlots();
+        }
         persistLocalGuests();
         buildRows();
+        if (typeof renderSlotsTable === "function") renderSlotsTable();
         try {
           await fetch(`${apiBase}/api/guests`, {
             method: "POST",
@@ -3248,7 +3256,7 @@
         const merged = { ...serverSlots };
         Object.keys(remoteSlots).forEach((code) => {
           const r = remoteSlots[code];
-          if (r && r.name) {
+          if (r && (r.name || r.mode)) {
             merged[code] = r;
             const n = parseInt(r.num, 10) || parseInt(code.split("-")[0], 10) || 0;
             if (n > slotMaxPrinted) slotMaxPrinted = n;
@@ -3268,7 +3276,67 @@
       function getSlotUrl(num) {
         const code = makeSlotCode(num);
         const base = baseOrigin.replace(/\?.*$/, "");
-        return `${base}?s=${encodeURIComponent(code)}&mode=directions`;
+        return `${base}?s=${encodeURIComponent(code)}`;
+      }
+
+      async function setSlotMode(num, nextMode) {
+        const n = parseInt(num, 10);
+        if (!n || n < 1 || n > 9999) return;
+        const code = makeSlotCode(n);
+        const prev = serverSlots[code] || {};
+        const assignedName = prev.name ? String(prev.name).trim() : "";
+        const lang = prev.lang || (/[\u4e00-\u9fff]/.test(assignedName) ? "zh" : "vi");
+
+        serverSlots[code] = {
+          num: n,
+          name: assignedName,
+          lang,
+          mode: nextMode,
+          assignedAt: prev.assignedAt || new Date().toISOString()
+        };
+
+        if (assignedName) {
+          const pk = normalizeNameKey(assignedName);
+          savedGuests = savedGuests.map((g) => {
+            if (normalizeNameKey(g.name) === pk) {
+              return { ...g, mode: nextMode, slot: n, slotCode: code };
+            }
+            return g;
+          });
+          persistLocalGuests();
+          buildRows();
+        }
+
+        persistLocalSlots();
+        renderSlotsTable();
+
+        try {
+          const res = await fetch(`${apiBase}/api/slots`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "set_mode",
+              code,
+              mode: nextMode
+            })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.slots) mergeServerSlots(data.slots);
+            if (Array.isArray(data.savedGuests)) mergeServerGuests(data.savedGuests);
+            renderSlotsTable();
+            buildRows();
+          }
+        } catch (_) {}
+
+        const targetLabel = assignedName ? `QR Số ${n} (${assignedName})` : `QR Số ${n}`;
+        notify(
+          nextMode === "thankyou"
+            ? `📸 Đã bật "Thiệp Cảm Ơn" cho ${targetLabel}!`
+            : nextMode === "directions"
+              ? `📍 Đã bật "Chỉ Đường Ngày Cưới" cho ${targetLabel}!`
+              : `💌 Đã chuyển ${targetLabel} về chế độ Thiệp Mời!`
+        );
       }
 
       async function assignSlotByNumber(num, rawName, rawNote, showToast = true) {
@@ -3296,7 +3364,17 @@
               return g;
             });
           }
-          delete serverSlots[code];
+          if (prevSlot && prevSlot.mode && prevSlot.mode !== "invite") {
+            serverSlots[code] = {
+              num: n,
+              name: "",
+              lang: "vi",
+              mode: prevSlot.mode,
+              assignedAt: prevSlot.assignedAt || new Date().toISOString()
+            };
+          } else {
+            delete serverSlots[code];
+          }
           persistLocalSlots();
           persistLocalGuests();
           renderSlotsTable();
@@ -3330,21 +3408,25 @@
           });
         }
 
-        serverSlots[code] = {
-          num: n,
-          name,
-          lang,
-          assignedAt: new Date().toISOString()
-        };
-
         const key = normalizeNameKey(name);
         if (note) guestNotesMap[key] = note;
         const existingIdx = savedGuests.findIndex((g) => normalizeNameKey(g.name) === key);
         const finalNote = note || (existingIdx >= 0 ? savedGuests[existingIdx].note : "") || guestNotesMap[key] || "";
+        const preservedMode =
+          (prevSlot && prevSlot.mode) ||
+          (existingIdx >= 0 && savedGuests[existingIdx].mode) ||
+          "invite";
+        serverSlots[code] = {
+          num: n,
+          name,
+          lang,
+          mode: preservedMode,
+          assignedAt: new Date().toISOString()
+        };
         const guestRecord = {
           name,
           lang,
-          mode: existingIdx >= 0 && savedGuests[existingIdx].mode ? savedGuests[existingIdx].mode : "invite",
+          mode: preservedMode,
           driveUrl: existingIdx >= 0 && savedGuests[existingIdx].driveUrl ? savedGuests[existingIdx].driveUrl : "",
           note: finalNote,
           slot: n,
@@ -3375,7 +3457,8 @@
               code,
               name,
               note: finalNote,
-              lang
+              lang,
+              mode: preservedMode
             })
           });
           if (res.ok) {
@@ -3467,7 +3550,29 @@
           }
 
           const slotUrl = getSlotUrl(n);
-          const previewUrl = `${slotUrl}&notrack=1`;
+          const rawMode =
+            (slotObj && slotObj.mode) ||
+            (matchedGuest && matchedGuest.mode) ||
+            "invite";
+          const globalMode =
+            globalSiteConfig.globalMode ||
+            (globalSiteConfig.globalThankYou
+              ? "thankyou"
+              : globalSiteConfig.globalDirections
+                ? "directions"
+                : "invite");
+          const effectiveMode =
+            globalMode === "thankyou" || rawMode === "thankyou"
+              ? "thankyou"
+              : globalMode === "directions" || rawMode === "directions"
+                ? "directions"
+                : "invite";
+          const isDirEffective = effectiveMode === "directions";
+          const isTyEffective = effectiveMode === "thankyou";
+          const previewUrl =
+            effectiveMode === "directions" || effectiveMode === "thankyou"
+              ? `${slotUrl}&mode=${effectiveMode}&notrack=1`
+              : `${slotUrl}&notrack=1`;
 
           const tr = document.createElement("tr");
           if (!assignedName) tr.className = "is-empty-slot";
@@ -3487,6 +3592,13 @@
                 placeholder="Ghi chú riêng (VD: Bạn ĐH, cô chú...)"
               />
             </td>
+            <td>
+              <div class="mode-switch-pill" title="Chuyển đổi trực tiếp giữa Thiệp Mời, Chỉ Đường Ngày Cưới và Thiệp Cảm Ơn cho QR Số ${n}">
+                <button type="button" class="mode-switch-btn js-slot-mode-invite ${effectiveMode === "invite" ? "is-active-invite" : ""}">💌 Thiệp Mời</button>
+                <button type="button" class="mode-switch-btn js-slot-mode-dir ${isDirEffective ? "is-active-dir" : ""}" title="Đẩy Sơ Đồ Đường Đi & Google Maps lên đầu trang, tự động mở sẵn bao thư">📍 Chỉ Đường</button>
+                <button type="button" class="mode-switch-btn js-slot-mode-ty ${isTyEffective ? "is-active-ty" : ""}">📸 Cảm Ơn</button>
+              </div>
+            </td>
             <td>${statusHtml}</td>
             <td class="slot-actions">
               <div style="display:inline-flex; gap:5px; align-items:center;">
@@ -3503,6 +3615,16 @@
           nameInput.value = assignedName;
           noteInput.value = privateNote;
           tr.querySelector(".js-slot-preview").href = previewUrl;
+
+          tr.querySelector(".js-slot-mode-invite").addEventListener("click", () => {
+            setSlotMode(n, "invite");
+          });
+          tr.querySelector(".js-slot-mode-dir").addEventListener("click", () => {
+            setSlotMode(n, "directions");
+          });
+          tr.querySelector(".js-slot-mode-ty").addEventListener("click", () => {
+            setSlotMode(n, "thankyou");
+          });
 
           const triggerSaveRow = () => {
             assignSlotByNumber(n, nameInput.value, noteInput.value, true);
