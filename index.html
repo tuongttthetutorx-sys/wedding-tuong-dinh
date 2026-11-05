@@ -30,7 +30,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,500;1,600&family=Dancing+Script:wght@600;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="css/styles.css?v=56" />
+  <link rel="stylesheet" href="css/styles.css?v=58" />
 
   <!-- Pre-printed numbered QR bookmark (?s=7-k3x9): look up the guest name & card mode assigned later in the admin page -->
   <style>html.td-slot-resolving body { visibility: hidden; }</style>
@@ -130,6 +130,7 @@
         </svg>
         <span data-i18n="navVenue">Bản đồ</span>
       </a>
+      <a href="#section-seating" id="nav-seating-pill" class="nav-pill is-desktop-pill" data-i18n="navSeating">Bàn tiệc</a>
     </nav>
     <div class="lang-switch" role="group" aria-label="Chọn ngôn ngữ VI / 中文">
       <button type="button" class="lang-btn is-active" data-lang="vi">VI</button>
@@ -520,41 +521,6 @@
           </div>
         </div>
 
-        <!-- VIP Guest Table Assignment Card & Interactive Sảnh Seine Floorplan (Shown automatically when guest is assigned to a table) -->
-        <div id="guest-seating-card" class="guest-seating-card" hidden>
-          <div class="gsc-top-badge" id="gsc-eyebrow">
-            🪑 VỊ TRÍ BÀN TIỆC CỦA QUÝ KHÁCH • SẢNH SEINE (TẦNG TRỆT • 672M²)
-          </div>
-          <div class="gsc-main-grid">
-            <div class="gsc-info-col">
-              <div class="gsc-greeting" id="gsc-greeting">Trân trọng kính mời Quý Khách</div>
-              <div class="gsc-table-hero">
-                <div class="gsc-table-number-pill" id="gsc-table-num">BÀN SỐ 01</div>
-                <div class="gsc-wing-hint" id="gsc-wing-hint">Cánh Trái Sân Khấu • Hàng 1</div>
-              </div>
-              <div class="gsc-zone-row">
-                <span class="gsc-zone-badge" id="gsc-zone-badge">✨ Khu vực Khách Quý</span>
-                <span class="gsc-pax-badge" id="gsc-pax-badge">1 ghế</span>
-              </div>
-              <p class="gsc-free-note" id="gsc-free-note">
-                💡 Quý khách chỉ cần vào đúng bàn này và ngồi tự do tại bất kỳ ghế trống nào trong bàn.
-              </p>
-              <div class="gsc-companions" id="gsc-companions" hidden></div>
-            </div>
-            <div class="gsc-map-col">
-              <div class="gsc-mini-hall">
-                <div class="gsc-mini-stage" id="gsc-mini-stage">✨ SÂN KHẤU CHÍNH &amp; MÀN HÌNH LED (STAGE) ✨</div>
-                <div class="gsc-mini-wings">
-                  <div class="gsc-mini-wing" id="gsc-mini-left"></div>
-                  <div class="gsc-mini-aisle" id="gsc-mini-aisle">LỐI ĐI CHÍNH</div>
-                  <div class="gsc-mini-wing" id="gsc-mini-right"></div>
-                </div>
-                <div class="gsc-mini-entrance" id="gsc-mini-entrance">🚪 CỔNG ĐÓN KHÁCH SẢNH SEINE (TẦNG TRỆT) ↑</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <div class="section-heading">
           <span class="eyebrow" data-i18n="venueEyebrow">Thời Gian &amp; Địa Điểm</span>
           <h2 data-i18n="venueTitle">Lịch Trình Hôn Lễ &amp; Sơ Đồ Chỉ Đường</h2>
@@ -620,6 +586,63 @@
         </div>
       </section>
 
+      <!-- ===================================================================
+           6. PERMANENT EDITORIAL SEATING SECTION (SẢNH SEINE — AFTER MAP)
+           =================================================================== -->
+      <section class="venue-section seating-section" id="section-seating">
+        <div class="section-heading">
+          <span class="eyebrow" id="seating-eyebrow">Sơ Đồ Tiệc Cưới • Sảnh Seine (Tầng Trệt)</span>
+          <h2 id="seating-main-title">Vị Trí Bàn Tiệc Của Quý Khách</h2>
+          <p id="seating-main-sub">
+            Không gian tiệc cưới bàn tròn 10 khách đối xứng qua lối đi lễ đường tại Riverside Palace.
+          </p>
+        </div>
+
+        <div class="venue-grid seating-editorial-grid">
+          <!-- Left Column: Editorial Ledger (matches .day-schedule-ledger exactly) -->
+          <div class="day-schedule-ledger seating-ledger" id="seating-ledger-card">
+            <div class="day-schedule-header">
+              <span class="day-schedule-badge" id="seating-badge">SẢNH SEINE • TẦNG TRỆT</span>
+              <div class="day-schedule-date" id="seating-hero-heading">Đang Sắp Xếp Số Bàn</div>
+              <div class="day-schedule-lunar" id="seating-guest-line">Dành riêng cho Quý Khách</div>
+            </div>
+
+            <div class="timeline-list is-same-day-rail">
+              <div class="timeline-item">
+                <span class="timeline-node" aria-hidden="true"></span>
+                <span class="timeline-period" id="seating-node1-period">Khu vực bàn tiệc</span>
+                <h3 id="seating-node1-title">Sảnh Seine — Bàn Tròn 10 Khách</h3>
+                <p id="seating-node1-desc">
+                  Các bàn tiệc được bố trí đối xứng hai bên lối đi lễ đường chính hướng lên sân khấu.
+                </p>
+              </div>
+
+              <div class="timeline-item">
+                <span class="timeline-node is-evening" aria-hidden="true"></span>
+                <span class="timeline-period" id="seating-node2-period">Tra cứu vị trí bàn</span>
+                <h3 id="seating-node2-title">Cập Nhật Trực Tiếp Trên Mã QR Này</h3>
+                <p id="seating-node2-desc">
+                  Gia đình đang hoàn tất danh sách bàn tiệc chu đáo nhất. Mời Quý Khách mở lại đường link hoặc quét lại mã QR này sát ngày cưới (06.01.2027) để xem số bàn chính thức của mình.
+                </p>
+                <p class="seating-companions-line" id="seating-companions-line" hidden></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Architectural Fine-Line Round-Table Illustration -->
+          <div class="seating-chart-sheet">
+            <div class="seating-chart-header">
+              <span class="seating-chart-kicker" id="seating-chart-kicker">RIVERSIDE PALACE • SEINE HALL</span>
+              <span class="seating-chart-note" id="seating-chart-note">Sơ đồ minh họa bàn tròn 10 ghế</span>
+            </div>
+            <div class="seating-svg-wrap" id="seating-svg-container" aria-label="Sơ đồ bàn tròn Sảnh Seine"></div>
+            <div class="seating-chart-footer" id="seating-chart-footer">
+              Cổng Đón Khách Biệt Lập (Tầng Trệt)
+            </div>
+          </div>
+        </div>
+      </section>
+
     </div>
 
     <!-- FOOTER COLOPHON -->
@@ -635,6 +658,6 @@
   <script src="js/config.js?v=56"></script>
   <script src="js/artwork.js?v=56"></script>
   <script src="js/audio.js?v=56"></script>
-  <script src="js/app.js?v=57"></script>
+  <script src="js/app.js?v=58"></script>
 </body>
 </html>

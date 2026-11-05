@@ -999,133 +999,271 @@
   }
 
   const SEAT_ZONE_I18N = {
-    groom_family: { vi: "👑 Khu vực: Gia đình Nhà Trai", zh: "👑 席位區：男方主家席" },
-    bride_family: { vi: "👑 Khu vực: Gia đình Nhà Gái", zh: "👑 席位區：女方主家席" },
-    groom_relatives: { vi: "🏮 Khu vực: Họ hàng Nhà Trai", zh: "🏮 席位區：男方親友區" },
-    bride_relatives: { vi: "🏮 Khu vực: Họ hàng Nhà Gái", zh: "🏮 席位區：女方親友區" },
-    friends_colleagues: { vi: "🥂 Khu vực: Bạn bè & Đồng nghiệp", zh: "🥂 席位區：摯友與同事區" },
-    honored_guests: { vi: "✨ Khu vực: Khách Quý Gia Đình", zh: "✨ 席位區：貴賓席" }
+    groom_family: { vi: "Gia Đình Nhà Trai", zh: "男方主家席" },
+    bride_family: { vi: "Gia Đình Nhà Gái", zh: "女方主家席" },
+    groom_relatives: { vi: "Họ Hàng Nhà Trai", zh: "男方親友區" },
+    bride_relatives: { vi: "Họ Hàng Nhà Gái", zh: "女方親友區" },
+    friends_colleagues: { vi: "Bạn Bè & Đồng Nghiệp", zh: "摯友與同事區" },
+    honored_guests: { vi: "Khách Quý Gia Đình", zh: "貴賓席" }
   };
 
+  function renderArchitecturalRoundTablesSvg(activeTableNum, isZh) {
+    // Draws a refined cream-and-gold architectural layout (inspired by classical wedding table plans):
+    // Head Stage at top, Center Ceremony Aisle, and 12 representative 10-chair round tables (3 rows x 4 columns).
+    // If activeTableNum > 12, the row containing activeTableNum is dynamically labeled with its exact row numbers!
+    const tNum = activeTableNum > 0 ? activeTableNum : 0;
+    const activeRow = tNum > 0 ? Math.ceil(Math.ceil(tNum / 2) / 2) : 0;
+    const baseStartRow = activeRow > 3 ? activeRow - 1 : 1;
+    const rows = [baseStartRow, baseStartRow + 1, baseStartRow + 2];
+
+    const stageLabel = isZh ? "STAGE • 主舞台" : "STAGE • SÂN KHẤU CHÍNH";
+    const aisleLabel = isZh ? "紅毯主走道" : "LỐI ĐI LỄ ĐƯỜNG";
+    let tablesSvg = "";
+
+    const colX = [82, 178, 342, 438];
+    const rowY = [126, 224, 322];
+
+    rows.forEach((r, rIdx) => {
+      const cy = rowY[rIdx];
+      // Left wing odd tables: (r-1)*4 + 1, (r-1)*4 + 3
+      // Right wing even tables: (r-1)*4 + 2, (r-1)*4 + 4
+      const tblNums = [(r - 1) * 4 + 1, (r - 1) * 4 + 3, (r - 1) * 4 + 2, (r - 1) * 4 + 4];
+
+      tblNums.forEach((num, cIdx) => {
+        const cx = colX[cIdx];
+        const isMine = tNum > 0 && num === tNum;
+        const padded = String(num).padStart(2, "0");
+
+        // 10 delicate chairs arranged in a circle around each round table (like classical architectural plan)
+        let chairs = "";
+        for (let ch = 0; ch < 10; ch++) {
+          const deg = ch * 36 - 90;
+          const rad = (deg * Math.PI) / 180;
+          const chX = (cx + Math.cos(rad) * 30.5).toFixed(1);
+          const chY = (cy + Math.sin(rad) * 30.5).toFixed(1);
+          const chairStroke = isMine ? "#841518" : "rgba(164, 112, 42, 0.48)";
+          const chairFill = isMine ? "rgba(198, 125, 8, 0.24)" : "rgba(250, 245, 234, 0.92)";
+          chairs += `<g transform="translate(${chX},${chY}) rotate(${deg + 90})">
+            <rect x="-4.6" y="-3.2" width="9.2" height="6.4" rx="2.4" fill="${chairFill}" stroke="${chairStroke}" stroke-width="${isMine ? "1.25" : "0.9"}" />
+          </g>`;
+        }
+
+        const halo = isMine
+          ? `<circle class="svg-my-table-halo" cx="${cx}" cy="${cy}" r="38" fill="none" stroke="rgba(198, 125, 8, 0.55)" stroke-width="1.6" stroke-dasharray="3 3" />`
+          : "";
+
+        const tableFill = isMine ? "#841518" : "#fdfaf3";
+        const tableStroke = isMine ? "#c67d08" : "rgba(164, 112, 42, 0.58)";
+        const innerStroke = isMine ? "rgba(255, 244, 214, 0.45)" : "rgba(164, 112, 42, 0.22)";
+        const textFill = isMine ? "#fffbf2" : "#6e4f3a";
+        const labelStr = isZh ? `第${padded}桌` : `Bàn ${padded}`;
+
+        tablesSvg += `
+          <g class="svg-round-table ${isMine ? "is-mine" : ""}">
+            ${halo}
+            ${chairs}
+            <circle cx="${cx}" cy="${cy}" r="23" fill="${tableFill}" stroke="${tableStroke}" stroke-width="${isMine ? "1.8" : "1.15"}" />
+            <circle cx="${cx}" cy="${cy}" r="18.5" fill="none" stroke="${innerStroke}" stroke-width="0.75" />
+            <text x="${cx}" y="${cy + 3.5}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="${isMine ? "10.5" : "10"}" font-weight="700" fill="${textFill}">${labelStr}</text>
+          </g>
+        `;
+      });
+    });
+
+    // 6 chairs behind the head stage table (classical architectural motif)
+    let headChairs = "";
+    for (let i = 0; i < 6; i++) {
+      const hx = 190 + i * 28;
+      headChairs += `<rect x="${hx - 6}" y="16" width="12" height="7" rx="2.5" fill="#faf5ea" stroke="rgba(164, 112, 42, 0.52)" stroke-width="0.95" />`;
+    }
+
+    return `
+      <svg viewBox="0 0 520 382" xmlns="http://www.w3.org/2000/svg" role="img">
+        <!-- Head Stage Table -->
+        ${headChairs}
+        <rect x="164" y="25" width="192" height="28" rx="3" fill="#fdfaf3" stroke="rgba(132, 21, 23, 0.42)" stroke-width="1.15" />
+        <rect x="168" y="28.5" width="184" height="21" rx="2" fill="none" stroke="rgba(198, 125, 8, 0.32)" stroke-width="0.75" />
+        <text x="260" y="42.5" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="10.5" font-weight="700" letter-spacing="2.2" fill="#841518">${stageLabel}</text>
+
+        <!-- Center Ceremony Aisle -->
+        <line x1="234" y1="68" x2="234" y2="366" stroke="rgba(132, 21, 23, 0.18)" stroke-width="1" stroke-dasharray="4 4" />
+        <line x1="286" y1="68" x2="286" y2="366" stroke="rgba(132, 21, 23, 0.18)" stroke-width="1" stroke-dasharray="4 4" />
+        <text x="260" y="224" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="9.5" font-weight="700" letter-spacing="2.5" fill="rgba(132, 21, 23, 0.42)" transform="rotate(-90 260 224)">${aisleLabel}</text>
+
+        <!-- 10-Chair Round Tables -->
+        ${tablesSvg}
+      </svg>
+    `;
+  }
+
   function syncGuestSeatingUI() {
-    const cardEl = document.getElementById("guest-seating-card");
-    if (!cardEl) return;
+    const secEl = document.getElementById("section-seating");
+    if (!secEl) return;
     const rCfg = remoteGuestConfig || {};
     const tableStr = String(params.get("table") || rCfg.table || "").trim();
-    if (!tableStr) {
-      cardEl.hidden = true;
-      return;
-    }
-    cardEl.hidden = false;
-
     const isZh = currentLang === "zh";
     const dict = I18N[currentLang];
     const displayGuest = guestName || dict.defaultGuest;
 
+    const navSeatEl = document.getElementById("nav-seating-pill");
+    if (navSeatEl) {
+      navSeatEl.textContent = isZh ? "席位" : "Bàn tiệc";
+    }
+
+    const eyebrowEl = document.getElementById("seating-eyebrow");
+    const mainTitleEl = document.getElementById("seating-main-title");
+    const mainSubEl = document.getElementById("seating-main-sub");
+    const badgeEl = document.getElementById("seating-badge");
+    const heroHeadingEl = document.getElementById("seating-hero-heading");
+    const guestLineEl = document.getElementById("seating-guest-line");
+    const n1PeriodEl = document.getElementById("seating-node1-period");
+    const n1TitleEl = document.getElementById("seating-node1-title");
+    const n1DescEl = document.getElementById("seating-node1-desc");
+    const n2PeriodEl = document.getElementById("seating-node2-period");
+    const n2TitleEl = document.getElementById("seating-node2-title");
+    const n2DescEl = document.getElementById("seating-node2-desc");
+    const compLineEl = document.getElementById("seating-companions-line");
+    const chartKickerEl = document.getElementById("seating-chart-kicker");
+    const chartNoteEl = document.getElementById("seating-chart-note");
+    const chartFooterEl = document.getElementById("seating-chart-footer");
+    const svgWrapEl = document.getElementById("seating-svg-container");
+
+    if (eyebrowEl) {
+      eyebrowEl.textContent = isZh
+        ? "婚宴席位指引 • Seine 宴會廳（一樓）"
+        : "Sơ Đồ Bàn Tiệc • Sảnh Seine (Tầng Trệt)";
+    }
+    if (mainTitleEl) {
+      mainTitleEl.textContent = isZh
+        ? "貴賓席位與宴會廳平面圖"
+        : "Vị Trí Bàn Tiệc Của Quý Khách";
+    }
+    if (mainSubEl) {
+      mainSubEl.textContent = isZh
+        ? "Riverside Palace 一樓 Seine 宴會廳採 10 人圓桌對稱配置，誠摯恭候您的蒞臨。"
+        : "Không gian tiệc cưới bàn tròn 10 khách bố trí đối xứng qua lối đi lễ đường tại Sảnh Seine.";
+    }
+    if (chartKickerEl) {
+      chartKickerEl.textContent = "RIVERSIDE PALACE • SEINE HALL";
+    }
+    if (chartFooterEl) {
+      chartFooterEl.textContent = isZh
+        ? "Seine 宴會廳獨立迎賓入口（一樓）↑"
+        : "Cổng Đón Khách Sảnh Seine (Tầng Trệt) ↑";
+    }
+
+    if (!tableStr) {
+      // STATE A: NO TABLE ASSIGNED YET -> Graceful editorial notice on the main invitation
+      if (badgeEl) {
+        badgeEl.textContent = isZh ? "SEINE 宴會廳 • 席位安排中" : "SẢNH SEINE • ĐANG XẾP BÀN";
+      }
+      if (heroHeadingEl) {
+        heroHeadingEl.textContent = isZh ? "專屬桌次安排中" : "Đang Cập Nhật Số Bàn";
+      }
+      if (guestLineEl) {
+        guestLineEl.textContent = isZh
+          ? `誠摯為 ${displayGuest} 預留席位`
+          : `Dành riêng cho ${displayGuest}`;
+      }
+      if (n1PeriodEl) {
+        n1PeriodEl.textContent = isZh ? "宴會廳空間配置 • 18:00 迎賓" : "Không gian sảnh tiệc • Đón khách 18:00";
+      }
+      if (n1TitleEl) {
+        n1TitleEl.textContent = isZh ? "Sảnh Seine — 10 人圓桌席位" : "Sảnh Seine — Bàn Tròn 10 Khách";
+      }
+      if (n1DescEl) {
+        n1DescEl.textContent = isZh
+          ? "全場圓桌沿紅毯主走道兩側對稱排列，入席後同桌座位皆可自由就座。"
+          : "Các bàn tròn 10 khách xếp đối xứng hai bên lối đi lễ đường; khi vào bàn Quý Khách ngồi tự do tại bất kỳ ghế trống nào.";
+      }
+      if (n2PeriodEl) {
+        n2PeriodEl.textContent = isZh ? "透過此 QR 碼或連結查看桌號" : "Tra cứu số bàn ngay trên mã QR này";
+      }
+      if (n2TitleEl) {
+        n2TitleEl.textContent = isZh ? "請於婚禮前夕再次開啟查看" : "Mời Quý Khách Xem Lại Sát Ngày Cưới";
+      }
+      if (n2DescEl) {
+        n2DescEl.textContent = isZh
+          ? "家屬正為每位親友精心安排最合適的同桌席位。於婚禮前夕（2027.01.06），您只需再次掃描喜帖書籤上的 QR 碼或開啟此連結，您的正式桌號將直接顯示於此。"
+          : "Gia đình đang hoàn tất danh sách chỗ ngồi chu đáo nhất. Sát ngày cưới (06.01.2027), Quý Khách chỉ cần quét lại mã QR trên Bookmark hoặc mở lại đường link này để xem số bàn chính thức của mình.";
+      }
+      if (compLineEl) compLineEl.hidden = true;
+      if (chartNoteEl) {
+        chartNoteEl.textContent = isZh ? "10人圓桌配置示意圖" : "Sơ đồ minh họa bàn tròn 10 ghế";
+      }
+      if (svgWrapEl) {
+        svgWrapEl.innerHTML = renderArchitecturalRoundTablesSvg(0, isZh);
+      }
+      return;
+    }
+
+    // STATE B: TABLE ASSIGNED -> Clean editorial ledger + highlighted round table
     const tNum = parseInt(tableStr, 10) || 1;
     const padded = String(tNum).padStart(2, "0");
     const isLeftWing = tNum % 2 === 1;
     const wingOrder = Math.ceil(tNum / 2);
     const rowNum = Math.ceil(wingOrder / 2);
-
-    const eyebrowEl = document.getElementById("gsc-eyebrow");
-    const greetingEl = document.getElementById("gsc-greeting");
-    const tableNumEl = document.getElementById("gsc-table-num");
-    const wingHintEl = document.getElementById("gsc-wing-hint");
-    const zoneBadgeEl = document.getElementById("gsc-zone-badge");
-    const paxBadgeEl = document.getElementById("gsc-pax-badge");
-    const freeNoteEl = document.getElementById("gsc-free-note");
-    const compEl = document.getElementById("gsc-companions");
-    const stageEl = document.getElementById("gsc-mini-stage");
-    const aisleEl = document.getElementById("gsc-mini-aisle");
-    const entranceEl = document.getElementById("gsc-mini-entrance");
-    const leftWingEl = document.getElementById("gsc-mini-left");
-    const rightWingEl = document.getElementById("gsc-mini-right");
-
-    if (eyebrowEl) {
-      eyebrowEl.textContent = isZh
-        ? "🪑 您的婚宴桌次指引 • SEINE 宴會廳（一樓獨立迎賓廳）"
-        : "🪑 VỊ TRÍ BÀN TIỆC CỦA QUÝ KHÁCH • SẢNH SEINE (TẦNG TRỆT)";
-    }
-    if (greetingEl) {
-      greetingEl.textContent = isZh
-        ? `誠摯邀請 ${displayGuest} 入席`
-        : `Trân trọng kính mời ${displayGuest}`;
-    }
-    if (tableNumEl) {
-      tableNumEl.textContent = isZh ? `第 ${padded} 桌` : `BÀN SỐ ${padded}`;
-    }
-    if (wingHintEl) {
-      wingHintEl.textContent = isZh
-        ? `${isLeftWing ? "舞台左側（單號區）" : "舞台右側（雙號區）"} • 第 ${rowNum} 排`
-        : `${isLeftWing ? "Cánh Trái Sân Khấu" : "Cánh Phải Sân Khấu"} • Hàng thứ ${rowNum}`;
-    }
-
     const grpKey = params.get("group") || rCfg.group || "honored_guests";
     const zInfo = SEAT_ZONE_I18N[grpKey] || SEAT_ZONE_I18N.honored_guests;
     const customLabel = rCfg.tableLabel ? ` (${rCfg.tableLabel})` : "";
-    if (zoneBadgeEl) {
-      zoneBadgeEl.textContent = (isZh ? zInfo.zh : zInfo.vi) + customLabel;
-    }
     const pax = Math.max(1, parseInt(params.get("pax") || rCfg.pax || "1", 10) || 1);
-    if (paxBadgeEl) {
-      paxBadgeEl.textContent = isZh ? `預留 ${pax} 席位` : `Đã xếp ${pax} ghế (Bàn 10 người)`;
+
+    if (badgeEl) {
+      badgeEl.textContent = isZh ? "SEINE 宴會廳 • 您的專屬桌次" : "SẢNH SEINE • VỊ TRÍ BÀN CỦA BẠN";
     }
-    if (freeNoteEl) {
-      freeNoteEl.textContent = isZh
-        ? `💡 請直接前往「第 ${padded} 桌」，桌內 10 個座位皆可自由入座，無須對號。`
-        : `💡 Quý khách chỉ cần tiến vào Bàn số ${padded} và ngồi tự do tại bất kỳ ghế trống nào trong bàn (10 khách/bàn).`;
+    if (heroHeadingEl) {
+      heroHeadingEl.textContent = isZh ? `第 ${padded} 桌` : `Bàn Số ${padded}`;
+    }
+    if (guestLineEl) {
+      guestLineEl.textContent = isZh
+        ? `誠摯邀請 ${displayGuest} 入席`
+        : `Trân trọng kính mời ${displayGuest}`;
+    }
+    if (n1PeriodEl) {
+      n1PeriodEl.textContent = isZh
+        ? `席位分區 • 已預留 ${pax} 席位（10人圓桌）`
+        : `Khu vực bàn tiệc • Đã xếp ${String(pax).padStart(2, "0")} ghế (Bàn 10 khách)`;
+    }
+    if (n1TitleEl) {
+      n1TitleEl.textContent = (isZh ? zInfo.zh : zInfo.vi) + customLabel;
+    }
+    if (n1DescEl) {
+      n1DescEl.textContent = isZh
+        ? `請直接前往「第 ${padded} 桌」，圓桌內 10 個座位皆可自由入座，無須對號。`
+        : `Quý khách chỉ cần tiến vào Bàn số ${padded} và ngồi tự do tại bất kỳ ghế trống nào trong bàn.`;
+    }
+    if (n2PeriodEl) {
+      n2PeriodEl.textContent = isZh ? "迎賓入口動線指引" : "Hướng di chuyển từ cổng sảnh tầng trệt";
+    }
+    if (n2TitleEl) {
+      n2TitleEl.textContent = isZh
+        ? `${isLeftWing ? "舞台左側（單號區）" : "舞台右側（雙號區）"} • 第 ${rowNum} 排`
+        : `${isLeftWing ? "Cánh Trái Sân Khấu" : "Cánh Phải Sân Khấu"} • Hàng Bàn Thứ ${rowNum}`;
+    }
+    if (n2DescEl) {
+      n2DescEl.textContent = isZh
+        ? `由一樓 Seine 宴會廳迎賓入口進入紅毯主走道後，請往${isLeftWing ? "左側（單號區）" : "右側（雙號區）"}前進至第 ${rowNum} 排即可抵達第 ${padded} 桌。`
+        : `Từ Cổng Đón Khách Sảnh Seine bước vào Lối Đi Lễ Đường chính, rẽ sang ${isLeftWing ? "cánh trái" : "cánh phải"} và tiến lên hàng bàn thứ ${rowNum}.`;
     }
 
     const companions = Array.isArray(rCfg.tableGuests) ? rCfg.tableGuests : [];
-    if (compEl) {
+    if (compLineEl) {
       if (companions.length > 0) {
         const namesStr = companions.map((c) => c.name).join(" · ");
-        compEl.hidden = false;
-        compEl.innerHTML = isZh
-          ? `<strong>👥 同桌親友：</strong>${namesStr}`
-          : `<strong>👥 Khách cùng Bàn ${padded}:</strong> ${namesStr}`;
+        compLineEl.hidden = false;
+        compLineEl.textContent = isZh
+          ? `同桌親友：${namesStr}`
+          : `Khách cùng Bàn ${padded}: ${namesStr}`;
       } else {
-        compEl.hidden = true;
+        compLineEl.hidden = true;
       }
     }
 
-    if (stageEl) {
-      stageEl.textContent = isZh
-        ? "✨ 主舞台與 LED 巨幕 (STAGE) ✨"
-        : "✨ SÂN KHẤU CHÍNH & MÀN HÌNH LED (STAGE) ✨";
+    if (chartNoteEl) {
+      chartNoteEl.textContent = isZh ? `已標示：第 ${padded} 桌` : `Đang đánh dấu: Bàn ${padded}`;
     }
-    if (aisleEl) {
-      aisleEl.textContent = isZh ? "紅毯主走道" : "LỐI ĐI LỄ ĐƯỜNG";
-    }
-    if (entranceEl) {
-      entranceEl.textContent = isZh
-        ? "🚪 SEINE 宴會廳迎賓入口（由此進入 ↑）"
-        : "🚪 CỔNG ĐÓN KHÁCH SẢNH SEINE (BƯỚC VÀO TỪ ĐÂY ↑)";
-    }
-
-    if (leftWingEl && rightWingEl) {
-      const totalTables = Math.max(
-        tNum,
-        (rCfg.seatingConfig && rCfg.seatingConfig.totalTables) || 40
-      );
-      leftWingEl.innerHTML = "";
-      rightWingEl.innerHTML = "";
-      for (let i = 1; i <= totalTables; i++) {
-        const pill = document.createElement("div");
-        const isMine = i === tNum;
-        pill.className = "gsc-mini-tbl" + (isMine ? " is-mine" : "");
-        pill.textContent = isMine
-          ? isZh
-            ? `📍 第${String(i).padStart(2, "0")}桌`
-            : `📍 Bàn ${String(i).padStart(2, "0")}`
-          : String(i).padStart(2, "0");
-        if (i % 2 === 1) {
-          leftWingEl.appendChild(pill);
-        } else {
-          rightWingEl.appendChild(pill);
-        }
-      }
+    if (svgWrapEl) {
+      svgWrapEl.innerHTML = renderArchitecturalRoundTablesSvg(tNum, isZh);
     }
   }
 
@@ -1176,6 +1314,11 @@
       if (locSec) {
         locSec.classList.remove("will-reveal");
         locSec.classList.add("is-visible");
+      }
+      const seatSec = document.getElementById("section-seating");
+      if (seatSec) {
+        seatSec.classList.remove("will-reveal");
+        seatSec.classList.add("is-visible");
       }
       window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
       triggerScrollRevealCheck();
