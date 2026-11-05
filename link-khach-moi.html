@@ -2485,39 +2485,41 @@
               "xi_emblem";
 
             ctx.save();
-            // Tiny, subtle serial number in the left corner (only ~1mm tall on paper!)
+            // Crisp, print-safe micro serial number in the left corner:
+            // Uses solid ink (#681115, no halftone opacity) + uniform-stroke sans-serif (Be Vietnam Pro 600, 23px = ~5pt / 1.65mm on paper)
+            // so any laser/offset printer prints every digit 100% sharp without losing thin strokes, while staying discreet in the corner!
             ctx.textAlign = "left";
             ctx.textBaseline = "alphabetic";
-            ctx.fillStyle = "rgba(104, 17, 21, 0.52)";
-            ctx.font = '500 15.5px "Cormorant Garamond", "Be Vietnam Pro", serif';
+            ctx.fillStyle = "#681115";
+            ctx.font = '600 23px "Be Vietnam Pro", sans-serif';
             const paddedNum = String(slotNum).padStart(2, "0");
-            ctx.fillText(`#${paddedNum}`, 28, 42);
+            ctx.fillText(`#${paddedNum}`, 26, 46);
 
-            // Center of the back-folded flap (y = 135)
+            // Center of the back-folded flap (y = 138) — solid ink for crisp print reproduction
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             if (flapCenterMode === "xi_emblem") {
-              // Symmetric ornamental lines + ✦ 囍 ✦ (looks balanced both upright and upside-down when folded!)
-              ctx.strokeStyle = "rgba(122, 59, 12, 0.35)";
-              ctx.lineWidth = 1.1;
+              // Symmetric ornamental lines + ✦ 囍 ✦ (solid ink so lines never drop out in print)
+              ctx.strokeStyle = "#8c4a27";
+              ctx.lineWidth = 1.6;
               ctx.beginPath();
-              ctx.moveTo(W / 2 - 96, 134);
-              ctx.lineTo(W / 2 - 44, 134);
-              ctx.moveTo(W / 2 + 44, 134);
-              ctx.lineTo(W / 2 + 96, 134);
+              ctx.moveTo(W / 2 - 102, 138);
+              ctx.lineTo(W / 2 - 48, 138);
+              ctx.moveTo(W / 2 + 48, 138);
+              ctx.lineTo(W / 2 + 102, 138);
               ctx.stroke();
 
-              ctx.fillStyle = "rgba(104, 17, 21, 0.72)";
-              ctx.font = '600 18px "Noto Serif TC", "Cormorant Garamond", serif';
-              ctx.fillText("✦   囍   ✦", W / 2, 134);
+              ctx.fillStyle = "#681115";
+              ctx.font = '700 22px "Noto Serif TC", "Cormorant Garamond", serif';
+              ctx.fillText("✦   囍   ✦", W / 2, 138);
             } else if (flapCenterMode === "with_love") {
-              ctx.fillStyle = "rgba(104, 17, 21, 0.72)";
-              ctx.font = 'italic 600 19px "Cormorant Garamond", serif';
-              ctx.fillText("✦   With Love  ·  T & D   ✦", W / 2, 134);
+              ctx.fillStyle = "#681115";
+              ctx.font = 'italic 600 22px "Cormorant Garamond", serif';
+              ctx.fillText("✦   With Love  ·  T & D   ✦", W / 2, 138);
             } else if (flapCenterMode === "monogram_date") {
-              ctx.fillStyle = "rgba(104, 17, 21, 0.72)";
-              ctx.font = '600 17.5px "Cormorant Garamond", "Be Vietnam Pro", serif';
-              ctx.fillText("✦   Tường & Dinh  ·  06.01.2027   ✦", W / 2, 134);
+              ctx.fillStyle = "#681115";
+              ctx.font = '700 20px "Cormorant Garamond", "Be Vietnam Pro", serif';
+              ctx.fillText("✦   Tường & Dinh  ·  06.01.2027   ✦", W / 2, 138);
             }
             ctx.restore();
           } else if (!forPrintTransparent) {
