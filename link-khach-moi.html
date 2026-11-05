@@ -1173,7 +1173,7 @@
       bottom: 22px;
       left: 50%;
       transform: translate(-50%, calc(100% + 50px));
-      z-index: 9999;
+      z-index: 999999;
       width: min(96vw, 980px);
       background: rgba(255, 253, 248, 0.96);
       backdrop-filter: blur(14px);
@@ -1604,9 +1604,11 @@
                 <div>
                   <label for="qr-layout-style" style="display:block; font-size:12.5px; font-weight:600; margin-bottom:5px;">1. Kiểu Thẻ Phụ QR (Không cần mua ghim kẹp):</label>
                   <select id="qr-layout-style" class="adm-select">
-                    <option value="pinterest_strip" selected>🔖 Dải Bookmark Dọc Thon Dài (3.1×9cm • 18 dải/tờ A4 có lề an toàn)</option>
-                    <option value="frameless">✨ Thẻ Phụ Vuông Không Khung (Đặt trên tờ thiệp số 1 • 20 thẻ/tờ A4)</option>
-                    <option value="fold_tab">📐 Thẻ Vuông Có Nếp Gấp Máng Đầu Thiệp (20 thẻ/tờ A4)</option>
+                    <option value="square_qr" selected>🟦 Thẻ Vuông QR Chuyên Dụng (4.5×4.5cm • 24 thẻ/tờ A4 • 4 cột × 6 hàng • Chuẩn Đẹp Nhất)</option>
+                    <option value="square_qr_lg">🟦 Thẻ Vuông QR Cỡ Lớn (5.8×5.8cm • 12 thẻ/tờ A4 • 3 cột × 4 hàng)</option>
+                    <option value="pinterest_strip">🔖 Dải Bookmark Dọc Thon Dài (3.1×9cm • 18 dải/tờ A4 có lề an toàn)</option>
+                    <option value="frameless">✨ Thẻ Phụ Chữ Nhật Không Khung (4.6×5.4cm • 20 thẻ/tờ A4)</option>
+                    <option value="fold_tab">📐 Thẻ Có Nếp Gấp Máng Đầu Thiệp (20 thẻ/tờ A4)</option>
                     <option value="flap_seal">💌 Tem Dán Mặt Trong Nắp Phong Bì Đỏ</option>
                   </select>
                 </div>
@@ -1653,7 +1655,7 @@
 
               <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:6px;">
                 <button type="button" id="btn-print-qr-sheet" class="btn-adm primary lg">
-                  🖨️ Xuất Tờ A4 Theo Đúng Cấu Hình Đang Xem (18 Dải Bookmark / Tờ A4)
+                  🖨️ Xuất Tờ A4 Theo Đúng Cấu Hình Đang Xem (24 Thẻ Vuông 4.5×4.5cm / Tờ A4)
                 </button>
                 <button type="button" id="btn-download-qr-png" class="btn-adm lg" style="border-color:var(--adm-crimson); color:var(--adm-crimson);">
                   ⬇️ Tải Ảnh Lẻ (.PNG)
@@ -1675,7 +1677,7 @@
                   </div>
                   <div>
                     <label for="slot-print-to" class="slot-label">Đến số</label>
-                    <input type="number" id="slot-print-to" class="adm-input" min="1" max="9999" value="18" />
+                    <input type="number" id="slot-print-to" class="adm-input" min="1" max="9999" value="24" />
                   </div>
                   <button type="button" id="btn-print-slots" class="btn-adm primary lg">
                     🖨️ Xuất Tờ A4 QR Đánh Số
@@ -1692,10 +1694,10 @@
                 </div>
                 <div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-top:8px;">
                   <span style="font-size:12px; color:#6d4c3d; font-weight:600;">Chọn nhanh số lượng:</span>
-                  <button type="button" class="btn-adm js-slot-quick-range" data-count="18" style="height:26px; padding:0 8px; font-size:11.5px;">1 tờ A4 (18 chiếc)</button>
-                  <button type="button" class="btn-adm js-slot-quick-range" data-count="54" style="height:26px; padding:0 8px; font-size:11.5px;">3 tờ A4 (54 chiếc)</button>
-                  <button type="button" class="btn-adm js-slot-quick-range" data-count="108" style="height:26px; padding:0 8px; font-size:11.5px;">6 tờ A4 (108 chiếc)</button>
-                  <button type="button" class="btn-adm js-slot-quick-range" data-count="198" style="height:26px; padding:0 8px; font-size:11.5px;">11 tờ A4 (198 chiếc)</button>
+                  <button type="button" class="btn-adm js-slot-quick-range" data-sheets="1" data-count="24" style="height:26px; padding:0 8px; font-size:11.5px;">1 tờ A4</button>
+                  <button type="button" class="btn-adm js-slot-quick-range" data-sheets="3" data-count="72" style="height:26px; padding:0 8px; font-size:11.5px;">3 tờ A4</button>
+                  <button type="button" class="btn-adm js-slot-quick-range" data-sheets="6" data-count="144" style="height:26px; padding:0 8px; font-size:11.5px;">6 tờ A4</button>
+                  <button type="button" class="btn-adm js-slot-quick-range" data-sheets="18" data-count="414" style="height:26px; padding:0 8px; font-size:11.5px;">Toàn bộ (414 chiếc)</button>
                 </div>
               </div>
 
@@ -1797,7 +1799,7 @@
           </div>
 
           <div class="qr-preview-stage">
-            <canvas id="qr-studio-canvas" width="900" height="1120"></canvas>
+            <canvas id="qr-studio-canvas" width="800" height="800"></canvas>
             <div style="font-size:12px; color:var(--adm-muted); text-align:center;">
               📱 Thiết kế thanh mảnh <strong>Không Đóng Khung</strong> • Quét thử trực tiếp bằng Camera / Zalo trên màn hình!
             </div>
@@ -2496,6 +2498,8 @@
         if (bulkFloatBadge) bulkFloatBadge.textContent = `⚡ Đã chọn: ${count} mục`;
         if (bulkFloatingDock) bulkFloatingDock.classList.toggle("is-visible", count > 0);
       }
+      window.updateBulkBadgeUI = updateBulkBadgeUI;
+      const updateBulkBadge = updateBulkBadgeUI;
 
       if (btnBulkSelectVisible) {
         btnBulkSelectVisible.addEventListener("click", () => {
@@ -3065,8 +3069,8 @@
         savedGuests = savedGuests.map((g) => {
           if (normalizeNameKey(g.name) === key) {
             matched = true;
-            if (g.slotCode) linkedSlotCode = g.slotCode;
-            return { ...g, group: effectiveGroup, table: cleanTable, pax: cleanPax };
+            linkedSlotCode = g.slotCode || (g.slot ? makeSlotCode(g.slot) : "");
+            return { ...g, group: effectiveGroup, table: cleanTable, pax: cleanPax, slotCode: linkedSlotCode || g.slotCode };
           }
           return g;
         });
@@ -4486,12 +4490,69 @@
         ctx.fill();
       }
 
+      function getLayoutSheetConfig(layoutMode) {
+        if (layoutMode === "square_qr") {
+          return {
+            cols: 4,
+            rows: 6,
+            itemsPerSheet: 24,
+            sheetWidth: "180mm",
+            pageMargin: "13.5mm 15mm",
+            cellPadding: "0",
+            cellWidth: "45mm",
+            cellHeight: "45mm",
+            name: "Thẻ Vuông QR Chuyên Dụng (4.5×4.5cm • 24 thẻ/tờ A4)",
+            shortName: "24 Thẻ Vuông (4.5×4.5cm)"
+          };
+        }
+        if (layoutMode === "square_qr_lg") {
+          return {
+            cols: 3,
+            rows: 4,
+            itemsPerSheet: 12,
+            sheetWidth: "174mm",
+            pageMargin: "32.5mm 18mm",
+            cellPadding: "0",
+            cellWidth: "58mm",
+            cellHeight: "58mm",
+            name: "Thẻ Vuông QR Cỡ Lớn (5.8×5.8cm • 12 thẻ/tờ A4)",
+            shortName: "12 Thẻ Vuông Lớn (5.8×5.8cm)"
+          };
+        }
+        if (layoutMode === "pinterest_strip") {
+          return {
+            cols: 6,
+            rows: 3,
+            itemsPerSheet: 18,
+            sheetWidth: "197mm",
+            pageMargin: "6.5mm",
+            cellPadding: "0",
+            cellWidth: "auto",
+            cellHeight: "auto",
+            name: "Dải Bookmark Dọc Thon Dài (3.1×9cm • 18 dải/tờ A4)",
+            shortName: "18 Dải Bookmark Dọc"
+          };
+        }
+        return {
+          cols: 4,
+          rows: 5,
+          itemsPerSheet: 20,
+          sheetWidth: "197mm",
+          pageMargin: "6.5mm",
+          cellPadding: "1.8mm 2.2mm",
+          cellWidth: "auto",
+          cellHeight: "auto",
+          name: "Thẻ Phụ Chữ Nhật Không Khung (4.6×5.4cm • 20 thẻ/tờ A4)",
+          shortName: "20 Thẻ Phụ Chữ Nhật"
+        };
+      }
+
       function renderLuxuryWeddingQR(forPrintTransparent = false, overrideOpts = null) {
         if (!qrCanvas || typeof window.qrcode !== "function") return;
         const layoutMode =
           (overrideOpts && overrideOpts.layoutMode) ||
           (qrLayoutStyle && qrLayoutStyle.value) ||
-          "pinterest_strip";
+          "square_qr";
         const targetUrl =
           (overrideOpts && overrideOpts.targetUrl) ||
           (qrUrlInput && qrUrlInput.value.trim()) ||
@@ -4510,11 +4571,13 @@
           "flap_only";
         const slotNum = overrideOpts && overrideOpts.slotNum ? overrideOpts.slotNum : 0;
 
+        const isSquareQr = layoutMode === "square_qr" || layoutMode === "square_qr_lg";
         const isPinterestStrip = layoutMode === "pinterest_strip";
-        // Exact A4-filling ratio: 6 cols x 3 rows inside 197mm x 284mm (6.5mm safe printer margin on all 4 sides of A4)
-        // Logical size: W=460, H=1326. Rendered at 3x Super-Sampling (1380 x 3978 px = ~1,060 DPI Ultra-HD Print Quality!)
-        const W = isPinterestStrip ? 460 : 900;
-        const H = isPinterestStrip ? 1326 : 1120;
+        // Square: 800 x 800 (1:1 True Square) -> at 3x = 2400 x 2400 px Ultra-HD
+        // Pinterest strip: 460 x 1326 -> at 3x = 1380 x 3978 px
+        // Frameless wide: 900 x 1120 -> at 3x = 2700 x 3360 px
+        const W = isPinterestStrip ? 460 : isSquareQr ? 800 : 900;
+        const H = isPinterestStrip ? 1326 : isSquareQr ? 800 : 1120;
         const SCALE = 3;
         const physW = W * SCALE;
         const physH = H * SCALE;
@@ -4533,7 +4596,205 @@
         const count = qr.getModuleCount();
         const centerMin = count * 0.39;
         const centerMax = count * 0.61;
-        const eyeHoleFill = forPrintTransparent ? "transparent" : "#fbf7ef";
+        const eyeHoleFill = forPrintTransparent ? "transparent" : "#faf8f4";
+        const champagneBg = "#faf8f4";
+
+        // =====================================================================
+        // MODE 0: DEDICATED SQUARE QR CARD (1:1 Ratio • 4.5×4.5cm hoặc 5.8×5.8cm)
+        // Hiển thị rõ: "Mời Quý Khách" (hoặc Tên Khách) + Mã QR + "Quét mã..."
+        // =====================================================================
+        if (isSquareQr) {
+          ctx.fillStyle = champagneBg;
+          if (!forPrintTransparent) {
+            drawRoundedRect(ctx, 0, 0, W, H, 16);
+            ctx.fill();
+            ctx.save();
+            ctx.strokeStyle = "rgba(110, 20, 20, 0.12)";
+            ctx.lineWidth = 1.2;
+            drawRoundedRect(ctx, 0.6, 0.6, W - 1.2, H - 1.2, 16);
+            ctx.stroke();
+            ctx.restore();
+          } else {
+            ctx.fillRect(0, 0, W, H);
+            // Crisp outer cut guide border directly on the canvas for printing
+            ctx.save();
+            ctx.strokeStyle = "#c89f88";
+            ctx.lineWidth = 1.4;
+            ctx.strokeRect(0.7, 0.7, W - 1.4, H - 1.4);
+            ctx.restore();
+          }
+
+          // Delicate hairline inner couture double-frame
+          ctx.save();
+          ctx.strokeStyle = "rgba(110, 20, 20, 0.18)";
+          ctx.lineWidth = 1.0;
+          drawRoundedRect(ctx, 14, 14, W - 28, H - 28, 8);
+          ctx.stroke();
+          ctx.restore();
+
+          // Discreet Corner Index (#01, #14) or ornamental corner accents
+          ctx.save();
+          if (slotNum) {
+            ctx.textAlign = "left";
+            ctx.textBaseline = "alphabetic";
+            ctx.fillStyle = "#681115";
+            ctx.font = '600 22px "Be Vietnam Pro", sans-serif';
+            ctx.fillText(`#${String(slotNum).padStart(2, "0")}`, 28, 48);
+
+            ctx.textAlign = "right";
+            ctx.fillStyle = "#7a3b0c";
+            ctx.font = '700 20px "Noto Serif TC", serif';
+            ctx.fillText("囍", W - 28, 48);
+          } else {
+            ctx.fillStyle = "#7a3b0c";
+            ctx.font = '700 19px "Noto Serif TC", serif';
+            ctx.textAlign = "left";
+            ctx.fillText("囍", 28, 48);
+            ctx.textAlign = "right";
+            ctx.fillText("囍", W - 28, 48);
+          }
+          ctx.restore();
+
+          // 1. TOP HEADER SECTION
+          ctx.textAlign = "center";
+          ctx.fillStyle = "#7a3b0c";
+          if (capMode === "zh") {
+            ctx.font = '600 22px "Noto Serif TC", serif';
+            ctx.fillText("誠   摯   敬   邀", W / 2, 60);
+          } else {
+            ctx.font = '700 20px "Cormorant Garamond", "Noto Serif TC", serif';
+            ctx.fillText("✦   06  ·  01  ·  2027   ✦", W / 2, 58);
+          }
+
+          // Main Title Line: "Mời Quý Khách" or "Mời <Tên Khách>"
+          let mainTitle = "";
+          if (guestText) {
+            if (/^(mời|kính mời)/i.test(guestText) || /[\u4e00-\u9fff]/.test(guestText) || capMode === "zh") {
+              mainTitle = guestText;
+            } else {
+              mainTitle = `Mời ${guestText}`;
+            }
+          } else {
+            if (capMode === "zh") {
+              mainTitle = "誠 摯 敬 邀 貴 賓";
+            } else if (capMode === "bilingual") {
+              mainTitle = "Mời Quý Khách · 敬邀貴賓";
+            } else {
+              mainTitle = "Mời Quý Khách";
+            }
+          }
+
+          ctx.fillStyle = "#681115";
+          const titleLen = mainTitle.length;
+          const titleFontSize = titleLen > 24 ? 22 : titleLen > 16 ? 27 : 33;
+          ctx.font = `700 ${titleFontSize}px "Cormorant Garamond", "Noto Serif TC", "Be Vietnam Pro", serif`;
+          ctx.fillText(mainTitle, W / 2, 108);
+
+          // Subtle hairline wing ornament
+          ctx.save();
+          ctx.strokeStyle = "rgba(122, 59, 12, 0.28)";
+          ctx.lineWidth = 1.0;
+          ctx.beginPath();
+          ctx.moveTo(W / 2 - 96, 124);
+          ctx.lineTo(W / 2 + 96, 124);
+          ctx.stroke();
+          ctx.restore();
+
+          // 2. CENTER SQUARE QR MATRIX (440 x 440)
+          const qrBoxSize = 440;
+          const qrX = (W - qrBoxSize) / 2;
+          const qrY = 148;
+          const pad = 14;
+          const innerQrSize = qrBoxSize - pad * 2;
+          const cellSize = innerQrSize / count;
+          const startX = qrX + pad;
+          const startY = qrY + pad;
+
+          drawFinderEye(ctx, startX, startY, cellSize, champagneBg);
+          drawFinderEye(ctx, startX + (count - 7) * cellSize, startY, cellSize, champagneBg);
+          drawFinderEye(ctx, startX + (count - 7) * cellSize, startY, cellSize, champagneBg);
+
+          ctx.fillStyle = "#681115";
+          for (let r = 0; r < count; r++) {
+            for (let c = 0; c < count; c++) {
+              if (isFinderPattern(r, c, count)) continue;
+              if (r > centerMin && r < centerMax && c > centerMin && c < centerMax) continue;
+              if (qr.isDark(r, c)) {
+                const cx = startX + (c + 0.5) * cellSize;
+                const cy = startY + (r + 0.5) * cellSize;
+                ctx.beginPath();
+                ctx.arc(cx, cy, cellSize * 0.44, 0, Math.PI * 2);
+                ctx.fill();
+              }
+            }
+          }
+
+          // Center 囍 Medallion
+          const sealCx = qrX + qrBoxSize / 2;
+          const sealCy = qrY + qrBoxSize / 2;
+          const sealR = qrBoxSize * 0.096;
+
+          ctx.fillStyle = champagneBg;
+          ctx.beginPath();
+          ctx.arc(sealCx, sealCy, sealR + 5, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = "#681115";
+          ctx.beginPath();
+          ctx.arc(sealCx, sealCy, sealR, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.strokeStyle = "#e5be77";
+          ctx.lineWidth = 2.4;
+          ctx.beginPath();
+          ctx.arc(sealCx, sealCy, sealR - 3.5, 0, Math.PI * 2);
+          ctx.stroke();
+
+          ctx.fillStyle = "#ffdf9e";
+          ctx.textAlign = "center";
+          ctx.font = `700 ${Math.round(sealR * 1.08)}px "Noto Serif TC", serif`;
+          ctx.textBaseline = "middle";
+          ctx.fillText("囍", sealCx, sealCy + 2);
+          ctx.textBaseline = "alphabetic";
+
+          // 3. BOTTOM CALL-TO-ACTION & SIGNATURE
+          ctx.textAlign = "center";
+          ctx.fillStyle = "#681115";
+          if (capMode === "zh") {
+            ctx.font = '700 23px "Noto Serif TC", serif';
+            ctx.fillText("掃 碼 開 啟 喜 帖 與 婚 宴 桌 次", W / 2, 638);
+            ctx.fillStyle = "#7a3b0c";
+            ctx.font = '600 17.5px "Noto Serif TC", serif';
+            ctx.fillText("胡志明市 Riverside Palace · Seine 宴會廳", W / 2, 670);
+            ctx.fillStyle = "#681115";
+            ctx.font = '700 23.5px "Noto Serif TC", serif';
+            ctx.fillText("趙  順  祥   &   盧  小  瑩", W / 2, 715);
+          } else if (capMode === "vi") {
+            ctx.font = '700 22.5px "Be Vietnam Pro", sans-serif';
+            ctx.fillText("Quét mã xem thiệp mời & sơ đồ bàn tiệc", W / 2, 638);
+            ctx.fillStyle = "#7a3b0c";
+            ctx.font = '600 16.5px "Be Vietnam Pro", sans-serif';
+            ctx.fillText("Riverside Palace · Sảnh Seine · Đón khách 18:00", W / 2, 670);
+            ctx.fillStyle = "#681115";
+            ctx.font = '700 24px "Cormorant Garamond", "Be Vietnam Pro", serif';
+            ctx.fillText("Thuận Tường  &  Tiểu Dinh", W / 2, 715);
+          } else {
+            ctx.font = '700 22px "Be Vietnam Pro", sans-serif';
+            ctx.fillText("Quét mã xem thiệp mời & sơ đồ bàn tiệc", W / 2, 638);
+            ctx.fillStyle = "#7a3b0c";
+            ctx.font = '600 17px "Noto Serif TC", serif';
+            ctx.fillText("掃 碼 開 啟 專 屬 喜 帖 與 婚 宴 桌 次", W / 2, 670);
+            ctx.fillStyle = "#681115";
+            ctx.font = '700 24px "Cormorant Garamond", "Be Vietnam Pro", serif';
+            ctx.fillText("Thuận Tường  &  Tiểu Dinh", W / 2, 715);
+          }
+
+          // Couture bottom tag
+          ctx.fillStyle = "#6e4242";
+          ctx.font = 'italic 500 15px "Cormorant Garamond", serif';
+          ctx.fillText("✦  Personally designed with love  ✦", W / 2, 750);
+          return;
+        }
 
         // =====================================================================
         // MODE A: PINTEREST SLENDER VERTICAL BOOKMARK STRIP (~3.28cm x 9.46cm)
@@ -4969,7 +5230,10 @@
       }
 
       if (qrLayoutStyle) {
-        qrLayoutStyle.addEventListener("change", () => renderLuxuryWeddingQR(false));
+        qrLayoutStyle.addEventListener("change", () => {
+          updateBatchLiveSummary();
+          renderLuxuryWeddingQR(false);
+        });
       }
       if (qrPresetSelect) {
         qrPresetSelect.addEventListener("change", () => {
@@ -5003,6 +5267,8 @@
         const namedCount = names.length;
         if (qrBatchNamedCount) qrBatchNamedCount.textContent = String(namedCount);
 
+        const layoutMode = (qrLayoutStyle && qrLayoutStyle.value) || "square_qr";
+        const cfg = getLayoutSheetConfig(layoutMode);
         const targetTotal = Math.max(
           namedCount,
           parseInt((qrBatchGenericCount && qrBatchGenericCount.value) || "414", 10) || 414
@@ -5013,24 +5279,49 @@
         );
         const fillMode = (qrBatchFillMode && qrBatchFillMode.value) || "numbered";
         const remainder = Math.max(0, targetTotal - namedCount);
-        const sheets = Math.ceil(targetTotal / 18);
-        const endSlot = remainder > 0 ? startSlot + remainder - 1 : startSlot;
+        const sheets = Math.ceil(targetTotal / cfg.itemsPerSheet);
+
+        // Compute unassigned slots sequence without duplicating named guests' slots
+        const usedSlotNums = new Set();
+        ensureGuestSlotsNormalized();
+        names.forEach((gName, pIdx) => {
+          const matchedG = savedGuests.find(
+            (g) => g && normalizeNameKey(g.name) === normalizeNameKey(gName)
+          );
+          const sNum = (matchedG && Number(matchedG.slot)) || pIdx + 1;
+          usedSlotNums.add(sNum);
+        });
+
+        let startSlotAuto = startSlot > 1 && !usedSlotNums.has(startSlot) ? startSlot : 1;
+        const remainingSlots = [];
+        let cur = startSlotAuto;
+        while (remainingSlots.length < remainder) {
+          if (!usedSlotNums.has(cur)) {
+            remainingSlots.push(cur);
+          }
+          cur++;
+        }
+        const firstRemSlot = remainingSlots.length > 0 ? remainingSlots[0] : startSlot;
+        const lastRemSlot = remainingSlots.length > 0 ? remainingSlots[remainingSlots.length - 1] : startSlot;
 
         if (qrBatchLiveSummary) {
           if (fillMode === "numbered") {
             qrBatchLiveSummary.innerHTML =
               remainder > 0
-                ? `📊 <strong>Tổng in: ${targetTotal} chiếc (${sheets} tờ A4)</strong> = <strong>${namedCount} chiếc Đã Có Tên</strong> + <strong>${remainder} chiếc QR Đánh Số (từ <code>#${String(startSlot).padStart(2, "0")}</code> → <code>#${String(endSlot).padStart(2, "0")}</code>)</strong>`
-                : `📊 <strong>Tổng in: ${targetTotal} chiếc (${sheets} tờ A4)</strong> = <strong>${namedCount} chiếc Đã Có Tên</strong> (Đã đủ số lượng, không cần bù thêm)`;
+                ? `📊 <strong>Tổng in: ${targetTotal} thẻ (${sheets} tờ A4 • ${cfg.name})</strong> = <strong>${namedCount} thẻ Đã Có Tên</strong> + <strong>${remainder} thẻ QR Đánh Số (từ <code>#${String(firstRemSlot).padStart(2, "0")}</code> → <code>#${String(lastRemSlot).padStart(2, "0")}</code>)</strong>`
+                : `📊 <strong>Tổng in: ${targetTotal} thẻ (${sheets} tờ A4 • ${cfg.name})</strong> = <strong>${namedCount} thẻ Đã Có Tên</strong> (Đã đủ số lượng, không cần bù thêm)`;
           } else {
-            qrBatchLiveSummary.innerHTML = `📊 <strong>Tổng in: ${targetTotal} chiếc (${sheets} tờ A4)</strong> = <strong>${namedCount} chiếc Đã Có Tên</strong> + <strong>${remainder} chiếc QR Chung</strong>`;
+            qrBatchLiveSummary.innerHTML = `📊 <strong>Tổng in: ${targetTotal} thẻ (${sheets} tờ A4 • ${cfg.name})</strong> = <strong>${namedCount} thẻ Đã Có Tên</strong> + <strong>${remainder} thẻ QR Chung</strong>`;
           }
         }
         if (btnPrintMixedA4) {
           btnPrintMixedA4.textContent =
             fillMode === "numbered" && remainder > 0
-              ? `🖨️ Xuất Đủ ${targetTotal} Bookmark Ra ${sheets} Tờ A4 (${namedCount} Có Tên + ${remainder} QR Đánh Số #${String(startSlot).padStart(2, "0")}→#${String(endSlot).padStart(2, "0")})`
-              : `🖨️ Xuất Đủ ${targetTotal} Bookmark Ra ${sheets} Tờ A4 (${namedCount} Có Tên + ${remainder} QR Chung)`;
+              ? `🖨️ Xuất Đủ ${targetTotal} Thẻ Ra ${sheets} Tờ A4 (${namedCount} Có Tên + ${remainder} QR Đánh Số #${String(firstRemSlot).padStart(2, "0")}→#${String(lastRemSlot).padStart(2, "0")})`
+              : `🖨️ Xuất Đủ ${targetTotal} Thẻ Ra ${sheets} Tờ A4 (${namedCount} Có Tên + ${remainder} QR Chung)`;
+        }
+        if (btnPrintQrSheet) {
+          btnPrintQrSheet.textContent = `🖨️ Xuất Tờ A4 Theo Đúng Cấu Hình Đang Xem (${cfg.shortName} / Tờ A4)`;
         }
       }
 
@@ -5067,10 +5358,10 @@
 
       if (btnPrintMixedA4) {
         btnPrintMixedA4.addEventListener("click", () => {
-          const layoutMode = (qrLayoutStyle && qrLayoutStyle.value) || "pinterest_strip";
+          const layoutMode = (qrLayoutStyle && qrLayoutStyle.value) || "square_qr";
+          const cfg = getLayoutSheetConfig(layoutMode);
+          const isSquareQr = layoutMode === "square_qr" || layoutMode === "square_qr_lg";
           const isPinterestStrip = layoutMode === "pinterest_strip";
-          const cols = isPinterestStrip ? 6 : 4;
-          const itemsPerSheet = isPinterestStrip ? 18 : 20;
           const capMode = (qrCaptionStyle && qrCaptionStyle.value) || "bilingual";
           const namePosMode = (qrBatchNamePos && qrBatchNamePos.value) || "flap_only";
           const presetVal = (qrPresetSelect && qrPresetSelect.value) || "directions";
@@ -5090,7 +5381,7 @@
           const remainderCount = Math.max(0, targetTotal - personalNames.length);
 
           if (personalNames.length === 0 && remainderCount === 0) {
-            notify("⚠️ Hãy nhập tổng số lượng Bookmark muốn in!");
+            notify("⚠️ Hãy nhập tổng số lượng thẻ QR muốn in!");
             return;
           }
 
@@ -5101,13 +5392,14 @@
           }
 
           win.document.write(
-            `<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><title>Đang dàn trang ${targetTotal} Bookmark...</title></head><body style="font-family:sans-serif;padding:40px;text-align:center;background:#f4efe6;color:#5a1818;"><h2>⏳ Đang tạo ${targetTotal} Bookmark độ nét cao 1.060 DPI (${Math.ceil(targetTotal / itemsPerSheet)} tờ A4)...</h2><p>Chỉ mất khoảng 1 giây, vui lòng đợi xíu nhé!</p></body></html>`
+            `<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><title>Đang dàn trang ${targetTotal} Thẻ QR...</title></head><body style="font-family:sans-serif;padding:40px;text-align:center;background:#f4efe6;color:#5a1818;"><h2>⏳ Đang tạo ${targetTotal} Thẻ QR độ nét cao 1.060 DPI (${Math.ceil(targetTotal / cfg.itemsPerSheet)} tờ A4 • ${cfg.name})...</h2><p>Chỉ mất khoảng 1 giây, vui lòng đợi xíu nhé!</p></body></html>`
           );
 
           setTimeout(() => {
             const cells = [];
+            const usedSlotNums = new Set();
 
-            // 1. Render Personalized Bookmarks for each named guest (using their permanent fixed ?s=slotCode URL!)
+            // 1. Render Personalized QR cards for each named guest
             ensureGuestSlotsNormalized();
             personalNames.forEach((gName, pIdx) => {
               const hasCjk = /[\u4e00-\u9fff]/.test(gName);
@@ -5115,6 +5407,7 @@
                 (g) => g && normalizeNameKey(g.name) === normalizeNameKey(gName)
               );
               const slotNum = (matchedG && Number(matchedG.slot)) || pIdx + 1;
+              usedSlotNums.add(slotNum);
               const gUrl = getSlotUrl(slotNum);
 
               renderLuxuryWeddingQR(true, {
@@ -5122,38 +5415,52 @@
                 targetUrl: gUrl,
                 capMode: hasCjk ? "zh" : capMode,
                 guestText: gName,
-                namePosMode
+                namePosMode,
+                slotNum
               });
-              const dUrl = isPinterestStrip
+              const dUrl = (isPinterestStrip || isSquareQr)
                 ? qrCanvas.toDataURL("image/jpeg", 0.95)
                 : qrCanvas.toDataURL("image/png");
               cells.push(
-                `<div class="sticker-cell"><img src="${dUrl}" alt="Bookmark QR #${slotNum} ${gName}" /></div>`
+                `<div class="sticker-cell"><img src="${dUrl}" alt="Thẻ QR #${slotNum} ${gName}" /></div>`
               );
             });
 
-            // 2. Fill the remaining slots up to targetTotal (e.g. 414)
+            // 2. Fill the remaining slots up to targetTotal (e.g. 414) without duplicate slot numbers
+            let firstRemSlot = startSlot;
+            let lastRemSlot = startSlot;
             if (remainderCount > 0) {
               if (fillMode === "numbered") {
-                const endSlot = startSlot + remainderCount - 1;
-                for (let n = startSlot; n <= endSlot; n++) {
+                let curSlot = startSlot > 1 && !usedSlotNums.has(startSlot) ? startSlot : 1;
+                const remainingSlots = [];
+                while (remainingSlots.length < remainderCount) {
+                  if (!usedSlotNums.has(curSlot)) {
+                    remainingSlots.push(curSlot);
+                  }
+                  curSlot++;
+                }
+                firstRemSlot = remainingSlots[0] || startSlot;
+                lastRemSlot = remainingSlots[remainingSlots.length - 1] || startSlot;
+
+                remainingSlots.forEach((n) => {
                   const sUrl = getSlotUrl(n);
                   renderLuxuryWeddingQR(true, {
                     layoutMode,
                     targetUrl: sUrl,
                     capMode,
+                    guestText: "",
                     slotNum: n,
                     flapCenterMode
                   });
-                  const dUrl = isPinterestStrip
+                  const dUrl = (isPinterestStrip || isSquareQr)
                     ? qrCanvas.toDataURL("image/jpeg", 0.95)
                     : qrCanvas.toDataURL("image/png");
                   cells.push(
-                    `<div class="sticker-cell"><img src="${dUrl}" alt="Bookmark QR Số ${n}" /></div>`
+                    `<div class="sticker-cell"><img src="${dUrl}" alt="Thẻ QR Số ${n}" /></div>`
                   );
-                }
-                if (endSlot > slotMaxPrinted) {
-                  slotMaxPrinted = endSlot;
+                });
+                if (lastRemSlot > slotMaxPrinted) {
+                  slotMaxPrinted = lastRemSlot;
                   try {
                     localStorage.setItem(STORAGE_SLOT_MAX_PRINTED, String(slotMaxPrinted));
                   } catch (_) {}
@@ -5170,12 +5477,12 @@
                   guestText: "",
                   namePosMode
                 });
-                const genericDataUrl = isPinterestStrip
+                const genericDataUrl = (isPinterestStrip || isSquareQr)
                   ? qrCanvas.toDataURL("image/jpeg", 0.95)
                   : qrCanvas.toDataURL("image/png");
                 for (let i = 0; i < remainderCount; i++) {
                   cells.push(
-                    `<div class="sticker-cell"><img src="${genericDataUrl}" alt="Bookmark QR Chung" /></div>`
+                    `<div class="sticker-cell"><img src="${genericDataUrl}" alt="Thẻ QR Chung" /></div>`
                   );
                 }
               }
@@ -5186,18 +5493,17 @@
 
             const totalCount = cells.length;
             const sheetsHtml = [];
-            for (let i = 0; i < totalCount; i += itemsPerSheet) {
-              const chunk = cells.slice(i, i + itemsPerSheet);
-              const isLast = i + itemsPerSheet >= totalCount;
+            for (let i = 0; i < totalCount; i += cfg.itemsPerSheet) {
+              const chunk = cells.slice(i, i + cfg.itemsPerSheet);
+              const isLast = i + cfg.itemsPerSheet >= totalCount;
               sheetsHtml.push(
                 `<div class="a4-sheet${isLast ? "" : " page-break"}">${chunk.join("")}</div>`
               );
             }
 
-            const endSlotLabel = startSlot + remainderCount - 1;
             const remainderDesc =
               fillMode === "numbered" && remainderCount > 0
-                ? `${remainderCount} QR Đánh Số (#${String(startSlot).padStart(2, "0")} → #${String(endSlotLabel).padStart(2, "0")})`
+                ? `${remainderCount} QR Đánh Số (#${String(firstRemSlot).padStart(2, "0")} → #${String(lastRemSlot).padStart(2, "0")})`
                 : `${remainderCount} QR Chung`;
 
             win.document.open();
@@ -5205,9 +5511,9 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <title>In Tờ A4 Gộp (${personalNames.length} Có Tên + ${remainderDesc} = ${totalCount} Bookmark) — Thuận Tường & Tiểu Dinh</title>
+  <title>In Tờ A4 Gộp (${personalNames.length} Có Tên + ${remainderDesc} = ${totalCount} Thẻ) — Thuận Tường & Tiểu Dinh</title>
   <style>
-    @page { size: A4 portrait; margin: 6.5mm; }
+    @page { size: A4 portrait; margin: ${cfg.pageMargin}; }
     * {
       box-sizing: border-box;
       -webkit-print-color-adjust: exact !important;
@@ -5243,11 +5549,11 @@
       white-space: nowrap;
     }
     .a4-sheet {
-      width: 197mm;
+      width: ${cfg.sheetWidth};
       margin: 0 auto 20px;
       background: transparent;
       display: grid;
-      grid-template-columns: repeat(${cols}, 1fr);
+      grid-template-columns: repeat(${cfg.cols}, 1fr);
       gap: 0;
       border-top: 0.25mm solid #b07b72;
       border-left: 0.25mm solid #b07b72;
@@ -5259,11 +5565,11 @@
     .sticker-cell {
       border-right: 0.25mm solid #b07b72;
       border-bottom: 0.25mm solid #b07b72;
-      padding: ${isPinterestStrip ? "0" : "1.8mm 2.2mm"};
+      padding: ${cfg.cellPadding};
       display: flex;
       align-items: center;
       justify-content: center;
-      background: ${isPinterestStrip ? "#faf8f4" : "transparent"};
+      background: ${isPinterestStrip || isSquareQr ? "#faf8f4" : "transparent"};
       page-break-inside: avoid;
       break-inside: avoid;
     }
@@ -5288,9 +5594,9 @@
 <body>
   <div class="print-toolbar">
     <div>
-      <strong>🖨️ Bản Dàn Trang A4 Đủ Số Lượng: ${personalNames.length} Bookmark Đã Có Tên + ${remainderDesc} = Tổng ${totalCount} chiếc (${sheetsHtml.length} tờ A4)</strong>
+      <strong>🖨️ Bản Dàn Trang A4 Đủ Số Lượng: ${personalNames.length} Thẻ Đã Có Tên + ${remainderDesc} = Tổng ${totalCount} chiếc (${sheetsHtml.length} tờ A4 • ${cfg.name})</strong>
       <div style="font-size:12.5px; color:#5c4747; margin-top:4px; line-height:1.5;">
-        • Những khách đã có tên được xếp ở các ô đầu tiên (có in tên khách ở mặt gập sau), tiếp nối liền mạch bởi <strong>${remainderDesc}</strong> để không trống 1 ô nào trên cả ${sheetsHtml.length} tờ A4.<br/>
+        • Những khách đã có tên được xếp ở các ô đầu tiên, tiếp nối liền mạch bởi <strong>${remainderDesc}</strong> mà không trùng lặp số.<br/>
         • Khi bấm In / Lưu PDF nhớ chọn <strong>Tỷ lệ (Scale): Mặc định / 100%</strong>.
       </div>
     </div>
@@ -5323,16 +5629,17 @@
 
       if (btnPrintQrSheet) {
         btnPrintQrSheet.addEventListener("click", () => {
-          // Render with 100% transparent background so Vellum / Cream paper texture shines through naturally
           renderLuxuryWeddingQR(true);
-          const printDataUrl = qrCanvas.toDataURL("image/png");
+          const layoutMode = (qrLayoutStyle && qrLayoutStyle.value) || "square_qr";
+          const cfg = getLayoutSheetConfig(layoutMode);
+          const isSquareQr = layoutMode === "square_qr" || layoutMode === "square_qr_lg";
+          const isPinterestStrip = layoutMode === "pinterest_strip";
+          const printDataUrl = (isPinterestStrip || isSquareQr)
+            ? qrCanvas.toDataURL("image/jpeg", 0.95)
+            : qrCanvas.toDataURL("image/png");
           renderLuxuryWeddingQR(false);
 
-          const layoutMode = (qrLayoutStyle && qrLayoutStyle.value) || "pinterest_strip";
-          const isPinterestStrip = layoutMode === "pinterest_strip";
-          const isFoldTab = layoutMode === "fold_tab";
-          const cols = isPinterestStrip ? 6 : 4;
-          const totalItems = isPinterestStrip ? 18 : 20;
+          const totalItems = cfg.itemsPerSheet;
 
           const win = window.open("", "_blank");
           if (!win) {
@@ -5347,9 +5654,9 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <title>In Tờ A4 (${totalItems} ${isPinterestStrip ? "Dải Bookmark Dọc Thon Dài" : "Thẻ Phụ QR Không Khung"}) — Thuận Tường & Tiểu Dinh</title>
+  <title>In Tờ A4 (${totalItems} ${cfg.name}) — Thuận Tường & Tiểu Dinh</title>
   <style>
-    @page { size: A4 portrait; margin: 6.5mm; }
+    @page { size: A4 portrait; margin: ${cfg.pageMargin}; }
     * {
       box-sizing: border-box;
       -webkit-print-color-adjust: exact !important;
@@ -5385,11 +5692,11 @@
       white-space: nowrap;
     }
     .a4-sheet {
-      width: 197mm;
+      width: ${cfg.sheetWidth};
       margin: 0 auto 20px;
       background: transparent;
       display: grid;
-      grid-template-columns: repeat(${cols}, 1fr);
+      grid-template-columns: repeat(${cfg.cols}, 1fr);
       gap: 0;
       border-top: 0.25mm solid #b07b72;
       border-left: 0.25mm solid #b07b72;
@@ -5397,11 +5704,11 @@
     .sticker-cell {
       border-right: 0.25mm solid #b07b72;
       border-bottom: 0.25mm solid #b07b72;
-      padding: ${isPinterestStrip ? "0" : "1.8mm 2.2mm"};
+      padding: ${cfg.cellPadding};
       display: flex;
       align-items: center;
       justify-content: center;
-      background: ${isPinterestStrip ? "#faf8f4" : "transparent"};
+      background: ${isPinterestStrip || isSquareQr ? "#faf8f4" : "transparent"};
       page-break-inside: avoid;
       break-inside: avoid;
     }
@@ -5426,18 +5733,10 @@
 <body>
   <div class="print-toolbar">
     <div>
-      <strong>🖨️ ${isPinterestStrip
-        ? "Tờ A4 Gồm 18 Dải Bookmark Dọc Thon Dài (6 cột × 3 hàng • Rộng ~3.05cm × Dài 8.9cm/dải • Lề an toàn 1.3cm)"
-        : "Tờ A4 Gồm 20 Thẻ Phụ QR Không Khung (4 cột × 5 hàng • Cỡ chuẩn ~4.6cm × 5.4cm/thẻ)"
-      }</strong>
+      <strong>🖨️ Tờ A4 Gồm ${totalItems} Thẻ (${cfg.name})</strong>
       <div style="font-size:12.5px; color:#5c4747; margin-top:4px; line-height:1.5;">
-        • <strong>Chống mất mép 100%:</strong> Đã thu gọn khung in vào giữa tờ A4 (chừa sẵn <strong>lề trắng an toàn 1.2cm–1.3cm ở cả 4 cạnh</strong>) nên mọi máy in laser đều in trọn vẹn không bị cắt lẹm mép!<br/>
-        • <strong>Cách gập xuống máng vô thiệp (0đ tiền ghim):</strong> ${isPinterestStrip
-          ? "Ở cách đỉnh mỗi dải <strong>1.4cm</strong> có sẵn 2 vạch chấm nhỏ ở 2 mép ➔ bạn chỉ việc <strong>gập cái đầu 1.4cm đó ra phía sau rồi máng thẳng vô cạnh trên tờ thiệp số 1</strong>!"
-          : isFoldTab
-          ? "Đã có sẵn <strong>nếp gấp 1.2cm ở đầu mỗi thẻ</strong> — bạn chỉ cần miết gập mép trên ra sau để máng lên cạnh trên tờ thiệp số 1!"
-          : "Khi xén rời xong, thẻ hoàn toàn <strong>không có khung viền</strong>. Bạn chỉ cần đặt thẻ nằm ngay trên mặt tờ thiệp số 1 rồi đút vào phong bì!"
-        }
+        • <strong>Chống mất mép 100%:</strong> Đã căn chỉnh lề an toàn ở cả 4 cạnh tờ A4 để in trọn vẹn, không bị mất nét.<br/>
+        • <strong>Tỷ lệ in:</strong> Khi bấm In / Lưu PDF nhớ chọn <strong>Tỷ lệ (Scale): Mặc định / 100%</strong>.
       </div>
     </div>
     <button class="print-btn" onclick="window.print()">🖨️ In Ngay / Lưu File PDF</button>
@@ -6115,16 +6414,20 @@
 
       document.querySelectorAll(".js-slot-quick-range").forEach((btn) => {
         btn.addEventListener("click", () => {
-          const count = parseInt(btn.getAttribute("data-count") || "18", 10) || 18;
+          const layoutMode = (qrLayoutStyle && qrLayoutStyle.value) || "square_qr";
+          const cfg = getLayoutSheetConfig(layoutMode);
+          const sheetsMult = parseInt(btn.getAttribute("data-sheets") || "0", 10);
+          const rawCount = parseInt(btn.getAttribute("data-count") || "0", 10);
+          const count = sheetsMult > 0 ? (cfg.itemsPerSheet * sheetsMult) : (rawCount || cfg.itemsPerSheet);
           const fromN = Math.max(1, parseInt(slotPrintFromInput ? slotPrintFromInput.value : "1", 10) || 1);
           const toN = fromN + count - 1;
           if (slotPrintToInput) slotPrintToInput.value = String(toN);
           renderLuxuryWeddingQR(false, {
-            layoutMode: "pinterest_strip",
+            layoutMode,
             targetUrl: getSlotUrl(fromN),
             slotNum: fromN
           });
-          notify(`📐 Đã chọn in từ Số ${fromN} → Số ${toN} (${count} chiếc = ${Math.ceil(count / 18)} tờ A4)!`);
+          notify(`📐 Đã chọn in từ Số ${fromN} → Số ${toN} (${count} chiếc = ${Math.ceil(count / cfg.itemsPerSheet)} tờ A4)!`);
         });
       });
 
@@ -6208,12 +6511,16 @@
 
       if (btnPrintSlots) {
         btnPrintSlots.addEventListener("click", () => {
+          const layoutMode = (qrLayoutStyle && qrLayoutStyle.value) || "square_qr";
+          const cfg = getLayoutSheetConfig(layoutMode);
+          const isSquareQr = layoutMode === "square_qr" || layoutMode === "square_qr_lg";
+          const isPinterestStrip = layoutMode === "pinterest_strip";
           const fromN = Math.max(1, parseInt(slotPrintFromInput ? slotPrintFromInput.value : "1", 10) || 1);
           const toN = Math.max(
             fromN,
             Math.min(
-              fromN + 359,
-              parseInt(slotPrintToInput ? slotPrintToInput.value : String(fromN + 17), 10) || fromN + 17
+              fromN + 479,
+              parseInt(slotPrintToInput ? slotPrintToInput.value : String(fromN + cfg.itemsPerSheet - 1), 10) || (fromN + cfg.itemsPerSheet - 1)
             )
           );
           const capMode = (qrCaptionStyle && qrCaptionStyle.value) || "bilingual";
@@ -6228,16 +6535,17 @@
           for (let n = fromN; n <= toN; n++) {
             const slotUrl = getSlotUrl(n);
             renderLuxuryWeddingQR(true, {
-              layoutMode: "pinterest_strip",
+              layoutMode,
               targetUrl: slotUrl,
               capMode,
               guestText: "",
               slotNum: n
             });
-            // Use high-res JPEG (0.95) for opaque #FAF8F4 bookmark strips -> 15x lighter & 10x faster for 198+ items!
-            const dUrl = qrCanvas.toDataURL("image/jpeg", 0.95);
+            const dUrl = (isPinterestStrip || isSquareQr)
+              ? qrCanvas.toDataURL("image/jpeg", 0.95)
+              : qrCanvas.toDataURL("image/png");
             itemsHtml.push(
-              `<div class="sticker-cell"><img src="${dUrl}" alt="Bookmark QR Số ${n}" /></div>`
+              `<div class="sticker-cell"><img src="${dUrl}" alt="Thẻ QR Số ${n}" /></div>`
             );
           }
 
@@ -6251,14 +6559,14 @@
           }
           if (slotPrintFromInput && slotPrintToInput) {
             slotPrintFromInput.value = String(toN + 1);
-            slotPrintToInput.value = String(toN + 18);
+            slotPrintToInput.value = String(toN + cfg.itemsPerSheet);
           }
 
           const totalCount = itemsHtml.length;
           const sheetsHtml = [];
-          for (let i = 0; i < totalCount; i += 18) {
-            const chunk = itemsHtml.slice(i, i + 18);
-            const isLast = i + 18 >= totalCount;
+          for (let i = 0; i < totalCount; i += cfg.itemsPerSheet) {
+            const chunk = itemsHtml.slice(i, i + cfg.itemsPerSheet);
+            const isLast = i + cfg.itemsPerSheet >= totalCount;
             sheetsHtml.push(
               `<div class="a4-sheet${isLast ? "" : " page-break"}">${chunk.join("")}</div>`
             );
@@ -6269,9 +6577,9 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <title>In ${numSheets} Tờ A4 Bookmark QR Đánh Số (Số ${fromN} → Số ${toN}) — Thuận Tường & Tiểu Dinh</title>
+  <title>In ${numSheets} Tờ A4 Thẻ QR Đánh Số (Số ${fromN} → Số ${toN} • ${cfg.name}) — Thuận Tường & Tiểu Dinh</title>
   <style>
-    @page { size: A4 portrait; margin: 6.5mm; }
+    @page { size: A4 portrait; margin: ${cfg.pageMargin}; }
     * {
       box-sizing: border-box;
       -webkit-print-color-adjust: exact !important;
@@ -6307,11 +6615,11 @@
       white-space: nowrap;
     }
     .a4-sheet {
-      width: 197mm;
+      width: ${cfg.sheetWidth};
       margin: 0 auto 20px;
       background: transparent;
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
+      grid-template-columns: repeat(${cfg.cols}, 1fr);
       gap: 0;
       border-top: 0.25mm solid #b07b72;
       border-left: 0.25mm solid #b07b72;
@@ -6323,11 +6631,11 @@
     .sticker-cell {
       border-right: 0.25mm solid #b07b72;
       border-bottom: 0.25mm solid #b07b72;
-      padding: 0;
+      padding: ${cfg.cellPadding};
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #faf8f4;
+      background: ${isPinterestStrip || isSquareQr ? "#faf8f4" : "transparent"};
       page-break-inside: avoid;
       break-inside: avoid;
     }
@@ -6352,10 +6660,10 @@
 <body>
   <div class="print-toolbar">
     <div>
-      <strong>🖨️ Bản Dàn Trang ${numSheets} Tờ A4 Bookmark QR Đánh Số: Từ Số ${fromN} → Số ${toN} (${totalCount} chiếc • 1.060 DPI)</strong>
+      <strong>🖨️ Xuất In ${totalCount} Thẻ QR Đánh Số (#${String(fromN).padStart(2, "0")} → #${String(toN).padStart(2, "0")}) Gồm ${numSheets} Tờ A4 (${cfg.name})</strong>
       <div style="font-size:12.5px; color:#5c4747; margin-top:4px; line-height:1.5;">
-        • Đã tự động chia chuẩn <strong>18 chiếc / 1 tờ A4 (Tổng cộng ${numSheets} trang A4)</strong>.<br/>
-        • Ở phần gập phía sau của mỗi Bookmark đã in sẵn <strong>Số ${fromN}, Số ${fromN + 1}...</strong> (in 2 chiều để gập xuống vẫn đọc được ngay).
+        • <strong>Mã QR chuyên dụng:</strong> Mỗi thẻ có mã QR riêng và số thứ tự ở góc để đối soát với link cố định.<br/>
+        • Khi bấm In / Lưu PDF nhớ chọn <strong>Tỷ lệ (Scale): Mặc định / 100%</strong>.
       </div>
     </div>
     <button class="print-btn" onclick="window.print()">🖨️ In Ngay / Lưu File PDF</button>
@@ -6548,12 +6856,19 @@
                 <button type="button" class="btn-adm danger js-sp-remove" style="height:26px; padding:0 8px; font-size:11.5px;" title="Gỡ khỏi bàn này">✕ Gỡ</button>
               `;
               row.querySelector(".js-sp-name").textContent = item.name;
-              row.querySelector(".js-sp-remove").addEventListener("click", () => {
-                if (item.type === "slot" && item.slot) {
-                  setSlotSeat(item.slot, item.group, "", item.pax, true);
-                } else {
-                  updateGuestSeatOnServer(item.name, item.group, "", item.pax, true);
+              row.querySelector(".js-sp-remove").addEventListener("click", async () => {
+                if (item.slot) {
+                  await setSlotSeat(item.slot, item.group || "", "", item.pax || 1, false);
                 }
+                if (item.name && !item.name.startsWith("QR Số")) {
+                  await updateGuestSeatOnServer(item.name, item.group || "", "", item.pax || 1, false);
+                }
+                persistLocalGuests();
+                persistLocalSlots();
+                buildRows();
+                renderSlotsTable();
+                renderSeineFloorplan();
+                notify(`🪑 Đã gỡ "${item.name}" khỏi Bàn ${String(tKey).padStart(2, "0")}!`);
               });
               seineInspSeatedList.appendChild(row);
             });
@@ -6636,13 +6951,21 @@
               <button type="button" class="btn-adm primary js-cand-assign" style="height:26px; padding:0 9px; font-size:11.5px;">➕ Vào Bàn ${String(tKey).padStart(2, "0")}</button>
             `;
             row.querySelector(".js-cand-name").textContent = c.name;
-            row.querySelector(".js-cand-assign").addEventListener("click", () => {
+            row.querySelector(".js-cand-assign").addEventListener("click", async () => {
               const targetGrp = c.group || meta.group || "";
-              if (c.type === "slot" && c.slot) {
-                setSlotSeat(c.slot, targetGrp, tKey, c.pax, true);
-              } else {
-                updateGuestSeatOnServer(c.name, targetGrp, tKey, c.pax, true);
+              const targetPax = Math.max(1, parseInt(c.pax || "1", 10) || 1);
+              if (c.slot) {
+                await setSlotSeat(c.slot, targetGrp, tKey, targetPax, false);
               }
+              if (c.name && !c.name.startsWith("QR Số")) {
+                await updateGuestSeatOnServer(c.name, targetGrp, tKey, targetPax, false);
+              }
+              persistLocalGuests();
+              persistLocalSlots();
+              buildRows();
+              renderSlotsTable();
+              renderSeineFloorplan();
+              notify(`🪑 Đã xếp "${c.name}" vào Bàn ${String(tKey).padStart(2, "0")} (${targetPax} ghế)!`);
             });
             seineUnassignedList.appendChild(row);
           });
