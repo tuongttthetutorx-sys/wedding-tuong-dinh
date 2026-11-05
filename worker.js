@@ -110,7 +110,16 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Headers": "Content-Type"
 };
 
-function defaultState(existingSavedGuests = [], existingSiteConfig = null) {
+function defaultSeatingConfig() {
+  return {
+    totalTables: 40, // Sảnh Seine (Riverside Palace): 36-40 tables standard (up to 52 max)
+    seatsPerTable: 10,
+    showTableGuests: true,
+    tableMeta: {}
+  };
+}
+
+function defaultState(existingSavedGuests = [], existingSiteConfig = null, existingSeatingConfig = null) {
   return {
     totalViews: 0,
     openedEnvelopeTotal: 0,
@@ -130,6 +139,10 @@ function defaultState(existingSavedGuests = [], existingSiteConfig = null) {
             thankYouVI: "",
             thankYouZH: ""
           },
+    seatingConfig:
+      existingSeatingConfig && typeof existingSeatingConfig === "object"
+        ? { ...defaultSeatingConfig(), ...existingSeatingConfig }
+        : defaultSeatingConfig(),
     updatedAt: new Date().toISOString()
   };
 }
@@ -197,35 +210,104 @@ export class WeddingAnalytics {
     if (!stored.slots || typeof stored.slots !== "object") {
       stored.slots = {};
     }
+    if (!stored.seatingConfig || typeof stored.seatingConfig !== "object") {
+      stored.seatingConfig = defaultSeatingConfig();
+    } else {
+      stored.seatingConfig = { ...defaultSeatingConfig(), ...stored.seatingConfig };
+    }
     return stored;
   }
 
-  resolveGuestConfig(data, guestName = "") {
+  resolveGuestConfig(data, guestName = "", slotCode = "") {
     const cfg = data.siteConfig || {};
+    const seatingCfg = data.seatingConfig || defaultSeatingConfig();
     const k = normalizeGuestKey(guestName);
     const saved = k
       ? (data.savedGuests || []).find((g) => normalizeGuestKey(g.name) === k)
       : null;
+    const cleanSlotCode = String(slotCode || (saved && saved.slotCode) || "").trim().toLowerCase();
+    const slotObj =
+      cleanSlotCode && data.slots && data.slots[cleanSlotCode]
+        ? data.slots[cleanSlotCode]
+        : null;
 
     let effectiveMode = "invite";
-    if (cfg.globalMode === "thankyou" || cfg.globalThankYou || (saved && saved.mode === "thankyou")) {
+    if (
+      cfg.globalMode === "thankyou" ||
+      cfg.globalThankYou ||
+      (saved && saved.mode === "thankyou") ||
+      (slotObj && slotObj.mode === "thankyou")
+    ) {
       effectiveMode = "thankyou";
     } else if (
       cfg.globalMode === "directions" ||
       cfg.globalDirections ||
-      (saved && saved.mode === "directions")
+      (saved && saved.mode === "directions") ||
+      (slotObj && slotObj.mode === "directions")
     ) {
       effectiveMode = "directions";
     }
 
     const driveUrl = (saved && saved.driveUrl) || cfg.driveUrl || "";
+    const table = String((saved && saved.table) || (slotObj && slotObj.table) || "").trim();
+    const tMeta = (table && seatingCfg.tableMeta && seatingCfg.tableMeta[table]) || {};
+    const group =
+      String((saved && saved.group) || (slotObj && slotObj.group) || tMeta.group || "").trim();
+    const pax = Math.max(
+      1,
+      parseInt((saved && saved.pax) || (slotObj && slotObj.pax) || "1", 10) || 1
+    );
+
+    // Aggregate per-table occupancy & companions across savedGuests + unassigned slots
+    const tableOccupancy = {};
+    const seenKeys = new Set();
+    const tableGuests = [];
+    (data.savedGuests || []).forEach((g) => {
+      if (!g || !g.table) return;
+      const gk = normalizeGuestKey(g.name || "");
+      if (gk) seenKeys.add(gk);
+      const t = String(g.table).trim();
+      const p = Math.max(1, parseInt(g.pax || "1", 10) || 1);
+      tableOccupancy[t] = (tableOccupancy[t] || 0) + p;
+      if (table && t === table && g.name) {
+        tableGuests.push({ name: g.name, pax: p, slot: g.slot || null });
+      }
+    });
+    Object.values(data.slots || {}).forEach((s) => {
+      if (!s || !s.table) return;
+      const sk = s.name ? normalizeGuestKey(s.name) : "";
+      if (sk && seenKeys.has(sk)) return;
+      const t = String(s.table).trim();
+      const p = Math.max(1, parseInt(s.pax || "1", 10) || 1);
+      tableOccupancy[t] = (tableOccupancy[t] || 0) + p;
+      if (table && t === table) {
+        tableGuests.push({
+          name: s.name || `QR #${String(s.num || "").padStart(2, "0")}`,
+          pax: p,
+          slot: s.num || null
+        });
+      }
+    });
+
     return {
       mode: effectiveMode,
       thankYouMode: effectiveMode === "thankyou",
       directionsMode: effectiveMode === "directions",
       driveUrl,
       thankYouVI: cfg.thankYouVI || "",
-      thankYouZH: cfg.thankYouZH || ""
+      thankYouZH: cfg.thankYouZH || "",
+      table,
+      group,
+      pax,
+      tableLabel: tMeta.label || "",
+      tableGuests: seatingCfg.showTableGuests !== false ? tableGuests : [],
+      tableOccupancy,
+      seatingConfig: {
+        totalTables: seatingCfg.totalTables || 40,
+        seatsPerTable: seatingCfg.seatsPerTable || 10,
+        showTableGuests: seatingCfg.showTableGuests !== false,
+        tableMeta: seatingCfg.tableMeta || {}
+      }
     };
   }
 
@@ -241,16 +323,20 @@ export class WeddingAnalytics {
       return new Response(null, { status: 204, headers: CORS_HEADERS });
     }
 
-    // Reset analytics counters & logs (keeps savedGuests, siteConfig & pre-printed QR slots intact)
+    // Reset analytics counters & logs (keeps savedGuests, siteConfig, seatingConfig & pre-printed QR slots intact)
     if (url.pathname === "/api/reset" && request.method === "POST") {
       const current = await this.loadData();
-      const fresh = defaultState(current.savedGuests || [], current.siteConfig || null);
+      const fresh = defaultState(
+        current.savedGuests || [],
+        current.siteConfig || null,
+        current.seatingConfig || null
+      );
       fresh.slots = current.slots || {};
       await this.saveData(fresh);
       return Response.json({ ok: true, stats: this.formatStats(fresh) }, { headers: CORS_HEADERS });
     }
 
-    // Public lookup for a pre-printed numbered QR bookmark (?s=7-ab3x) -> assigned guest name & mode
+    // Public lookup for a pre-printed numbered QR bookmark (?s=7-ab3x) -> assigned guest name, mode & table seat
     if (url.pathname === "/api/slot" && request.method === "GET") {
       const code = String(url.searchParams.get("code") || "").trim().toLowerCase();
       const valid = isValidSlotCode(code);
@@ -263,6 +349,9 @@ export class WeddingAnalytics {
           : cfg.globalMode === "directions" || cfg.globalDirections
             ? "directions"
             : "";
+      const seatInfo = valid
+        ? this.resolveGuestConfig(data, (slot && slot.name) || "", code)
+        : null;
       return Response.json(
         {
           ok: true,
@@ -271,9 +360,13 @@ export class WeddingAnalytics {
                 num: slot ? slot.num : slotNumFromCode(code),
                 name: (slot && slot.name) || "",
                 lang: (slot && slot.lang) || "vi",
-                mode: globalMode || (slot && slot.mode) || "invite"
+                mode: globalMode || (slot && slot.mode) || "invite",
+                group: (seatInfo && seatInfo.group) || "",
+                table: (seatInfo && seatInfo.table) || "",
+                pax: (seatInfo && seatInfo.pax) || 1
               }
-            : null
+            : null,
+          config: seatInfo
         },
         {
           headers: {
@@ -284,7 +377,7 @@ export class WeddingAnalytics {
       );
     }
 
-    // Assign / clear / switch mode of a pre-printed numbered QR bookmark
+    // Assign / clear / switch mode / assign table seat of a pre-printed numbered QR bookmark
     if (url.pathname === "/api/slots" && request.method === "POST") {
       let body = {};
       try {
@@ -300,12 +393,25 @@ export class WeddingAnalytics {
       const num = slotNumFromCode(code);
       const data = await this.loadData();
       const prev = data.slots[code] || null;
-      const name = String(body.name || "").trim().slice(0, 120);
+      const name = String(body.name !== undefined ? body.name : (prev && prev.name) || "")
+        .trim()
+        .slice(0, 120);
       const action = String(body.action || "assign");
       const validModes = ["invite", "directions", "thankyou"];
       const requestedMode = validModes.includes(body.mode)
         ? body.mode
         : (prev && prev.mode) || "invite";
+      const requestedGroup =
+        body.group !== undefined ? String(body.group || "").trim() : (prev && prev.group) || "";
+      const requestedTable =
+        body.table !== undefined ? String(body.table || "").trim() : (prev && prev.table) || "";
+      const requestedPax = Math.max(
+        1,
+        Math.min(
+          20,
+          parseInt(body.pax !== undefined ? body.pax : (prev && prev.pax) || "1", 10) || 1
+        )
+      );
 
       // Drop the slot link from the previously assigned guest record
       const detachPrevGuest = () => {
@@ -319,12 +425,15 @@ export class WeddingAnalytics {
         });
       };
 
-      if (action === "set_mode") {
+      if (action === "set_mode" || action === "set_seat") {
         data.slots[code] = {
           num,
           name: (prev && prev.name) || "",
           lang: (prev && prev.lang) || "vi",
           mode: requestedMode,
+          group: requestedGroup,
+          table: requestedTable,
+          pax: requestedPax,
           assignedAt: (prev && prev.assignedAt) || new Date().toISOString()
         };
         if (prev && prev.name) {
@@ -332,16 +441,25 @@ export class WeddingAnalytics {
           const idx = data.savedGuests.findIndex((g) => normalizeGuestKey(g.name) === pk);
           if (idx >= 0) {
             data.savedGuests[idx].mode = requestedMode;
+            data.savedGuests[idx].group = requestedGroup;
+            data.savedGuests[idx].table = requestedTable;
+            data.savedGuests[idx].pax = requestedPax;
           }
         }
       } else if (action === "clear" || !name) {
         detachPrevGuest();
-        if (prev && prev.mode && prev.mode !== "invite") {
+        if (
+          prev &&
+          ((prev.mode && prev.mode !== "invite") || prev.group || prev.table)
+        ) {
           data.slots[code] = {
             num,
             name: "",
             lang: "vi",
-            mode: prev.mode,
+            mode: prev.mode || "invite",
+            group: prev.group || "",
+            table: prev.table || "",
+            pax: prev.pax || 1,
             assignedAt: prev.assignedAt || new Date().toISOString()
           };
         } else {
@@ -358,9 +476,12 @@ export class WeddingAnalytics {
           name,
           lang,
           mode: requestedMode,
+          group: requestedGroup,
+          table: requestedTable,
+          pax: requestedPax,
           assignedAt: new Date().toISOString()
         };
-        // Upsert into the permanent guest list so tracking / mode switches / notes work as usual
+        // Upsert into the permanent guest list so tracking / mode switches / notes / seating work as usual
         const k = normalizeGuestKey(name);
         const idx = data.savedGuests.findIndex((g) => normalizeGuestKey(g.name) === k);
         if (idx >= 0) {
@@ -369,6 +490,9 @@ export class WeddingAnalytics {
           g.slotCode = code;
           g.lang = lang;
           if (validModes.includes(body.mode)) g.mode = body.mode;
+          if (body.group !== undefined || requestedGroup) g.group = requestedGroup;
+          if (body.table !== undefined || requestedTable) g.table = requestedTable;
+          if (body.pax !== undefined || requestedPax) g.pax = requestedPax;
           if (note) g.note = note;
         } else {
           data.savedGuests.push({
@@ -377,6 +501,9 @@ export class WeddingAnalytics {
             mode: requestedMode,
             driveUrl: "",
             note,
+            group: requestedGroup,
+            table: requestedTable,
+            pax: requestedPax,
             slot: num,
             slotCode: code,
             createdAt: new Date().toISOString()
@@ -387,6 +514,34 @@ export class WeddingAnalytics {
       await this.saveData(data);
       return Response.json(
         { ok: true, slots: data.slots, savedGuests: data.savedGuests, stats: this.formatStats(data) },
+        { headers: CORS_HEADERS }
+      );
+    }
+
+    // Update Sảnh Seine Seating Map Config (totalTables, seatsPerTable, showTableGuests, tableMeta, bulk assign)
+    if (url.pathname === "/api/seating" && request.method === "POST") {
+      let body = {};
+      try {
+        body = await request.json();
+      } catch (_) {}
+      const data = await this.loadData();
+      const prevCfg = data.seatingConfig || defaultSeatingConfig();
+      if (body.totalTables !== undefined) {
+        prevCfg.totalTables = Math.max(4, Math.min(60, parseInt(body.totalTables, 10) || 40));
+      }
+      if (body.seatsPerTable !== undefined) {
+        prevCfg.seatsPerTable = Math.max(4, Math.min(20, parseInt(body.seatsPerTable, 10) || 10));
+      }
+      if (body.showTableGuests !== undefined) {
+        prevCfg.showTableGuests = Boolean(body.showTableGuests);
+      }
+      if (body.tableMeta && typeof body.tableMeta === "object") {
+        prevCfg.tableMeta = { ...(prevCfg.tableMeta || {}), ...body.tableMeta };
+      }
+      data.seatingConfig = prevCfg;
+      await this.saveData(data);
+      return Response.json(
+        { ok: true, seatingConfig: data.seatingConfig, stats: this.formatStats(data) },
         { headers: CORS_HEADERS }
       );
     }
@@ -421,12 +576,13 @@ export class WeddingAnalytics {
       );
     }
 
-    // Lightweight endpoint for any already-sent guest link (?to=...) to check if Thank-You or Directions mode was enabled
+    // Lightweight endpoint for any already-sent guest link (?to=...) to check if Thank-You or Directions mode or Table Seat was enabled
     if (url.pathname === "/api/guest-config") {
       const guest = url.searchParams.get("guest") || "";
+      const slot = url.searchParams.get("slot") || "";
       const data = await this.loadData();
       return Response.json(
-        { ok: true, config: this.resolveGuestConfig(data, guest) },
+        { ok: true, config: this.resolveGuestConfig(data, guest, slot) },
         {
           headers: {
             ...CORS_HEADERS,
@@ -462,6 +618,12 @@ export class WeddingAnalytics {
             mode: validModes.includes(item.mode) ? item.mode : existing?.mode || "invite",
             driveUrl: String(item.driveUrl ?? existing?.driveUrl ?? "").trim(),
             note: String(item.note !== undefined ? item.note : existing?.note || "").trim(),
+            group: String(item.group !== undefined ? item.group : existing?.group || "").trim(),
+            table: String(item.table !== undefined ? item.table : existing?.table || "").trim(),
+            pax: Math.max(
+              1,
+              Math.min(20, parseInt(item.pax !== undefined ? item.pax : existing?.pax || "1", 10) || 1)
+            ),
             ...(existing && existing.slotCode
               ? { slot: existing.slot, slotCode: existing.slotCode }
               : {}),
@@ -484,6 +646,27 @@ export class WeddingAnalytics {
           );
           if (idx >= 0) {
             data.savedGuests[idx].note = String(body.note || "").trim();
+          }
+        }
+      } else if (action === "update_seat") {
+        const targetKey = normalizeGuestKey(body.name || "");
+        if (targetKey) {
+          const idx = data.savedGuests.findIndex(
+            (g) => normalizeGuestKey(g.name) === targetKey
+          );
+          if (idx >= 0) {
+            const g = data.savedGuests[idx];
+            if (body.group !== undefined) g.group = String(body.group || "").trim();
+            if (body.table !== undefined) g.table = String(body.table || "").trim();
+            if (body.pax !== undefined) {
+              g.pax = Math.max(1, Math.min(20, parseInt(body.pax, 10) || 1));
+            }
+            const sc = g.slotCode;
+            if (sc && data.slots && data.slots[sc]) {
+              data.slots[sc].group = g.group || "";
+              data.slots[sc].table = g.table || "";
+              data.slots[sc].pax = g.pax || 1;
+            }
           }
         }
       } else if (action === "toggle_mode") {
@@ -710,6 +893,7 @@ export class WeddingAnalytics {
         thankYouVI: "",
         thankYouZH: ""
       },
+      seatingConfig: data.seatingConfig || defaultSeatingConfig(),
       updatedAt: data.updatedAt || new Date().toISOString()
     };
   }

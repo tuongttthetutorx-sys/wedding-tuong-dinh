@@ -4621,3 +4621,213 @@ body.lang-zh .imap-title {
     opacity: 0;
   }
 }
+
+/* ==========================================================================
+   VIP GUEST TABLE CARD & SẢNH SEINE FLOORPLAN (RIVERSIDE PALACE)
+   ========================================================================== */
+.guest-seating-card {
+  margin: 0 auto 28px;
+  padding: 20px 22px;
+  border-radius: 16px;
+  background: linear-gradient(155deg, #fffdf9 0%, #f9f1e4 100%);
+  border: 1.5px solid rgba(132, 21, 23, 0.28);
+  box-shadow: 0 12px 32px rgba(92, 20, 22, 0.09);
+}
+
+.gsc-top-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #7d1518;
+  background: rgba(125, 21, 24, 0.08);
+  border: 1px solid rgba(125, 21, 24, 0.2);
+  padding: 4px 11px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+
+.gsc-main-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 1.15fr;
+  gap: 18px;
+  align-items: center;
+}
+
+@media (max-width: 780px) {
+  .gsc-main-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.gsc-greeting {
+  font-family: var(--font-serif);
+  font-size: 21px;
+  font-weight: 700;
+  color: #4a1517;
+  margin-bottom: 8px;
+}
+
+.gsc-table-hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.gsc-table-number-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 18px;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #7d1518 0%, #a51c20 100%);
+  color: #fff8ec;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  box-shadow: 0 6px 16px rgba(125, 21, 24, 0.25);
+}
+
+.gsc-wing-hint {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #7a3b0c;
+  background: #faeedb;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(154, 91, 19, 0.25);
+}
+
+.gsc-zone-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.gsc-zone-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 11px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 700;
+  background: #f3e8d8;
+  color: #5c2818;
+}
+
+.gsc-pax-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 9px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #fff;
+  border: 1px solid rgba(125, 21, 24, 0.2);
+  color: #6b4c3e;
+}
+
+.gsc-free-note {
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #5a3e36;
+}
+
+.gsc-companions {
+  padding: 9px 12px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px dashed rgba(125, 21, 24, 0.24);
+  font-size: 12.5px;
+  color: #4a2c2a;
+  line-height: 1.5;
+}
+
+.gsc-mini-hall {
+  background: #fdfaf4;
+  border: 1.5px solid #decbb1;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.gsc-mini-stage {
+  text-align: center;
+  padding: 6px 10px;
+  border-radius: 7px;
+  background: #681115;
+  color: #fff6e5;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: 10px;
+}
+
+.gsc-mini-wings {
+  display: grid;
+  grid-template-columns: 1fr 28px 1fr;
+  gap: 6px;
+  align-items: stretch;
+}
+
+.gsc-mini-wing {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 5px;
+}
+
+.gsc-mini-aisle {
+  background: rgba(166, 28, 28, 0.1);
+  border-left: 1px dashed rgba(125, 21, 24, 0.3);
+  border-right: 1px dashed rgba(125, 21, 24, 0.3);
+  border-radius: 5px;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #7d1518;
+}
+
+.gsc-mini-tbl {
+  height: 26px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid #cbb89d;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #6e5a4f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gsc-mini-tbl.is-mine {
+  background: #7d1518;
+  border: 2px solid #d49b35;
+  color: #fff;
+  font-weight: 800;
+  transform: scale(1.1);
+  box-shadow: 0 0 0 4px rgba(212, 155, 53, 0.32);
+  z-index: 2;
+}
+
+.gsc-mini-entrance {
+  margin-top: 10px;
+  text-align: center;
+  padding: 5px 10px;
+  border-radius: 7px;
+  background: #e6f4ea;
+  border: 1px solid #419e6a;
+  color: #0f532d;
+  font-size: 10.8px;
+  font-weight: 700;
+}
+

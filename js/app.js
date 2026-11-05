@@ -838,6 +838,8 @@
     const isZh = currentLang === "zh";
     const dict = I18N[currentLang];
     const displayGuest = guestName || dict.defaultGuest;
+
+    syncGuestSeatingUI();
     const phrase = isZh
       ? {
           ornament: "♡",
@@ -916,21 +918,217 @@
   /* Post-Wedding Thank You Card + Google Drive Photo Album & Access Toggle */
   let remoteGuestConfig = null;
 
+  function resolveLocalFallbackSeating() {
+    try {
+      const slotParam = (params.get("s") || "").trim().toLowerCase();
+      const seatCfgRaw = localStorage.getItem("td_seating_config_v1");
+      const seatCfg = seatCfgRaw ? JSON.parse(seatCfgRaw) : null;
+      const guestsRaw = localStorage.getItem("td_saved_guests_v2");
+      const guestsList = guestsRaw ? JSON.parse(guestsRaw) : [];
+      const slotsRaw = localStorage.getItem("td_saved_slots_v1");
+      const slotsMap = slotsRaw ? JSON.parse(slotsRaw) : {};
+
+      const norm = (s) => String(s || "").trim().toLowerCase().replace(/\s+/g, " ");
+      const gKey = norm(guestName);
+      const saved = gKey && Array.isArray(guestsList)
+        ? guestsList.find((g) => g && norm(g.name) === gKey)
+        : null;
+      const sObj =
+        slotParam && slotsMap && slotsMap[slotParam]
+          ? slotsMap[slotParam]
+          : saved && saved.slotCode && slotsMap && slotsMap[saved.slotCode]
+            ? slotsMap[saved.slotCode]
+            : null;
+      const table = String((saved && saved.table) || (sObj && sObj.table) || "").trim();
+      if (!table) return null;
+      const tMeta = (seatCfg && seatCfg.tableMeta && seatCfg.tableMeta[table]) || {};
+      const group = String(
+        (saved && saved.group) || (sObj && sObj.group) || tMeta.group || ""
+      ).trim();
+      const pax = Math.max(
+        1,
+        parseInt((saved && saved.pax) || (sObj && sObj.pax) || "1", 10) || 1
+      );
+      const companions = [];
+      if (Array.isArray(guestsList)) {
+        guestsList.forEach((g) => {
+          if (g && String(g.table || "").trim() === table && g.name) {
+            companions.push({ name: g.name, pax: g.pax || 1 });
+          }
+        });
+      }
+      return {
+        table,
+        group,
+        pax,
+        tableLabel: tMeta.label || "",
+        tableGuests: companions,
+        seatingConfig: seatCfg || { totalTables: 40, seatsPerTable: 10, showTableGuests: true }
+      };
+    } catch (_) {
+      return null;
+    }
+  }
+
   function fetchRemoteGuestConfig() {
     try {
+      const localSeat = resolveLocalFallbackSeating();
+      if (localSeat) {
+        remoteGuestConfig = { ...(remoteGuestConfig || {}), ...localSeat };
+        syncPostWeddingAndAccessMode();
+      }
       const qs = new URLSearchParams();
       if (guestName) qs.set("guest", guestName);
+      const slotCode = (params.get("s") || "").trim().toLowerCase();
+      if (slotCode) qs.set("slot", slotCode);
       qs.set("t", String(Date.now()));
-      fetch(`/api/guest-config?${qs.toString()}`, { cache: "no-store" })
+      const isLoc = /^(file:|https?:\/\/(localhost|127\.0\.0\.1))/i.test(window.location.href);
+      const apiOrigin = isLoc ? "https://thuantuongtieudinh.io.vn" : "";
+      fetch(`${apiOrigin}/api/guest-config?${qs.toString()}`, { cache: "no-store" })
         .then((r) => (r.ok ? r.json() : null))
         .then((data) => {
           if (data && data.config) {
             remoteGuestConfig = data.config;
+            if (!remoteGuestConfig.table && localSeat) {
+              remoteGuestConfig = { ...remoteGuestConfig, ...localSeat };
+            }
             syncPostWeddingAndAccessMode();
           }
         })
         .catch(() => {});
     } catch (_) {}
+  }
+
+  const SEAT_ZONE_I18N = {
+    groom_family: { vi: "👑 Khu vực: Gia đình Nhà Trai", zh: "👑 席位區：男方主家席" },
+    bride_family: { vi: "👑 Khu vực: Gia đình Nhà Gái", zh: "👑 席位區：女方主家席" },
+    groom_relatives: { vi: "🏮 Khu vực: Họ hàng Nhà Trai", zh: "🏮 席位區：男方親友區" },
+    bride_relatives: { vi: "🏮 Khu vực: Họ hàng Nhà Gái", zh: "🏮 席位區：女方親友區" },
+    friends_colleagues: { vi: "🥂 Khu vực: Bạn bè & Đồng nghiệp", zh: "🥂 席位區：摯友與同事區" },
+    honored_guests: { vi: "✨ Khu vực: Khách Quý Gia Đình", zh: "✨ 席位區：貴賓席" }
+  };
+
+  function syncGuestSeatingUI() {
+    const cardEl = document.getElementById("guest-seating-card");
+    if (!cardEl) return;
+    const rCfg = remoteGuestConfig || {};
+    const tableStr = String(params.get("table") || rCfg.table || "").trim();
+    if (!tableStr) {
+      cardEl.hidden = true;
+      return;
+    }
+    cardEl.hidden = false;
+
+    const isZh = currentLang === "zh";
+    const dict = I18N[currentLang];
+    const displayGuest = guestName || dict.defaultGuest;
+
+    syncGuestSeatingUI();
+    const tNum = parseInt(tableStr, 10) || 1;
+    const padded = String(tNum).padStart(2, "0");
+    const isLeftWing = tNum % 2 === 1;
+    const wingOrder = Math.ceil(tNum / 2);
+    const rowNum = Math.ceil(wingOrder / 2);
+
+    const eyebrowEl = document.getElementById("gsc-eyebrow");
+    const greetingEl = document.getElementById("gsc-greeting");
+    const tableNumEl = document.getElementById("gsc-table-num");
+    const wingHintEl = document.getElementById("gsc-wing-hint");
+    const zoneBadgeEl = document.getElementById("gsc-zone-badge");
+    const paxBadgeEl = document.getElementById("gsc-pax-badge");
+    const freeNoteEl = document.getElementById("gsc-free-note");
+    const compEl = document.getElementById("gsc-companions");
+    const stageEl = document.getElementById("gsc-mini-stage");
+    const aisleEl = document.getElementById("gsc-mini-aisle");
+    const entranceEl = document.getElementById("gsc-mini-entrance");
+    const leftWingEl = document.getElementById("gsc-mini-left");
+    const rightWingEl = document.getElementById("gsc-mini-right");
+
+    if (eyebrowEl) {
+      eyebrowEl.textContent = isZh
+        ? "🪑 您的婚宴桌次指引 • SEINE 宴會廳（一樓獨立迎賓廳）"
+        : "🪑 VỊ TRÍ BÀN TIỆC CỦA QUÝ KHÁCH • SẢNH SEINE (TẦNG TRỆT)";
+    }
+    if (greetingEl) {
+      greetingEl.textContent = isZh
+        ? `誠摯邀請 ${displayGuest} 入席`
+        : `Trân trọng kính mời ${displayGuest}`;
+    }
+    if (tableNumEl) {
+      tableNumEl.textContent = isZh ? `第 ${padded} 桌` : `BÀN SỐ ${padded}`;
+    }
+    if (wingHintEl) {
+      wingHintEl.textContent = isZh
+        ? `${isLeftWing ? "舞台左側（單號區）" : "舞台右側（雙號區）"} • 第 ${rowNum} 排`
+        : `${isLeftWing ? "Cánh Trái Sân Khấu" : "Cánh Phải Sân Khấu"} • Hàng thứ ${rowNum}`;
+    }
+
+    const grpKey = rCfg.group || "honored_guests";
+    const zInfo = SEAT_ZONE_I18N[grpKey] || SEAT_ZONE_I18N.honored_guests;
+    const customLabel = rCfg.tableLabel ? ` (${rCfg.tableLabel})` : "";
+    if (zoneBadgeEl) {
+      zoneBadgeEl.textContent = (isZh ? zInfo.zh : zInfo.vi) + customLabel;
+    }
+    const pax = Math.max(1, parseInt(rCfg.pax || "1", 10) || 1);
+    if (paxBadgeEl) {
+      paxBadgeEl.textContent = isZh ? `預留 ${pax} 席位` : `Đã xếp ${pax} ghế (Bàn 10 người)`;
+    }
+    if (freeNoteEl) {
+      freeNoteEl.textContent = isZh
+        ? `💡 請直接前往「第 ${padded} 桌」，桌內 10 個座位皆可自由入座，無須對號。`
+        : `💡 Quý khách chỉ cần tiến vào Bàn số ${padded} và ngồi tự do tại bất kỳ ghế trống nào trong bàn (10 khách/bàn).`;
+    }
+
+    const companions = Array.isArray(rCfg.tableGuests) ? rCfg.tableGuests : [];
+    if (compEl) {
+      if (companions.length > 0) {
+        const namesStr = companions.map((c) => c.name).join(" · ");
+        compEl.hidden = false;
+        compEl.innerHTML = isZh
+          ? `<strong>👥 同桌親友：</strong>${namesStr}`
+          : `<strong>👥 Khách cùng Bàn ${padded}:</strong> ${namesStr}`;
+      } else {
+        compEl.hidden = true;
+      }
+    }
+
+    if (stageEl) {
+      stageEl.textContent = isZh
+        ? "✨ 主舞台與 LED 巨幕 (STAGE) ✨"
+        : "✨ SÂN KHẤU CHÍNH & MÀN HÌNH LED (STAGE) ✨";
+    }
+    if (aisleEl) {
+      aisleEl.textContent = isZh ? "紅毯主走道" : "LỐI ĐI LỄ ĐƯỜNG";
+    }
+    if (entranceEl) {
+      entranceEl.textContent = isZh
+        ? "🚪 SEINE 宴會廳迎賓入口（由此進入 ↑）"
+        : "🚪 CỔNG ĐÓN KHÁCH SẢNH SEINE (BƯỚC VÀO TỪ ĐÂY ↑)";
+    }
+
+    if (leftWingEl && rightWingEl) {
+      const totalTables = Math.max(
+        tNum,
+        (rCfg.seatingConfig && rCfg.seatingConfig.totalTables) || 40
+      );
+      leftWingEl.innerHTML = "";
+      rightWingEl.innerHTML = "";
+      for (let i = 1; i <= totalTables; i++) {
+        const pill = document.createElement("div");
+        const isMine = i === tNum;
+        pill.className = "gsc-mini-tbl" + (isMine ? " is-mine" : "");
+        pill.textContent = isMine
+          ? isZh
+            ? `📍 第${String(i).padStart(2, "0")}桌`
+            : `📍 Bàn ${String(i).padStart(2, "0")}`
+          : String(i).padStart(2, "0");
+        if (i % 2 === 1) {
+          leftWingEl.appendChild(pill);
+        } else {
+          rightWingEl.appendChild(pill);
+        }
+      }
+    }
   }
 
   function syncPostWeddingAndAccessMode() {
@@ -945,6 +1143,8 @@
     const isZh = currentLang === "zh";
     const dict = I18N[currentLang];
     const displayGuest = guestName || dict.defaultGuest;
+
+    syncGuestSeatingUI();
 
     // 1. Wedding-Day Priority Directions Mode (Elevates Map & Illustrated Route Guide to top of page)
     const isDirectionsPriority =

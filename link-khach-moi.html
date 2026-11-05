@@ -914,6 +914,258 @@
         grid-column: 1 / -1;
       }
     }
+
+    /* =====================================================================
+       SẢNH SEINE (RIVERSIDE PALACE) VISUAL SEATING PLANNER
+       ===================================================================== */
+    .seat-inline-bar {
+      display: inline-flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 5px;
+    }
+    .seat-inline-select {
+      height: 31px;
+      padding: 0 7px;
+      border-radius: 6px;
+      border: 1px solid var(--adm-border-strong);
+      background: #fffdf9;
+      color: var(--adm-text);
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .seat-inline-select:focus {
+      outline: none;
+      border-color: var(--adm-crimson);
+    }
+    .seat-inline-select.has-table {
+      background: #fdf2f2;
+      border-color: var(--adm-crimson);
+      color: var(--adm-crimson);
+    }
+    .seat-inline-pax {
+      width: 54px;
+      height: 31px;
+      padding: 0 5px;
+      border-radius: 6px;
+      border: 1px solid var(--adm-border-strong);
+      background: #fff;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      text-align: center;
+      color: var(--adm-text);
+    }
+    .seine-layout-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.95fr);
+      gap: 16px;
+      align-items: start;
+    }
+    @media (max-width: 1024px) {
+      .seine-layout-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .seine-hall-canvas {
+      background:
+        radial-gradient(circle at 20% 20%, rgba(125, 21, 24, 0.03), transparent 45%),
+        linear-gradient(#e9dfd0 1px, transparent 1px),
+        linear-gradient(90deg, #e9dfd0 1px, transparent 1px),
+        #fcf9f3;
+      background-size: 100% 100%, 22px 22px, 22px 22px;
+      border: 1.5px solid #d5c2a5;
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: inset 0 0 24px rgba(125, 21, 24, 0.04);
+    }
+    .seine-stage-banner {
+      max-width: 440px;
+      margin: 0 auto 14px;
+      padding: 10px 18px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #681115 0%, #8f1d21 100%);
+      color: #fff8ec;
+      text-align: center;
+      border: 1.5px solid #d9b382;
+      box-shadow: 0 6px 16px rgba(104, 17, 21, 0.16);
+    }
+    .seine-stage-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+    }
+    .seine-stage-sub {
+      font-size: 11px;
+      opacity: 0.88;
+      margin-top: 2px;
+    }
+    .seine-wings-wrap {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 54px minmax(0, 1fr);
+      gap: 10px;
+      align-items: stretch;
+    }
+    .seine-wing-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px 10px;
+      padding: 6px 2px;
+    }
+    .seine-aisle-col {
+      background: linear-gradient(180deg, rgba(166, 28, 28, 0.14), rgba(217, 179, 130, 0.22), rgba(166, 28, 28, 0.14));
+      border-left: 1.5px dashed rgba(125, 21, 24, 0.35);
+      border-right: 1.5px dashed rgba(125, 21, 24, 0.35);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: var(--adm-crimson);
+      padding: 12px 0;
+      user-select: none;
+    }
+    .seine-entrance-banner {
+      max-width: 340px;
+      margin: 14px auto 0;
+      padding: 8px 16px;
+      border-radius: 9px;
+      background: #e6f4ea;
+      border: 1.5px solid #419e6a;
+      color: #0f532d;
+      text-align: center;
+      font-size: 12.2px;
+      font-weight: 700;
+    }
+    .seine-table-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 6px 2px;
+      border-radius: 12px;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+    .seine-table-wrap:hover {
+      transform: translateY(-2px);
+      background: rgba(125, 21, 24, 0.045);
+    }
+    .seine-table-wrap.is-selected {
+      background: rgba(125, 21, 24, 0.1);
+      outline: 2px solid var(--adm-crimson);
+    }
+    .seine-table-ring {
+      position: relative;
+      width: 92px;
+      height: 92px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .seine-table-circle {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: #fff;
+      border: 2.2px solid #2e8555;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 4px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
+      transition: all 0.15s ease;
+    }
+    .seine-table-circle.is-partial {
+      background: #fff9eb;
+      border-color: #d9822b;
+    }
+    .seine-table-circle.is-full {
+      background: #fff1f0;
+      border-color: #c92a2a;
+    }
+    .seine-table-num {
+      font-size: 12px;
+      font-weight: 700;
+      color: #2c1616;
+      line-height: 1.1;
+    }
+    .seine-table-cap {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #6b5344;
+      margin-top: 2px;
+    }
+    .seine-seat-dot {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #419e6a;
+      border: 1px solid #fff;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    }
+    .seine-seat-dot.is-occupied {
+      background: #1d4ed8;
+    }
+    .seine-seat-dot.is-full {
+      background: #b91c1c;
+    }
+    .seine-table-tag {
+      margin-top: 4px;
+      font-size: 10.8px;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: 5px;
+      background: #f2ebe1;
+      color: #5c4338;
+      max-width: 112px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .seine-legend-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+      padding: 10px 12px;
+      background: #faf4ea;
+      border: 1px solid var(--adm-border);
+      border-radius: 9px;
+      font-size: 12px;
+    }
+    .seine-inspector {
+      position: sticky;
+      top: 14px;
+      background: #fffdf9;
+      border: 1.5px solid var(--adm-border-strong);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 8px 24px rgba(60, 20, 20, 0.06);
+    }
+    .seine-guest-pill {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 8px;
+      background: #faf5ec;
+      border: 1px solid var(--adm-border);
+      margin-bottom: 6px;
+      font-size: 12.8px;
+    }
   </style>
 </head>
 <body>
@@ -980,6 +1232,10 @@
       <button type="button" class="adm-tab-btn" data-tab="tab-qr">
         🖨️ Tạo Thẻ Phụ QR &amp; In A4 (Đánh Số / Kèm Tên)
         <span class="adm-tab-badge" id="badge-slots-count">0</span>
+      </button>
+      <button type="button" class="adm-tab-btn" data-tab="tab-seating">
+        🪑 Sơ Đồ Bàn Tiệc Sảnh Seine (36–40 Bàn)
+        <span class="adm-tab-badge" id="badge-seated-count">0</span>
       </button>
     </nav>
 
@@ -1414,6 +1670,7 @@
                 <th>Số QR</th>
                 <th>Tên khách (Hiện trên thiệp)</th>
                 <th>Ghi chú riêng (Chỉ bạn thấy)</th>
+                <th>Nhóm &amp; Bàn tiệc (Sảnh Seine)</th>
                 <th>Loại thiệp khi quét</th>
                 <th>Trạng thái mở thiệp</th>
                 <th>Thao tác</th>
@@ -1421,6 +1678,136 @@
             </thead>
             <tbody id="slot-table-body"></tbody>
           </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         TAB 5: SƠ ĐỒ BÀN TIỆC SẢNH SEINE (RIVERSIDE PALACE • 36–40 BÀN TRÒN)
+         ===================================================================== -->
+    <section id="tab-seating" class="adm-panel">
+      <div class="adm-box">
+        <div class="adm-box-head">
+          <div>
+            <h2 class="adm-box-title">🪑 Sơ Đồ Bàn Tiệc Sảnh Seine — Riverside Palace (Tầng Trệt • 672m²)</h2>
+            <p class="adm-box-desc">
+              Bố trí chuẩn <strong>Bàn Tròn 10 khách đối xứng qua Lối Đi Lễ Đường hướng lên Sân Khấu LED</strong>. Khách quét chính mã QR đã in trên Bookmark (hoặc mở link thiệp) sẽ thấy ngay <strong>Số Bàn + Khu vực (6 nhóm) + Sơ đồ chỉ vị trí bàn</strong> mà không cần ấn định ghế cứng trong bàn!
+            </p>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px;">
+            <label style="font-size:12.5px; font-weight:600; color:var(--adm-text);">
+              Tổng số bàn:
+              <input type="number" id="seine-total-tables" class="adm-input" min="4" max="52" value="40" style="width:72px; height:34px; margin-left:4px; display:inline-block;" />
+            </label>
+            <button type="button" class="btn-adm js-seine-preset" data-tables="36" style="height:32px; padding:0 10px; font-size:12px;">36 bàn</button>
+            <button type="button" class="btn-adm js-seine-preset" data-tables="38" style="height:32px; padding:0 10px; font-size:12px;">38 bàn</button>
+            <button type="button" class="btn-adm js-seine-preset" data-tables="40" style="height:32px; padding:0 10px; font-size:12px;">40 bàn</button>
+            <button type="button" class="btn-adm js-seine-preset" data-tables="52" style="height:32px; padding:0 10px; font-size:12px;">52 bàn (Tối đa)</button>
+            <label style="display:inline-flex; align-items:center; gap:5px; font-size:12.2px; font-weight:600; color:var(--adm-text); margin-left:6px; cursor:pointer;">
+              <input type="checkbox" id="seine-show-companions" checked />
+              Cho khách xem tên người cùng bàn
+            </label>
+          </div>
+        </div>
+
+        <div class="seine-legend-bar">
+          <div style="display:flex; flex-wrap:wrap; align-items:center; gap:12px;">
+            <span><strong id="seine-kpi-summary">Đang xếp: 0 khách (0/400 ghế)</strong></span>
+            <span>🟢 Ghế trống</span>
+            <span>🔵 Đã có khách ngồi</span>
+            <span>🔴 Bàn đã đủ 10/10 ghế</span>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:6px; font-size:11.5px; font-weight:600;">
+            <span style="padding:2px 7px; border-radius:5px; background:#f9e6e6; color:#7d1518;">👑 GĐ Nhà Trai</span>
+            <span style="padding:2px 7px; border-radius:5px; background:#fde8e8; color:#a61c1c;">👑 GĐ Nhà Gái</span>
+            <span style="padding:2px 7px; border-radius:5px; background:#faeedb; color:#9a5b13;">🏮 Họ hàng Trai</span>
+            <span style="padding:2px 7px; border-radius:5px; background:#fcebd9; color:#b85d19;">🏮 Họ hàng Gái</span>
+            <span style="padding:2px 7px; border-radius:5px; background:#e3f5ee; color:#1b6b52;">🥂 Bạn bè &amp; Đ.Nghiệp</span>
+            <span style="padding:2px 7px; border-radius:5px; background:#efeaf8; color:#5b3e85;">✨ Khách mời</span>
+          </div>
+        </div>
+
+        <div class="seine-layout-grid">
+          <!-- CỘT TRÁI: MẶT BẰNG SẢNH SEINE -->
+          <div class="seine-hall-canvas">
+            <div class="seine-stage-banner">
+              <div class="seine-stage-title">✨ SÂN KHẤU CHÍNH &amp; MÀN HÌNH LED PHA LÊ (STAGE) ✨</div>
+              <div class="seine-stage-sub">Sảnh Seine • Tầng Trệt (672m²) • Thuận Tường &amp; Tiểu Dinh</div>
+            </div>
+
+            <div class="seine-wings-wrap">
+              <div>
+                <div style="text-align:center; font-size:11.5px; font-weight:700; color:var(--adm-muted); margin-bottom:6px;">
+                  ◀ CÁNH TRÁI SÂN KHẤU (BÀN LẺ)
+                </div>
+                <div class="seine-wing-grid" id="seine-left-wing"></div>
+              </div>
+
+              <div class="seine-aisle-col">✨ LỐI ĐI LỄ ĐƯỜNG CHÍNH (CENTER AISLE) ✨</div>
+
+              <div>
+                <div style="text-align:center; font-size:11.5px; font-weight:700; color:var(--adm-muted); margin-bottom:6px;">
+                  CÁNH PHẢI SÂN KHẤU (BÀN CHẴN) ▶
+                </div>
+                <div class="seine-wing-grid" id="seine-right-wing"></div>
+              </div>
+            </div>
+
+            <div class="seine-entrance-banner">
+              🚪 SẢNH ĐÓN KHÁCH BIỆT LẬP &amp; CỔNG VÀO (LOBBY &amp; ENTRANCE)
+            </div>
+          </div>
+
+          <!-- CỘT PHẢI: CHI TIẾT BÀN ĐANG CHỌN & THÊM KHÁCH NHANH -->
+          <div class="seine-inspector">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px;">
+              <h3 id="seine-insp-title" style="margin:0; font-size:16px; color:var(--adm-crimson);">🪑 Bàn 01</h3>
+              <span id="seine-insp-badge" class="status-badge is-opened">0 / 10 ghế</span>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:12px;">
+              <div>
+                <label class="slot-label" for="seine-insp-group">Khu vực / Nhóm của bàn này:</label>
+                <select id="seine-insp-group" class="adm-select" style="height:36px; font-size:12.5px;">
+                  <option value="">⚪ Chưa phân nhóm</option>
+                  <option value="groom_family">👑 Gia đình Nhà Trai</option>
+                  <option value="bride_family">👑 Gia đình Nhà Gái</option>
+                  <option value="groom_relatives">🏮 Họ hàng Nhà Trai</option>
+                  <option value="bride_relatives">🏮 Họ hàng Nhà Gái</option>
+                  <option value="friends_colleagues">🥂 Bạn bè &amp; Đồng nghiệp</option>
+                  <option value="honored_guests">✨ Khách mời / Khách quý</option>
+                </select>
+              </div>
+              <div>
+                <label class="slot-label" for="seine-insp-label">Tên phụ / Ghi chú bàn:</label>
+                <input type="text" id="seine-insp-label" class="adm-input" placeholder="VD: Bạn ĐH, Đồng nghiệp..." style="height:36px; font-size:12.5px;" />
+              </div>
+            </div>
+
+            <div style="font-size:12.5px; font-weight:700; color:var(--adm-text); margin-bottom:6px;">
+              👥 Khách đang ngồi tại bàn này (<span id="seine-insp-count">0</span>):
+            </div>
+            <div id="seine-insp-seated-list" style="max-height:210px; overflow-y:auto; margin-bottom:14px;"></div>
+
+            <div style="border-top:1px dashed var(--adm-border-strong); padding-top:12px;">
+              <div style="font-size:12.5px; font-weight:700; color:var(--adm-crimson); margin-bottom:6px;">
+                ➕ Thêm nhanh khách / Số QR vào bàn này:
+              </div>
+              <div style="display:grid; grid-template-columns: 1fr 135px; gap:6px; margin-bottom:8px;">
+                <input type="search" id="seine-unassigned-search" class="adm-input" placeholder="🔍 Tìm tên, số QR, ghi chú..." style="height:34px; font-size:12.2px;" />
+                <select id="seine-unassigned-group-filter" class="adm-select" style="height:34px; font-size:12px;">
+                  <option value="all">Tất cả nhóm</option>
+                  <option value="groom_family">👑 GĐ Nhà Trai</option>
+                  <option value="bride_family">👑 GĐ Nhà Gái</option>
+                  <option value="groom_relatives">🏮 Họ hàng Trai</option>
+                  <option value="bride_relatives">🏮 Họ hàng Gái</option>
+                  <option value="friends_colleagues">🥂 Bạn bè &amp; ĐN</option>
+                  <option value="honored_guests">✨ Khách mời</option>
+                </select>
+              </div>
+              <div id="seine-unassigned-list" style="max-height:240px; overflow-y:auto;"></div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -1460,6 +1847,127 @@
         thankYouZH: ""
       };
       let globalConfigLoadedOnce = false;
+
+      const STORAGE_SEATING_CFG = "td_seating_config_v1";
+      let seatingConfig = {
+        totalTables: 40,
+        seatsPerTable: 10,
+        showTableGuests: true,
+        tableMeta: {}
+      };
+      try {
+        const rawSeat = localStorage.getItem(STORAGE_SEATING_CFG);
+        if (rawSeat) {
+          const parsedSeat = JSON.parse(rawSeat);
+          if (parsedSeat && typeof parsedSeat === "object") {
+            seatingConfig = { ...seatingConfig, ...parsedSeat };
+          }
+        }
+      } catch (_) {}
+      let selectedSeineTable = "1";
+
+      const SEAT_GROUPS = {
+        "": { label: "⚪ Chưa phân nhóm", short: "Chưa gán", bg: "#f2ebe1", color: "#5c4338" },
+        groom_family: { label: "👑 Gia đình Nhà Trai", short: "👑 GĐ Trai", bg: "#f9e6e6", color: "#7d1518" },
+        bride_family: { label: "👑 Gia đình Nhà Gái", short: "👑 GĐ Gái", bg: "#fde8e8", color: "#a61c1c" },
+        groom_relatives: { label: "🏮 Họ hàng Nhà Trai", short: "🏮 Họ hàng Trai", bg: "#faeedb", color: "#9a5b13" },
+        bride_relatives: { label: "🏮 Họ hàng Nhà Gái", short: "🏮 Họ hàng Gái", bg: "#fcebd9", color: "#b85d19" },
+        friends_colleagues: { label: "🥂 Bạn bè & Đồng nghiệp", short: "🥂 Bạn bè/ĐN", bg: "#e3f5ee", color: "#1b6b52" },
+        honored_guests: { label: "✨ Khách mời / Khách quý", short: "✨ Khách mời", bg: "#efeaf8", color: "#5b3e85" }
+      };
+
+      function persistLocalSeating() {
+        try {
+          localStorage.setItem(STORAGE_SEATING_CFG, JSON.stringify(seatingConfig));
+        } catch (_) {}
+      }
+
+      function computeTableStats() {
+        const occ = {};
+        const byTable = {};
+        const seenGuestKeys = new Set();
+        let totalSeatedRecords = 0;
+        let totalSeatedPax = 0;
+
+        savedGuests.forEach((g) => {
+          if (!g || !g.name) return;
+          const gk = normalizeNameKey(g.name);
+          const slotObj = g.slotCode && serverSlots[g.slotCode] ? serverSlots[g.slotCode] : null;
+          const t = String(g.table || (slotObj && slotObj.table) || "").trim();
+          const grp = String(g.group || (slotObj && slotObj.group) || "").trim();
+          const pax = Math.max(1, parseInt(g.pax || (slotObj && slotObj.pax) || "1", 10) || 1);
+          if (gk) seenGuestKeys.add(gk);
+          if (t) {
+            occ[t] = (occ[t] || 0) + pax;
+            if (!byTable[t]) byTable[t] = [];
+            byTable[t].push({
+              type: "guest",
+              name: g.name,
+              slot: g.slot || (slotObj && slotObj.num) || null,
+              slotCode: g.slotCode || "",
+              group: grp,
+              pax,
+              note: g.note || guestNotesMap[gk] || ""
+            });
+            totalSeatedRecords++;
+            totalSeatedPax += pax;
+          }
+        });
+
+        Object.keys(serverSlots).forEach((code) => {
+          const s = serverSlots[code];
+          if (!s) return;
+          const sk = s.name ? normalizeNameKey(s.name) : "";
+          if (sk && seenGuestKeys.has(sk)) return;
+          const t = String(s.table || "").trim();
+          const grp = String(s.group || "").trim();
+          const pax = Math.max(1, parseInt(s.pax || "1", 10) || 1);
+          if (t) {
+            occ[t] = (occ[t] || 0) + pax;
+            if (!byTable[t]) byTable[t] = [];
+            byTable[t].push({
+              type: "slot",
+              name: s.name || `QR Số ${s.num}`,
+              slot: s.num,
+              slotCode: code,
+              group: grp,
+              pax,
+              note: ""
+            });
+            totalSeatedRecords++;
+            totalSeatedPax += pax;
+          }
+        });
+
+        return { occ, byTable, totalSeatedRecords, totalSeatedPax };
+      }
+
+      function buildGroupSelectOptions(selectedGroup = "") {
+        return Object.keys(SEAT_GROUPS)
+          .map(
+            (k) =>
+              `<option value="${k}" ${k === (selectedGroup || "") ? "selected" : ""}>${SEAT_GROUPS[k].label}</option>`
+          )
+          .join("");
+      }
+
+      function buildTableSelectOptions(selectedTable = "", occMap = {}) {
+        const total = seatingConfig.totalTables || 40;
+        const cap = seatingConfig.seatsPerTable || 10;
+        const meta = seatingConfig.tableMeta || {};
+        const opts = [`<option value="" ${!selectedTable ? "selected" : ""}>🪑 Chưa xếp bàn</option>`];
+        for (let i = 1; i <= total; i++) {
+          const tKey = String(i);
+          const used = occMap[tKey] || 0;
+          const m = meta[tKey] || {};
+          const grpShort = m.group && SEAT_GROUPS[m.group] ? ` • ${SEAT_GROUPS[m.group].short}` : "";
+          const lbl = m.label ? ` (${m.label})` : "";
+          opts.push(
+            `<option value="${tKey}" ${tKey === String(selectedTable || "") ? "selected" : ""}>Bàn ${String(i).padStart(2, "0")} (${used}/${cap})${grpShort}${lbl}</option>`
+          );
+        }
+        return opts.join("");
+      }
 
       const globalTySelect = document.getElementById("global-thankyou-select");
       const globalDriveInput = document.getElementById("global-drive-url");
@@ -1732,6 +2240,54 @@
         );
       }
 
+      async function updateGuestSeatOnServer(name, nextGroup, nextTable, nextPax, showToast = true) {
+        const key = normalizeNameKey(name);
+        let linkedSlotCode = "";
+        const cleanPax = Math.max(1, Math.min(20, parseInt(nextPax || "1", 10) || 1));
+        const tMeta = (nextTable && seatingConfig.tableMeta && seatingConfig.tableMeta[nextTable]) || {};
+        const effectiveGroup = nextGroup || tMeta.group || "";
+
+        savedGuests = savedGuests.map((g) => {
+          if (normalizeNameKey(g.name) === key) {
+            if (g.slotCode) linkedSlotCode = g.slotCode;
+            return { ...g, group: effectiveGroup, table: nextTable, pax: cleanPax };
+          }
+          return g;
+        });
+        if (linkedSlotCode && serverSlots[linkedSlotCode]) {
+          serverSlots[linkedSlotCode].group = effectiveGroup;
+          serverSlots[linkedSlotCode].table = nextTable;
+          serverSlots[linkedSlotCode].pax = cleanPax;
+          persistLocalSlots();
+        }
+        persistLocalGuests();
+        buildRows();
+        if (typeof renderSlotsTable === "function") renderSlotsTable();
+        if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
+
+        try {
+          await fetch(`${apiBase}/api/guests`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "update_seat",
+              name,
+              group: effectiveGroup,
+              table: nextTable,
+              pax: cleanPax
+            })
+          });
+        } catch (_) {}
+
+        if (showToast) {
+          notify(
+            nextTable
+              ? `🪑 Đã xếp "${name}" vào Bàn ${String(nextTable).padStart(2, "0")} (${cleanPax} ghế)!`
+              : `🪑 Đã cập nhật phân nhóm cho "${name}"!`
+          );
+        }
+      }
+
       async function removeGuestFromList(name) {
         const key = normalizeNameKey(name);
         savedGuests = savedGuests.filter((g) => normalizeNameKey(g.name) !== key);
@@ -1765,6 +2321,7 @@
           return rowsData;
         }
 
+        const { occ: tableOccMap } = computeTableStats();
         let visibleCount = 0;
 
         savedGuests.forEach((guestObj, idx) => {
@@ -1776,6 +2333,20 @@
           const hasHanzi = /[\u4e00-\u9fff]/.test(name);
           const effectiveLang = guestObj.lang === "zh" || hasHanzi ? "zh" : "vi";
           const mode = guestObj.mode || "invite";
+          const linkedSlotObj =
+            guestObj.slotCode && serverSlots[guestObj.slotCode]
+              ? serverSlots[guestObj.slotCode]
+              : null;
+          const guestGroup = String(
+            guestObj.group || (linkedSlotObj && linkedSlotObj.group) || ""
+          ).trim();
+          const guestTable = String(
+            guestObj.table || (linkedSlotObj && linkedSlotObj.table) || ""
+          ).trim();
+          const guestPax = Math.max(
+            1,
+            parseInt(guestObj.pax || (linkedSlotObj && linkedSlotObj.pax) || "1", 10) || 1
+          );
           const globalMode =
             globalSiteConfig.globalMode ||
             (globalSiteConfig.globalThankYou
@@ -1866,6 +2437,22 @@
                       placeholder="Ghi chú riêng (VD: Con dì Ý, bạn ĐH...)"
                     />
                   </label>
+                  <div class="seat-inline-bar" title="Phân nhóm khách (6 nhóm chính) & xếp vào Bàn Tiệc Sảnh Seine">
+                    <select class="seat-inline-select js-guest-group-select">
+                      ${buildGroupSelectOptions(guestGroup)}
+                    </select>
+                    <select class="seat-inline-select ${guestTable ? "has-table" : ""} js-guest-table-select">
+                      ${buildTableSelectOptions(guestTable, tableOccMap)}
+                    </select>
+                    <input
+                      type="number"
+                      min="1"
+                      max="15"
+                      class="seat-inline-pax js-guest-pax-input"
+                      value="${guestPax}"
+                      title="Số ghế (Pax) của khách/gia đình này trong bàn"
+                    />
+                  </div>
                 </div>
                 <div class="guest-url-line js-url-preview"></div>
               </div>
@@ -1910,6 +2497,22 @@
               }
             });
           }
+
+          const grpSelectEl = card.querySelector(".js-guest-group-select");
+          const tblSelectEl = card.querySelector(".js-guest-table-select");
+          const paxInputEl = card.querySelector(".js-guest-pax-input");
+          const triggerGuestSeatChange = () => {
+            updateGuestSeatOnServer(
+              name,
+              grpSelectEl ? grpSelectEl.value : "",
+              tblSelectEl ? tblSelectEl.value : "",
+              paxInputEl ? paxInputEl.value : "1",
+              true
+            );
+          };
+          if (grpSelectEl) grpSelectEl.addEventListener("change", triggerGuestSeatChange);
+          if (tblSelectEl) tblSelectEl.addEventListener("change", triggerGuestSeatChange);
+          if (paxInputEl) paxInputEl.addEventListener("change", triggerGuestSeatChange);
 
           const sessionsWrap = card.querySelector(".js-sessions-wrap");
           if (!sessions.length) {
@@ -2116,6 +2719,10 @@
           if (st.slots && typeof st.slots === "object") {
             mergeServerSlots(st.slots);
           }
+          if (st.seatingConfig && typeof st.seatingConfig === "object") {
+            seatingConfig = { ...seatingConfig, ...st.seatingConfig };
+            persistLocalSeating();
+          }
 
           const visitLogs = Array.isArray(st.visitLogs) ? st.visitLogs : [];
           badgeLogsEl.textContent = String(visitLogs.length);
@@ -2213,6 +2820,9 @@
           }
           if (!isTypingSlot || showToast) {
             renderSlotsTable();
+          }
+          if (typeof renderSeineFloorplan === "function") {
+            renderSeineFloorplan();
           }
           subLabel.textContent =
             "Đang đồng bộ trực tiếp • Cập nhật lúc " + new Date().toLocaleTimeString("vi-VN");
@@ -3435,7 +4045,7 @@
         const merged = { ...serverSlots };
         Object.keys(remoteSlots).forEach((code) => {
           const r = remoteSlots[code];
-          if (r && (r.name || r.mode)) {
+          if (r && (r.name || r.mode || r.group || r.table)) {
             merged[code] = r;
             const n = parseInt(r.num, 10) || parseInt(code.split("-")[0], 10) || 0;
             if (n > slotMaxPrinted) slotMaxPrinted = n;
@@ -3458,6 +4068,76 @@
         return `${base}?s=${encodeURIComponent(code)}`;
       }
 
+      async function setSlotSeat(num, nextGroup, nextTable, nextPax, showToast = true) {
+        const n = parseInt(num, 10);
+        if (!n || n < 1 || n > 9999) return;
+        const code = makeSlotCode(n);
+        const prev = serverSlots[code] || {};
+        const assignedName = prev.name ? String(prev.name).trim() : "";
+        const lang = prev.lang || (/[\u4e00-\u9fff]/.test(assignedName) ? "zh" : "vi");
+        const cleanPax = Math.max(1, Math.min(20, parseInt(nextPax || "1", 10) || 1));
+        const tMeta = (nextTable && seatingConfig.tableMeta && seatingConfig.tableMeta[nextTable]) || {};
+        const effectiveGroup = nextGroup || tMeta.group || "";
+
+        serverSlots[code] = {
+          num: n,
+          name: assignedName,
+          lang,
+          mode: prev.mode || "invite",
+          group: effectiveGroup,
+          table: nextTable,
+          pax: cleanPax,
+          assignedAt: prev.assignedAt || new Date().toISOString()
+        };
+
+        if (assignedName) {
+          const pk = normalizeNameKey(assignedName);
+          savedGuests = savedGuests.map((g) => {
+            if (normalizeNameKey(g.name) === pk) {
+              return { ...g, group: effectiveGroup, table: nextTable, pax: cleanPax, slot: n, slotCode: code };
+            }
+            return g;
+          });
+          persistLocalGuests();
+          buildRows();
+        }
+
+        persistLocalSlots();
+        renderSlotsTable();
+        if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
+
+        try {
+          const res = await fetch(`${apiBase}/api/slots`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "set_seat",
+              code,
+              group: effectiveGroup,
+              table: nextTable,
+              pax: cleanPax
+            })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.slots) mergeServerSlots(data.slots);
+            if (Array.isArray(data.savedGuests)) mergeServerGuests(data.savedGuests);
+            renderSlotsTable();
+            buildRows();
+            if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
+          }
+        } catch (_) {}
+
+        if (showToast) {
+          const targetLabel = assignedName ? `QR Số ${n} (${assignedName})` : `QR Số ${n}`;
+          notify(
+            nextTable
+              ? `🪑 Đã xếp ${targetLabel} vào Bàn ${String(nextTable).padStart(2, "0")} (${cleanPax} ghế)!`
+              : `🪑 Đã cập nhật nhóm cho ${targetLabel}!`
+          );
+        }
+      }
+
       async function setSlotMode(num, nextMode) {
         const n = parseInt(num, 10);
         if (!n || n < 1 || n > 9999) return;
@@ -3471,6 +4151,9 @@
           name: assignedName,
           lang,
           mode: nextMode,
+          group: prev.group || "",
+          table: prev.table || "",
+          pax: prev.pax || 1,
           assignedAt: prev.assignedAt || new Date().toISOString()
         };
 
@@ -3595,11 +4278,26 @@
           (prevSlot && prevSlot.mode) ||
           (existingIdx >= 0 && savedGuests[existingIdx].mode) ||
           "invite";
+        const preservedGroup =
+          (prevSlot && prevSlot.group) ||
+          (existingIdx >= 0 && savedGuests[existingIdx].group) ||
+          "";
+        const preservedTable =
+          (prevSlot && prevSlot.table) ||
+          (existingIdx >= 0 && savedGuests[existingIdx].table) ||
+          "";
+        const preservedPax =
+          (prevSlot && prevSlot.pax) ||
+          (existingIdx >= 0 && savedGuests[existingIdx].pax) ||
+          1;
         serverSlots[code] = {
           num: n,
           name,
           lang,
           mode: preservedMode,
+          group: preservedGroup,
+          table: preservedTable,
+          pax: preservedPax,
           assignedAt: new Date().toISOString()
         };
         const guestRecord = {
@@ -3608,6 +4306,9 @@
           mode: preservedMode,
           driveUrl: existingIdx >= 0 && savedGuests[existingIdx].driveUrl ? savedGuests[existingIdx].driveUrl : "",
           note: finalNote,
+          group: preservedGroup,
+          table: preservedTable,
+          pax: preservedPax,
           slot: n,
           slotCode: code,
           createdAt:
@@ -3687,6 +4388,7 @@
         });
 
         const q = (slotSearchInput ? slotSearchInput.value : "").trim().toLowerCase();
+        const { occ: slotTableOccMap } = computeTableStats();
         slotTableBody.innerHTML = "";
 
         for (let n = 1; n <= maxN; n++) {
@@ -3700,12 +4402,23 @@
           const privateNote = String(
             (matchedGuest && matchedGuest.note) || (nameKey ? guestNotesMap[nameKey] : "") || ""
           ).trim();
+          const rowGroup = String(
+            (slotObj && slotObj.group) || (matchedGuest && matchedGuest.group) || ""
+          ).trim();
+          const rowTable = String(
+            (slotObj && slotObj.table) || (matchedGuest && matchedGuest.table) || ""
+          ).trim();
+          const rowPax = Math.max(
+            1,
+            parseInt((slotObj && slotObj.pax) || (matchedGuest && matchedGuest.pax) || "1", 10) || 1
+          );
 
           if (q) {
             const numMatch = String(n) === q || `số ${n}`.includes(q) || `#${n}` === q;
             const nameMatch = assignedName.toLowerCase().includes(q);
             const noteMatch = privateNote.toLowerCase().includes(q);
-            if (!numMatch && !nameMatch && !noteMatch) continue;
+            const tblMatch = rowTable && (`bàn ${rowTable}` === q || `ban ${rowTable}` === q);
+            if (!numMatch && !nameMatch && !noteMatch && !tblMatch) continue;
           }
 
           const unassignedLogKey = normalizeNameKey(`QR số ${n} (chưa gán tên)`);
@@ -3772,6 +4485,24 @@
               />
             </td>
             <td>
+              <div class="seat-inline-bar">
+                <select class="seat-inline-select js-slot-group-select">
+                  ${buildGroupSelectOptions(rowGroup)}
+                </select>
+                <select class="seat-inline-select ${rowTable ? "has-table" : ""} js-slot-table-select">
+                  ${buildTableSelectOptions(rowTable, slotTableOccMap)}
+                </select>
+                <input
+                  type="number"
+                  min="1"
+                  max="15"
+                  class="seat-inline-pax js-slot-pax-input"
+                  value="${rowPax}"
+                  title="Số ghế (Pax) của khách này"
+                />
+              </div>
+            </td>
+            <td>
               <div class="mode-switch-pill" title="Chuyển đổi trực tiếp giữa Thiệp Mời, Chỉ Đường Ngày Cưới và Thiệp Cảm Ơn cho QR Số ${n}">
                 <button type="button" class="mode-switch-btn js-slot-mode-invite ${effectiveMode === "invite" ? "is-active-invite" : ""}">💌 Thiệp Mời</button>
                 <button type="button" class="mode-switch-btn js-slot-mode-dir ${isDirEffective ? "is-active-dir" : ""}" title="Đẩy Sơ Đồ Đường Đi & Google Maps lên đầu trang, tự động mở sẵn bao thư">📍 Chỉ Đường</button>
@@ -3794,6 +4525,22 @@
           nameInput.value = assignedName;
           noteInput.value = privateNote;
           tr.querySelector(".js-slot-preview").href = previewUrl;
+
+          const sGrpSel = tr.querySelector(".js-slot-group-select");
+          const sTblSel = tr.querySelector(".js-slot-table-select");
+          const sPaxInp = tr.querySelector(".js-slot-pax-input");
+          const triggerSlotSeatChange = () => {
+            setSlotSeat(
+              n,
+              sGrpSel ? sGrpSel.value : "",
+              sTblSel ? sTblSel.value : "",
+              sPaxInp ? sPaxInp.value : "1",
+              true
+            );
+          };
+          if (sGrpSel) sGrpSel.addEventListener("change", triggerSlotSeatChange);
+          if (sTblSel) sTblSel.addEventListener("change", triggerSlotSeatChange);
+          if (sPaxInp) sPaxInp.addEventListener("change", triggerSlotSeatChange);
 
           tr.querySelector(".js-slot-mode-invite").addEventListener("click", () => {
             setSlotMode(n, "invite");
@@ -4090,8 +4837,327 @@
         });
       }
 
+      // =======================================================================
+      // SẢNH SEINE (RIVERSIDE PALACE) INTERACTIVE SEATING FLOORPLAN
+      // =======================================================================
+      const badgeSeatedEl = document.getElementById("badge-seated-count");
+      const seineTotalTablesInput = document.getElementById("seine-total-tables");
+      const seineShowCompanionsChk = document.getElementById("seine-show-companions");
+      const seineKpiSummary = document.getElementById("seine-kpi-summary");
+      const seineLeftWing = document.getElementById("seine-left-wing");
+      const seineRightWing = document.getElementById("seine-right-wing");
+      const seineInspTitle = document.getElementById("seine-insp-title");
+      const seineInspBadge = document.getElementById("seine-insp-badge");
+      const seineInspGroup = document.getElementById("seine-insp-group");
+      const seineInspLabel = document.getElementById("seine-insp-label");
+      const seineInspCount = document.getElementById("seine-insp-count");
+      const seineInspSeatedList = document.getElementById("seine-insp-seated-list");
+      const seineUnassignedSearch = document.getElementById("seine-unassigned-search");
+      const seineUnassignedGroupFilter = document.getElementById("seine-unassigned-group-filter");
+      const seineUnassignedList = document.getElementById("seine-unassigned-list");
+
+      async function saveSeatingConfigToServer(showToast = false) {
+        persistLocalSeating();
+        try {
+          await fetch(`${apiBase}/api/seating`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(seatingConfig)
+          });
+        } catch (_) {}
+        if (showToast) notify("✅ Đã lưu cấu hình Sơ Đồ Bàn Tiệc Sảnh Seine!");
+      }
+
+      function renderSeineFloorplan() {
+        if (!seineLeftWing || !seineRightWing) return;
+        const total = Math.max(4, Math.min(52, parseInt(seatingConfig.totalTables || "40", 10) || 40));
+        const cap = seatingConfig.seatsPerTable || 10;
+        if (seineTotalTablesInput && document.activeElement !== seineTotalTablesInput) {
+          seineTotalTablesInput.value = String(total);
+        }
+        if (seineShowCompanionsChk) {
+          seineShowCompanionsChk.checked = seatingConfig.showTableGuests !== false;
+        }
+
+        const { occ, byTable, totalSeatedRecords, totalSeatedPax } = computeTableStats();
+        if (badgeSeatedEl) badgeSeatedEl.textContent = String(totalSeatedRecords);
+        if (seineKpiSummary) {
+          seineKpiSummary.textContent = `Đã xếp bàn: ${totalSeatedRecords} khách/nhóm • ${totalSeatedPax} / ${total * cap} ghế (${total} bàn × ${cap} ghế)`;
+        }
+
+        seineLeftWing.innerHTML = "";
+        seineRightWing.innerHTML = "";
+
+        for (let i = 1; i <= total; i++) {
+          const tKey = String(i);
+          const used = occ[tKey] || 0;
+          const isFull = used >= cap;
+          const isPartial = used > 0 && used < cap;
+          const meta = (seatingConfig.tableMeta && seatingConfig.tableMeta[tKey]) || {};
+          const grpKey = meta.group || "";
+          const grpInfo = SEAT_GROUPS[grpKey] || SEAT_GROUPS[""];
+
+          const wrap = document.createElement("div");
+          wrap.className = "seine-table-wrap" + (selectedSeineTable === tKey ? " is-selected" : "");
+
+          // Build 10 seat dots in a circle around the table (radius = 40px from center 46,46)
+          let dotsHtml = "";
+          for (let s = 0; s < cap; s++) {
+            const angle = (s / cap) * Math.PI * 2 - Math.PI / 2;
+            const dx = Math.round(46 + 40 * Math.cos(angle) - 4);
+            const dy = Math.round(46 + 40 * Math.sin(angle) - 4);
+            const dotCls = isFull ? "is-full" : s < used ? "is-occupied" : "";
+            dotsHtml += `<span class="seine-seat-dot ${dotCls}" style="left:${dx}px; top:${dy}px;"></span>`;
+          }
+
+          const tagLabel = meta.label
+            ? meta.label
+            : grpKey
+              ? grpInfo.short
+              : "Chưa gán khu";
+
+          wrap.innerHTML = `
+            <div class="seine-table-ring">
+              ${dotsHtml}
+              <div class="seine-table-circle ${isFull ? "is-full" : isPartial ? "is-partial" : ""}">
+                <div class="seine-table-num">Bàn ${String(i).padStart(2, "0")}</div>
+                <div class="seine-table-cap">${used}/${cap}</div>
+              </div>
+            </div>
+            <div class="seine-table-tag" style="background:${grpInfo.bg}; color:${grpInfo.color};">
+              ${tagLabel}
+            </div>
+          `;
+
+          wrap.addEventListener("click", () => {
+            selectedSeineTable = tKey;
+            renderSeineFloorplan();
+          });
+
+          if (i % 2 === 1) {
+            seineLeftWing.appendChild(wrap);
+          } else {
+            seineRightWing.appendChild(wrap);
+          }
+        }
+
+        renderSeineInspector(occ, byTable);
+      }
+
+      function renderSeineInspector(occ, byTable) {
+        if (!seineInspTitle) return;
+        const tKey = String(selectedSeineTable || "1");
+        const cap = seatingConfig.seatsPerTable || 10;
+        const used = (occ && occ[tKey]) || 0;
+        const seatedArr = (byTable && byTable[tKey]) || [];
+        const meta = (seatingConfig.tableMeta && seatingConfig.tableMeta[tKey]) || {};
+
+        seineInspTitle.textContent = `🪑 Bàn ${String(tKey).padStart(2, "0")}`;
+        if (seineInspBadge) {
+          seineInspBadge.textContent = `${used} / ${cap} ghế`;
+          seineInspBadge.className =
+            "status-badge " + (used >= cap ? "is-viewed" : used > 0 ? "is-opened" : "is-pending");
+        }
+        if (seineInspGroup && document.activeElement !== seineInspGroup) {
+          seineInspGroup.value = meta.group || "";
+        }
+        if (seineInspLabel && document.activeElement !== seineInspLabel) {
+          seineInspLabel.value = meta.label || "";
+        }
+        if (seineInspCount) {
+          seineInspCount.textContent = `${seatedArr.length} khách • ${used} ghế`;
+        }
+
+        if (seineInspSeatedList) {
+          seineInspSeatedList.innerHTML = "";
+          if (!seatedArr.length) {
+            seineInspSeatedList.innerHTML = `<div style="font-size:12px; color:var(--adm-muted); padding:8px 0;">Chưa có khách nào ở Bàn ${String(tKey).padStart(2, "0")}. Hãy bấm ➕ ở danh sách dưới để thêm vào bàn!</div>`;
+          } else {
+            seatedArr.forEach((item) => {
+              const row = document.createElement("div");
+              row.className = "seine-guest-pill";
+              row.innerHTML = `
+                <div>
+                  <strong class="js-sp-name"></strong>
+                  ${item.slot ? `<span class="lang-tag" style="margin-left:4px;">#${String(item.slot).padStart(2, "0")}</span>` : ""}
+                  <span style="font-size:11.5px; color:var(--adm-muted); margin-left:4px;">(${item.pax} ghế)</span>
+                </div>
+                <button type="button" class="btn-adm danger js-sp-remove" style="height:26px; padding:0 8px; font-size:11.5px;" title="Gỡ khỏi bàn này">✕ Gỡ</button>
+              `;
+              row.querySelector(".js-sp-name").textContent = item.name;
+              row.querySelector(".js-sp-remove").addEventListener("click", () => {
+                if (item.type === "slot" && item.slot) {
+                  setSlotSeat(item.slot, item.group, "", item.pax, true);
+                } else {
+                  updateGuestSeatOnServer(item.name, item.group, "", item.pax, true);
+                }
+              });
+              seineInspSeatedList.appendChild(row);
+            });
+          }
+        }
+
+        if (seineUnassignedList) {
+          const q = (seineUnassignedSearch ? seineUnassignedSearch.value : "").trim().toLowerCase();
+          const grpFilter = (seineUnassignedGroupFilter ? seineUnassignedGroupFilter.value : "all") || "all";
+          seineUnassignedList.innerHTML = "";
+
+          const candidates = [];
+          const seenKeys = new Set();
+          savedGuests.forEach((g) => {
+            if (!g || !g.name) return;
+            const gk = normalizeNameKey(g.name);
+            seenKeys.add(gk);
+            const slotObj = g.slotCode && serverSlots[g.slotCode] ? serverSlots[g.slotCode] : null;
+            const tbl = String(g.table || (slotObj && slotObj.table) || "").trim();
+            if (tbl === tKey) return;
+            const grp = String(g.group || (slotObj && slotObj.group) || "").trim();
+            const pax = Math.max(1, parseInt(g.pax || (slotObj && slotObj.pax) || "1", 10) || 1);
+            const note = String(g.note || guestNotesMap[gk] || "").trim();
+            candidates.push({
+              type: "guest",
+              name: g.name,
+              slot: g.slot || (slotObj && slotObj.num) || null,
+              group: grp,
+              table: tbl,
+              pax,
+              note
+            });
+          });
+
+          // Also include numbered QR slots up to max(18, slotMaxPrinted) that have no table yet
+          const maxSlot = Math.max(18, slotMaxPrinted);
+          for (let n = 1; n <= maxSlot; n++) {
+            const code = makeSlotCode(n);
+            const s = serverSlots[code];
+            const sName = s && s.name ? String(s.name).trim() : "";
+            if (sName && seenKeys.has(normalizeNameKey(sName))) continue;
+            const tbl = s && s.table ? String(s.table).trim() : "";
+            if (tbl === tKey) continue;
+            const grp = s && s.group ? String(s.group).trim() : "";
+            const pax = Math.max(1, parseInt((s && s.pax) || "1", 10) || 1);
+            candidates.push({
+              type: "slot",
+              name: sName || `QR Số ${n} (Chưa gán tên)`,
+              slot: n,
+              group: grp,
+              table: tbl,
+              pax,
+              note: ""
+            });
+          }
+
+          const filtered = candidates.filter((c) => {
+            if (grpFilter !== "all" && c.group !== grpFilter) return false;
+            if (q) {
+              const mName = c.name.toLowerCase().includes(q);
+              const mNote = c.note.toLowerCase().includes(q);
+              const mSlot = c.slot && (`số ${c.slot}` === q || `#${c.slot}` === q || String(c.slot) === q);
+              if (!mName && !mNote && !mSlot) return false;
+            }
+            return true;
+          });
+
+          filtered.slice(0, 60).forEach((c) => {
+            const row = document.createElement("div");
+            row.className = "seine-guest-pill";
+            const grpShort = c.group && SEAT_GROUPS[c.group] ? SEAT_GROUPS[c.group].short : "";
+            const curTblBadge = c.table ? ` (Đang ở Bàn ${c.table})` : "";
+            row.innerHTML = `
+              <div style="min-width:0;">
+                <strong class="js-cand-name"></strong>
+                ${c.slot ? `<span class="lang-tag" style="margin-left:4px;">#${String(c.slot).padStart(2, "0")}</span>` : ""}
+                ${grpShort ? `<span style="font-size:11px; color:var(--adm-muted); margin-left:4px;">• ${grpShort}</span>` : ""}
+                <span style="font-size:11px; color:#a45a04;">${curTblBadge}</span>
+              </div>
+              <button type="button" class="btn-adm primary js-cand-assign" style="height:26px; padding:0 9px; font-size:11.5px;">➕ Vào Bàn ${String(tKey).padStart(2, "0")}</button>
+            `;
+            row.querySelector(".js-cand-name").textContent = c.name;
+            row.querySelector(".js-cand-assign").addEventListener("click", () => {
+              const targetGrp = c.group || meta.group || "";
+              if (c.type === "slot" && c.slot) {
+                setSlotSeat(c.slot, targetGrp, tKey, c.pax, true);
+              } else {
+                updateGuestSeatOnServer(c.name, targetGrp, tKey, c.pax, true);
+              }
+            });
+            seineUnassignedList.appendChild(row);
+          });
+        }
+      }
+
+      if (seineTotalTablesInput) {
+        seineTotalTablesInput.addEventListener("change", () => {
+          seatingConfig.totalTables = Math.max(
+            4,
+            Math.min(52, parseInt(seineTotalTablesInput.value || "40", 10) || 40)
+          );
+          renderSeineFloorplan();
+          buildRows();
+          renderSlotsTable();
+          saveSeatingConfigToServer(true);
+        });
+      }
+
+      document.querySelectorAll(".js-seine-preset").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const t = parseInt(btn.getAttribute("data-tables") || "40", 10) || 40;
+          seatingConfig.totalTables = t;
+          if (seineTotalTablesInput) seineTotalTablesInput.value = String(t);
+          renderSeineFloorplan();
+          buildRows();
+          renderSlotsTable();
+          saveSeatingConfigToServer(true);
+        });
+      });
+
+      if (seineShowCompanionsChk) {
+        seineShowCompanionsChk.addEventListener("change", () => {
+          seatingConfig.showTableGuests = seineShowCompanionsChk.checked;
+          saveSeatingConfigToServer(true);
+        });
+      }
+
+      if (seineInspGroup) {
+        seineInspGroup.addEventListener("change", () => {
+          const tKey = String(selectedSeineTable || "1");
+          if (!seatingConfig.tableMeta) seatingConfig.tableMeta = {};
+          seatingConfig.tableMeta[tKey] = {
+            ...(seatingConfig.tableMeta[tKey] || {}),
+            group: seineInspGroup.value
+          };
+          renderSeineFloorplan();
+          buildRows();
+          renderSlotsTable();
+          saveSeatingConfigToServer(true);
+        });
+      }
+
+      if (seineInspLabel) {
+        seineInspLabel.addEventListener("change", () => {
+          const tKey = String(selectedSeineTable || "1");
+          if (!seatingConfig.tableMeta) seatingConfig.tableMeta = {};
+          seatingConfig.tableMeta[tKey] = {
+            ...(seatingConfig.tableMeta[tKey] || {}),
+            label: seineInspLabel.value.trim()
+          };
+          renderSeineFloorplan();
+          buildRows();
+          renderSlotsTable();
+          saveSeatingConfigToServer(true);
+        });
+      }
+
+      if (seineUnassignedSearch) {
+        seineUnassignedSearch.addEventListener("input", () => renderSeineFloorplan());
+      }
+      if (seineUnassignedGroupFilter) {
+        seineUnassignedGroupFilter.addEventListener("change", () => renderSeineFloorplan());
+      }
+
       renderSlotsTable();
       updateSlotAssignPreview();
+      renderSeineFloorplan();
 
       setTimeout(renderLuxuryWeddingQR, 250);
       if (document.fonts && document.fonts.ready) {
