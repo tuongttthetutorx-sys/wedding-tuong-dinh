@@ -90,6 +90,7 @@ function isBotUserAgent(ua = "") {
 
 function normalizeGuestKey(name = "") {
   return String(name || "")
+    .normalize("NFC")
     .trim()
     .toLowerCase()
     .replace(/\s+/g, " ");
@@ -444,6 +445,19 @@ export class WeddingAnalytics {
             data.savedGuests[idx].group = requestedGroup;
             data.savedGuests[idx].table = requestedTable;
             data.savedGuests[idx].pax = requestedPax;
+          } else {
+            data.savedGuests.push({
+              name: prev.name,
+              lang: prev.lang || "vi",
+              mode: requestedMode,
+              group: requestedGroup,
+              table: requestedTable,
+              pax: requestedPax,
+              slot: num,
+              slotCode: code,
+              driveUrl: "",
+              createdAt: new Date().toISOString()
+            });
           }
         }
       } else if (action === "clear" || !name) {
@@ -537,6 +551,9 @@ export class WeddingAnalytics {
       }
       if (body.tableMeta && typeof body.tableMeta === "object") {
         prevCfg.tableMeta = { ...(prevCfg.tableMeta || {}), ...body.tableMeta };
+      }
+      if (body.groups && typeof body.groups === "object") {
+        prevCfg.groups = { ...(prevCfg.groups || {}), ...body.groups };
       }
       data.seatingConfig = prevCfg;
 
@@ -725,19 +742,43 @@ export class WeddingAnalytics {
           const idx = data.savedGuests.findIndex(
             (g) => normalizeGuestKey(g.name) === targetKey
           );
+          const cleanGroup = body.group !== undefined ? String(body.group || "").trim() : "";
+          const cleanTable = body.table !== undefined ? String(body.table || "").trim() : "";
+          const cleanPax = body.pax !== undefined ? Math.max(1, Math.min(20, parseInt(body.pax, 10) || 1)) : 1;
+
           if (idx >= 0) {
             const g = data.savedGuests[idx];
-            if (body.group !== undefined) g.group = String(body.group || "").trim();
-            if (body.table !== undefined) g.table = String(body.table || "").trim();
-            if (body.pax !== undefined) {
-              g.pax = Math.max(1, Math.min(20, parseInt(body.pax, 10) || 1));
-            }
+            if (body.group !== undefined) g.group = cleanGroup;
+            if (body.table !== undefined) g.table = cleanTable;
+            if (body.pax !== undefined) g.pax = cleanPax;
             const sc = g.slotCode;
             if (sc && data.slots && data.slots[sc]) {
               data.slots[sc].group = g.group || "";
               data.slots[sc].table = g.table || "";
               data.slots[sc].pax = g.pax || 1;
             }
+          } else {
+            data.savedGuests.push({
+              name: String(body.name || "").trim(),
+              lang: /[\u4e00-\u9fff]/.test(body.name) ? "zh" : "vi",
+              mode: "invite",
+              group: cleanGroup,
+              table: cleanTable,
+              pax: cleanPax,
+              driveUrl: "",
+              createdAt: new Date().toISOString()
+            });
+          }
+
+          // Also check if any slot has this name and update it
+          if (data.slots) {
+            Object.values(data.slots).forEach((s) => {
+              if (s && s.name && normalizeGuestKey(s.name) === targetKey) {
+                if (body.group !== undefined) s.group = cleanGroup;
+                if (body.table !== undefined) s.table = cleanTable;
+                if (body.pax !== undefined) s.pax = cleanPax;
+              }
+            });
           }
         }
       } else if (action === "toggle_mode") {

@@ -1861,20 +1861,16 @@
       <div class="adm-box">
         <div class="adm-box-head">
           <div>
-            <h2 class="adm-box-title">🪑 Sơ Đồ Bàn Tiệc Sảnh Seine — Riverside Palace (Tầng Trệt • 672m²)</h2>
+            <h2 class="adm-box-title">🪑 Sơ Đồ Bàn Tiệc Sảnh Seine — Riverside Palace</h2>
             <p class="adm-box-desc">
-              Bố trí chuẩn <strong>Bàn Tròn 10 khách đối xứng qua Lối Đi Lễ Đường hướng lên Sân Khấu LED</strong>. Khách quét chính mã QR đã in trên Bookmark (hoặc mở link thiệp) sẽ thấy ngay <strong>Số Bàn + Khu vực (6 nhóm) + Sơ đồ chỉ vị trí bàn</strong> mà không cần ấn định ghế cứng trong bàn!
+              Sắp xếp bàn tròn 10 khách sảnh Seine &amp; phân nhóm khách tự động theo sơ đồ.
             </p>
           </div>
           <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px;">
             <label style="font-size:12.5px; font-weight:600; color:var(--adm-text);">
               Tổng số bàn:
-              <input type="number" id="seine-total-tables" class="adm-input" min="4" max="52" value="40" style="width:72px; height:34px; margin-left:4px; display:inline-block;" />
+              <input type="number" id="seine-total-tables" class="adm-input" min="4" max="52" value="40" style="width:68px; height:34px; margin-left:4px; display:inline-block;" />
             </label>
-            <button type="button" class="btn-adm js-seine-preset" data-tables="36" style="height:32px; padding:0 10px; font-size:12px;">36 bàn</button>
-            <button type="button" class="btn-adm js-seine-preset" data-tables="38" style="height:32px; padding:0 10px; font-size:12px;">38 bàn</button>
-            <button type="button" class="btn-adm js-seine-preset" data-tables="40" style="height:32px; padding:0 10px; font-size:12px;">40 bàn</button>
-            <button type="button" class="btn-adm js-seine-preset" data-tables="52" style="height:32px; padding:0 10px; font-size:12px;">52 bàn (Tối đa)</button>
             <label style="display:inline-flex; align-items:center; gap:5px; font-size:12.2px; font-weight:600; color:var(--adm-text); margin-left:6px; cursor:pointer;">
               <input type="checkbox" id="seine-show-companions" checked />
               Cho khách xem tên người cùng bàn
@@ -1882,20 +1878,58 @@
           </div>
         </div>
 
-        <div class="seine-legend-bar">
-          <div style="display:flex; flex-wrap:wrap; align-items:center; gap:12px;">
-            <span><strong id="seine-kpi-summary">Đang xếp: 0 khách (0/400 ghế)</strong></span>
-            <span>🟢 Ghế trống</span>
-            <span>🔵 Đã có khách ngồi</span>
-            <span>🔴 Bàn đã đủ 10/10 ghế</span>
+        <!-- THIẾT LẬP & TỰ CHỈNH NHÓM KHÁCH (THÊM / BỚT / ĐỔI MÀU NHÓM TÙY Ý) -->
+        <div class="custom-groups-panel" style="margin-bottom:12px; padding:10px 14px; border-radius:10px; background:#fffdf9; border:1.5px solid #d4b895;">
+          <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px;">
+            <div style="font-size:13px; font-weight:700; color:var(--adm-crimson); display:flex; align-items:center; gap:6px;">
+              <span>🎨 Quản Lý &amp; Tự Chỉnh Nhóm Khách</span>
+              <span id="custom-groups-count-badge" class="lang-tag" style="background:#f2ebe1; color:var(--adm-crimson);">6 nhóm</span>
+            </div>
+            <div style="display:flex; gap:6px;">
+              <button type="button" id="btn-toggle-add-group" class="btn-adm primary" style="height:28px; padding:0 10px; font-size:11.8px;">
+                ➕ Thêm Nhóm Mới
+              </button>
+              <button type="button" id="btn-reset-groups" class="btn-adm" style="height:28px; padding:0 8px; font-size:11.5px;" title="Khôi phục lại 6 nhóm ban đầu">
+                ↺ Mặc định
+              </button>
+            </div>
           </div>
-          <div style="display:flex; flex-wrap:wrap; gap:6px; font-size:11.5px; font-weight:600;">
-            <span style="padding:2px 7px; border-radius:5px; background:#f9e6e6; color:#7d1518;">👑 GĐ Nhà Trai</span>
-            <span style="padding:2px 7px; border-radius:5px; background:#fde8e8; color:#a61c1c;">👑 GĐ Nhà Gái</span>
-            <span style="padding:2px 7px; border-radius:5px; background:#faeedb; color:#9a5b13;">🏮 Họ hàng Trai</span>
-            <span style="padding:2px 7px; border-radius:5px; background:#fcebd9; color:#b85d19;">🏮 Họ hàng Gái</span>
-            <span style="padding:2px 7px; border-radius:5px; background:#e3f5ee; color:#1b6b52;">🥂 Bạn bè &amp; Đ.Nghiệp</span>
-            <span style="padding:2px 7px; border-radius:5px; background:#efeaf8; color:#5b3e85;">✨ Khách mời</span>
+
+          <!-- FORM THÊM NHÓM MỚI -->
+          <div id="add-group-form" style="display:none; margin-bottom:10px; padding:8px 10px; border-radius:8px; background:#fbf5ea; border:1px solid var(--adm-border);">
+            <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px;">
+              <input type="text" id="new-group-name" class="adm-input" placeholder="Tên nhóm mới (VD: Bạn Cấp 3, Cty ABC, VIP, Họ Ngoại...)" style="height:32px; font-size:12.2px; flex:1 1 200px;" />
+              <select id="new-group-color" class="adm-select" style="height:32px; font-size:12px; width:auto;">
+                <option value="wine">🍷 Đỏ Rượu</option>
+                <option value="crimson">🌹 Đỏ San Hô</option>
+                <option value="amber">🏮 Hổ Phách</option>
+                <option value="orange">🍊 Cam Đất</option>
+                <option value="emerald">🌿 Xanh Ngọc</option>
+                <option value="blue">🌊 Xanh Biển</option>
+                <option value="purple">🔮 Tím Huế</option>
+                <option value="pink">🌸 Hồng Phấn</option>
+                <option value="brown">🪵 Nâu Trầm</option>
+                <option value="slate">🌫️ Xám Khói</option>
+              </select>
+              <button type="button" id="btn-save-new-group" class="btn-adm primary" style="height:32px; padding:0 12px; font-size:12px; font-weight:700;">
+                ✓ Lưu Nhóm
+              </button>
+              <button type="button" id="btn-cancel-add-group" class="btn-adm" style="height:32px; padding:0 8px; font-size:12px;">
+                ✕ Hủy
+              </button>
+            </div>
+          </div>
+
+          <!-- DANH SÁCH CHIP CÁC NHÓM KHÁCH HIỆN CÓ -->
+          <div id="custom-groups-chips-list" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
+        </div>
+
+        <div class="seine-legend-bar" style="margin-bottom:12px; padding:8px 12px; border-radius:8px; background:#fbf5ea; border:1px solid #e2cfb8; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px; font-size:12px;">
+          <div><strong id="seine-kpi-summary">Đang xếp: 0 khách (0/400 ghế)</strong></div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span>🟢 Ghế trống</span>
+            <span>🔵 Đã có khách</span>
+            <span>🔴 Đủ 10/10 ghế</span>
           </div>
         </div>
 
@@ -1932,45 +1966,38 @@
 
           <!-- CỘT PHẢI: CHI TIẾT BÀN ĐANG CHỌN & THÊM KHÁCH NHANH -->
           <div class="seine-inspector">
-            <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px;">
               <h3 id="seine-insp-title" style="margin:0; font-size:16px; color:var(--adm-crimson);">🪑 Bàn 01</h3>
-              <span id="seine-insp-badge" class="status-badge is-opened">0 / 10 ghế</span>
-            </div>
-
-            <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;">
-              <a
-                id="btn-preview-seine-table"
-                href="./index.html?to=Gia+%C4%90%C3%ACnh+Anh+Minh+%26+Ch%E1%BB%8B+Lan&table=1&group=groom_family&pax=2&mode=directions&notrack=1"
-                target="_blank"
-                rel="noopener"
-                class="btn-adm primary"
-                style="flex:1; justify-content:center; height:34px; font-size:12px;"
-                title="Mở xem thử giao diện Thiệp + Vị trí Bàn tiệc + Bản đồ chỉ đường mà khách ngồi bàn này sẽ thấy khi quét QR"
-              >
-                👁️ Xem thử Bàn này + Chỉ đường
-              </a>
-              <button
-                type="button"
-                id="btn-copy-seine-table-link"
-                class="btn-adm"
-                style="height:34px; padding:0 10px; font-size:12px;"
-                title="Copy link demo của Bàn đang chọn"
-              >
-                📋 Copy Link Demo
-              </button>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span id="seine-insp-badge" class="status-badge is-opened">0 / 10 ghế</span>
+                <a
+                  id="btn-preview-seine-table"
+                  href="#"
+                  target="_blank"
+                  rel="noopener"
+                  class="btn-adm"
+                  style="height:28px; padding:0 8px; font-size:11.5px;"
+                  title="Xem thử giao diện thiệp của bàn này"
+                >
+                  👁️ Xem thử
+                </a>
+                <button
+                  type="button"
+                  id="btn-copy-seine-table-link"
+                  class="btn-adm"
+                  style="height:28px; padding:0 8px; font-size:11.5px;"
+                  title="Copy link demo của bàn này"
+                >
+                  📋 Copy
+                </button>
+              </div>
             </div>
 
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:12px;">
               <div>
-                <label class="slot-label" for="seine-insp-group">Khu vực / Nhóm của bàn này:</label>
+                <label class="slot-label" for="seine-insp-group">Khu vực / Nhóm của bàn:</label>
                 <select id="seine-insp-group" class="adm-select" style="height:36px; font-size:12.5px;">
                   <option value="">⚪ Chưa phân nhóm</option>
-                  <option value="groom_family">👑 Gia đình Nhà Trai</option>
-                  <option value="bride_family">👑 Gia đình Nhà Gái</option>
-                  <option value="groom_relatives">🏮 Họ hàng Nhà Trai</option>
-                  <option value="bride_relatives">🏮 Họ hàng Nhà Gái</option>
-                  <option value="friends_colleagues">🥂 Bạn bè &amp; Đồng nghiệp</option>
-                  <option value="honored_guests">✨ Khách mời / Khách quý</option>
                 </select>
               </div>
               <div>
@@ -1992,12 +2019,6 @@
                 <input type="search" id="seine-unassigned-search" class="adm-input" placeholder="🔍 Tìm tên, số QR, ghi chú..." style="height:34px; font-size:12.2px;" />
                 <select id="seine-unassigned-group-filter" class="adm-select" style="height:34px; font-size:12px;">
                   <option value="all">Tất cả nhóm</option>
-                  <option value="groom_family">👑 GĐ Nhà Trai</option>
-                  <option value="bride_family">👑 GĐ Nhà Gái</option>
-                  <option value="groom_relatives">🏮 Họ hàng Trai</option>
-                  <option value="bride_relatives">🏮 Họ hàng Gái</option>
-                  <option value="friends_colleagues">🥂 Bạn bè &amp; ĐN</option>
-                  <option value="honored_guests">✨ Khách mời</option>
                 </select>
               </div>
               <div id="seine-unassigned-list" style="max-height:240px; overflow-y:auto;"></div>
@@ -2099,15 +2120,253 @@
       } catch (_) {}
       let selectedSeineTable = "1";
 
-      const SEAT_GROUPS = {
+      const DEFAULT_SEAT_GROUPS = {
         "": { label: "⚪ Chưa phân nhóm", short: "Chưa gán", bg: "#f2ebe1", color: "#5c4338" },
         groom_family: { label: "👑 Gia đình Nhà Trai", short: "👑 GĐ Trai", bg: "#f9e6e6", color: "#7d1518" },
         bride_family: { label: "👑 Gia đình Nhà Gái", short: "👑 GĐ Gái", bg: "#fde8e8", color: "#a61c1c" },
-        groom_relatives: { label: "🏮 Họ hàng Nhà Trai", short: "🏮 Họ hàng Trai", bg: "#faeedb", color: "#9a5b13" },
-        bride_relatives: { label: "🏮 Họ hàng Nhà Gái", short: "🏮 Họ hàng Gái", bg: "#fcebd9", color: "#b85d19" },
-        friends_colleagues: { label: "🥂 Bạn bè & Đồng nghiệp", short: "🥂 Bạn bè/ĐN", bg: "#e3f5ee", color: "#1b6b52" },
-        honored_guests: { label: "✨ Khách mời / Khách quý", short: "✨ Khách mời", bg: "#efeaf8", color: "#5b3e85" }
+        groom_relatives: { label: "🏮 Họ hàng Nhà Trai", short: "🏮 Họ Trai", bg: "#faeedb", color: "#9a5b13" },
+        bride_relatives: { label: "🏮 Họ hàng Nhà Gái", short: "🏮 Họ Gái", bg: "#fcebd9", color: "#b85d19" },
+        friends_colleagues: { label: "🥂 Bạn bè & Đồng nghiệp", short: "🥂 Bạn & ĐN", bg: "#e3f5ee", color: "#1b6b52" },
+        honored_guests: { label: "✨ Khách mời / Khách quý", short: "✨ Khách quý", bg: "#efeaf8", color: "#5b3e85" }
       };
+
+      const STORAGE_SEAT_GROUPS = "td_seat_groups_v1";
+      let SEAT_GROUPS = { ...DEFAULT_SEAT_GROUPS };
+      try {
+        const rawGroups = localStorage.getItem(STORAGE_SEAT_GROUPS);
+        if (rawGroups) {
+          const parsed = JSON.parse(rawGroups);
+          if (parsed && typeof parsed === "object") {
+            SEAT_GROUPS = { ...DEFAULT_SEAT_GROUPS, ...parsed };
+          }
+        }
+      } catch (_) {}
+
+      const COLOR_PALETTES = {
+        wine: { bg: "#f9e6e6", color: "#7d1518", icon: "🍷" },
+        crimson: { bg: "#fde8e8", color: "#a61c1c", icon: "🌹" },
+        amber: { bg: "#faeedb", color: "#9a5b13", icon: "🏮" },
+        orange: { bg: "#fcebd9", color: "#b85d19", icon: "🍊" },
+        emerald: { bg: "#e3f5ee", color: "#1b6b52", icon: "🌿" },
+        blue: { bg: "#e8f0fe", color: "#1a5276", icon: "🌊" },
+        purple: { bg: "#efeaf8", color: "#5b3e85", icon: "🔮" },
+        pink: { bg: "#fcebf2", color: "#9b2c67", icon: "🌸" },
+        brown: { bg: "#f2ece6", color: "#6e4b37", icon: "🪵" },
+        slate: { bg: "#edeef1", color: "#374151", icon: "🌫️" }
+      };
+
+      function persistCustomGroups() {
+        try {
+          localStorage.setItem(STORAGE_SEAT_GROUPS, JSON.stringify(SEAT_GROUPS));
+        } catch (_) {}
+        if (!seatingConfig.groups) seatingConfig.groups = {};
+        seatingConfig.groups = { ...SEAT_GROUPS };
+        saveSeatingConfigToServer(false);
+      }
+
+      function refreshAllGroupSelects() {
+        const groupKeys = Object.keys(SEAT_GROUPS).filter(Boolean);
+
+        // 1. guest-group-filter (Danh sách khách)
+        const grpFilterEl = document.getElementById("guest-group-filter");
+        if (grpFilterEl) {
+          const prev = grpFilterEl.value || "all";
+          let html = `<option value="all">👥 Tất cả ${groupKeys.length} nhóm khách</option><option value="unassigned_group">⚪ Chưa phân nhóm</option>`;
+          groupKeys.forEach((k) => {
+            html += `<option value="${k}">${SEAT_GROUPS[k].label}</option>`;
+          });
+          grpFilterEl.innerHTML = html;
+          grpFilterEl.value = prev;
+        }
+
+        // 2. bulk-assign-group & bulk-float-group
+        const topBulkGrp = document.getElementById("bulk-assign-group");
+        const floatBulkGrp = document.getElementById("bulk-float-group");
+        let bulkOpts = `<option value="__keep__">-- Giữ nguyên Nhóm khách --</option>`;
+        groupKeys.forEach((k) => {
+          bulkOpts += `<option value="${k}">Gán: ${SEAT_GROUPS[k].label}</option>`;
+        });
+        bulkOpts += `<option value="">⚪ Xóa phân nhóm (Về trống)</option>`;
+        if (topBulkGrp) {
+          const p = topBulkGrp.value || "__keep__";
+          topBulkGrp.innerHTML = bulkOpts;
+          topBulkGrp.value = p;
+        }
+        if (floatBulkGrp) {
+          const p = floatBulkGrp.value || "__keep__";
+          floatBulkGrp.innerHTML = bulkOpts;
+          floatBulkGrp.value = p;
+        }
+
+        // 3. seine-insp-group (Chi tiết bàn)
+        const seineInspGrp = document.getElementById("seine-insp-group");
+        if (seineInspGrp) {
+          const p = seineInspGrp.value || "";
+          let html = `<option value="">⚪ Chưa phân nhóm</option>`;
+          groupKeys.forEach((k) => {
+            html += `<option value="${k}">${SEAT_GROUPS[k].label}</option>`;
+          });
+          seineInspGrp.innerHTML = html;
+          seineInspGrp.value = p;
+        }
+
+        // 4. seine-unassigned-group-filter (Lọc thêm khách)
+        const unassignedFilter = document.getElementById("seine-unassigned-group-filter");
+        if (unassignedFilter) {
+          const p = unassignedFilter.value || "all";
+          let html = `<option value="all">Tất cả nhóm</option>`;
+          groupKeys.forEach((k) => {
+            html += `<option value="${k}">${SEAT_GROUPS[k].short || SEAT_GROUPS[k].label}</option>`;
+          });
+          unassignedFilter.innerHTML = html;
+          unassignedFilter.value = p;
+        }
+
+        renderCustomGroupsChips();
+      }
+
+      function renderCustomGroupsChips() {
+        const container = document.getElementById("custom-groups-chips-list");
+        const countBadge = document.getElementById("custom-groups-count-badge");
+        if (!container) return;
+        const keys = Object.keys(SEAT_GROUPS).filter(Boolean);
+        if (countBadge) countBadge.textContent = `${keys.length} nhóm`;
+        container.innerHTML = "";
+
+        const groupCounts = {};
+        savedGuests.forEach((g) => {
+          const grp = String(g.group || "").trim();
+          if (grp) groupCounts[grp] = (groupCounts[grp] || 0) + 1;
+        });
+        Object.values(serverSlots).forEach((s) => {
+          const grp = String(s.group || "").trim();
+          if (grp && (!s.name || !savedGuests.some((g) => normalizeNameKey(g.name) === normalizeNameKey(s.name)))) {
+            groupCounts[grp] = (groupCounts[grp] || 0) + 1;
+          }
+        });
+
+        keys.forEach((k) => {
+          const gInfo = SEAT_GROUPS[k];
+          const cnt = groupCounts[k] || 0;
+          const chip = document.createElement("div");
+          chip.style.cssText = `
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 600;
+            background: ${gInfo.bg}; color: ${gInfo.color};
+            border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+          `;
+          chip.innerHTML = `
+            <span>${gInfo.label}</span>
+            <span style="font-size:11px; opacity:0.85; font-weight:700;">(${cnt})</span>
+            <button type="button" class="btn-group-delete" style="background:none; border:none; cursor:pointer; font-size:11.5px; color:${gInfo.color}; padding:0 2px; margin-left:2px; opacity:0.65;" title="Xóa nhóm này">✕</button>
+          `;
+
+          const delBtn = chip.querySelector(".btn-group-delete");
+          if (delBtn) {
+            delBtn.addEventListener("click", (e) => {
+              e.stopPropagation();
+              if (!confirm(`Bạn có chắc muốn xóa nhóm "${gInfo.label}" không?\nKhách thuộc nhóm này sẽ chuyển về "Chưa phân nhóm".`)) return;
+              delete SEAT_GROUPS[k];
+              savedGuests = savedGuests.map((g) => g.group === k ? { ...g, group: "" } : g);
+              Object.keys(serverSlots).forEach((code) => {
+                if (serverSlots[code].group === k) serverSlots[code].group = "";
+              });
+              persistLocalGuests();
+              persistLocalSlots();
+              persistCustomGroups();
+              refreshAllGroupSelects();
+              buildRows();
+              renderSeineFloorplan();
+              notify(`🗑️ Đã xóa nhóm "${gInfo.label}".`);
+            });
+          }
+
+          container.appendChild(chip);
+        });
+      }
+
+      // Group Form Toggle & Add Logic
+      const btnToggleAddGroup = document.getElementById("btn-toggle-add-group");
+      const addGroupForm = document.getElementById("add-group-form");
+      const btnCancelAddGroup = document.getElementById("btn-cancel-add-group");
+      const btnSaveNewGroup = document.getElementById("btn-save-new-group");
+      const btnResetGroups = document.getElementById("btn-reset-groups");
+      const newGroupNameInput = document.getElementById("new-group-name");
+      const newGroupColorSelect = document.getElementById("new-group-color");
+
+      if (btnToggleAddGroup && addGroupForm) {
+        btnToggleAddGroup.addEventListener("click", () => {
+          const isOpen = addGroupForm.style.display !== "none";
+          addGroupForm.style.display = isOpen ? "none" : "block";
+          if (!isOpen && newGroupNameInput) {
+            newGroupNameInput.value = "";
+            newGroupNameInput.focus();
+          }
+        });
+      }
+
+      if (btnCancelAddGroup && addGroupForm) {
+        btnCancelAddGroup.addEventListener("click", () => {
+          addGroupForm.style.display = "none";
+          if (newGroupNameInput) newGroupNameInput.value = "";
+        });
+      }
+
+      if (btnSaveNewGroup && newGroupNameInput && newGroupColorSelect) {
+        btnSaveNewGroup.addEventListener("click", () => {
+          const name = newGroupNameInput.value.trim();
+          if (!name) {
+            alert("Vui lòng nhập tên nhóm khách mới!");
+            newGroupNameInput.focus();
+            return;
+          }
+          const colorKey = newGroupColorSelect.value || "wine";
+          const pal = COLOR_PALETTES[colorKey] || COLOR_PALETTES.wine;
+          // Generate key from name
+          const slug = name
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-z0-9]+/g, "_")
+            .replace(/^_+|_+$/g, "") || ("grp_" + Date.now());
+          const groupKey = "custom_" + slug;
+
+          SEAT_GROUPS[groupKey] = {
+            label: `${pal.icon} ${name}`,
+            short: `${pal.icon} ${name.length > 10 ? name.slice(0, 10) + '…' : name}`,
+            bg: pal.bg,
+            color: pal.color
+          };
+
+          persistCustomGroups();
+          refreshAllGroupSelects();
+          buildRows();
+          if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
+
+          newGroupNameInput.value = "";
+          if (addGroupForm) addGroupForm.style.display = "none";
+          notify(`🎉 Đã tạo nhóm "${name}" thành công!`);
+        });
+
+        newGroupNameInput.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            btnSaveNewGroup.click();
+          }
+        });
+      }
+
+      if (btnResetGroups) {
+        btnResetGroups.addEventListener("click", () => {
+          if (!confirm("Khôi phục danh sách nhóm về mặc định ban đầu?")) return;
+          SEAT_GROUPS = { ...DEFAULT_SEAT_GROUPS };
+          persistCustomGroups();
+          refreshAllGroupSelects();
+          buildRows();
+          if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
+          notify("↺ Đã khôi phục các nhóm mặc định.");
+        });
+      }
 
       function persistLocalSeating() {
         try {
@@ -2479,7 +2738,11 @@
       let guestNotesMap = {};
 
       function normalizeNameKey(name) {
-        return String(name || "").trim().toLowerCase().replace(/\s+/g, " ");
+        return String(name || "")
+          .normalize("NFC")
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g, " ");
       }
 
       try {
@@ -2533,7 +2796,40 @@
             const loc = localByKey.get(k);
             const mergedNote = String(g.note || (loc && loc.note) || guestNotesMap[k] || "").trim();
             if (mergedNote) guestNotesMap[k] = mergedNote;
-            map.set(k, { ...g, note: mergedNote });
+
+            const mergedTable =
+              g.table !== undefined && g.table !== ""
+                ? String(g.table)
+                : loc && loc.table !== undefined && loc.table !== ""
+                  ? String(loc.table)
+                  : "";
+            const mergedGroup =
+              g.group !== undefined && g.group !== ""
+                ? String(g.group)
+                : loc && loc.group !== undefined && loc.group !== ""
+                  ? String(loc.group)
+                  : "";
+            const mergedPax =
+              g.pax && Number(g.pax) >= 1
+                ? Number(g.pax)
+                : loc && loc.pax && Number(loc.pax) >= 1
+                  ? Number(loc.pax)
+                  : 1;
+            const mergedSlot = g.slot || (loc ? loc.slot : null);
+            const mergedSlotCode = g.slotCode || (loc ? loc.slotCode : "");
+            const mergedMode = g.mode || (loc ? loc.mode : "invite") || "invite";
+
+            map.set(k, {
+              ...loc,
+              ...g,
+              table: mergedTable,
+              group: mergedGroup,
+              pax: mergedPax,
+              slot: mergedSlot,
+              slotCode: mergedSlotCode,
+              mode: mergedMode,
+              note: mergedNote
+            });
           }
         });
         savedGuests.forEach((g) => {
@@ -2704,48 +3000,78 @@
         const key = normalizeNameKey(name);
         let linkedSlotCode = "";
         const cleanPax = Math.max(1, Math.min(20, parseInt(nextPax || "1", 10) || 1));
-        const tMeta = (nextTable && seatingConfig.tableMeta && seatingConfig.tableMeta[nextTable]) || {};
+        const cleanTable = String(nextTable || "");
+        const tMeta = (cleanTable && seatingConfig.tableMeta && seatingConfig.tableMeta[cleanTable]) || {};
         const effectiveGroup = nextGroup || tMeta.group || "";
 
+        let matched = false;
         savedGuests = savedGuests.map((g) => {
           if (normalizeNameKey(g.name) === key) {
+            matched = true;
             if (g.slotCode) linkedSlotCode = g.slotCode;
-            return { ...g, group: effectiveGroup, table: nextTable, pax: cleanPax };
+            return { ...g, group: effectiveGroup, table: cleanTable, pax: cleanPax };
           }
           return g;
         });
+        if (!matched && name) {
+          savedGuests.push({
+            name,
+            group: effectiveGroup,
+            table: cleanTable,
+            pax: cleanPax,
+            mode: "invite"
+          });
+        }
         if (linkedSlotCode && serverSlots[linkedSlotCode]) {
           serverSlots[linkedSlotCode].group = effectiveGroup;
-          serverSlots[linkedSlotCode].table = nextTable;
+          serverSlots[linkedSlotCode].table = cleanTable;
           serverSlots[linkedSlotCode].pax = cleanPax;
           persistLocalSlots();
         }
+        Object.keys(serverSlots).forEach((code) => {
+          const s = serverSlots[code];
+          if (s && s.name && normalizeNameKey(s.name) === key) {
+            s.group = effectiveGroup;
+            s.table = cleanTable;
+            s.pax = cleanPax;
+            persistLocalSlots();
+          }
+        });
+
         persistLocalGuests();
         buildRows();
         if (typeof renderSlotsTable === "function") renderSlotsTable();
         if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
 
+        if (showToast) {
+          notify(
+            cleanTable
+              ? `🪑 Đã xếp "${name}" vào Bàn ${String(cleanTable).padStart(2, "0")} (${cleanPax} ghế)!`
+              : `🪑 Đã gỡ "${name}" khỏi bàn tiệc!`
+          );
+        }
+
         try {
-          await fetch(`${apiBase}/api/guests`, {
+          const res = await fetch(`${apiBase}/api/guests`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               action: "update_seat",
               name,
               group: effectiveGroup,
-              table: nextTable,
+              table: cleanTable,
               pax: cleanPax
             })
           });
+          if (res.ok) {
+            const data = await res.json();
+            if (Array.isArray(data.savedGuests)) {
+              mergeServerGuests(data.savedGuests);
+              buildRows();
+              if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
+            }
+          }
         } catch (_) {}
-
-        if (showToast) {
-          notify(
-            nextTable
-              ? `🪑 Đã xếp "${name}" vào Bàn ${String(nextTable).padStart(2, "0")} (${cleanPax} ghế)!`
-              : `🪑 Đã cập nhật phân nhóm cho "${name}"!`
-          );
-        }
       }
 
       async function removeGuestFromList(name) {
@@ -3486,6 +3812,13 @@
           }
           if (st.seatingConfig && typeof st.seatingConfig === "object") {
             seatingConfig = { ...seatingConfig, ...st.seatingConfig };
+            if (st.seatingConfig.groups && typeof st.seatingConfig.groups === "object") {
+              SEAT_GROUPS = { ...DEFAULT_SEAT_GROUPS, ...st.seatingConfig.groups };
+              try {
+                localStorage.setItem(STORAGE_SEAT_GROUPS, JSON.stringify(SEAT_GROUPS));
+              } catch (_) {}
+              refreshAllGroupSelects();
+            }
             persistLocalSeating();
           }
 
@@ -4810,8 +5143,41 @@
         const merged = { ...serverSlots };
         Object.keys(remoteSlots).forEach((code) => {
           const r = remoteSlots[code];
-          if (r && (r.name || r.mode || r.group || r.table)) {
-            merged[code] = r;
+          if (r) {
+            const loc = serverSlots[code] || {};
+            const mergedTable =
+              r.table !== undefined && r.table !== ""
+                ? String(r.table)
+                : loc.table !== undefined && loc.table !== ""
+                  ? String(loc.table)
+                  : "";
+            const mergedGroup =
+              r.group !== undefined && r.group !== ""
+                ? String(r.group)
+                : loc.group !== undefined && loc.group !== ""
+                  ? String(loc.group)
+                  : "";
+            const mergedPax =
+              r.pax && Number(r.pax) >= 1
+                ? Number(r.pax)
+                : loc.pax && Number(loc.pax) >= 1
+                  ? Number(loc.pax)
+                  : 1;
+            const mergedName =
+              r.name !== undefined && r.name !== ""
+                ? r.name
+                : loc.name || "";
+            const mergedMode = r.mode || loc.mode || "invite";
+
+            merged[code] = {
+              ...loc,
+              ...r,
+              name: mergedName,
+              mode: mergedMode,
+              table: mergedTable,
+              group: mergedGroup,
+              pax: mergedPax
+            };
             const n = parseInt(r.num, 10) || parseInt(code.split("-")[0], 10) || 0;
             if (n > slotMaxPrinted) slotMaxPrinted = n;
           }
@@ -4841,7 +5207,8 @@
         const assignedName = prev.name ? String(prev.name).trim() : "";
         const lang = prev.lang || (/[\u4e00-\u9fff]/.test(assignedName) ? "zh" : "vi");
         const cleanPax = Math.max(1, Math.min(20, parseInt(nextPax || "1", 10) || 1));
-        const tMeta = (nextTable && seatingConfig.tableMeta && seatingConfig.tableMeta[nextTable]) || {};
+        const cleanTable = String(nextTable || "");
+        const tMeta = (cleanTable && seatingConfig.tableMeta && seatingConfig.tableMeta[cleanTable]) || {};
         const effectiveGroup = nextGroup || tMeta.group || "";
 
         serverSlots[code] = {
@@ -4850,19 +5217,34 @@
           lang,
           mode: prev.mode || "invite",
           group: effectiveGroup,
-          table: nextTable,
+          table: cleanTable,
           pax: cleanPax,
           assignedAt: prev.assignedAt || new Date().toISOString()
         };
 
         if (assignedName) {
           const pk = normalizeNameKey(assignedName);
+          let guestFound = false;
           savedGuests = savedGuests.map((g) => {
             if (normalizeNameKey(g.name) === pk) {
-              return { ...g, group: effectiveGroup, table: nextTable, pax: cleanPax, slot: n, slotCode: code };
+              guestFound = true;
+              return { ...g, group: effectiveGroup, table: cleanTable, pax: cleanPax, slot: n, slotCode: code };
             }
             return g;
           });
+          if (!guestFound) {
+            savedGuests.push({
+              name: assignedName,
+              lang,
+              mode: prev.mode || "invite",
+              group: effectiveGroup,
+              table: cleanTable,
+              pax: cleanPax,
+              slot: n,
+              slotCode: code,
+              createdAt: new Date().toISOString()
+            });
+          }
           persistLocalGuests();
           buildRows();
         }
@@ -4870,6 +5252,15 @@
         persistLocalSlots();
         renderSlotsTable();
         if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
+
+        if (showToast) {
+          const displayName = assignedName || `QR #${String(n).padStart(2, "0")}`;
+          notify(
+            cleanTable
+              ? `🪑 Đã xếp "${displayName}" vào Bàn ${String(cleanTable).padStart(2, "0")} (${cleanPax} ghế)!`
+              : `🪑 Đã gỡ "${displayName}" khỏi bàn tiệc!`
+          );
+        }
 
         try {
           const res = await fetch(`${apiBase}/api/slots`, {
@@ -4879,7 +5270,7 @@
               action: "set_seat",
               code,
               group: effectiveGroup,
-              table: nextTable,
+              table: cleanTable,
               pax: cleanPax
             })
           });
@@ -4892,15 +5283,6 @@
             if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
           }
         } catch (_) {}
-
-        if (showToast) {
-          const targetLabel = assignedName ? `QR Số ${n} (${assignedName})` : `QR Số ${n}`;
-          notify(
-            nextTable
-              ? `🪑 Đã xếp ${targetLabel} vào Bàn ${String(nextTable).padStart(2, "0")} (${cleanPax} ghế)!`
-              : `🪑 Đã cập nhật nhóm cho ${targetLabel}!`
-          );
-        }
       }
 
       async function setSlotMode(num, nextMode) {
@@ -5849,8 +6231,8 @@
             });
           });
 
-          // Also include numbered QR slots up to max(18, slotMaxPrinted) that have no table yet
-          const maxSlot = Math.max(18, slotMaxPrinted);
+          // Also include numbered QR slots up to 414 (total cards) that have no table yet
+          const maxSlot = Math.max(414, slotMaxPrinted);
           for (let n = 1; n <= maxSlot; n++) {
             const code = makeSlotCode(n);
             const s = serverSlots[code];
@@ -5979,6 +6361,7 @@
         seineUnassignedGroupFilter.addEventListener("change", () => renderSeineFloorplan());
       }
 
+      refreshAllGroupSelects();
       renderSlotsTable();
       updateSlotAssignPreview();
       renderSeineFloorplan();

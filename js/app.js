@@ -922,6 +922,12 @@
       const slotParam = (params.get("s") || "").trim().toLowerCase();
       const seatCfgRaw = localStorage.getItem("td_seating_config_v1");
       const seatCfg = seatCfgRaw ? JSON.parse(seatCfgRaw) : null;
+      const customGroupsRaw = localStorage.getItem("td_seat_groups_v1");
+      const customGroups = customGroupsRaw ? JSON.parse(customGroupsRaw) : null;
+      const finalCfg = seatCfg || { totalTables: 40, seatsPerTable: 10, showTableGuests: true };
+      if (customGroups) {
+        finalCfg.groups = { ...(finalCfg.groups || {}), ...customGroups };
+      }
       const guestsRaw = localStorage.getItem("td_saved_guests_v2");
       const guestsList = guestsRaw ? JSON.parse(guestsRaw) : [];
       const slotsRaw = localStorage.getItem("td_saved_slots_v1");
@@ -962,7 +968,7 @@
         pax,
         tableLabel: tMeta.label || "",
         tableGuests: companions,
-        seatingConfig: seatCfg || { totalTables: 40, seatsPerTable: 10, showTableGuests: true }
+        seatingConfig: finalCfg
       };
     } catch (_) {
       return null;
@@ -1204,7 +1210,11 @@
     const wingOrder = Math.ceil(tNum / 2);
     const rowNum = Math.ceil(wingOrder / 2);
     const grpKey = params.get("group") || rCfg.group || "honored_guests";
+    const customGrp =
+      (rCfg.seatingConfig && rCfg.seatingConfig.groups && rCfg.seatingConfig.groups[grpKey]) ||
+      (window.SEAT_GROUPS && window.SEAT_GROUPS[grpKey]);
     const zInfo = SEAT_ZONE_I18N[grpKey] || SEAT_ZONE_I18N.honored_guests;
+    const groupDisplay = customGrp ? (customGrp.label || customGrp.short) : (isZh ? zInfo.zh : zInfo.vi);
     const customLabel = rCfg.tableLabel ? ` (${rCfg.tableLabel})` : "";
     const pax = Math.max(1, parseInt(params.get("pax") || rCfg.pax || "1", 10) || 1);
 
@@ -1225,7 +1235,7 @@
         : `Khu vực bàn tiệc • Đã xếp ${String(pax).padStart(2, "0")} ghế (Bàn 10 khách)`;
     }
     if (n1TitleEl) {
-      n1TitleEl.textContent = (isZh ? zInfo.zh : zInfo.vi) + customLabel;
+      n1TitleEl.textContent = groupDisplay + customLabel;
     }
     if (n1DescEl) {
       n1DescEl.textContent = isZh
