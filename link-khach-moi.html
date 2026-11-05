@@ -1285,12 +1285,16 @@
         </details>
       </div>
 
-      <!-- DANH SÁCH KHÁCH ĐÃ LƯU -->
+      <!-- DANH SÁCH TỔNG 414 THIỆP (ĐÃ CÓ TÊN Ở TRÊN • CHƯA CÓ TÊN Ở DƯỚI) -->
       <div class="adm-box">
         <div class="adm-box-head">
           <div>
-            <h2 class="adm-box-title">📌 Danh Sách Khách Mời Đã Tạo (<span id="saved-guest-count">0</span> khách)</h2>
-            <p class="adm-box-desc">Bấm <strong>Copy Link</strong> hoặc <strong>Copy Lời Mời</strong> để gửi qua Zalo / LINE. Bạn có thể bật <strong>📸 Lời Cảm Ơn</strong> ngay trên từng khách bất kỳ lúc nào.</p>
+            <h2 class="adm-box-title">
+              📌 Danh Sách Tổng 414 Thiệp Mời (✅ Đã có tên: <span id="saved-guest-count">0</span> • 🔢 Chưa có tên: <span id="unnamed-slot-count">414</span>)
+            </h2>
+            <p class="adm-box-desc">
+              <strong>Ai đã có tên sẽ tự động nằm ở trên cao</strong>, các <strong>Mã QR đánh số chưa có tên nằm ở phía dưới</strong> cho đủ tổng <strong>414 thiệp</strong>. Khi bạn gõ tên vào bất kỳ QR số nào ở dưới và bấm <strong>💾 Lưu tên (hoặc Enter)</strong>, khách đó sẽ lập tức nhảy lên danh sách Đã có tên ở trên!
+            </p>
           </div>
           <div style="display:flex; flex-wrap:wrap; gap:8px;">
             <button type="button" id="btn-export-csv" class="btn-adm">📥 Tải File Excel (.CSV)</button>
@@ -1301,13 +1305,15 @@
         <!-- THANH LỌC & TÌM KIẾM -->
         <div class="guest-toolbar">
           <div class="filter-chips" id="guest-filter-chips">
-            <button type="button" class="filter-chip is-active" data-filter="all">Tất cả</button>
+            <button type="button" class="filter-chip is-active" data-filter="all">Tất cả (414)</button>
+            <button type="button" class="filter-chip" data-filter="named">✅ Đã có tên</button>
+            <button type="button" class="filter-chip" data-filter="unnamed">🔢 Chưa có tên</button>
             <button type="button" class="filter-chip" data-filter="opened">✨ Đã xem thiệp</button>
             <button type="button" class="filter-chip" data-filter="pending">⏳ Chưa mở</button>
             <button type="button" class="filter-chip" data-filter="directions">📍 Đang bật Chỉ Đường</button>
             <button type="button" class="filter-chip" data-filter="thankyou">📸 Đang bật Lời Cảm Ơn</button>
           </div>
-          <input type="search" id="guest-search-input" class="search-box" placeholder="🔍 Tìm nhanh tên khách hoặc ghi chú riêng..." />
+          <input type="search" id="guest-search-input" class="search-box" placeholder="🔍 Tìm tên khách, số QR (VD: 15, #15) hoặc ghi chú..." />
         </div>
 
         <div id="guest-cards-container" class="guest-list-cards"></div>
@@ -1856,10 +1862,14 @@
       let currentFilter = "all";
       // Numbered QR bookmarks (print first, assign guest later): code -> { num, name, lang, assignedAt }
       let serverSlots = {};
+      const TOTAL_INVITE_TARGET = 414;
       const STORAGE_SLOT_MAX_PRINTED = "td_slot_max_printed_v1";
-      let slotMaxPrinted = 0;
+      let slotMaxPrinted = TOTAL_INVITE_TARGET;
       try {
-        slotMaxPrinted = parseInt(localStorage.getItem(STORAGE_SLOT_MAX_PRINTED) || "0", 10) || 0;
+        slotMaxPrinted = Math.max(
+          TOTAL_INVITE_TARGET,
+          parseInt(localStorage.getItem(STORAGE_SLOT_MAX_PRINTED) || "414", 10) || TOTAL_INVITE_TARGET
+        );
       } catch (_) {}
       let globalSiteConfig = {
         globalMode: "invite",
@@ -2329,23 +2339,28 @@
       function buildRows() {
         const base = baseOrigin.replace(/\?.*$/, "");
         cardsContainer.innerHTML = "";
+        const unnamedCount = Math.max(0, TOTAL_INVITE_TARGET - savedGuests.length);
         savedCountEl.textContent = String(savedGuests.length);
-        badgeSavedEl.textContent = String(savedGuests.length);
+        const unnamedCountEl = document.getElementById("unnamed-slot-count");
+        if (unnamedCountEl) unnamedCountEl.textContent = String(unnamedCount);
+        badgeSavedEl.textContent = `${savedGuests.length}/${TOTAL_INVITE_TARGET}`;
 
         const q = (searchInput ? searchInput.value : "").trim().toLowerCase();
         const rowsData = [];
-
-        if (!savedGuests.length) {
-          cardsContainer.innerHTML = `
-            <div class="empty-state">
-              Danh sách khách mời đang trống. Hãy nhập tên khách vào ô phía trên và bấm <strong>"✨ Tạo &amp; Lưu Vào Danh Sách"</strong> nhé!
-            </div>
-          `;
-          return rowsData;
-        }
-
         const { occ: tableOccMap } = computeTableStats();
         let visibleCount = 0;
+        const frag = document.createDocumentFragment();
+
+        if (savedGuests.length > 0 && currentFilter !== "unnamed") {
+          const namedHeader = document.createElement("div");
+          namedHeader.style.cssText =
+            "padding:10px 14px; margin-bottom:10px; border-radius:9px; background:#f7ebe8; border:1.5px solid var(--adm-crimson); color:var(--adm-crimson); font-weight:700; font-size:13.2px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;";
+          namedHeader.innerHTML = `
+            <span>✅ PHẦN 1 (Ở TRÊN CAO): KHÁCH MỜI ĐÃ CÓ TÊN (${savedGuests.length} / ${TOTAL_INVITE_TARGET} thiệp)</span>
+            <span style="font-size:11.8px; font-weight:600; color:#6d4c3d;">Ai đã có tên sẽ luôn nằm ở phần trên cùng này</span>
+          `;
+          frag.appendChild(namedHeader);
+        }
 
         savedGuests.forEach((guestObj, idx) => {
           const name = guestObj.name;
@@ -2428,13 +2443,14 @@
             devicesSummary
           });
 
-          // Apply UI Filter & Search (search matches both Guest Name AND Private Note!)
-          if (
-            q &&
-            !name.toLowerCase().includes(q) &&
-            !privateNote.toLowerCase().includes(q)
-          ) {
-            return;
+          // Apply UI Filter & Search (search matches Guest Name, Slot Number, AND Private Note!)
+          if (currentFilter === "unnamed") return;
+          if (q) {
+            const slotStr = guestObj.slot ? String(guestObj.slot) : "";
+            const matchName = name.toLowerCase().includes(q);
+            const matchNote = privateNote.toLowerCase().includes(q);
+            const matchSlot = slotStr && (slotStr === q || `#${slotStr}` === q || `số ${slotStr}`.includes(q));
+            if (!matchName && !matchNote && !matchSlot) return;
           }
           if (currentFilter === "opened" && !hasOpened) return;
           if (currentFilter === "pending" && hasOpened) return;
@@ -2616,8 +2632,218 @@
             removeGuestFromList(name)
           );
 
-          cardsContainer.appendChild(card);
+          frag.appendChild(card);
         });
+
+        // =====================================================================
+        // PHẦN 2 (Ở PHÍA DƯỚI): CÁC SỐ QR CHƯA GÁN TÊN — BÙ ĐỦ TỔNG 414 MỤC
+        // =====================================================================
+        if (currentFilter !== "named" && unnamedCount > 0) {
+          const usedSlotNums = new Set();
+          savedGuests.forEach((g) => {
+            if (g && g.slot) usedSlotNums.add(Number(g.slot));
+          });
+          Object.keys(serverSlots).forEach((code) => {
+            const s = serverSlots[code];
+            if (s && s.name && String(s.name).trim()) {
+              usedSlotNums.add(Number(s.num || parseInt(code.split("-")[0], 10)));
+            }
+          });
+
+          const unnamedSlotNumbers = [];
+          let candidateN = 1;
+          while (unnamedSlotNumbers.length < unnamedCount && candidateN <= 9999) {
+            if (!usedSlotNums.has(candidateN)) {
+              unnamedSlotNumbers.push(candidateN);
+            }
+            candidateN++;
+          }
+
+          const unnamedHeader = document.createElement("div");
+          unnamedHeader.style.cssText =
+            "padding:10px 14px; margin:14px 0 10px; border-radius:9px; background:#fff6ea; border:1.5px solid #c98a3b; color:#7d1518; font-weight:700; font-size:13.2px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;";
+          unnamedHeader.innerHTML = `
+            <span>🔢 PHẦN 2 (Ở PHÍA DƯỚI): ${unnamedSlotNumbers.length} MÃ QR ĐÁNH SỐ CHƯA CÓ TÊN (Bù đủ tổng ${TOTAL_INVITE_TARGET} thiệp)</span>
+            <span style="font-size:11.8px; font-weight:600; color:#5a3e2b;">Gõ tên khách trực tiếp trên từng dòng rồi bấm Lưu (hoặc Enter) là tự động nhảy lên Phần 1 ở trên!</span>
+          `;
+          frag.appendChild(unnamedHeader);
+
+          const globalMode =
+            globalSiteConfig.globalMode ||
+            (globalSiteConfig.globalThankYou
+              ? "thankyou"
+              : globalSiteConfig.globalDirections
+                ? "directions"
+                : "invite");
+
+          unnamedSlotNumbers.forEach((n, uIdx) => {
+            const overallIdx = savedGuests.length + uIdx + 1;
+            const code = makeSlotCode(n);
+            const slotObj = serverSlots[code] || {};
+            const rowGroup = String(slotObj.group || "").trim();
+            const rowTable = String(slotObj.table || "").trim();
+            const rowPax = Math.max(1, parseInt(slotObj.pax || "1", 10) || 1);
+            const rawMode = slotObj.mode || "invite";
+            const effectiveMode =
+              globalMode === "thankyou" || rawMode === "thankyou"
+                ? "thankyou"
+                : globalMode === "directions" || rawMode === "directions"
+                  ? "directions"
+                  : "invite";
+            const isTyEffective = effectiveMode === "thankyou";
+            const isDirEffective = effectiveMode === "directions";
+
+            const unassignedLogKey = normalizeNameKey(`QR số ${n} (chưa gán tên)`);
+            const sessions = visitLogsByGuest[unassignedLogKey] || [];
+            const hasOpened = sessions.length > 0;
+
+            if (q) {
+              const numMatch =
+                String(n) === q ||
+                `số ${n}`.includes(q) ||
+                `qr số ${n}`.includes(q) ||
+                `#${n}` === q ||
+                `#${String(n).padStart(2, "0")}` === q;
+              const tblMatch = rowTable && (`bàn ${rowTable}` === q || `ban ${rowTable}` === q);
+              if (!numMatch && !tblMatch) return;
+            }
+            if (currentFilter === "opened" && !hasOpened) return;
+            if (currentFilter === "pending" && hasOpened) return;
+            if (currentFilter === "directions" && !isDirEffective) return;
+            if (currentFilter === "thankyou" && !isTyEffective) return;
+
+            visibleCount++;
+
+            const slotUrl = getSlotUrl(n);
+            const slotPreviewParams = new URLSearchParams();
+            slotPreviewParams.set("s", code);
+            if (rowTable) {
+              slotPreviewParams.set("table", rowTable);
+              if (rowGroup) slotPreviewParams.set("group", rowGroup);
+              if (rowPax > 1) slotPreviewParams.set("pax", String(rowPax));
+            }
+            if (effectiveMode === "directions" || effectiveMode === "thankyou") {
+              slotPreviewParams.set("mode", effectiveMode);
+            }
+            slotPreviewParams.set("notrack", "1");
+            const previewUrl = `${base}?${slotPreviewParams.toString()}`;
+
+            const statusBadgeHtml = hasOpened
+              ? `<span class="status-badge is-viewed">👀 Đã quét (${sessions.length} lần • Chưa có tên)</span>`
+              : `<span class="status-badge is-pending">⚪ Chưa gán tên</span>`;
+
+            const card = document.createElement("div");
+            card.className = "guest-item-card";
+            card.style.background = "#fffdf9";
+            card.style.borderStyle = "dashed";
+            card.innerHTML = `
+              <div class="guest-top-row">
+                <div class="guest-main-info">
+                  <div class="guest-title-row">
+                    <span class="guest-idx" title="Thứ tự trong tổng 414 thiệp">#${overallIdx}</span>
+                    <span class="slot-num-pill">🔢 QR Số ${n}</span>
+                    ${statusBadgeHtml}
+                    <input
+                      type="text"
+                      class="slot-inline-input js-u-slot-name"
+                      style="max-width:230px; height:32px; font-weight:600;"
+                      placeholder="✍️ Gõ tên khách cho QR Số ${n}..."
+                    />
+                    <input
+                      type="text"
+                      class="slot-inline-input js-u-slot-note"
+                      style="max-width:185px; height:32px;"
+                      placeholder="📝 Ghi chú riêng (nếu có)..."
+                    />
+                    <button type="button" class="btn-adm primary js-u-slot-save" style="height:32px; padding:0 10px; font-size:12px;">
+                      💾 Lưu tên (Lên trên ↑)
+                    </button>
+                    <div class="seat-inline-bar" title="Xếp trước Nhóm khách & Bàn tiệc Sảnh Seine cho QR Số ${n}">
+                      <select class="seat-inline-select js-u-slot-group">
+                        ${buildGroupSelectOptions(rowGroup)}
+                      </select>
+                      <select class="seat-inline-select ${rowTable ? "has-table" : ""} js-u-slot-table">
+                        ${buildTableSelectOptions(rowTable, tableOccMap)}
+                      </select>
+                      <input
+                        type="number"
+                        min="1"
+                        max="15"
+                        class="seat-inline-pax js-u-slot-pax"
+                        value="${rowPax}"
+                        title="Số ghế (Pax) của QR Số ${n}"
+                      />
+                    </div>
+                  </div>
+                  <div class="guest-url-line">${slotUrl}</div>
+                </div>
+
+                <div class="guest-actions-col">
+                  <div class="guest-btn-group">
+                    <div class="mode-switch-pill" title="Chuyển đổi trực tiếp giữa Thiệp Mời, Chỉ Đường Ngày Cưới và Thiệp Cảm Ơn cho QR Số ${n}">
+                      <button type="button" class="mode-switch-btn js-u-mode-invite ${effectiveMode === "invite" ? "is-active-invite" : ""}">💌 Thiệp Mời</button>
+                      <button type="button" class="mode-switch-btn js-u-mode-dir ${isDirEffective ? "is-active-dir" : ""}">📍 Chỉ Đường</button>
+                      <button type="button" class="mode-switch-btn js-u-mode-ty ${isTyEffective ? "is-active-ty" : ""}">📸 Cảm Ơn</button>
+                    </div>
+                    <button type="button" class="btn-adm js-u-copy-link">📋 Copy Link</button>
+                    <a class="btn-adm" href="${previewUrl}" target="_blank" rel="noopener">👁️ Xem thử</a>
+                  </div>
+                </div>
+              </div>
+            `;
+
+            const nameInp = card.querySelector(".js-u-slot-name");
+            const noteInp = card.querySelector(".js-u-slot-note");
+            const saveBtn = card.querySelector(".js-u-slot-save");
+            const doSaveSlotName = () => {
+              const typedName = (nameInp ? nameInp.value : "").trim();
+              const typedNote = (noteInp ? noteInp.value : "").trim();
+              if (!typedName) {
+                notify(`⚠️ Hãy gõ tên khách cho QR Số ${n} trước khi bấm Lưu nhé!`);
+                if (nameInp) nameInp.focus();
+                return;
+              }
+              assignSlotByNumber(n, typedName, typedNote, true);
+            };
+            if (saveBtn) saveBtn.addEventListener("click", doSaveSlotName);
+            [nameInp, noteInp].forEach((inp) => {
+              if (!inp) return;
+              inp.addEventListener("keydown", (ev) => {
+                if (ev.key === "Enter") {
+                  ev.preventDefault();
+                  doSaveSlotName();
+                }
+              });
+            });
+
+            const uGrpSel = card.querySelector(".js-u-slot-group");
+            const uTblSel = card.querySelector(".js-u-slot-table");
+            const uPaxInp = card.querySelector(".js-u-slot-pax");
+            const triggerUSlotSeat = () => {
+              setSlotSeat(
+                n,
+                uGrpSel ? uGrpSel.value : "",
+                uTblSel ? uTblSel.value : "",
+                uPaxInp ? uPaxInp.value : "1",
+                true
+              );
+            };
+            if (uGrpSel) uGrpSel.addEventListener("change", triggerUSlotSeat);
+            if (uTblSel) uTblSel.addEventListener("change", triggerUSlotSeat);
+            if (uPaxInp) uPaxInp.addEventListener("change", triggerUSlotSeat);
+
+            card.querySelector(".js-u-mode-invite").addEventListener("click", () => setSlotMode(n, "invite"));
+            card.querySelector(".js-u-mode-dir").addEventListener("click", () => setSlotMode(n, "directions"));
+            card.querySelector(".js-u-mode-ty").addEventListener("click", () => setSlotMode(n, "thankyou"));
+            card.querySelector(".js-u-copy-link").addEventListener("click", () =>
+              copyText(slotUrl, `📋 Đã copy link của QR Số ${n}!`)
+            );
+
+            frag.appendChild(card);
+          });
+        }
+
+        cardsContainer.appendChild(frag);
 
         if (visibleCount === 0) {
           cardsContainer.innerHTML = `
@@ -4414,7 +4640,7 @@
         const assignedCount = Object.values(serverSlots).filter((s) => s && s.name).length;
         if (badgeSlotsEl) badgeSlotsEl.textContent = String(assignedCount);
 
-        let maxN = Math.max(18, slotMaxPrinted);
+        let maxN = Math.max(TOTAL_INVITE_TARGET, slotMaxPrinted);
         Object.keys(serverSlots).forEach((code) => {
           const n = parseInt(code.split("-")[0], 10) || 0;
           if (n > maxN) maxN = n;
@@ -4424,7 +4650,33 @@
         const { occ: slotTableOccMap } = computeTableStats();
         slotTableBody.innerHTML = "";
 
+        // Sort: Named QR numbers on top, Unnamed QR numbers below!
+        const assignedNums = [];
+        const unassignedNums = [];
         for (let n = 1; n <= maxN; n++) {
+          const code = makeSlotCode(n);
+          const s = serverSlots[code];
+          if (s && s.name && String(s.name).trim()) {
+            assignedNums.push(n);
+          } else {
+            unassignedNums.push(n);
+          }
+        }
+        const orderedNums = assignedNums.concat(unassignedNums);
+        const frag = document.createDocumentFragment();
+
+        for (let idxOrder = 0; idxOrder < orderedNums.length; idxOrder++) {
+          const n = orderedNums[idxOrder];
+          if (idxOrder === 0 && assignedNums.length > 0 && !q) {
+            const sepTr = document.createElement("tr");
+            sepTr.innerHTML = `<td colspan="7" style="background:#f7ebe8; color:var(--adm-crimson); font-weight:700; font-size:12.5px; padding:8px 12px;">✅ CÁC SỐ QR ĐÃ CÓ TÊN KHÁCH (${assignedNums.length} số) — HIỆN Ở TRÊN CAO</td>`;
+            frag.appendChild(sepTr);
+          }
+          if (idxOrder === assignedNums.length && unassignedNums.length > 0 && !q) {
+            const sepTr = document.createElement("tr");
+            sepTr.innerHTML = `<td colspan="7" style="background:#fff6ea; color:#7d1518; font-weight:700; font-size:12.5px; padding:8px 12px;">🔢 CÁC SỐ QR CHƯA GÁN TÊN (${unassignedNums.length} số) — HIỆN Ở PHÍA DƯỚI</td>`;
+            frag.appendChild(sepTr);
+          }
           const code = makeSlotCode(n);
           const slotObj = serverSlots[code] || null;
           const assignedName = slotObj && slotObj.name ? String(slotObj.name).trim() : "";
@@ -4621,8 +4873,9 @@
             });
           }
 
-          slotTableBody.appendChild(tr);
+          frag.appendChild(tr);
         }
+        slotTableBody.appendChild(frag);
       }
 
       document.querySelectorAll(".js-slot-quick-range").forEach((btn) => {
