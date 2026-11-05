@@ -2747,6 +2747,66 @@
         } catch (_) {}
       }
 
+      function ensureGuestSlotsNormalized() {
+        if (!Array.isArray(savedGuests) || savedGuests.length === 0) return false;
+        let changed = false;
+
+        // 1. Give sequential slot numbers (1..N) to any legacy guests missing .slot
+        savedGuests.forEach((g, idx) => {
+          if (g && (!g.slot || Number(g.slot) < 1)) {
+            g.slot = idx + 1;
+            changed = true;
+          }
+        });
+
+        // 2. Deduplicate colliding slot numbers in order so #1..#N each own a unique 1-to-1 QR slot
+        const usedSlots = new Set();
+        savedGuests.forEach((g) => {
+          if (!g) return;
+          let sNum = Number(g.slot) || 1;
+          if (usedSlots.has(sNum)) {
+            let cand = 1;
+            while (usedSlots.has(cand)) cand++;
+            sNum = cand;
+            changed = true;
+          }
+          usedSlots.add(sNum);
+          const expectedCode = makeSlotCode(sNum);
+          if (g.slot !== sNum || g.slotCode !== expectedCode) {
+            g.slot = sNum;
+            g.slotCode = expectedCode;
+            changed = true;
+          }
+
+          if (serverSlots && typeof serverSlots === "object") {
+            const prevS = serverSlots[expectedCode] || {};
+            if (prevS.name !== g.name || prevS.num !== sNum) {
+              changed = true;
+            }
+            serverSlots[expectedCode] = {
+              ...prevS,
+              num: sNum,
+              name: g.name,
+              lang: g.lang || (/[\u4e00-\u9fff]/.test(g.name || "") ? "zh" : "vi"),
+              mode: g.mode || prevS.mode || "invite",
+              group: g.group || prevS.group || "",
+              table: g.table || prevS.table || "",
+              pax: Math.max(1, parseInt(g.pax || prevS.pax || "1", 10) || 1),
+              assignedAt: prevS.assignedAt || g.createdAt || new Date().toISOString()
+            };
+          }
+        });
+
+        // Sort savedGuests by their fixed slot number so #1..#414 are always in clean ascending order
+        savedGuests.sort((a, b) => (Number(a?.slot) || 9999) - (Number(b?.slot) || 9999));
+
+        if (changed) {
+          persistLocalGuests();
+          if (typeof persistLocalSlots === "function") persistLocalSlots();
+        }
+        return changed;
+      }
+
       function mergeServerGuests(serverList) {
         if (!Array.isArray(serverList)) return;
         const localByKey = new Map();
@@ -2782,6 +2842,12 @@
             const mergedSlot = g.slot || (loc ? loc.slot : null);
             const mergedSlotCode = g.slotCode || (loc ? loc.slotCode : "");
             const mergedMode = g.mode || (loc ? loc.mode : "invite") || "invite";
+            const mergedAliases = Array.from(
+              new Set([
+                ...(loc && Array.isArray(loc.aliases) ? loc.aliases : []),
+                ...(Array.isArray(g.aliases) ? g.aliases : [])
+              ])
+            ).filter(Boolean);
 
             map.set(k, {
               ...loc,
@@ -2792,7 +2858,8 @@
               slot: mergedSlot,
               slotCode: mergedSlotCode,
               mode: mergedMode,
-              note: mergedNote
+              note: mergedNote,
+              ...(mergedAliases.length ? { aliases: mergedAliases } : {})
             });
           }
         });
@@ -2807,6 +2874,7 @@
           }
         });
         savedGuests = Array.from(map.values());
+        ensureGuestSlotsNormalized();
         persistLocalGuests();
         const batchTa = document.getElementById("qr-batch-guests");
         if (batchTa && !batchTa.value.trim() && savedGuests.length > 0) {
@@ -3038,22 +3106,150 @@
         } catch (_) {}
       }
 
-      async function removeGuestFromList(name) {
+      async function renameGuestKeepSlot(slotNum, oldName, newName) {
+        const cleanNew = String(newName || "").trim();
+        const cleanOld = String(oldName || "").trim();
+        if (!cleanNew) {
+          notify("⚠️ Tên khách mới không được để trống!");
+          return false;
+        }
+        const n = Math.max(1, parseInt(slotNum, 10) || 1);
+        const code = makeSlotCode(n);
+        const oldKey = normalizeNameKey(cleanOld);
+        const newKey = normalizeNameKey(cleanNew);
+        const hasHanzi = /[\u4e00-\u9fff]/.test(cleanNew);
+        const newLang = hasHanzi ? "zh" : "vi";
+
+        if (oldKey && oldKey !== newKey && guestNotesMap[oldKey] && !guestNotesMap[newKey]) {
+          guestNotesMap[newKey] = guestNotesMap[oldKey];
+        }
+
+        let updatedRecord = null;
+        savedGuests = savedGuests.map((g) => {
+          if (
+            (g && Number(g.slot) === n) ||
+            (g && g.slotCode === code) ||
+            (oldKey && g && normalizeNameKey(g.name) === oldKey)
+          ) {
+            const aliases = Array.from(
+              new Set([...(Array.isArray(g.aliases) ? g.aliases : []), cleanOld].filter(Boolean))
+            ).filter((a) => normalizeNameKey(a) !== newKey);
+            updatedRecord = {
+              ...g,
+              name: cleanNew,
+              lang: newLang,
+              slot: n,
+              slotCode: code,
+              ...(aliases.length ? { aliases } : {})
+            };
+            return updatedRecord;
+          }
+          return g;
+        });
+
+        const prevSlot = serverSlots[code] || {};
+        serverSlots[code] = {
+          ...prevSlot,
+          num: n,
+          name: cleanNew,
+          lang: newLang,
+          mode: (updatedRecord && updatedRecord.mode) || prevSlot.mode || "invite",
+          group: (updatedRecord && updatedRecord.group) || prevSlot.group || "",
+          table: (updatedRecord && updatedRecord.table) || prevSlot.table || "",
+          pax: (updatedRecord && updatedRecord.pax) || prevSlot.pax || 1,
+          assignedAt: prevSlot.assignedAt || new Date().toISOString()
+        };
+
+        // Keep local visitLogsByGuest attached under newKey
+        if (oldKey && oldKey !== newKey && visitLogsByGuest[oldKey]) {
+          visitLogsByGuest[newKey] = (visitLogsByGuest[newKey] || []).concat(visitLogsByGuest[oldKey]);
+        }
+
+        persistLocalGuests();
+        if (typeof persistLocalSlots === "function") persistLocalSlots();
+        buildRows();
+        if (typeof renderSlotsTable === "function") renderSlotsTable();
+        if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
+
+        notify(
+          `✅ Đã đổi tên thành "${cleanNew}" — Link & Mã QR #${n} (?s=${code}) giữ nguyên cố định 100%!`
+        );
+
+        try {
+          await fetch(`${apiBase}/api/guests`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "rename",
+              oldName: cleanOld,
+              newName: cleanNew,
+              slot: n,
+              slotCode: code,
+              lang: newLang,
+              note: (updatedRecord && updatedRecord.note) || ""
+            })
+          });
+          await fetch(`${apiBase}/api/slots`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "assign",
+              code,
+              name: cleanNew,
+              lang: newLang,
+              note: (updatedRecord && updatedRecord.note) || "",
+              mode: (updatedRecord && updatedRecord.mode) || "invite",
+              group: (updatedRecord && updatedRecord.group) || "",
+              table: (updatedRecord && updatedRecord.table) || "",
+              pax: (updatedRecord && updatedRecord.pax) || 1
+            })
+          });
+        } catch (_) {}
+        return true;
+      }
+
+      async function removeGuestFromList(name, slotNum) {
         const key = normalizeNameKey(name);
-        savedGuests = savedGuests.filter((g) => normalizeNameKey(g.name) !== key);
+        const targetGuest = savedGuests.find(
+          (g) => (slotNum && Number(g.slot) === Number(slotNum)) || normalizeNameKey(g.name) === key
+        );
+        const resolvedSlot = Number(slotNum || (targetGuest && targetGuest.slot) || 0);
+        const resolvedCode = resolvedSlot > 0 ? makeSlotCode(resolvedSlot) : "";
+
+        savedGuests = savedGuests.filter(
+          (g) => !(resolvedSlot > 0 && Number(g.slot) === resolvedSlot) && normalizeNameKey(g.name) !== key
+        );
+        if (resolvedCode && serverSlots[resolvedCode]) {
+          delete serverSlots[resolvedCode];
+          if (typeof persistLocalSlots === "function") persistLocalSlots();
+        }
         persistLocalGuests();
         buildRows();
+        if (typeof renderSlotsTable === "function") renderSlotsTable();
+        if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
         try {
           await fetch(`${apiBase}/api/guests`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ action: "remove", name })
           });
+          if (resolvedCode) {
+            await fetch(`${apiBase}/api/slots`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ action: "clear", code: resolvedCode })
+            });
+          }
         } catch (_) {}
-        notify(`🗑️ Đã xóa "${name}" khỏi danh sách.`);
+        notify(
+          resolvedSlot > 0
+            ? `🗑️ Đã xóa tên "${name}" — Thẻ #${resolvedSlot} (?s=${resolvedCode}) đã trở về danh sách Chưa có tên.`
+            : `🗑️ Đã xóa "${name}" khỏi danh sách.`
+        );
       }
 
       function buildRows() {
+        ensureGuestSlotsNormalized();
         const base = baseOrigin.replace(/\?.*$/, "");
         cardsContainer.innerHTML = "";
         const unnamedCount = Math.max(0, TOTAL_INVITE_TARGET - savedGuests.length);
@@ -3109,16 +3305,30 @@
         savedGuests.forEach((guestObj, idx) => {
           const name = guestObj.name;
           const key = normalizeNameKey(name);
-          const sessions = visitLogsByGuest[key] || [];
+          const slotNum = Number(guestObj.slot) || idx + 1;
+          const slotCode = guestObj.slotCode || makeSlotCode(slotNum);
+
+          // Combine visit sessions from current name, any previous renamed aliases, and unassigned QR slot logs
+          const sessionMap = new Map();
+          const addSessionsForKey = (kStr) => {
+            (visitLogsByGuest[kStr] || []).forEach((s) => {
+              if (s) sessionMap.set(s.sid || `${s.openedAt}_${s.deviceDetail}`, s);
+            });
+          };
+          addSessionsForKey(key);
+          if (Array.isArray(guestObj.aliases)) {
+            guestObj.aliases.forEach((al) => addSessionsForKey(normalizeNameKey(al)));
+          }
+          addSessionsForKey(normalizeNameKey(`QR số ${slotNum} (chưa gán tên)`));
+          const sessions = Array.from(sessionMap.values());
+
           const hasOpened = sessions.length > 0;
           const anyOpenedEnv = sessions.some((s) => s.openedEnvelope);
           const hasHanzi = /[\u4e00-\u9fff]/.test(name);
           const effectiveLang = guestObj.lang === "zh" || hasHanzi ? "zh" : "vi";
           const mode = guestObj.mode || "invite";
           const linkedSlotObj =
-            guestObj.slotCode && serverSlots[guestObj.slotCode]
-              ? serverSlots[guestObj.slotCode]
-              : null;
+            slotCode && serverSlots[slotCode] ? serverSlots[slotCode] : null;
           const guestGroup = String(
             guestObj.group || (linkedSlotObj && linkedSlotObj.group) || ""
           ).trim();
@@ -3146,16 +3356,18 @@
           const isDirEffective = effectiveMode === "directions";
           const driveUrl = guestObj.driveUrl || globalSiteConfig.driveUrl || "";
 
-          const qs = new URLSearchParams();
-          qs.set("to", name);
-          if (effectiveLang === "zh") qs.set("lang", "zh");
+          // Permanent Fixed Slot URL (?s=5-7n19) — NEVER changes when adding or editing guest name!
+          const fullUrl = getSlotUrl(slotNum);
+
+          const previewQs = new URLSearchParams();
+          previewQs.set("s", slotCode);
+          previewQs.set("to", name);
+          if (effectiveLang === "zh") previewQs.set("lang", "zh");
           if (guestTable) {
-            qs.set("table", guestTable);
-            if (guestGroup) qs.set("group", guestGroup);
-            if (guestPax > 1) qs.set("pax", String(guestPax));
+            previewQs.set("table", guestTable);
+            if (guestGroup) previewQs.set("group", guestGroup);
+            if (guestPax > 1) previewQs.set("pax", String(guestPax));
           }
-          const fullUrl = `${base}?${qs.toString()}`;
-          const previewQs = new URLSearchParams(qs);
           if (effectiveMode === "directions" || effectiveMode === "thankyou") {
             previewQs.set("mode", effectiveMode);
           }
@@ -3177,7 +3389,7 @@
           const privateNote = String(guestObj.note || guestNotesMap[key] || "").trim();
 
           rowsData.push({
-            idx: idx + 1,
+            idx: slotNum,
             name,
             privateNote,
             effectiveLang,
@@ -3194,10 +3406,14 @@
             if (activeGrpFilter !== "unassigned_group" && guestGroup !== activeGrpFilter) return;
           }
           if (q) {
-            const slotStr = guestObj.slot ? String(guestObj.slot) : "";
+            const slotStr = String(slotNum);
             const matchName = name.toLowerCase().includes(q);
             const matchNote = privateNote.toLowerCase().includes(q);
-            const matchSlot = slotStr && (slotStr === q || `#${slotStr}` === q || `số ${slotStr}`.includes(q));
+            const matchSlot =
+              slotStr === q ||
+              `#${slotStr}` === q ||
+              `số ${slotStr}`.includes(q) ||
+              slotCode.includes(q);
             if (!matchName && !matchNote && !matchSlot) return;
           }
           if (currentFilter === "opened" && !hasOpened) return;
@@ -3212,8 +3428,8 @@
             type: "guest",
             name,
             key,
-            orderIdx: idx + 1,
-            slotNum: guestObj.slot ? Number(guestObj.slot) : 0
+            orderIdx: slotNum,
+            slotNum
           });
 
           const statusBadgeHtml = !hasOpened
@@ -3237,10 +3453,26 @@
                     style="width:16px; height:16px; accent-color:var(--adm-crimson); cursor:pointer;"
                     title="Tích chọn để phân nhóm hoặc xếp bàn hàng loạt"
                   />
-                  <span class="guest-idx">#${idx + 1}</span>
-                  <span class="guest-name-text js-guest-name"></span>
+                  <span class="guest-idx" title="Số thứ tự thẻ & Mã QR cố định">#${slotNum}</span>
+                  <span class="guest-name-text js-guest-name" title="Bấm ✏️ Sửa tên để đổi tên khách (Link & QR giữ nguyên cố định)"></span>
+                  <button
+                    type="button"
+                    class="btn-adm js-edit-name-btn"
+                    style="height:26px; padding:0 8px; font-size:11.5px;"
+                    title="Sửa tên khách này (Link ?s=${slotCode} và mã QR đã in vẫn giữ nguyên cố định 100%)"
+                  >✏️ Sửa tên</button>
+                  <span class="js-edit-name-wrap" style="display:none; align-items:center; gap:5px;">
+                    <input
+                      type="text"
+                      class="slot-inline-input js-edit-name-input"
+                      style="width:195px; height:30px; font-weight:700;"
+                      placeholder="Nhập tên khách mới..."
+                    />
+                    <button type="button" class="btn-adm primary js-save-name-btn" style="height:30px; padding:0 10px; font-size:11.5px;">💾 Lưu</button>
+                    <button type="button" class="btn-adm js-cancel-name-btn" style="height:30px; padding:0 8px; font-size:11.5px;">Hủy</button>
+                  </span>
                   <span class="lang-tag">${effectiveLang === "zh" ? "繁體中文" : "VI"}</span>
-                  ${guestObj.slot ? `<span class="lang-tag" title="Khách này dùng Bookmark QR đánh số">🔢 QR số ${Number(guestObj.slot) || ""}</span>` : ""}
+                  <span class="lang-tag" title="Mã QR & Link cố định vĩnh viễn: ?s=${slotCode}">🔢 QR số ${slotNum} · Link cố định</span>
                   ${statusBadgeHtml}
                   <label class="guest-private-note-wrap ${privateNote ? "has-note" : ""}" title="Ghi chú riêng cho Cô Dâu & Chú Rể (Khách mời tuyệt đối KHÔNG thấy ghi chú này)">
                     <span class="guest-private-note-icon">📝</span>
@@ -3281,16 +3513,61 @@
                   <button type="button" class="btn-adm js-copy-msg">${msgBtnLabel}</button>
                   <button type="button" class="btn-adm js-open-guest-qr" title="Tạo & tải Mã QR đẹp riêng cho khách này">📱 Mã QR</button>
                   <a class="btn-adm js-preview" target="_blank" rel="noopener" title="Mở xem thử (Không tính vào lượt xem)">👁️ Xem thử</a>
-                  <button type="button" class="btn-adm danger js-remove-guest" title="Xóa khách này khỏi danh sách">✕</button>
+                  <button type="button" class="btn-adm danger js-remove-guest" title="Xóa tên khách khỏi thẻ #${slotNum} (Đưa thẻ #${slotNum} về mục Chưa có tên)">✕</button>
                 </div>
               </div>
             </div>
             <div class="guest-sessions-wrap js-sessions-wrap"></div>
           `;
 
-          card.querySelector(".js-guest-name").textContent = name;
+          const nameSpanEl = card.querySelector(".js-guest-name");
+          const editBtnEl = card.querySelector(".js-edit-name-btn");
+          const editWrapEl = card.querySelector(".js-edit-name-wrap");
+          const editInputEl = card.querySelector(".js-edit-name-input");
+          const saveNameBtnEl = card.querySelector(".js-save-name-btn");
+          const cancelNameBtnEl = card.querySelector(".js-cancel-name-btn");
+
+          nameSpanEl.textContent = name;
           card.querySelector(".js-url-preview").textContent = fullUrl;
           card.querySelector(".js-preview").href = previewUrl;
+
+          const openInlineRename = () => {
+            nameSpanEl.style.display = "none";
+            editBtnEl.style.display = "none";
+            editWrapEl.style.display = "inline-flex";
+            editInputEl.value = name;
+            editInputEl.focus();
+            editInputEl.select();
+          };
+          const closeInlineRename = () => {
+            editWrapEl.style.display = "none";
+            nameSpanEl.style.display = "";
+            editBtnEl.style.display = "";
+          };
+          const commitInlineRename = () => {
+            const nextVal = (editInputEl.value || "").trim();
+            if (!nextVal || nextVal === name) {
+              closeInlineRename();
+              return;
+            }
+            renameGuestKeepSlot(slotNum, name, nextVal);
+          };
+
+          editBtnEl.addEventListener("click", openInlineRename);
+          nameSpanEl.style.cursor = "pointer";
+          nameSpanEl.addEventListener("dblclick", openInlineRename);
+          saveNameBtnEl.addEventListener("click", commitInlineRename);
+          cancelNameBtnEl.addEventListener("click", closeInlineRename);
+          editInputEl.addEventListener("keydown", (ev) => {
+            if (ev.key === "Enter") {
+              ev.preventDefault();
+              commitInlineRename();
+            } else if (ev.key === "Escape") {
+              ev.preventDefault();
+              closeInlineRename();
+            }
+          });
+
           const bulkChkEl = card.querySelector(".js-bulk-chk");
           if (bulkChkEl) {
             bulkChkEl.addEventListener("change", () => {
@@ -3392,16 +3669,16 @@
             if (effectiveMode !== "thankyou") setGuestModeOnServer(name, "thankyou");
           });
           card.querySelector(".js-copy-link").addEventListener("click", () =>
-            copyText(fullUrl, `✅ Đã copy link thiệp của "${name}"!`)
+            copyText(fullUrl, `✅ Đã copy link cố định (#${slotNum}) của "${name}"!`)
           );
           card.querySelector(".js-copy-msg").addEventListener("click", () =>
-            copyText(inviteMsg, `💌 Đã copy lời mời + link cho "${name}"!`)
+            copyText(inviteMsg, `💌 Đã copy lời mời + link cố định cho "${name}"!`)
           );
           card.querySelector(".js-open-guest-qr").addEventListener("click", () => {
             openGuestInQrStudio(name, fullUrl, effectiveLang);
           });
           card.querySelector(".js-remove-guest").addEventListener("click", () =>
-            removeGuestFromList(name)
+            removeGuestFromList(name, slotNum)
           );
 
           frag.appendChild(card);
@@ -3961,11 +4238,11 @@
             });
           }
 
-          // Do not rebuild guest cards while user is actively typing a private note or slot input
+          // Do not rebuild guest cards while user is actively typing a private note, guest name edit, or slot input
           const activeEl = document.activeElement;
           const isTypingNote = activeEl && activeEl.classList && activeEl.classList.contains("js-guest-note-input");
           const isTypingSlot = activeEl && activeEl.classList && activeEl.classList.contains("slot-inline-input");
-          if (!isTypingNote || showToast) {
+          if ((!isTypingNote && !isTypingSlot) || showToast) {
             buildRows();
           }
           if (!isTypingSlot || showToast) {
@@ -4805,13 +5082,15 @@
           setTimeout(() => {
             const cells = [];
 
-            // 1. Render Personalized Bookmarks for each named guest
-            personalNames.forEach((gName) => {
+            // 1. Render Personalized Bookmarks for each named guest (using their permanent fixed ?s=slotCode URL!)
+            ensureGuestSlotsNormalized();
+            personalNames.forEach((gName, pIdx) => {
               const hasCjk = /[\u4e00-\u9fff]/.test(gName);
-              const gLang = hasCjk ? "zh" : capMode === "zh" ? "zh" : "vi";
-              let gUrl = `${baseOrigin}?to=${encodeURIComponent(gName)}`;
-              if (gLang === "zh") gUrl += "&lang=zh";
-              if (presetVal === "directions") gUrl += "&mode=directions";
+              const matchedG = savedGuests.find(
+                (g) => g && normalizeNameKey(g.name) === normalizeNameKey(gName)
+              );
+              const slotNum = (matchedG && Number(matchedG.slot)) || pIdx + 1;
+              const gUrl = getSlotUrl(slotNum);
 
               renderLuxuryWeddingQR(true, {
                 layoutMode,
@@ -4824,7 +5103,7 @@
                 ? qrCanvas.toDataURL("image/jpeg", 0.95)
                 : qrCanvas.toDataURL("image/png");
               cells.push(
-                `<div class="sticker-cell"><img src="${dUrl}" alt="Bookmark QR ${gName}" /></div>`
+                `<div class="sticker-cell"><img src="${dUrl}" alt="Bookmark QR #${slotNum} ${gName}" /></div>`
               );
             });
 

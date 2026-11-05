@@ -933,20 +933,50 @@
       const slotsRaw = localStorage.getItem("td_saved_slots_v1");
       const slotsMap = slotsRaw ? JSON.parse(slotsRaw) : {};
 
-      const norm = (s) => String(s || "").trim().toLowerCase().replace(/\s+/g, " ");
+      const norm = (s) =>
+        String(s || "")
+          .normalize("NFC")
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g, " ");
       const gKey = norm(guestName);
-      const saved = gKey && Array.isArray(guestsList)
-        ? guestsList.find((g) => g && norm(g.name) === gKey)
-        : null;
+      const slotNum = slotParam ? parseInt(slotParam.split("-")[0], 10) || 0 : 0;
+      let saved = null;
+      if (slotParam && Array.isArray(guestsList)) {
+        saved = guestsList.find(
+          (g) =>
+            g &&
+            (String(g.slotCode || "").toLowerCase() === slotParam ||
+              (slotNum > 0 && Number(g.slot) === slotNum))
+        );
+      }
+      if (!saved && gKey && Array.isArray(guestsList)) {
+        saved =
+          guestsList.find((g) => g && norm(g.name) === gKey) ||
+          guestsList.find(
+            (g) =>
+              g &&
+              Array.isArray(g.aliases) &&
+              g.aliases.some((alias) => norm(alias) === gKey)
+          ) ||
+          null;
+      }
       const sObj =
         slotParam && slotsMap && slotsMap[slotParam]
           ? slotsMap[slotParam]
           : saved && saved.slotCode && slotsMap && slotsMap[saved.slotCode]
             ? slotsMap[saved.slotCode]
             : null;
+      const resolvedName = String(
+        (saved && saved.name) || (sObj && sObj.name) || guestName || ""
+      ).trim();
+      const resolvedLang =
+        (saved && saved.lang) ||
+        (sObj && sObj.lang) ||
+        (/[\u4e00-\u9fff]/.test(resolvedName) ? "zh" : "vi");
       const table = String((saved && saved.table) || (sObj && sObj.table) || "").trim();
-      if (!table) return null;
-      const tMeta = (seatCfg && seatCfg.tableMeta && seatCfg.tableMeta[table]) || {};
+      if (!table && !resolvedName) return null;
+      const tMeta = (table && seatCfg && seatCfg.tableMeta && seatCfg.tableMeta[table]) || {};
       const group = String(
         (saved && saved.group) || (sObj && sObj.group) || tMeta.group || ""
       ).trim();
@@ -955,7 +985,7 @@
         parseInt((saved && saved.pax) || (sObj && sObj.pax) || "1", 10) || 1
       );
       const companions = [];
-      if (Array.isArray(guestsList)) {
+      if (table && Array.isArray(guestsList)) {
         guestsList.forEach((g) => {
           if (g && String(g.table || "").trim() === table && g.name) {
             companions.push({ name: g.name, pax: g.pax || 1 });
@@ -963,6 +993,8 @@
         });
       }
       return {
+        resolvedName,
+        resolvedLang,
         table,
         group,
         pax,
@@ -975,11 +1007,29 @@
     }
   }
 
+  function applyResolvedGuestIdentity(cfgObj) {
+    if (!cfgObj || !cfgObj.resolvedName) return;
+    const nextName = String(cfgObj.resolvedName).trim();
+    if (!nextName) return;
+    if (nextName !== guestName) {
+      guestName = nextName;
+      document.body.classList.add("is-guest-mode");
+      const nextLang =
+        cfgObj.resolvedLang === "zh" || /[\u4e00-\u9fff]/.test(nextName) ? "zh" : "vi";
+      if (!explicitLang && nextLang !== currentLang) {
+        applyLanguage(nextLang);
+      } else {
+        updateGuestNameDisplay();
+      }
+    }
+  }
+
   function fetchRemoteGuestConfig() {
     try {
       const localSeat = resolveLocalFallbackSeating();
       if (localSeat) {
         remoteGuestConfig = { ...(remoteGuestConfig || {}), ...localSeat };
+        applyResolvedGuestIdentity(localSeat);
         syncPostWeddingAndAccessMode();
       }
       const qs = new URLSearchParams();
@@ -994,9 +1044,10 @@
         .then((data) => {
           if (data && data.config) {
             remoteGuestConfig = data.config;
-            if (!remoteGuestConfig.table && localSeat) {
+            if (!remoteGuestConfig.table && localSeat && localSeat.table) {
               remoteGuestConfig = { ...remoteGuestConfig, ...localSeat };
             }
+            applyResolvedGuestIdentity(remoteGuestConfig);
             syncPostWeddingAndAccessMode();
           }
         })

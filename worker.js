@@ -105,6 +105,56 @@ function slotNumFromCode(code = "") {
   return parseInt(String(code).split("-")[0], 10) || 0;
 }
 
+function makeSlotCode(num) {
+  const n = Math.max(1, Math.min(9999, parseInt(num, 10) || 1));
+  let h = (n * 2654435761) ^ 0x5a3c9e17;
+  h = Math.imul(h ^ (h >>> 15), 2246822507);
+  h = Math.imul(h ^ (h >>> 13), 3266489909);
+  const unsigned = (h ^ (h >>> 16)) >>> 0;
+  const hash4 = unsigned.toString(36).padStart(4, "0").slice(0, 4).toLowerCase();
+  return `${n}-${hash4}`;
+}
+
+function normalizeSlotsAndGuests(stored) {
+  if (!stored || !Array.isArray(stored.savedGuests)) return;
+  if (!stored.slots || typeof stored.slots !== "object") stored.slots = {};
+
+  // 1. If any legacy guest lacks .slot, assign their sequential index first (1..N)
+  stored.savedGuests.forEach((g, idx) => {
+    if (g && (!g.slot || Number(g.slot) < 1)) {
+      g.slot = idx + 1;
+    }
+  });
+
+  // 2. Deduplicate colliding slot numbers in order so #1..#N each own a unique 1-to-1 QR slot
+  const usedSlots = new Set();
+  stored.savedGuests.forEach((g) => {
+    if (!g) return;
+    let sNum = Number(g.slot) || 1;
+    if (usedSlots.has(sNum)) {
+      let cand = 1;
+      while (usedSlots.has(cand)) cand++;
+      sNum = cand;
+    }
+    usedSlots.add(sNum);
+    g.slot = sNum;
+    g.slotCode = makeSlotCode(sNum);
+
+    const prevSlot = stored.slots[g.slotCode] || {};
+    stored.slots[g.slotCode] = {
+      ...prevSlot,
+      num: sNum,
+      name: g.name || prevSlot.name || "",
+      lang: g.lang || prevSlot.lang || (/[\u4e00-\u9fff]/.test(g.name || "") ? "zh" : "vi"),
+      mode: g.mode || prevSlot.mode || "invite",
+      group: g.group || prevSlot.group || "",
+      table: g.table || prevSlot.table || "",
+      pax: Math.max(1, parseInt(g.pax || prevSlot.pax || "1", 10) || 1),
+      assignedAt: prevSlot.assignedAt || g.createdAt || new Date().toISOString()
+    };
+  });
+}
+
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
@@ -216,6 +266,7 @@ export class WeddingAnalytics {
     } else {
       stored.seatingConfig = { ...defaultSeatingConfig(), ...stored.seatingConfig };
     }
+    normalizeSlotsAndGuests(stored);
     return stored;
   }
 
@@ -223,14 +274,46 @@ export class WeddingAnalytics {
     const cfg = data.siteConfig || {};
     const seatingCfg = data.seatingConfig || defaultSeatingConfig();
     const k = normalizeGuestKey(guestName);
-    const saved = k
-      ? (data.savedGuests || []).find((g) => normalizeGuestKey(g.name) === k)
-      : null;
-    const cleanSlotCode = String(slotCode || (saved && saved.slotCode) || "").trim().toLowerCase();
+    const rawSlotCode = String(slotCode || "").trim().toLowerCase();
+    const slotNum = rawSlotCode ? slotNumFromCode(rawSlotCode) : 0;
+
+    // 1. Match guest by slotCode/slotNum first (fixed URL ?s=5-7n19), or by current name, or by previous name (aliases)
+    let saved = null;
+    if (rawSlotCode && Array.isArray(data.savedGuests)) {
+      saved = data.savedGuests.find(
+        (g) => g && (g.slotCode === rawSlotCode || (slotNum > 0 && Number(g.slot) === slotNum))
+      );
+    }
+    if (!saved && k && Array.isArray(data.savedGuests)) {
+      saved =
+        data.savedGuests.find((g) => g && normalizeGuestKey(g.name) === k) ||
+        data.savedGuests.find(
+          (g) =>
+            g &&
+            Array.isArray(g.aliases) &&
+            g.aliases.some((alias) => normalizeGuestKey(alias) === k)
+        ) ||
+        null;
+    }
+
+    const cleanSlotCode = String(rawSlotCode || (saved && saved.slotCode) || "").trim().toLowerCase();
     const slotObj =
       cleanSlotCode && data.slots && data.slots[cleanSlotCode]
         ? data.slots[cleanSlotCode]
         : null;
+
+    if (!saved && slotObj && slotObj.name && Array.isArray(data.savedGuests)) {
+      const sk = normalizeGuestKey(slotObj.name);
+      saved = data.savedGuests.find((g) => g && normalizeGuestKey(g.name) === sk) || null;
+    }
+
+    const resolvedName = String(
+      (saved && saved.name) || (slotObj && slotObj.name) || guestName || ""
+    ).trim();
+    const resolvedLang =
+      (saved && saved.lang) ||
+      (slotObj && slotObj.lang) ||
+      (/[\u4e00-\u9fff]/.test(resolvedName) ? "zh" : "vi");
 
     let effectiveMode = "invite";
     if (
@@ -291,6 +374,9 @@ export class WeddingAnalytics {
     });
 
     return {
+      resolvedName,
+      resolvedLang,
+      slotCode: cleanSlotCode,
       mode: effectiveMode,
       thankYouMode: effectiveMode === "thankyou",
       directionsMode: effectiveMode === "directions",
@@ -313,6 +399,7 @@ export class WeddingAnalytics {
   }
 
   async saveData(data) {
+    normalizeSlotsAndGuests(data);
     data.updatedAt = new Date().toISOString();
     await this.state.storage.put("analytics_v1", data);
   }
@@ -342,7 +429,21 @@ export class WeddingAnalytics {
       const code = String(url.searchParams.get("code") || "").trim().toLowerCase();
       const valid = isValidSlotCode(code);
       const data = await this.loadData();
+      const num = valid ? slotNumFromCode(code) : 0;
       const slot = valid ? (data.slots || {})[code] : null;
+      const guestBySlot =
+        valid && Array.isArray(data.savedGuests)
+          ? data.savedGuests.find(
+              (g) => g && (g.slotCode === code || (num > 0 && Number(g.slot) === num))
+            )
+          : null;
+      const resolvedSlotName = String(
+        (guestBySlot && guestBySlot.name) || (slot && slot.name) || ""
+      ).trim();
+      const resolvedSlotLang =
+        (guestBySlot && guestBySlot.lang) ||
+        (slot && slot.lang) ||
+        (/[\u4e00-\u9fff]/.test(resolvedSlotName) ? "zh" : "vi");
       const cfg = data.siteConfig || {};
       const globalMode =
         cfg.globalMode === "thankyou" || cfg.globalThankYou
@@ -351,17 +452,21 @@ export class WeddingAnalytics {
             ? "directions"
             : "";
       const seatInfo = valid
-        ? this.resolveGuestConfig(data, (slot && slot.name) || "", code)
+        ? this.resolveGuestConfig(data, resolvedSlotName, code)
         : null;
       return Response.json(
         {
           ok: true,
           slot: valid
             ? {
-                num: slot ? slot.num : slotNumFromCode(code),
-                name: (slot && slot.name) || "",
-                lang: (slot && slot.lang) || "vi",
-                mode: globalMode || (slot && slot.mode) || "invite",
+                num: slot ? slot.num : num,
+                name: resolvedSlotName,
+                lang: resolvedSlotLang,
+                mode:
+                  globalMode ||
+                  (guestBySlot && guestBySlot.mode) ||
+                  (slot && slot.mode) ||
+                  "invite",
                 group: (seatInfo && seatInfo.group) || "",
                 table: (seatInfo && seatInfo.table) || "",
                 pax: (seatInfo && seatInfo.pax) || 1
@@ -700,9 +805,23 @@ export class WeddingAnalytics {
             (g) => normalizeGuestKey(g.name) === k
           );
           const existing = existingIdx >= 0 ? data.savedGuests[existingIdx] : null;
+          const resolvedSlot = Number(item.slot || (existing && existing.slot) || 0);
+          const resolvedSlotCode = String(
+            item.slotCode ||
+              (existing && existing.slotCode) ||
+              (resolvedSlot > 0 ? makeSlotCode(resolvedSlot) : "")
+          )
+            .trim()
+            .toLowerCase();
+          const mergedAliases = Array.from(
+            new Set([
+              ...(existing && Array.isArray(existing.aliases) ? existing.aliases : []),
+              ...(Array.isArray(item.aliases) ? item.aliases : [])
+            ])
+          ).filter(Boolean);
           const record = {
             name,
-            lang: item.lang === "zh" ? "zh" : "vi",
+            lang: item.lang === "zh" || /[\u4e00-\u9fff]/.test(name) ? "zh" : "vi",
             mode: validModes.includes(item.mode) ? item.mode : existing?.mode || "invite",
             driveUrl: String(item.driveUrl ?? existing?.driveUrl ?? "").trim(),
             note: String(item.note !== undefined ? item.note : existing?.note || "").trim(),
@@ -712,9 +831,8 @@ export class WeddingAnalytics {
               1,
               Math.min(20, parseInt(item.pax !== undefined ? item.pax : existing?.pax || "1", 10) || 1)
             ),
-            ...(existing && existing.slotCode
-              ? { slot: existing.slot, slotCode: existing.slotCode }
-              : {}),
+            ...(resolvedSlot > 0 ? { slot: resolvedSlot, slotCode: resolvedSlotCode } : {}),
+            ...(mergedAliases.length ? { aliases: mergedAliases } : {}),
             createdAt:
               existing && existing.createdAt
                 ? existing.createdAt
@@ -726,6 +844,100 @@ export class WeddingAnalytics {
             data.savedGuests.push(record);
           }
         });
+      } else if (action === "rename") {
+        const oldName = String(body.oldName || "").trim();
+        const newName = String(body.newName || "").trim().slice(0, 120);
+        const oldKey = normalizeGuestKey(oldName);
+        const newKey = normalizeGuestKey(newName);
+        const slotNum = parseInt(body.slot, 10) || 0;
+        const slotCode = String(body.slotCode || (slotNum > 0 ? makeSlotCode(slotNum) : ""))
+          .trim()
+          .toLowerCase();
+
+        if (newName) {
+          let idx = -1;
+          if (slotCode) {
+            idx = data.savedGuests.findIndex(
+              (g) => g && (g.slotCode === slotCode || (slotNum > 0 && Number(g.slot) === slotNum))
+            );
+          }
+          if (idx < 0 && oldKey) {
+            idx = data.savedGuests.findIndex((g) => g && normalizeGuestKey(g.name) === oldKey);
+          }
+          const newLang = body.lang === "zh" || /[\u4e00-\u9fff]/.test(newName) ? "zh" : "vi";
+          if (idx >= 0) {
+            const g = data.savedGuests[idx];
+            const prevName = String(g.name || oldName || "").trim();
+            const aliases = Array.isArray(g.aliases) ? [...g.aliases] : [];
+            if (prevName && normalizeGuestKey(prevName) !== newKey) {
+              aliases.push(prevName);
+            }
+            if (oldName && normalizeGuestKey(oldName) !== newKey) {
+              aliases.push(oldName);
+            }
+            g.name = newName;
+            g.lang = newLang;
+            if (slotNum > 0) g.slot = slotNum;
+            if (slotCode) g.slotCode = slotCode;
+            if (body.note !== undefined) g.note = String(body.note || "").trim();
+            g.aliases = Array.from(new Set(aliases));
+          } else {
+            data.savedGuests.push({
+              name: newName,
+              lang: newLang,
+              mode: "invite",
+              driveUrl: "",
+              note: String(body.note || "").trim(),
+              group: "",
+              table: "",
+              pax: 1,
+              ...(slotNum > 0 ? { slot: slotNum, slotCode } : {}),
+              ...(oldName && oldKey !== newKey ? { aliases: [oldName] } : {}),
+              createdAt: new Date().toISOString()
+            });
+          }
+
+          if (slotCode && data.slots) {
+            const prevSlot = data.slots[slotCode] || {};
+            const matchedG =
+              data.savedGuests.find((g) => g && g.slotCode === slotCode) || {};
+            data.slots[slotCode] = {
+              ...prevSlot,
+              num: slotNum || prevSlot.num || slotNumFromCode(slotCode),
+              name: newName,
+              lang: newLang,
+              mode: matchedG.mode || prevSlot.mode || "invite",
+              group: matchedG.group || prevSlot.group || "",
+              table: matchedG.table || prevSlot.table || "",
+              pax: matchedG.pax || prevSlot.pax || 1,
+              assignedAt: prevSlot.assignedAt || new Date().toISOString()
+            };
+          }
+
+          // Migrate existing visitLogs & visitors from oldName / unassigned slot to newName so history stays intact
+          const unassignedSlotKey =
+            slotNum > 0 ? normalizeGuestKey(`QR số ${slotNum} (chưa gán tên)`) : "";
+          if (Array.isArray(data.visitLogs)) {
+            data.visitLogs.forEach((log) => {
+              if (!log || !log.guestName) return;
+              const lk = normalizeGuestKey(log.guestName);
+              if ((oldKey && lk === oldKey) || (unassignedSlotKey && lk === unassignedSlotKey)) {
+                log.guestName = newName;
+                log.hasCustomName = true;
+              }
+            });
+          }
+          if (data.visitors && typeof data.visitors === "object") {
+            Object.values(data.visitors).forEach((v) => {
+              if (!v || !v.guestName) return;
+              const vk = normalizeGuestKey(v.guestName);
+              if ((oldKey && vk === oldKey) || (unassignedSlotKey && vk === unassignedSlotKey)) {
+                v.guestName = newName;
+                v.hasCustomName = true;
+              }
+            });
+          }
+        }
       } else if (action === "update_note") {
         const targetKey = normalizeGuestKey(body.name || "");
         if (targetKey) {
