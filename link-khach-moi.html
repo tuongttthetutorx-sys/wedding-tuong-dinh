@@ -2803,6 +2803,31 @@
         if (changed) {
           persistLocalGuests();
           if (typeof persistLocalSlots === "function") persistLocalSlots();
+          if (!window._slotNormSyncedOnce && savedGuests.length > 0) {
+            window._slotNormSyncedOnce = true;
+            setTimeout(async () => {
+              try {
+                for (const g of savedGuests) {
+                  if (!g || !g.slotCode || !g.name) continue;
+                  await fetch(`${apiBase}/api/slots`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      action: "assign",
+                      code: g.slotCode,
+                      name: g.name,
+                      lang: g.lang || (/[\u4e00-\u9fff]/.test(g.name) ? "zh" : "vi"),
+                      note: g.note || "",
+                      mode: g.mode || "invite",
+                      group: g.group || "",
+                      table: g.table || "",
+                      pax: g.pax || 1
+                    })
+                  }).catch(() => {});
+                }
+              } catch (_) {}
+            }, 300);
+          }
         }
         return changed;
       }
@@ -3176,6 +3201,13 @@
         );
 
         try {
+          if (oldKey && oldKey !== newKey) {
+            await fetch(`${apiBase}/api/guests`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ action: "remove", name: cleanOld })
+            });
+          }
           await fetch(`${apiBase}/api/guests`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -5514,6 +5546,7 @@
           }
         });
         serverSlots = merged;
+        ensureGuestSlotsNormalized();
         persistLocalSlots();
       }
 
