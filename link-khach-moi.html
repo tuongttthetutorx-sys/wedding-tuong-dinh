@@ -4655,56 +4655,22 @@
           }
           ctx.restore();
 
-          // 1. TOP HEADER SECTION
+          // 1. TOP HEADER SECTION (THANH LỊCH, GỌN GÀNG, BỎ CHỮ MỜI Ở TRÊN ĐỂ DỒN TRỌNG TÂM VÀO QR)
           ctx.textAlign = "center";
           ctx.fillStyle = "#7a3b0c";
           if (capMode === "zh") {
-            ctx.font = '600 22px "Noto Serif TC", serif';
-            ctx.fillText("誠   摯   敬   邀", W / 2, 60);
+            ctx.font = '600 21px "Noto Serif TC", serif';
+            ctx.fillText("誠   摯   敬   邀", W / 2, 48);
           } else {
-            ctx.font = '700 20px "Cormorant Garamond", "Noto Serif TC", serif';
-            ctx.fillText("✦   06  ·  01  ·  2027   ✦", W / 2, 58);
+            ctx.font = '700 19px "Cormorant Garamond", "Noto Serif TC", serif';
+            ctx.fillText("✦   06  ·  01  ·  2027   ✦", W / 2, 48);
           }
 
-          // Main Title Line: "Mời Quý Khách" or "Mời <Tên Khách>"
-          let mainTitle = "";
-          if (guestText) {
-            if (/^(mời|kính mời)/i.test(guestText) || /[\u4e00-\u9fff]/.test(guestText) || capMode === "zh") {
-              mainTitle = guestText;
-            } else {
-              mainTitle = `Mời ${guestText}`;
-            }
-          } else {
-            if (capMode === "zh") {
-              mainTitle = "誠 摯 敬 邀 貴 賓";
-            } else if (capMode === "bilingual") {
-              mainTitle = "Mời Quý Khách · 敬邀貴賓";
-            } else {
-              mainTitle = "Mời Quý Khách";
-            }
-          }
-
-          ctx.fillStyle = "#681115";
-          const titleLen = mainTitle.length;
-          const titleFontSize = titleLen > 24 ? 22 : titleLen > 16 ? 27 : 33;
-          ctx.font = `700 ${titleFontSize}px "Cormorant Garamond", "Noto Serif TC", "Be Vietnam Pro", serif`;
-          ctx.fillText(mainTitle, W / 2, 108);
-
-          // Subtle hairline wing ornament
-          ctx.save();
-          ctx.strokeStyle = "rgba(122, 59, 12, 0.28)";
-          ctx.lineWidth = 1.0;
-          ctx.beginPath();
-          ctx.moveTo(W / 2 - 96, 124);
-          ctx.lineTo(W / 2 + 96, 124);
-          ctx.stroke();
-          ctx.restore();
-
-          // 2. CENTER SQUARE QR MATRIX (440 x 440)
-          const qrBoxSize = 460;
+          // 2. CENTER SQUARE QR MATRIX (MÃ QR PHÓNG TO TỐI ĐA 490px ĐỂ QUÉT CỰC NHANH & NÉT)
+          const qrBoxSize = 490;
           const qrX = (W - qrBoxSize) / 2;
-          const qrY = 148;
-          const pad = 14;
+          const qrY = 82;
+          const pad = 15;
           const innerQrSize = qrBoxSize - pad * 2;
           const cellSize = innerQrSize / count;
           const startX = qrX + pad;
@@ -4757,16 +4723,54 @@
           ctx.fillText("囍", sealCx, sealCy + 2);
           ctx.textBaseline = "alphabetic";
 
-          // 3. BOTTOM CALL-TO-ACTION (TINH GỌN, SANG TRỌNG THEO YÊU CẦU: BỎ TÊN DÂU RỂ & SUB-LINE)
-          ctx.textAlign = "center";
-          ctx.fillStyle = "#681115";
+          // 3. BOTTOM CALL-TO-ACTION (LỰA CHỌN 1B - NGẮN GỌN, HIỆN ĐẠI, CHỮ TO RÕ NHÌN RẤT SANG)
+          let line1 = "";
+          let line2 = "";
+
           if (capMode === "zh") {
-            ctx.font = '700 25px "Noto Serif TC", serif';
-            ctx.fillText("掃 碼 開 啟 喜 帖 與 婚 宴 桌 次", W / 2, 680);
+            if (guestText) {
+              const raw = guestText.trim();
+              line1 = /^(敬邀|誠摯敬邀)/.test(raw) ? raw : `敬邀 ${raw}`;
+            } else {
+              line1 = "誠摯敬邀貴賓";
+            }
+            line2 = "掃碼開啟喜帖、地圖與婚宴桌次";
           } else {
-            ctx.font = '700 23.5px "Be Vietnam Pro", sans-serif';
-            ctx.fillText("Quét mã xem thiệp mời & sơ đồ bàn tiệc", W / 2, 680);
+            // Vietnamese (default & bilingual)
+            if (guestText) {
+              const raw = guestText.trim();
+              if (/^(mời|kính mời)/i.test(raw)) {
+                line1 = raw;
+              } else if (/^(anh|chị|bạn|em|cô|chú|bác|dì|ông|bà|gia đình)/i.test(raw)) {
+                line1 = `Mời ${raw}`;
+              } else if (/[\u4e00-\u9fff]/.test(raw)) {
+                line1 = `敬邀 ${raw}`;
+              } else {
+                line1 = `Mời bạn ${raw}`;
+              }
+            } else {
+              line1 = "Mời Quý khách";
+            }
+            line2 = "quét mã xem thiệp cưới, bản đồ & chỗ ngồi";
           }
+
+          ctx.textAlign = "center";
+          // Dòng 1: Lời mời / Tên khách (Font to, nổi bật, trang trọng)
+          ctx.fillStyle = "#681115";
+          const len1 = line1.length;
+          const size1 = len1 > 28 ? 24 : len1 > 18 ? 28 : 33;
+          ctx.font = capMode === "zh"
+            ? `700 ${size1}px "Noto Serif TC", serif`
+            : `700 ${size1}px "Be Vietnam Pro", sans-serif`;
+          ctx.fillText(line1, W / 2, 638);
+
+          // Dòng 2: Hành động (Font rõ ràng, sắc nét, dễ đọc từ xa)
+          ctx.fillStyle = "#7a3b0c";
+          const size2 = capMode === "zh" ? 24 : 23.5;
+          ctx.font = capMode === "zh"
+            ? `600 ${size2}px "Noto Serif TC", serif`
+            : `600 ${size2}px "Be Vietnam Pro", sans-serif`;
+          ctx.fillText(line2, W / 2, 680);
           return;
         }
 
