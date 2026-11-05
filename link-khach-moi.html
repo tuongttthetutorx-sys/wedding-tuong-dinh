@@ -1604,8 +1604,8 @@
                 <div>
                   <label for="qr-layout-style" style="display:block; font-size:12.5px; font-weight:600; margin-bottom:5px;">1. Kiểu Thẻ Phụ QR (Không cần mua ghim kẹp):</label>
                   <select id="qr-layout-style" class="adm-select">
-                    <option value="square_qr" selected>🟦 Thẻ Vuông QR Chuyên Dụng (4.5×4.5cm • 24 thẻ/tờ A4 • 4 cột × 6 hàng • Chuẩn Đẹp Nhất)</option>
-                    <option value="square_qr_lg">🟦 Thẻ Vuông QR Cỡ Lớn (5.8×5.8cm • 12 thẻ/tờ A4 • 3 cột × 4 hàng)</option>
+                    <option value="square_qr" selected>🟦 Thẻ Vuông QR Cỡ Lớn (6×6cm • 1 hàng 3 thẻ • 12 thẻ/tờ A4 • Đẹp &amp; Rõ Nhất)</option>
+                    <option value="square_qr_sm">🟦 Thẻ Vuông QR Tiết Kiệm (4.5×4.5cm • 1 hàng 4 thẻ • 24 thẻ/tờ A4)</option>
                     <option value="pinterest_strip">🔖 Dải Bookmark Dọc Thon Dài (3.1×9cm • 18 dải/tờ A4 có lề an toàn)</option>
                     <option value="frameless">✨ Thẻ Phụ Chữ Nhật Không Khung (4.6×5.4cm • 20 thẻ/tờ A4)</option>
                     <option value="fold_tab">📐 Thẻ Có Nếp Gấp Máng Đầu Thiệp (20 thẻ/tờ A4)</option>
@@ -1655,7 +1655,7 @@
 
               <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:6px;">
                 <button type="button" id="btn-print-qr-sheet" class="btn-adm primary lg">
-                  🖨️ Xuất Tờ A4 Theo Đúng Cấu Hình Đang Xem (24 Thẻ Vuông 4.5×4.5cm / Tờ A4)
+                  🖨️ Xuất Tờ A4 Theo Đúng Cấu Hình Đang Xem (12 Thẻ Vuông 6×6cm / Tờ A4)
                 </button>
                 <button type="button" id="btn-download-qr-png" class="btn-adm lg" style="border-color:var(--adm-crimson); color:var(--adm-crimson);">
                   ⬇️ Tải Ảnh Lẻ (.PNG)
@@ -1677,7 +1677,7 @@
                   </div>
                   <div>
                     <label for="slot-print-to" class="slot-label">Đến số</label>
-                    <input type="number" id="slot-print-to" class="adm-input" min="1" max="9999" value="24" />
+                    <input type="number" id="slot-print-to" class="adm-input" min="1" max="9999" value="12" />
                   </div>
                   <button type="button" id="btn-print-slots" class="btn-adm primary lg">
                     🖨️ Xuất Tờ A4 QR Đánh Số
@@ -1694,10 +1694,10 @@
                 </div>
                 <div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-top:8px;">
                   <span style="font-size:12px; color:#6d4c3d; font-weight:600;">Chọn nhanh số lượng:</span>
-                  <button type="button" class="btn-adm js-slot-quick-range" data-sheets="1" data-count="24" style="height:26px; padding:0 8px; font-size:11.5px;">1 tờ A4</button>
-                  <button type="button" class="btn-adm js-slot-quick-range" data-sheets="3" data-count="72" style="height:26px; padding:0 8px; font-size:11.5px;">3 tờ A4</button>
-                  <button type="button" class="btn-adm js-slot-quick-range" data-sheets="6" data-count="144" style="height:26px; padding:0 8px; font-size:11.5px;">6 tờ A4</button>
-                  <button type="button" class="btn-adm js-slot-quick-range" data-sheets="18" data-count="414" style="height:26px; padding:0 8px; font-size:11.5px;">Toàn bộ (414 chiếc)</button>
+                  <button type="button" class="btn-adm js-slot-quick-range" data-sheets="1" data-count="12" style="height:26px; padding:0 8px; font-size:11.5px;">1 tờ A4 (12 chiếc)</button>
+                  <button type="button" class="btn-adm js-slot-quick-range" data-sheets="3" data-count="36" style="height:26px; padding:0 8px; font-size:11.5px;">3 tờ A4 (36 chiếc)</button>
+                  <button type="button" class="btn-adm js-slot-quick-range" data-sheets="6" data-count="72" style="height:26px; padding:0 8px; font-size:11.5px;">6 tờ A4 (72 chiếc)</button>
+                  <button type="button" class="btn-adm js-slot-quick-range" data-sheets="35" data-count="414" style="height:26px; padding:0 8px; font-size:11.5px;">Toàn bộ (414 chiếc)</button>
                 </div>
               </div>
 
@@ -4491,7 +4491,21 @@
       }
 
       function getLayoutSheetConfig(layoutMode) {
-        if (layoutMode === "square_qr") {
+        if (layoutMode === "square_qr" || layoutMode === "square_qr_lg") {
+          return {
+            cols: 3,
+            rows: 4,
+            itemsPerSheet: 12,
+            sheetWidth: "180mm",
+            pageMargin: "28.5mm 15mm",
+            cellPadding: "0",
+            cellWidth: "60mm",
+            cellHeight: "60mm",
+            name: "Thẻ Vuông QR Cỡ Lớn (6×6cm • 1 hàng 3 thẻ • 12 thẻ/tờ A4)",
+            shortName: "12 Thẻ Vuông 6×6cm (1 hàng 3 thẻ)"
+          };
+        }
+        if (layoutMode === "square_qr_sm") {
           return {
             cols: 4,
             rows: 6,
@@ -4501,22 +4515,8 @@
             cellPadding: "0",
             cellWidth: "45mm",
             cellHeight: "45mm",
-            name: "Thẻ Vuông QR Chuyên Dụng (4.5×4.5cm • 24 thẻ/tờ A4)",
-            shortName: "24 Thẻ Vuông (4.5×4.5cm)"
-          };
-        }
-        if (layoutMode === "square_qr_lg") {
-          return {
-            cols: 3,
-            rows: 4,
-            itemsPerSheet: 12,
-            sheetWidth: "174mm",
-            pageMargin: "32.5mm 18mm",
-            cellPadding: "0",
-            cellWidth: "58mm",
-            cellHeight: "58mm",
-            name: "Thẻ Vuông QR Cỡ Lớn (5.8×5.8cm • 12 thẻ/tờ A4)",
-            shortName: "12 Thẻ Vuông Lớn (5.8×5.8cm)"
+            name: "Thẻ Vuông QR Tiết Kiệm (4.5×4.5cm • 1 hàng 4 thẻ • 24 thẻ/tờ A4)",
+            shortName: "24 Thẻ Vuông 4.5×4.5cm"
           };
         }
         if (layoutMode === "pinterest_strip") {
@@ -4571,7 +4571,7 @@
           "flap_only";
         const slotNum = overrideOpts && overrideOpts.slotNum ? overrideOpts.slotNum : 0;
 
-        const isSquareQr = layoutMode === "square_qr" || layoutMode === "square_qr_lg";
+        const isSquareQr = layoutMode.startsWith("square_qr");
         const isPinterestStrip = layoutMode === "pinterest_strip";
         // Square: 800 x 800 (1:1 True Square) -> at 3x = 2400 x 2400 px Ultra-HD
         // Pinterest strip: 460 x 1326 -> at 3x = 1380 x 3978 px
@@ -4701,7 +4701,7 @@
           ctx.restore();
 
           // 2. CENTER SQUARE QR MATRIX (440 x 440)
-          const qrBoxSize = 440;
+          const qrBoxSize = 460;
           const qrX = (W - qrBoxSize) / 2;
           const qrY = 148;
           const pad = 14;
@@ -4757,42 +4757,16 @@
           ctx.fillText("囍", sealCx, sealCy + 2);
           ctx.textBaseline = "alphabetic";
 
-          // 3. BOTTOM CALL-TO-ACTION & SIGNATURE
+          // 3. BOTTOM CALL-TO-ACTION (TINH GỌN, SANG TRỌNG THEO YÊU CẦU: BỎ TÊN DÂU RỂ & SUB-LINE)
           ctx.textAlign = "center";
           ctx.fillStyle = "#681115";
           if (capMode === "zh") {
-            ctx.font = '700 23px "Noto Serif TC", serif';
-            ctx.fillText("掃 碼 開 啟 喜 帖 與 婚 宴 桌 次", W / 2, 638);
-            ctx.fillStyle = "#7a3b0c";
-            ctx.font = '600 17.5px "Noto Serif TC", serif';
-            ctx.fillText("胡志明市 Riverside Palace · Seine 宴會廳", W / 2, 670);
-            ctx.fillStyle = "#681115";
-            ctx.font = '700 23.5px "Noto Serif TC", serif';
-            ctx.fillText("趙  順  祥   &   盧  小  瑩", W / 2, 715);
-          } else if (capMode === "vi") {
-            ctx.font = '700 22.5px "Be Vietnam Pro", sans-serif';
-            ctx.fillText("Quét mã xem thiệp mời & sơ đồ bàn tiệc", W / 2, 638);
-            ctx.fillStyle = "#7a3b0c";
-            ctx.font = '600 16.5px "Be Vietnam Pro", sans-serif';
-            ctx.fillText("Riverside Palace · Sảnh Seine · Đón khách 18:00", W / 2, 670);
-            ctx.fillStyle = "#681115";
-            ctx.font = '700 24px "Cormorant Garamond", "Be Vietnam Pro", serif';
-            ctx.fillText("Thuận Tường  &  Tiểu Dinh", W / 2, 715);
+            ctx.font = '700 25px "Noto Serif TC", serif';
+            ctx.fillText("掃 碼 開 啟 喜 帖 與 婚 宴 桌 次", W / 2, 680);
           } else {
-            ctx.font = '700 22px "Be Vietnam Pro", sans-serif';
-            ctx.fillText("Quét mã xem thiệp mời & sơ đồ bàn tiệc", W / 2, 638);
-            ctx.fillStyle = "#7a3b0c";
-            ctx.font = '600 17px "Noto Serif TC", serif';
-            ctx.fillText("掃 碼 開 啟 專 屬 喜 帖 與 婚 宴 桌 次", W / 2, 670);
-            ctx.fillStyle = "#681115";
-            ctx.font = '700 24px "Cormorant Garamond", "Be Vietnam Pro", serif';
-            ctx.fillText("Thuận Tường  &  Tiểu Dinh", W / 2, 715);
+            ctx.font = '700 23.5px "Be Vietnam Pro", sans-serif';
+            ctx.fillText("Quét mã xem thiệp mời & sơ đồ bàn tiệc", W / 2, 680);
           }
-
-          // Couture bottom tag
-          ctx.fillStyle = "#6e4242";
-          ctx.font = 'italic 500 15px "Cormorant Garamond", serif';
-          ctx.fillText("✦  Personally designed with love  ✦", W / 2, 750);
           return;
         }
 
@@ -5360,7 +5334,7 @@
         btnPrintMixedA4.addEventListener("click", () => {
           const layoutMode = (qrLayoutStyle && qrLayoutStyle.value) || "square_qr";
           const cfg = getLayoutSheetConfig(layoutMode);
-          const isSquareQr = layoutMode === "square_qr" || layoutMode === "square_qr_lg";
+          const isSquareQr = layoutMode.startsWith("square_qr");
           const isPinterestStrip = layoutMode === "pinterest_strip";
           const capMode = (qrCaptionStyle && qrCaptionStyle.value) || "bilingual";
           const namePosMode = (qrBatchNamePos && qrBatchNamePos.value) || "flap_only";
@@ -5632,7 +5606,7 @@
           renderLuxuryWeddingQR(true);
           const layoutMode = (qrLayoutStyle && qrLayoutStyle.value) || "square_qr";
           const cfg = getLayoutSheetConfig(layoutMode);
-          const isSquareQr = layoutMode === "square_qr" || layoutMode === "square_qr_lg";
+          const isSquareQr = layoutMode.startsWith("square_qr");
           const isPinterestStrip = layoutMode === "pinterest_strip";
           const printDataUrl = (isPinterestStrip || isSquareQr)
             ? qrCanvas.toDataURL("image/jpeg", 0.95)
@@ -6513,7 +6487,7 @@
         btnPrintSlots.addEventListener("click", () => {
           const layoutMode = (qrLayoutStyle && qrLayoutStyle.value) || "square_qr";
           const cfg = getLayoutSheetConfig(layoutMode);
-          const isSquareQr = layoutMode === "square_qr" || layoutMode === "square_qr_lg";
+          const isSquareQr = layoutMode.startsWith("square_qr");
           const isPinterestStrip = layoutMode === "pinterest_strip";
           const fromN = Math.max(1, parseInt(slotPrintFromInput ? slotPrintFromInput.value : "1", 10) || 1);
           const toN = Math.max(
