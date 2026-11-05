@@ -978,10 +978,7 @@
         📍 Chế Độ Ngày Cưới (Chỉ Đường) &amp; 📸 Thiệp Cảm Ơn
       </button>
       <button type="button" class="adm-tab-btn" data-tab="tab-qr">
-        🖨️ Tạo Thẻ Phụ QR (Vellum / Giấy Kem) &amp; In A4
-      </button>
-      <button type="button" class="adm-tab-btn" data-tab="tab-slots">
-        🔢 QR Đánh Số (In Trước, Gán Tên Sau)
+        🖨️ Tạo Thẻ Phụ QR &amp; In A4 (Đánh Số / Kèm Tên)
         <span class="adm-tab-badge" id="badge-slots-count">0</span>
       </button>
     </nav>
@@ -1233,22 +1230,37 @@
                 </button>
               </div>
 
-              <!-- KHỐI MỚI: IN TRƯỚC QR ĐÁNH SỐ (SỐ 1, SỐ 2...) — ĐIỀN TÊN KHÁCH SAU -->
-              <div style="margin-top:8px; padding:14px 16px; border-radius:10px; background:#fff6ea; border:1.5px solid #c98a3b; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px;">
-                <div style="flex:1 1 280px;">
-                  <div style="font-weight:700; font-size:14px; color:#7d1518; margin-bottom:4px;">
-                    🔢 MỚI: In Trước Bookmark Đánh Số (Số 1, Số 2...) — Điền Tên Khách Sau!
-                  </div>
-                  <div style="font-size:12.5px; color:#5a3e2b; line-height:1.45;">
-                    Không cần đợi có đủ danh sách tên khách mới in! In sẵn tờ A4 đánh số <strong>Số 1 → Số 18</strong> ở mép gập sau, bỏ số mấy vào phong bì của ai thì lên web gõ tên người đó vào số tương ứng.
-                  </div>
+              <!-- KHỐI 1 (KHUYÊN DÙNG): IN TRƯỚC QR ĐÁNH SỐ (SỐ 1, SỐ 2...) — ĐIỀN TÊN KHÁCH SAU -->
+              <div style="margin-top:8px; padding:14px 16px; border-radius:10px; background:#fff6ea; border:1.5px solid #c98a3b;">
+                <div style="font-weight:700; font-size:14px; color:#7d1518; margin-bottom:4px;">
+                  🔢 Cách 1 (Khuyên dùng): In Trước Bookmark Đánh Số (Số 1, Số 2...) — Điền Tên Khách Sau!
                 </div>
-                <button type="button" id="btn-jump-to-slots" class="btn-adm primary" style="height:40px; padding:0 16px; font-size:13px;">
-                  🔢 Mở mục In QR Đánh Số &amp; Gán Tên →
-                </button>
+                <div style="font-size:12.5px; color:#5a3e2b; margin-bottom:10px; line-height:1.48;">
+                  Mỗi Bookmark có <strong>1 mã QR riêng</strong> và in to <strong>Số 1, Số 2...</strong> ở phần nếp gấp phía sau. Bạn cứ in sẵn hàng loạt (18 chiếc/tờ A4), sau này bỏ <strong>Số mấy</strong> vào phong bì của ai thì kéo xuống bảng ngay bên dưới gõ tên khách vào số đó là xong!
+                </div>
+                <div class="slot-print-row">
+                  <div>
+                    <label for="slot-print-from" class="slot-label">Từ số</label>
+                    <input type="number" id="slot-print-from" class="adm-input" min="1" max="9999" value="1" />
+                  </div>
+                  <div>
+                    <label for="slot-print-to" class="slot-label">Đến số</label>
+                    <input type="number" id="slot-print-to" class="adm-input" min="1" max="9999" value="18" />
+                  </div>
+                  <button type="button" id="btn-print-slots" class="btn-adm primary lg">
+                    🖨️ Xuất Tờ A4 QR Đánh Số
+                  </button>
+                </div>
+                <div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-top:8px;">
+                  <span style="font-size:12px; color:#6d4c3d; font-weight:600;">Chọn nhanh số lượng:</span>
+                  <button type="button" class="btn-adm js-slot-quick-range" data-count="18" style="height:26px; padding:0 8px; font-size:11.5px;">1 tờ A4 (18 chiếc)</button>
+                  <button type="button" class="btn-adm js-slot-quick-range" data-count="54" style="height:26px; padding:0 8px; font-size:11.5px;">3 tờ A4 (54 chiếc)</button>
+                  <button type="button" class="btn-adm js-slot-quick-range" data-count="108" style="height:26px; padding:0 8px; font-size:11.5px;">6 tờ A4 (108 chiếc)</button>
+                  <button type="button" class="btn-adm js-slot-quick-range" data-count="198" style="height:26px; padding:0 8px; font-size:11.5px;">11 tờ A4 (198 chiếc)</button>
+                </div>
               </div>
 
-              <!-- KHỐI DÀN TRANG A4 KẾT HỢP: KHÁCH CÓ QR RIÊNG + KHÁCH DÙNG QR CHUNG -->
+              <!-- KHỐI 2: DÀN TRANG A4 KẾT HỢP: KHÁCH CÓ QR RIÊNG + KHÁCH DÙNG QR CHUNG -->
               <div style="margin-top:8px; padding:14px 16px; border-radius:10px; background:#fbf6ee; border:1px solid var(--adm-border-strong);">
                 <div style="font-weight:700; font-size:13.8px; color:var(--adm-crimson); margin-bottom:6px;">
                   ✨ Dàn Trang A4 Thông Minh: Ghép Chung "Khách Có QR Riêng" + "Khách Dùng QR Chung"
@@ -1321,38 +1333,18 @@
           </div>
         </div>
       </div>
-    </section>
 
-    <!-- =====================================================================
-         TAB 5: QR ĐÁNH SỐ — IN TRƯỚC HÀNG LOẠT, GÁN TÊN KHÁCH SAU
-         ===================================================================== -->
-    <section id="tab-slots" class="adm-panel">
-      <div class="adm-box">
+      <!-- BẢNG ĐIỀN TÊN KHÁCH CHO SỐ QR ĐÃ IN (NẰM NGAY TRONG CÙNG MỤC TẠO THẺ PHỤ QR) -->
+      <div class="adm-box" id="slot-assign-section">
         <div class="adm-box-head">
           <div>
-            <h2 class="adm-box-title">🔢 QR Đánh Số: In Trước Hàng Loạt, Gán Tên Khách Sau</h2>
+            <h2 class="adm-box-title">🔢 Điền Tên Khách Cho Bookmark QR Đánh Số (Số 1, Số 2, Số 3...)</h2>
             <p class="adm-box-desc">
-              Mỗi Bookmark có <strong>1 mã QR riêng</strong> và <strong>số thứ tự in to ở phần gập phía sau</strong>. Bỏ Bookmark số mấy vào phong bì của ai thì vào đây gõ số đó + tên khách là xong. Khách quét QR sẽ thấy thiệp có tên mình ngay, không cần in lại.
-              Bookmark chưa gán tên thì khách quét vẫn mở thiệp chung bình thường.
+              Bỏ Bookmark <strong>Số mấy</strong> vào phong bì của ai thì bạn gõ tên người đó vào đúng số bên dưới. Khách quét QR sẽ mở ra thiệp có tên mình ngay lập tức! Nếu chưa gán tên thì khách quét vẫn mở ra thiệp chung bình thường.
             </p>
           </div>
         </div>
 
-        <div class="slot-step-title">Bước 1 · In Bookmark đánh số (18 chiếc / tờ A4)</div>
-        <div class="slot-print-row">
-          <div>
-            <label for="slot-print-from" class="slot-label">Từ số</label>
-            <input type="number" id="slot-print-from" class="adm-input" min="1" max="9999" value="1" />
-          </div>
-          <div>
-            <label for="slot-print-to" class="slot-label">Đến số</label>
-            <input type="number" id="slot-print-to" class="adm-input" min="1" max="9999" value="18" />
-          </div>
-          <button type="button" id="btn-print-slots" class="btn-adm primary lg">🖨️ Xuất tờ A4 QR đánh số</button>
-        </div>
-        <p class="slot-hint" id="slot-print-hint">1 tờ A4 = 18 chiếc. Lần in sau bắt đầu từ số tiếp theo (VD: 19 → 36) để không bị trùng số.</p>
-
-        <div class="slot-step-title">Bước 2 · Gán tên khách cho số QR</div>
         <div class="slot-assign-row">
           <div>
             <label for="slot-assign-num" class="slot-label">Số QR</label>
@@ -1368,10 +1360,10 @@
           </div>
           <button type="button" id="btn-assign-slot" class="btn-adm primary lg">💾 Gán tên</button>
         </div>
-        <p class="slot-hint" id="slot-assign-preview">Gõ số QR để xem số đó đang gán cho ai.</p>
+        <p class="slot-hint" id="slot-assign-preview">Gõ số QR (VD: 1, 2, 3...) để xem số đó đang trống hay đã gán cho ai.</p>
 
         <div class="slot-step-title">
-          Danh sách QR đã in
+          <span>📋 Danh sách các số QR (Gõ tên trực tiếp trên từng dòng rồi bấm Lưu hoặc Enter)</span>
           <input type="search" id="slot-search-input" class="search-box" placeholder="🔍 Tìm theo số, tên hoặc ghi chú..." />
         </div>
         <div class="table-scroll">
@@ -1379,10 +1371,10 @@
             <thead>
               <tr>
                 <th>Số QR</th>
-                <th>Tên khách</th>
-                <th>Ghi chú riêng</th>
-                <th>Trạng thái</th>
-                <th></th>
+                <th>Tên khách (Hiện trên thiệp)</th>
+                <th>Ghi chú riêng (Chỉ bạn thấy)</th>
+                <th>Trạng thái mở thiệp</th>
+                <th>Thao tác</th>
               </tr>
             </thead>
             <tbody id="slot-table-body"></tbody>
@@ -3503,11 +3495,29 @@
         }
       }
 
-      if (btnJumpToSlots) {
-        btnJumpToSlots.addEventListener("click", () => {
-          const tabBtn = document.querySelector('.adm-tab-btn[data-tab="tab-slots"]');
-          if (tabBtn) tabBtn.click();
-          window.scrollTo({ top: 0, behavior: "smooth" });
+      document.querySelectorAll(".js-slot-quick-range").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const count = parseInt(btn.getAttribute("data-count") || "18", 10) || 18;
+          const fromN = Math.max(1, parseInt(slotPrintFromInput ? slotPrintFromInput.value : "1", 10) || 1);
+          const toN = fromN + count - 1;
+          if (slotPrintToInput) slotPrintToInput.value = String(toN);
+          renderLuxuryWeddingQR(false, {
+            layoutMode: "pinterest_strip",
+            targetUrl: getSlotUrl(fromN),
+            slotNum: fromN
+          });
+          notify(`📐 Đã chọn in từ Số ${fromN} → Số ${toN} (${count} chiếc = ${Math.ceil(count / 18)} tờ A4)!`);
+        });
+      });
+
+      if (slotPrintFromInput) {
+        slotPrintFromInput.addEventListener("input", () => {
+          const fromN = Math.max(1, parseInt(slotPrintFromInput.value || "1", 10) || 1);
+          renderLuxuryWeddingQR(false, {
+            layoutMode: "pinterest_strip",
+            targetUrl: getSlotUrl(fromN),
+            slotNum: fromN
+          });
         });
       }
 
@@ -3569,7 +3579,13 @@
       if (btnPrintSlots) {
         btnPrintSlots.addEventListener("click", () => {
           const fromN = Math.max(1, parseInt(slotPrintFromInput ? slotPrintFromInput.value : "1", 10) || 1);
-          const toN = Math.max(fromN, Math.min(fromN + 179, parseInt(slotPrintToInput ? slotPrintToInput.value : String(fromN + 17), 10) || fromN + 17));
+          const toN = Math.max(
+            fromN,
+            Math.min(
+              fromN + 359,
+              parseInt(slotPrintToInput ? slotPrintToInput.value : String(fromN + 17), 10) || fromN + 17
+            )
+          );
           const capMode = (qrCaptionStyle && qrCaptionStyle.value) || "bilingual";
 
           const win = window.open("", "_blank");
@@ -3588,7 +3604,8 @@
               guestText: "",
               slotNum: n
             });
-            const dUrl = qrCanvas.toDataURL("image/png");
+            // Use high-res JPEG (0.95) for opaque #FAF8F4 bookmark strips -> 15x lighter & 10x faster for 198+ items!
+            const dUrl = qrCanvas.toDataURL("image/jpeg", 0.95);
             itemsHtml.push(
               `<div class="sticker-cell"><img src="${dUrl}" alt="Bookmark QR Số ${n}" /></div>`
             );
@@ -3608,11 +3625,21 @@
           }
 
           const totalCount = itemsHtml.length;
+          const sheetsHtml = [];
+          for (let i = 0; i < totalCount; i += 18) {
+            const chunk = itemsHtml.slice(i, i + 18);
+            const isLast = i + 18 >= totalCount;
+            sheetsHtml.push(
+              `<div class="a4-sheet${isLast ? "" : " page-break"}">${chunk.join("")}</div>`
+            );
+          }
+          const numSheets = sheetsHtml.length;
+
           win.document.write(`<!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <title>In Tờ A4 Bookmark QR Đánh Số (Số ${fromN} → Số ${toN}) — Thuận Tường & Tiểu Dinh</title>
+  <title>In ${numSheets} Tờ A4 Bookmark QR Đánh Số (Số ${fromN} → Số ${toN}) — Thuận Tường & Tiểu Dinh</title>
   <style>
     @page { size: A4 portrait; margin: 6.5mm; }
     * {
@@ -3659,6 +3686,10 @@
       border-top: 0.25mm solid #b07b72;
       border-left: 0.25mm solid #b07b72;
     }
+    .a4-sheet.page-break {
+      page-break-after: always;
+      break-after: page;
+    }
     .sticker-cell {
       border-right: 0.25mm solid #b07b72;
       border-bottom: 0.25mm solid #b07b72;
@@ -3691,15 +3722,15 @@
 <body>
   <div class="print-toolbar">
     <div>
-      <strong>🖨️ Tờ A4 Bookmark QR Đánh Số: Từ Số ${fromN} → Số ${toN} (${totalCount} chiếc • 1.060 DPI)</strong>
+      <strong>🖨️ Bản Dàn Trang ${numSheets} Tờ A4 Bookmark QR Đánh Số: Từ Số ${fromN} → Số ${toN} (${totalCount} chiếc • 1.060 DPI)</strong>
       <div style="font-size:12.5px; color:#5c4747; margin-top:4px; line-height:1.5;">
-        • Ở phần gập phía sau của mỗi Bookmark đã in sẵn <strong>Số ${fromN}, Số ${fromN + 1}...</strong> (in 2 chiều để gập xuống vẫn đọc được ngay).<br/>
-        • Bạn cứ in hàng loạt trước, sau này bỏ <strong>Số mấy</strong> vào phong bì của ai thì mở mục <strong>🔢 QR Đánh Số</strong> gõ tên người đó vào là xong!
+        • Đã tự động chia chuẩn <strong>18 chiếc / 1 tờ A4 (Tổng cộng ${numSheets} trang A4)</strong>.<br/>
+        • Ở phần gập phía sau của mỗi Bookmark đã in sẵn <strong>Số ${fromN}, Số ${fromN + 1}...</strong> (in 2 chiều để gập xuống vẫn đọc được ngay).
       </div>
     </div>
     <button class="print-btn" onclick="window.print()">🖨️ In Ngay / Lưu File PDF</button>
   </div>
-  <div class="a4-sheet">${itemsHtml.join("")}</div>
+  ${sheetsHtml.join("")}
 </body>
 </html>`);
           win.document.close();
