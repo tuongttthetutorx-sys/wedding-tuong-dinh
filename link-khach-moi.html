@@ -1666,7 +1666,7 @@
                   🔢 Cách 1 (Khuyên dùng): In Trước Bookmark Đánh Số (Số 1, Số 2...) — Điền Tên Khách Sau!
                 </div>
                 <div style="font-size:12.5px; color:#5a3e2b; margin-bottom:10px; line-height:1.48;">
-                  Mỗi Bookmark có <strong>1 mã QR riêng</strong> và in to <strong>Số 1, Số 2...</strong> ở phần nếp gấp phía sau. Bạn cứ in sẵn hàng loạt (18 chiếc/tờ A4), sau này bỏ <strong>Số mấy</strong> vào phong bì của ai thì kéo xuống bảng ngay bên dưới gõ tên khách vào số đó là xong!
+                  Mỗi Bookmark có <strong>1 mã QR riêng</strong> và in to <strong>Số 1, Số 2...</strong> ở phần nếp gấp phía sau. Bạn cứ in sẵn hàng loạt (18 chiếc/tờ A4), sau này bỏ <strong>Số mấy</strong> vào phong bì của ai thì bạn gõ tên người đó tại <strong>Tab 1 (Danh Sách Khách &amp; Tạo Link)</strong> là xong!
                 </div>
                 <div class="slot-print-row">
                   <div>
@@ -1802,56 +1802,6 @@
               📱 Thiết kế thanh mảnh <strong>Không Đóng Khung</strong> • Quét thử trực tiếp bằng Camera / Zalo trên màn hình!
             </div>
           </div>
-        </div>
-      </div>
-
-      <!-- BẢNG ĐIỀN TÊN KHÁCH CHO SỐ QR ĐÃ IN (NẰM NGAY TRONG CÙNG MỤC TẠO THẺ PHỤ QR) -->
-      <div class="adm-box" id="slot-assign-section">
-        <div class="adm-box-head">
-          <div>
-            <h2 class="adm-box-title">🔢 Điền Tên Khách Cho Bookmark QR Đánh Số (Số 1, Số 2, Số 3...)</h2>
-            <p class="adm-box-desc">
-              Bỏ Bookmark <strong>Số mấy</strong> vào phong bì của ai thì bạn gõ tên người đó vào đúng số bên dưới. Khách quét QR sẽ mở ra thiệp có tên mình ngay lập tức! Nếu chưa gán tên thì khách quét vẫn mở ra thiệp chung bình thường.
-            </p>
-          </div>
-        </div>
-
-        <div class="slot-assign-row">
-          <div>
-            <label for="slot-assign-num" class="slot-label">Số QR</label>
-            <input type="number" id="slot-assign-num" class="adm-input" min="1" max="9999" placeholder="VD: 1" />
-          </div>
-          <div>
-            <label for="slot-assign-name" class="slot-label">Tên khách (hiện trên thiệp)</label>
-            <input type="text" id="slot-assign-name" class="adm-input" placeholder="VD: Gia Đình Dì Ý hoặc 林子惟" />
-          </div>
-          <div>
-            <label for="slot-assign-note" class="slot-label">Ghi chú riêng (khách không thấy)</label>
-            <input type="text" id="slot-assign-note" class="adm-input" placeholder="VD: Con trai dì Ý bên Đài" />
-          </div>
-          <button type="button" id="btn-assign-slot" class="btn-adm primary lg">💾 Gán tên</button>
-        </div>
-        <p class="slot-hint" id="slot-assign-preview">Gõ số QR (VD: 1, 2, 3...) để xem số đó đang trống hay đã gán cho ai.</p>
-
-        <div class="slot-step-title">
-          <span>📋 Danh sách các số QR (Gõ tên trực tiếp trên từng dòng rồi bấm Lưu hoặc Enter)</span>
-          <input type="search" id="slot-search-input" class="search-box" placeholder="🔍 Tìm theo số, tên hoặc ghi chú..." />
-        </div>
-        <div class="table-scroll">
-          <table class="adm-table slot-table">
-            <thead>
-              <tr>
-                <th>Số QR</th>
-                <th>Tên khách (Hiện trên thiệp)</th>
-                <th>Ghi chú riêng (Chỉ bạn thấy)</th>
-                <th>Nhóm &amp; Bàn tiệc (Sảnh Seine)</th>
-                <th>Loại thiệp khi quét</th>
-                <th>Trạng thái mở thiệp</th>
-                <th>Thao tác</th>
-              </tr>
-            </thead>
-            <tbody id="slot-table-body"></tbody>
-          </table>
         </div>
       </div>
     </section>
