@@ -539,9 +539,80 @@ export class WeddingAnalytics {
         prevCfg.tableMeta = { ...(prevCfg.tableMeta || {}), ...body.tableMeta };
       }
       data.seatingConfig = prevCfg;
+
+      // Support atomic bulk group / table / mode assignment for multiple guests & numbered QR slots
+      if (body.action === "bulk_assign") {
+        const nextGroup = body.group !== undefined ? String(body.group || "").trim() : undefined;
+        const nextTable = body.table !== undefined ? String(body.table || "").trim() : undefined;
+        const nextPax =
+          body.pax !== undefined
+            ? Math.max(1, Math.min(20, parseInt(body.pax || "1", 10) || 1))
+            : undefined;
+        const validModes = ["invite", "directions", "thankyou"];
+        const nextMode = validModes.includes(body.mode) ? body.mode : undefined;
+
+        if (Array.isArray(body.guestNames)) {
+          const targetKeys = new Set(body.guestNames.map((n) => normalizeGuestKey(n)).filter(Boolean));
+          data.savedGuests.forEach((g) => {
+            if (!g || !targetKeys.has(normalizeGuestKey(g.name))) return;
+            if (nextGroup !== undefined) g.group = nextGroup;
+            if (nextTable !== undefined) g.table = nextTable;
+            if (nextPax !== undefined) g.pax = nextPax;
+            if (nextMode !== undefined) g.mode = nextMode;
+            if (g.slotCode && data.slots && data.slots[g.slotCode]) {
+              if (nextGroup !== undefined) data.slots[g.slotCode].group = nextGroup;
+              if (nextTable !== undefined) data.slots[g.slotCode].table = nextTable;
+              if (nextPax !== undefined) data.slots[g.slotCode].pax = nextPax;
+              if (nextMode !== undefined) data.slots[g.slotCode].mode = nextMode;
+            }
+          });
+        }
+
+        if (Array.isArray(body.slotItems)) {
+          if (!data.slots) data.slots = {};
+          body.slotItems.forEach((item) => {
+            const code = String((item && item.code) || "").trim().toLowerCase();
+            const num = parseInt((item && item.num) || code.split("-")[0], 10) || 0;
+            if (!code || num < 1) return;
+            const prev = data.slots[code] || {
+              num,
+              name: "",
+              lang: "vi",
+              mode: "invite",
+              group: "",
+              table: "",
+              pax: 1,
+              assignedAt: new Date().toISOString()
+            };
+            if (nextGroup !== undefined) prev.group = nextGroup;
+            if (nextTable !== undefined) prev.table = nextTable;
+            if (nextPax !== undefined) prev.pax = nextPax;
+            if (nextMode !== undefined) prev.mode = nextMode;
+            data.slots[code] = prev;
+
+            if (prev.name) {
+              const gk = normalizeGuestKey(prev.name);
+              const g = data.savedGuests.find((x) => normalizeGuestKey(x.name) === gk);
+              if (g) {
+                if (nextGroup !== undefined) g.group = nextGroup;
+                if (nextTable !== undefined) g.table = nextTable;
+                if (nextPax !== undefined) g.pax = nextPax;
+                if (nextMode !== undefined) g.mode = nextMode;
+              }
+            }
+          });
+        }
+      }
+
       await this.saveData(data);
       return Response.json(
-        { ok: true, seatingConfig: data.seatingConfig, stats: this.formatStats(data) },
+        {
+          ok: true,
+          seatingConfig: data.seatingConfig,
+          savedGuests: data.savedGuests,
+          slots: data.slots,
+          stats: this.formatStats(data)
+        },
         { headers: CORS_HEADERS }
       );
     }

@@ -1268,6 +1268,18 @@
                 <option value="zh">🧧 繁體中文 (Khách Đài Loan)</option>
               </select>
             </div>
+            <div>
+              <label for="default-add-group" style="display:block; font-size:12px; font-weight:600; color:var(--adm-muted); margin-bottom:5px;">Phân nhóm sẵn cho đợt nhập này:</label>
+              <select id="default-add-group" class="adm-select">
+                <option value="">⚪ Chưa phân nhóm (Chọn sau)</option>
+                <option value="groom_family">👑 Gia đình Nhà Trai</option>
+                <option value="bride_family">👑 Gia đình Nhà Gái</option>
+                <option value="groom_relatives">🏮 Họ hàng Nhà Trai</option>
+                <option value="bride_relatives">🏮 Họ hàng Nhà Gái</option>
+                <option value="friends_colleagues">🥂 Bạn bè &amp; Đồng nghiệp</option>
+                <option value="honored_guests">✨ Khách mời / Khách quý</option>
+              </select>
+            </div>
             <button type="button" id="btn-generate" class="btn-adm primary lg" style="width:100%;">
               ✨ Tạo &amp; Lưu Vào Danh Sách
             </button>
@@ -1313,7 +1325,78 @@
             <button type="button" class="filter-chip" data-filter="directions">📍 Đang bật Chỉ Đường</button>
             <button type="button" class="filter-chip" data-filter="thankyou">📸 Đang bật Lời Cảm Ơn</button>
           </div>
-          <input type="search" id="guest-search-input" class="search-box" placeholder="🔍 Tìm tên khách, số QR (VD: 15, #15) hoặc ghi chú..." />
+          <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+            <select id="guest-group-filter" class="adm-select" style="width:auto; min-width:175px; height:36px; font-size:12.5px;" title="Lọc danh sách theo Nhóm khách (6 nhóm chính)">
+              <option value="all">👥 Tất cả 6 nhóm khách</option>
+              <option value="unassigned_group">⚪ Chưa phân nhóm</option>
+              <option value="groom_family">👑 Gia đình Nhà Trai</option>
+              <option value="bride_family">👑 Gia đình Nhà Gái</option>
+              <option value="groom_relatives">🏮 Họ hàng Nhà Trai</option>
+              <option value="bride_relatives">🏮 Họ hàng Nhà Gái</option>
+              <option value="friends_colleagues">🥂 Bạn bè &amp; Đồng nghiệp</option>
+              <option value="honored_guests">✨ Khách mời / Khách quý</option>
+            </select>
+            <input type="search" id="guest-search-input" class="search-box" placeholder="🔍 Tìm tên khách, số QR (VD: 15, #15) hoặc ghi chú..." />
+          </div>
+        </div>
+
+        <!-- THANH CÔNG CỤ PHÂN NHÓM & XẾP BÀN HÀNG LOẠT -->
+        <div style="margin-bottom:14px; padding:12px 14px; border-radius:10px; background:#fbf5ea; border:1.5px solid #d4b895; display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px;">
+            <div style="font-size:13.2px; font-weight:700; color:var(--adm-crimson);">
+              ⚡ Phân Nhóm &amp; Xếp Bàn Hàng Loạt (Tích chọn bên dưới hoặc nhập khoảng số <span id="bulk-selected-badge" class="lang-tag" style="margin-left:4px;">Đã tích: 0 mục</span>)
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:6px;">
+              <button type="button" id="btn-bulk-select-visible" class="btn-adm" style="height:28px; padding:0 10px; font-size:11.8px;">
+                ☑️ Tích chọn tất cả đang hiện
+              </button>
+              <button type="button" id="btn-bulk-select-named" class="btn-adm" style="height:28px; padding:0 10px; font-size:11.8px;">
+                ✅ Chỉ tích khách Đã có tên
+              </button>
+              <button type="button" id="btn-bulk-clear-selection" class="btn-adm" style="height:28px; padding:0 10px; font-size:11.8px;">
+                ✕ Bỏ tích hết
+              </button>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px;">
+            <div style="display:inline-flex; align-items:center; gap:5px; background:#fff; padding:4px 8px; border-radius:8px; border:1px solid var(--adm-border);">
+              <span style="font-size:12px; font-weight:600; color:var(--adm-muted);">Hoặc chọn theo khoảng:</span>
+              <select id="bulk-range-type" class="seat-inline-select" style="height:28px;">
+                <option value="order">Thứ tự # trên DS (#1 → #414)</option>
+                <option value="slot">Số QR in trên thẻ (Số 1 → Số 414)</option>
+              </select>
+              <input type="number" id="bulk-range-from" class="seat-inline-pax" min="1" max="9999" placeholder="Từ" style="width:58px; height:28px;" />
+              <span style="font-size:12px; color:var(--adm-muted);">→</span>
+              <input type="number" id="bulk-range-to" class="seat-inline-pax" min="1" max="9999" placeholder="Đến" style="width:58px; height:28px;" />
+            </div>
+
+            <select id="bulk-assign-group" class="adm-select" style="width:auto; min-width:185px; height:36px; font-size:12.5px;">
+              <option value="__keep__">-- Giữ nguyên Nhóm khách --</option>
+              <option value="groom_family">👑 Gán: Gia đình Nhà Trai</option>
+              <option value="bride_family">👑 Gán: Gia đình Nhà Gái</option>
+              <option value="groom_relatives">🏮 Gán: Họ hàng Nhà Trai</option>
+              <option value="bride_relatives">🏮 Gán: Họ hàng Nhà Gái</option>
+              <option value="friends_colleagues">🥂 Gán: Bạn bè &amp; Đồng nghiệp</option>
+              <option value="honored_guests">✨ Gán: Khách mời / Khách quý</option>
+              <option value="">⚪ Xóa phân nhóm (Về trống)</option>
+            </select>
+
+            <select id="bulk-assign-table" class="adm-select" style="width:auto; min-width:155px; height:36px; font-size:12.5px;">
+              <option value="__keep__">-- Giữ nguyên Bàn --</option>
+            </select>
+
+            <select id="bulk-assign-mode" class="adm-select" style="width:auto; min-width:155px; height:36px; font-size:12.5px;">
+              <option value="__keep__">-- Giữ nguyên Loại thiệp --</option>
+              <option value="invite">💌 Chuyển sang: Thiệp Mời</option>
+              <option value="directions">📍 Chuyển sang: Chỉ Đường</option>
+              <option value="thankyou">📸 Chuyển sang: Cảm Ơn</option>
+            </select>
+
+            <button type="button" id="btn-apply-bulk-assign" class="btn-adm primary" style="height:36px; padding:0 14px; font-size:12.8px;">
+              ⚡ Áp Dụng Hàng Loạt
+            </button>
+          </div>
         </div>
 
         <div id="guest-cards-container" class="guest-list-cards"></div>
@@ -2034,7 +2117,7 @@
         });
       });
 
-      // FILTER CHIPS & SEARCH
+      // FILTER CHIPS, GROUP FILTER, SEARCH & BULK ACTIONS
       document.querySelectorAll("#guest-filter-chips .filter-chip").forEach((chip) => {
         chip.addEventListener("click", () => {
           currentFilter = chip.dataset.filter || "all";
@@ -2046,6 +2129,168 @@
       });
       if (searchInput) {
         searchInput.addEventListener("input", buildRows);
+      }
+      const grpFilterSelectEl = document.getElementById("guest-group-filter");
+      if (grpFilterSelectEl) {
+        grpFilterSelectEl.addEventListener("change", buildRows);
+      }
+
+      const btnBulkSelectVisible = document.getElementById("btn-bulk-select-visible");
+      const btnBulkSelectNamed = document.getElementById("btn-bulk-select-named");
+      const btnBulkClearSel = document.getElementById("btn-bulk-clear-selection");
+      const btnApplyBulkAssign = document.getElementById("btn-apply-bulk-assign");
+
+      if (btnBulkSelectVisible) {
+        btnBulkSelectVisible.addEventListener("click", () => {
+          window._bulkSelectedSet = window._bulkSelectedSet || new Set();
+          (window._visibleBulkItems || []).forEach((it) => window._bulkSelectedSet.add(it.token));
+          buildRows();
+          notify(`☑️ Đã tích chọn ${(window._visibleBulkItems || []).length} mục đang hiển thị!`);
+        });
+      }
+      if (btnBulkSelectNamed) {
+        btnBulkSelectNamed.addEventListener("click", () => {
+          window._bulkSelectedSet = new Set();
+          (window._visibleBulkItems || []).forEach((it) => {
+            if (it.type === "guest") window._bulkSelectedSet.add(it.token);
+          });
+          buildRows();
+          notify(`✅ Đã tích chọn ${window._bulkSelectedSet.size} khách Đã có tên!`);
+        });
+      }
+      if (btnBulkClearSel) {
+        btnBulkClearSel.addEventListener("click", () => {
+          window._bulkSelectedSet = new Set();
+          const rFrom = document.getElementById("bulk-range-from");
+          const rTo = document.getElementById("bulk-range-to");
+          if (rFrom) rFrom.value = "";
+          if (rTo) rTo.value = "";
+          buildRows();
+          notify("✕ Đã bỏ tích chọn toàn bộ.");
+        });
+      }
+
+      if (btnApplyBulkAssign) {
+        btnApplyBulkAssign.addEventListener("click", async () => {
+          const grpSel = document.getElementById("bulk-assign-group");
+          const tblSel = document.getElementById("bulk-assign-table");
+          const modeSel = document.getElementById("bulk-assign-mode");
+          const rangeTypeEl = document.getElementById("bulk-range-type");
+          const rangeFromEl = document.getElementById("bulk-range-from");
+          const rangeToEl = document.getElementById("bulk-range-to");
+
+          const grpVal = grpSel ? grpSel.value : "__keep__";
+          const tblVal = tblSel ? tblSel.value : "__keep__";
+          const modeVal = modeSel ? modeSel.value : "__keep__";
+
+          if (grpVal === "__keep__" && tblVal === "__keep__" && modeVal === "__keep__") {
+            notify("⚠️ Hãy chọn ít nhất 1 mục cần gán (Nhóm khách, Bàn tiệc hoặc Loại thiệp)!");
+            return;
+          }
+
+          const targetGuestKeys = new Set();
+          const targetSlotNums = new Set();
+
+          const fromNum = parseInt(rangeFromEl ? rangeFromEl.value : "", 10);
+          const toNum = parseInt(rangeToEl ? rangeToEl.value : "", 10);
+          const rangeMode = rangeTypeEl ? rangeTypeEl.value : "order";
+
+          if (fromNum >= 1 && toNum >= fromNum) {
+            if (rangeMode === "slot") {
+              for (let s = fromNum; s <= Math.min(9999, toNum); s++) {
+                targetSlotNums.add(s);
+              }
+            } else {
+              (window._visibleBulkItems || []).forEach((it) => {
+                if (it.orderIdx >= fromNum && it.orderIdx <= toNum) {
+                  if (it.type === "guest") targetGuestKeys.add(it.key);
+                  else if (it.slotNum) targetSlotNums.add(it.slotNum);
+                }
+              });
+            }
+          }
+
+          window._bulkSelectedSet = window._bulkSelectedSet || new Set();
+          window._bulkSelectedSet.forEach((tok) => {
+            if (tok.startsWith("guest:")) targetGuestKeys.add(tok.slice(6));
+            else if (tok.startsWith("slot:")) {
+              const sn = parseInt(tok.slice(5), 10);
+              if (sn >= 1) targetSlotNums.add(sn);
+            }
+          });
+
+          const totalSelected = targetGuestKeys.size + targetSlotNums.size;
+          if (totalSelected === 0) {
+            notify("⚠️ Hãy tích chọn ít nhất 1 dòng bên dưới hoặc nhập khoảng số (Từ → Đến) nhé!");
+            return;
+          }
+
+          const nextGroup = grpVal === "__keep__" ? undefined : grpVal;
+          const nextTable = tblVal === "__keep__" ? undefined : tblVal;
+          const nextMode = modeVal === "__keep__" ? undefined : modeVal;
+
+          const guestNamesToUpdate = [];
+          savedGuests = savedGuests.map((g) => {
+            const k = normalizeNameKey(g.name);
+            const matchedByGuest = targetGuestKeys.has(k);
+            const matchedBySlot = g.slot && targetSlotNums.has(Number(g.slot));
+            if (!matchedByGuest && !matchedBySlot) return g;
+            guestNamesToUpdate.push(g.name);
+            const updated = { ...g };
+            if (nextGroup !== undefined) updated.group = nextGroup;
+            if (nextTable !== undefined) updated.table = nextTable;
+            if (nextMode !== undefined) updated.mode = nextMode;
+            if (g.slotCode && serverSlots[g.slotCode]) {
+              if (nextGroup !== undefined) serverSlots[g.slotCode].group = nextGroup;
+              if (nextTable !== undefined) serverSlots[g.slotCode].table = nextTable;
+              if (nextMode !== undefined) serverSlots[g.slotCode].mode = nextMode;
+            }
+            return updated;
+          });
+
+          const slotItemsToUpdate = [];
+          targetSlotNums.forEach((n) => {
+            const code = makeSlotCode(n);
+            const prev = serverSlots[code] || {
+              num: n,
+              name: "",
+              lang: "vi",
+              mode: "invite",
+              group: "",
+              table: "",
+              pax: 1,
+              assignedAt: new Date().toISOString()
+            };
+            if (nextGroup !== undefined) prev.group = nextGroup;
+            if (nextTable !== undefined) prev.table = nextTable;
+            if (nextMode !== undefined) prev.mode = nextMode;
+            serverSlots[code] = prev;
+            slotItemsToUpdate.push({ code, num: n });
+          });
+
+          persistLocalGuests();
+          if (typeof persistLocalSlots === "function") persistLocalSlots();
+          buildRows();
+          if (typeof renderSlotsTable === "function") renderSlotsTable();
+          if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
+
+          try {
+            await fetch(`${apiBase}/api/seating`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                action: "bulk_assign",
+                guestNames: guestNamesToUpdate,
+                slotItems: slotItemsToUpdate,
+                ...(nextGroup !== undefined ? { group: nextGroup } : {}),
+                ...(nextTable !== undefined ? { table: nextTable } : {}),
+                ...(nextMode !== undefined ? { mode: nextMode } : {})
+              })
+            });
+          } catch (_) {}
+
+          notify(`⚡ Đã áp dụng hàng loạt cho ${totalSelected} mục thành công!`);
+        });
       }
 
       const STORAGE_GUEST_NOTES = "td_guest_notes_v1";
@@ -2346,10 +2591,40 @@
         badgeSavedEl.textContent = `${savedGuests.length}/${TOTAL_INVITE_TARGET}`;
 
         const q = (searchInput ? searchInput.value : "").trim().toLowerCase();
+        const grpFilterEl = document.getElementById("guest-group-filter");
+        const activeGrpFilter = grpFilterEl ? grpFilterEl.value : "all";
         const rowsData = [];
         const { occ: tableOccMap } = computeTableStats();
         let visibleCount = 0;
         const frag = document.createDocumentFragment();
+
+        window._bulkSelectedSet = window._bulkSelectedSet || new Set();
+        window._visibleBulkItems = [];
+        const updateBulkBadge = () => {
+          const b = document.getElementById("bulk-selected-badge");
+          if (b) b.textContent = `Đã tích: ${window._bulkSelectedSet.size} mục`;
+        };
+        updateBulkBadge();
+
+        const bulkTableSel = document.getElementById("bulk-assign-table");
+        if (bulkTableSel) {
+          const prevVal = bulkTableSel.value || "__keep__";
+          const total = seatingConfig.totalTables || 40;
+          const cap = seatingConfig.seatsPerTable || 10;
+          const opts = [
+            `<option value="__keep__">-- Giữ nguyên Bàn --</option>`,
+            `<option value="">🪑 Gỡ khỏi bàn (Chưa xếp)</option>`
+          ];
+          for (let i = 1; i <= total; i++) {
+            const tKey = String(i);
+            const used = tableOccMap[tKey] || 0;
+            opts.push(
+              `<option value="${tKey}">🪑 Xếp vào Bàn ${String(i).padStart(2, "0")} (${used}/${cap})</option>`
+            );
+          }
+          bulkTableSel.innerHTML = opts.join("");
+          bulkTableSel.value = prevVal;
+        }
 
         if (savedGuests.length > 0 && currentFilter !== "unnamed") {
           const namedHeader = document.createElement("div");
@@ -2445,6 +2720,10 @@
 
           // Apply UI Filter & Search (search matches Guest Name, Slot Number, AND Private Note!)
           if (currentFilter === "unnamed") return;
+          if (activeGrpFilter !== "all") {
+            if (activeGrpFilter === "unassigned_group" && guestGroup) return;
+            if (activeGrpFilter !== "unassigned_group" && guestGroup !== activeGrpFilter) return;
+          }
           if (q) {
             const slotStr = guestObj.slot ? String(guestObj.slot) : "";
             const matchName = name.toLowerCase().includes(q);
@@ -2458,6 +2737,15 @@
           if (currentFilter === "thankyou" && !isTyEffective) return;
 
           visibleCount++;
+          const bulkToken = `guest:${key}`;
+          window._visibleBulkItems.push({
+            token: bulkToken,
+            type: "guest",
+            name,
+            key,
+            orderIdx: idx + 1,
+            slotNum: guestObj.slot ? Number(guestObj.slot) : 0
+          });
 
           const statusBadgeHtml = !hasOpened
             ? `<span class="status-badge is-pending">⏳ Chưa mở thiệp</span>`
@@ -2473,6 +2761,13 @@
             <div class="guest-top-row">
               <div class="guest-main-info">
                 <div class="guest-title-row">
+                  <input
+                    type="checkbox"
+                    class="js-bulk-chk"
+                    ${window._bulkSelectedSet.has(bulkToken) ? "checked" : ""}
+                    style="width:16px; height:16px; accent-color:var(--adm-crimson); cursor:pointer;"
+                    title="Tích chọn để phân nhóm hoặc xếp bàn hàng loạt"
+                  />
                   <span class="guest-idx">#${idx + 1}</span>
                   <span class="guest-name-text js-guest-name"></span>
                   <span class="lang-tag">${effectiveLang === "zh" ? "繁體中文" : "VI"}</span>
@@ -2527,6 +2822,14 @@
           card.querySelector(".js-guest-name").textContent = name;
           card.querySelector(".js-url-preview").textContent = fullUrl;
           card.querySelector(".js-preview").href = previewUrl;
+          const bulkChkEl = card.querySelector(".js-bulk-chk");
+          if (bulkChkEl) {
+            bulkChkEl.addEventListener("change", () => {
+              if (bulkChkEl.checked) window._bulkSelectedSet.add(bulkToken);
+              else window._bulkSelectedSet.delete(bulkToken);
+              updateBulkBadge();
+            });
+          }
           const noteInputEl = card.querySelector(".js-guest-note-input");
           const noteWrapEl = card.querySelector(".guest-private-note-wrap");
           if (noteInputEl) {
@@ -2697,6 +3000,10 @@
             const sessions = visitLogsByGuest[unassignedLogKey] || [];
             const hasOpened = sessions.length > 0;
 
+            if (activeGrpFilter !== "all") {
+              if (activeGrpFilter === "unassigned_group" && rowGroup) return;
+              if (activeGrpFilter !== "unassigned_group" && rowGroup !== activeGrpFilter) return;
+            }
             if (q) {
               const numMatch =
                 String(n) === q ||
@@ -2713,6 +3020,14 @@
             if (currentFilter === "thankyou" && !isTyEffective) return;
 
             visibleCount++;
+            const bulkToken = `slot:${n}`;
+            window._visibleBulkItems.push({
+              token: bulkToken,
+              type: "slot",
+              slotNum: n,
+              slotCode: code,
+              orderIdx: overallIdx
+            });
 
             const slotUrl = getSlotUrl(n);
             const slotPreviewParams = new URLSearchParams();
@@ -2740,6 +3055,13 @@
               <div class="guest-top-row">
                 <div class="guest-main-info">
                   <div class="guest-title-row">
+                    <input
+                      type="checkbox"
+                      class="js-u-bulk-chk"
+                      ${window._bulkSelectedSet.has(bulkToken) ? "checked" : ""}
+                      style="width:16px; height:16px; accent-color:var(--adm-crimson); cursor:pointer;"
+                      title="Tích chọn để phân nhóm hoặc xếp bàn hàng loạt"
+                    />
                     <span class="guest-idx" title="Thứ tự trong tổng 414 thiệp">#${overallIdx}</span>
                     <span class="slot-num-pill">🔢 QR Số ${n}</span>
                     ${statusBadgeHtml}
@@ -2795,6 +3117,14 @@
             const nameInp = card.querySelector(".js-u-slot-name");
             const noteInp = card.querySelector(".js-u-slot-note");
             const saveBtn = card.querySelector(".js-u-slot-save");
+            const uBulkChk = card.querySelector(".js-u-bulk-chk");
+            if (uBulkChk) {
+              uBulkChk.addEventListener("change", () => {
+                if (uBulkChk.checked) window._bulkSelectedSet.add(bulkToken);
+                else window._bulkSelectedSet.delete(bulkToken);
+                updateBulkBadge();
+              });
+            }
             const doSaveSlotName = () => {
               const typedName = (nameInp ? nameInp.value : "").trim();
               const typedNote = (noteInp ? noteInp.value : "").trim();
@@ -2858,6 +3188,8 @@
 
       async function handleAddGuests() {
         const lang = langSelect.value;
+        const defaultAddGrpEl = document.getElementById("default-add-group");
+        const batchGroup = defaultAddGrpEl ? defaultAddGrpEl.value : "";
         const names = (listArea.value || "")
           .split(/\r?\n/)
           .map((s) => s.trim())
@@ -2891,12 +3223,16 @@
 
           const hasHanzi = /[\u4e00-\u9fff]/.test(name);
           const effectiveLang = lang === "zh" || hasHanzi ? "zh" : "vi";
+          const effectiveGrp = batchGroup || (existingIdx >= 0 && savedGuests[existingIdx].group ? savedGuests[existingIdx].group : "");
           const record = {
             name,
             lang: effectiveLang,
             mode: existingIdx >= 0 && savedGuests[existingIdx].mode ? savedGuests[existingIdx].mode : "invite",
             driveUrl: existingIdx >= 0 && savedGuests[existingIdx].driveUrl ? savedGuests[existingIdx].driveUrl : "",
             note: finalNote,
+            group: effectiveGrp,
+            table: existingIdx >= 0 && savedGuests[existingIdx].table ? savedGuests[existingIdx].table : "",
+            pax: existingIdx >= 0 && savedGuests[existingIdx].pax ? savedGuests[existingIdx].pax : 1,
             createdAt: existingIdx >= 0 && savedGuests[existingIdx].createdAt ? savedGuests[existingIdx].createdAt : new Date().toISOString()
           };
           newItems.push(record);
