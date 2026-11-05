@@ -4758,7 +4758,7 @@
             slotPreviewParams.set("mode", effectiveMode);
           }
           slotPreviewParams.set("notrack", "1");
-          const previewUrl = `${(baseUrlInput.value || "").trim().replace(/\/+$/, "")}/?${slotPreviewParams.toString()}`;
+          const previewUrl = `${baseOrigin.replace(/\?.*$/, "")}?${slotPreviewParams.toString()}`;
 
           const tr = document.createElement("tr");
           if (!assignedName) tr.className = "is-empty-slot";
@@ -5270,7 +5270,7 @@
         const sampleGroup =
           (seatedArr[0] && seatedArr[0].group) || meta.group || "friends_colleagues";
         const samplePax = (seatedArr[0] && seatedArr[0].pax) || 2;
-        const baseClean = (baseUrlInput.value || "").trim().replace(/\/+$/, "");
+        const baseClean = baseOrigin.replace(/\?.*$/, "").replace(/\/+$/, "");
         const demoParams = new URLSearchParams();
         demoParams.set("to", sampleGuestName);
         demoParams.set("table", tKey);
