@@ -1008,7 +1008,16 @@
   }
 
   function applyResolvedGuestIdentity(cfgObj) {
-    if (!cfgObj || !cfgObj.resolvedName) return;
+    if (!cfgObj) return;
+    // Canonicalize legacy ?to=... URLs in the browser address bar to their permanent fixed ?s=slotCode link
+    if (cfgObj.slotCode && !params.get("s") && window.history && window.history.replaceState) {
+      try {
+        params.set("s", cfgObj.slotCode);
+        const cleanSearch = `?s=${encodeURIComponent(cfgObj.slotCode)}`;
+        window.history.replaceState(null, "", window.location.pathname + cleanSearch + window.location.hash);
+      } catch (_) {}
+    }
+    if (!cfgObj.resolvedName) return;
     const nextName = String(cfgObj.resolvedName).trim();
     if (!nextName) return;
     if (nextName !== guestName) {

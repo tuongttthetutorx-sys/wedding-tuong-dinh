@@ -1065,8 +1065,29 @@ export class WeddingAnalytics {
 
       const data = await this.loadData();
 
-      // Auto-register named guest in savedGuests if not already saved
-      if (rawGuest) {
+      // Match guest by slotCode, current name, or previous alias (if renamed from an old ?to=... link)
+      let matchedGuest = null;
+      const slotNum = isValidSlotCode(slotCode) ? slotNumFromCode(slotCode) : 0;
+      if (slotCode && Array.isArray(data.savedGuests)) {
+        matchedGuest = data.savedGuests.find(
+          (g) => g && (g.slotCode === slotCode || (slotNum > 0 && Number(g.slot) === slotNum))
+        );
+      }
+      if (!matchedGuest && rawGuest && Array.isArray(data.savedGuests)) {
+        const gk = normalizeGuestKey(rawGuest);
+        matchedGuest =
+          data.savedGuests.find((g) => g && normalizeGuestKey(g.name) === gk) ||
+          data.savedGuests.find(
+            (g) =>
+              g &&
+              Array.isArray(g.aliases) &&
+              g.aliases.some((alias) => normalizeGuestKey(alias) === gk)
+          ) ||
+          null;
+      }
+
+      // Auto-register named guest in savedGuests only if not already saved under current name or alias
+      if (rawGuest && !matchedGuest) {
         const gk = normalizeGuestKey(rawGuest);
         if (!data.savedGuests.some((g) => normalizeGuestKey(g.name) === gk)) {
           data.savedGuests.push({
@@ -1079,14 +1100,17 @@ export class WeddingAnalytics {
         }
       }
 
+      const effectiveGuestName = (matchedGuest && matchedGuest.name) || guestName;
+      const effectiveHasCustomName = Boolean(matchedGuest || rawGuest);
+
       // 1. Update Individual Unmerged Session Log (data.visitLogs)
       let sessionEntry = data.visitLogs.find((item) => item.sid === sid);
       if (!sessionEntry) {
         sessionEntry = {
           sid,
           vid,
-          guestName,
-          hasCustomName: Boolean(rawGuest),
+          guestName: effectiveGuestName,
+          hasCustomName: effectiveHasCustomName,
           lang,
           mode,
           country,
@@ -1105,7 +1129,7 @@ export class WeddingAnalytics {
         }
       }
 
-      sessionEntry.guestName = guestName;
+      sessionEntry.guestName = effectiveGuestName;
       sessionEntry.lang = lang;
       sessionEntry.mode = mode;
       if (country) sessionEntry.country = country;
@@ -1128,13 +1152,15 @@ export class WeddingAnalytics {
       }
 
       // 2. Also maintain per-guest summary for unique guest KPI & quick lookup
-      const key = rawGuest ? "guest:" + normalizeGuestKey(rawGuest) : "anon:" + vid;
+      const key = effectiveHasCustomName
+        ? "guest:" + normalizeGuestKey(effectiveGuestName)
+        : "anon:" + vid;
       let rec = data.visitors[key];
       if (!rec) {
         rec = {
           key,
-          guestName,
-          hasCustomName: Boolean(rawGuest),
+          guestName: effectiveGuestName,
+          hasCustomName: effectiveHasCustomName,
           vid,
           lang,
           mode,
@@ -1150,7 +1176,7 @@ export class WeddingAnalytics {
         data.visitors[key] = rec;
       }
 
-      rec.guestName = guestName;
+      rec.guestName = effectiveGuestName;
       rec.lang = lang;
       rec.mode = mode;
       if (country) rec.country = country;

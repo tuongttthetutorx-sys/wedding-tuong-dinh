@@ -3201,13 +3201,6 @@
         );
 
         try {
-          if (oldKey && oldKey !== newKey) {
-            await fetch(`${apiBase}/api/guests`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ action: "remove", name: cleanOld })
-            });
-          }
           await fetch(`${apiBase}/api/guests`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
