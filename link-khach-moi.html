@@ -768,6 +768,202 @@
       .session-time { margin-left: 0; width: 100%; }
     }
 
+
+    /* =====================================================================
+       MOBILE-RESPONSIVE GUEST CARDS (<=820px)
+       ===================================================================== */
+    @media (max-width: 820px) {
+      /* -- Named guest card mobile -- */
+      .guest-item-card {
+        padding: 10px 12px;
+        gap: 6px;
+      }
+      .guest-top-row {
+        gap: 6px 10px;
+      }
+      .guest-title-row {
+        gap: 5px;
+      }
+      .guest-name-text {
+        font-size: 14px;
+      }
+      .guest-idx {
+        min-width: 20px;
+        height: 22px;
+        padding: 0 5px;
+        font-size: 11px;
+      }
+      .lang-tag {
+        font-size: 10px;
+        padding: 1px 5px;
+      }
+      .status-badge {
+        font-size: 11px;
+        padding: 2px 7px;
+      }
+      .guest-url-line {
+        font-size: 10.5px;
+        max-width: 100%;
+      }
+      .guest-private-note-input {
+        min-width: 120px;
+        width: 100%;
+        font-size: 11.5px;
+      }
+      .guest-private-note-wrap {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      /* Seat inline bar: stack on mobile */
+      .guest-title-row .seat-inline-bar {
+        width: 100%;
+        flex-wrap: wrap;
+      }
+      .seat-inline-select {
+        font-size: 11px;
+        height: 28px;
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+      .seat-inline-pax {
+        width: 46px;
+        height: 28px;
+        font-size: 11px;
+      }
+
+      /* Actions column: horizontal scroll-like, smaller buttons */
+      .guest-actions-col {
+        flex-direction: row;
+        align-items: center;
+        gap: 6px;
+        overflow-x: auto;
+        padding-bottom: 2px;
+      }
+      .guest-btn-group {
+        flex-wrap: nowrap;
+        gap: 4px;
+      }
+      .btn-adm {
+        font-size: 11px;
+        height: 30px;
+        padding: 0 8px;
+        gap: 3px;
+      }
+      .btn-adm.lg {
+        height: 36px;
+        padding: 0 12px;
+        font-size: 12.5px;
+      }
+
+      /* Mode switch pill: compact */
+      .mode-switch-pill {
+        padding: 1px;
+        gap: 1px;
+      }
+      .mode-switch-btn {
+        font-size: 10.5px;
+        padding: 4px 7px;
+      }
+
+      /* Session pills: single column */
+      .guest-sessions-grid {
+        grid-template-columns: 1fr;
+      }
+      .session-row-pill {
+        font-size: 10.8px;
+        padding: 4px 8px;
+      }
+
+      /* ---- UNNAMED SLOT CARD: COLLAPSIBLE DETAILS ---- */
+      .guest-item-card .mob-slot-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 5px;
+        width: 100%;
+      }
+      .guest-item-card .mob-slot-details {
+        display: none;
+        flex-direction: column;
+        gap: 6px;
+        width: 100%;
+        padding-top: 6px;
+        border-top: 1px dashed var(--adm-border);
+      }
+      .guest-item-card .mob-slot-details.is-expanded {
+        display: flex;
+      }
+      .guest-item-card .mob-toggle-details {
+        appearance: none;
+        border: 1px solid var(--adm-border);
+        background: #faf5ed;
+        color: var(--adm-crimson);
+        font-family: inherit;
+        font-size: 10.5px;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-left: auto;
+        white-space: nowrap;
+        transition: background 0.15s ease;
+      }
+      .guest-item-card .mob-toggle-details:hover {
+        background: var(--adm-crimson-soft);
+      }
+      .guest-item-card .mob-slot-name-row {
+        display: flex;
+        gap: 5px;
+        width: 100%;
+      }
+      .guest-item-card .mob-slot-name-row .slot-inline-input {
+        flex: 1 1 0;
+        min-width: 0;
+        height: 32px;
+        font-size: 12.5px;
+      }
+      .guest-item-card .mob-slot-name-row .btn-adm {
+        flex-shrink: 0;
+        font-size: 11px;
+        height: 32px;
+        padding: 0 8px;
+      }
+      .guest-item-card .mob-slot-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        align-items: center;
+      }
+
+      /* Slot table (Tab 3): also responsive */
+      .slot-num-pill {
+        min-width: 36px;
+        height: 24px;
+        padding: 0 6px;
+        font-size: 12px;
+      }
+    }
+
+    /* Desktop: hide mobile-specific wrappers (they're transparent) */
+    @media (min-width: 821px) {
+      .mob-slot-header {
+        display: contents;
+      }
+      .mob-slot-details {
+        display: contents;
+      }
+      .mob-toggle-details {
+        display: none !important;
+      }
+      .mob-slot-name-row {
+        display: contents;
+      }
+      .mob-slot-actions {
+        display: contents;
+      }
+    }
+
     /* QR STUDIO & A4 STICKER SHEET PRINT LAYOUT */
     .qr-studio-grid {
       display: grid;
@@ -3821,60 +4017,63 @@
               <div class="guest-top-row">
                 <div class="guest-main-info">
                   <div class="guest-title-row">
-                    <input
-                      type="checkbox"
-                      class="js-u-bulk-chk"
-                      ${window._bulkSelectedSet.has(bulkToken) ? "checked" : ""}
-                      style="width:16px; height:16px; accent-color:var(--adm-crimson); cursor:pointer;"
-                      title="Tích chọn để phân nhóm hoặc xếp bàn hàng loạt"
-                    />
-                    <span class="guest-idx" title="Thứ tự trong tổng 414 thiệp">#${overallIdx}</span>
-                    <span class="slot-num-pill">🔢 QR Số ${n}</span>
-                    ${statusBadgeHtml}
-                    <input
-                      type="text"
-                      class="slot-inline-input js-u-slot-name"
-                      style="max-width:230px; height:32px; font-weight:600;"
-                      placeholder="✍️ Gõ tên khách cho QR Số ${n}..."
-                    />
-                    <input
-                      type="text"
-                      class="slot-inline-input js-u-slot-note"
-                      style="max-width:185px; height:32px;"
-                      placeholder="📝 Ghi chú riêng (nếu có)..."
-                    />
-                    <button type="button" class="btn-adm primary js-u-slot-save" style="height:32px; padding:0 10px; font-size:12px;">
-                      💾 Lưu tên (Lên trên ↑)
-                    </button>
-                    <div class="seat-inline-bar" title="Xếp trước Nhóm khách & Bàn tiệc Sảnh Seine cho QR Số ${n}">
-                      <select class="seat-inline-select js-u-slot-group">
-                        ${buildGroupSelectOptions(rowGroup)}
-                      </select>
-                      <select class="seat-inline-select ${rowTable ? "has-table" : ""} js-u-slot-table">
-                        ${buildTableSelectOptions(rowTable, tableOccMap)}
-                      </select>
+                    <div class="mob-slot-header">
                       <input
-                        type="number"
-                        min="1"
-                        max="15"
-                        class="seat-inline-pax js-u-slot-pax"
-                        value="${rowPax}"
-                        title="Số ghế (Pax) của QR Số ${n}"
+                        type="checkbox"
+                        class="js-u-bulk-chk"
+                        ${window._bulkSelectedSet.has(bulkToken) ? "checked" : ""}
+                        style="width:16px; height:16px; accent-color:var(--adm-crimson); cursor:pointer;"
+                        title="Tích chọn để phân nhóm hoặc xếp bàn hàng loạt"
                       />
+                      <span class="guest-idx" title="Thứ tự trong tổng 414 thiệp">#${overallIdx}</span>
+                      <span class="slot-num-pill">🔢 QR Số ${n}</span>
+                      ${statusBadgeHtml}
+                      <button type="button" class="mob-toggle-details js-mob-toggle">▾ Mở</button>
                     </div>
-                  </div>
-                  <div class="guest-url-line">${slotUrl}</div>
-                </div>
-
-                <div class="guest-actions-col">
-                  <div class="guest-btn-group">
-                    <div class="mode-switch-pill" title="Chuyển đổi trực tiếp giữa Thiệp Mời, Chỉ Đường Ngày Cưới và Thiệp Cảm Ơn cho QR Số ${n}">
-                      <button type="button" class="mode-switch-btn js-u-mode-invite ${effectiveMode === "invite" ? "is-active-invite" : ""}">💌 Thiệp Mời</button>
-                      <button type="button" class="mode-switch-btn js-u-mode-dir ${isDirEffective ? "is-active-dir" : ""}">📍 Chỉ Đường</button>
-                      <button type="button" class="mode-switch-btn js-u-mode-ty ${isTyEffective ? "is-active-ty" : ""}">📸 Cảm Ơn</button>
+                    <div class="mob-slot-details">
+                      <div class="mob-slot-name-row">
+                        <input
+                          type="text"
+                          class="slot-inline-input js-u-slot-name"
+                          placeholder="✍️ Gõ tên khách cho QR Số ${n}..."
+                        />
+                        <input
+                          type="text"
+                          class="slot-inline-input js-u-slot-note"
+                          style="max-width:185px;"
+                          placeholder="📝 Ghi chú..."
+                        />
+                        <button type="button" class="btn-adm primary js-u-slot-save">
+                          💾 Lưu tên
+                        </button>
+                      </div>
+                      <div class="seat-inline-bar" title="Xếp trước Nhóm khách & Bàn tiệc Sảnh Seine cho QR Số ${n}">
+                        <select class="seat-inline-select js-u-slot-group">
+                          ${buildGroupSelectOptions(rowGroup)}
+                        </select>
+                        <select class="seat-inline-select ${rowTable ? "has-table" : ""} js-u-slot-table">
+                          ${buildTableSelectOptions(rowTable, tableOccMap)}
+                        </select>
+                        <input
+                          type="number"
+                          min="1"
+                          max="15"
+                          class="seat-inline-pax js-u-slot-pax"
+                          value="${rowPax}"
+                          title="Số ghế (Pax) của QR Số ${n}"
+                        />
+                      </div>
+                      <div class="mob-slot-actions">
+                        <div class="mode-switch-pill" title="Chuyển đổi trực tiếp giữa Thiệp Mời, Chỉ Đường Ngày Cưới và Thiệp Cảm Ơn cho QR Số ${n}">
+                          <button type="button" class="mode-switch-btn js-u-mode-invite ${effectiveMode === "invite" ? "is-active-invite" : ""}">💌 Thiệp Mời</button>
+                          <button type="button" class="mode-switch-btn js-u-mode-dir ${isDirEffective ? "is-active-dir" : ""}">📍 Chỉ Đường</button>
+                          <button type="button" class="mode-switch-btn js-u-mode-ty ${isTyEffective ? "is-active-ty" : ""}">📸 Cảm Ơn</button>
+                        </div>
+                        <button type="button" class="btn-adm js-u-copy-link">📋 Copy Link</button>
+                        <a class="btn-adm" href="${previewUrl}" target="_blank" rel="noopener">👁️ Xem thử</a>
+                      </div>
+                      <div class="guest-url-line">${slotUrl}</div>
                     </div>
-                    <button type="button" class="btn-adm js-u-copy-link">📋 Copy Link</button>
-                    <a class="btn-adm" href="${previewUrl}" target="_blank" rel="noopener">👁️ Xem thử</a>
                   </div>
                 </div>
               </div>
@@ -3927,6 +4126,17 @@
             if (uGrpSel) uGrpSel.addEventListener("change", triggerUSlotSeat);
             if (uTblSel) uTblSel.addEventListener("change", triggerUSlotSeat);
             if (uPaxInp) uPaxInp.addEventListener("change", triggerUSlotSeat);
+
+            
+            // Mobile collapsible toggle for unnamed slot card
+            const mobToggleBtn = card.querySelector(".js-mob-toggle");
+            if (mobToggleBtn) {
+              const mobDetails = card.querySelector(".mob-slot-details");
+              mobToggleBtn.addEventListener("click", () => {
+                const isExpanded = mobDetails.classList.toggle("is-expanded");
+                mobToggleBtn.textContent = isExpanded ? "▴ Đóng" : "▾ Mở";
+              });
+            }
 
             card.querySelector(".js-u-mode-invite").addEventListener("click", () => setSlotMode(n, "invite"));
             card.querySelector(".js-u-mode-dir").addEventListener("click", () => setSlotMode(n, "directions"));
