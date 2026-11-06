@@ -1224,11 +1224,11 @@
         badgeEl.textContent = isZh ? "SEINE 宴會廳 • 席位安排中" : "SẢNH SEINE • ĐANG XẾP BÀN";
       }
       if (heroHeadingEl) {
-        heroHeadingEl.textContent = isZh ? "專屬桌次安排中" : "Đang Cập Nhật Số Bàn";
+        heroHeadingEl.textContent = isZh ? "席位安排中" : "Đang Cập Nhật";
       }
       if (guestLineEl) {
         guestLineEl.textContent = isZh
-          ? `誠摯為 ${displayGuest} 預留席位`
+          ? `為 ${displayGuest} 預留席位`
           : `Dành riêng cho ${displayGuest}`;
       }
       if (n1PeriodEl) {
@@ -1239,8 +1239,8 @@
       }
       if (n1DescEl) {
         n1DescEl.textContent = isZh
-          ? "全場圓桌沿紅毯主走道兩側對稱排列，入席後同桌座位皆可自由就座。"
-          : "Các bàn tròn 10 khách xếp đối xứng hai bên lối đi lễ đường; khi vào bàn Quý Khách ngồi tự do tại bất kỳ ghế trống nào.";
+          ? "10人圓桌，同桌自由入座。"
+          : "Bàn tròn 10 khách, ngồi tự do trong bàn.";
       }
       if (n2PeriodEl) {
         n2PeriodEl.textContent = isZh ? "透過此 QR 碼或連結查看桌號" : "Tra cứu số bàn ngay trên mã QR này";
@@ -1250,8 +1250,8 @@
       }
       if (n2DescEl) {
         n2DescEl.textContent = isZh
-          ? "家屬正為每位親友精心安排最合適的同桌席位。於婚禮前夕（2027.01.06），您只需再次掃描喜帖書籤上的 QR 碼或開啟此連結，您的正式桌號將直接顯示於此。"
-          : "Gia đình đang hoàn tất danh sách chỗ ngồi chu đáo nhất. Sát ngày cưới (06.01.2027), Quý Khách chỉ cần quét lại mã QR trên Bookmark hoặc mở lại đường link này để xem số bàn chính thức của mình.";
+          ? "婚禮前夕再次掃描 QR 碼即可查看桌號。"
+          : "Mở lại link hoặc quét QR sát ngày cưới để xem số bàn.";
       }
       if (compLineEl) compLineEl.hidden = true;
       if (chartNoteEl) {
@@ -1282,12 +1282,12 @@
       badgeEl.textContent = isZh ? "SEINE 宴會廳 • 您的專屬桌次" : "SẢNH SEINE • VỊ TRÍ BÀN CỦA BẠN";
     }
     if (heroHeadingEl) {
-      heroHeadingEl.textContent = isZh ? `第 ${padded} 桌` : `Bàn Số ${padded}`;
+      heroHeadingEl.textContent = isZh ? `第 ${padded} 桌` : `Bàn ${padded}`;
     }
     if (guestLineEl) {
       guestLineEl.textContent = isZh
-        ? `誠摯邀請 ${displayGuest} 入席`
-        : `Trân trọng kính mời ${displayGuest}`;
+        ? `${displayGuest} 的席位`
+        : `Kính mời ${displayGuest}`;
     }
     if (n1PeriodEl) {
       n1PeriodEl.textContent = isZh
@@ -1299,8 +1299,8 @@
     }
     if (n1DescEl) {
       n1DescEl.textContent = isZh
-        ? `請直接前往「第 ${padded} 桌」，圓桌內 10 個座位皆可自由入座，無須對號。`
-        : `Quý khách chỉ cần tiến vào Bàn số ${padded} và ngồi tự do tại bất kỳ ghế trống nào trong bàn.`;
+        ? `第 ${padded} 桌，10席自由入座。`
+        : `Bàn ${padded} • 10 ghế, ngồi tự do.`;
     }
     if (n2PeriodEl) {
       n2PeriodEl.textContent = isZh ? "迎賓入口動線指引" : "Hướng di chuyển từ cổng sảnh tầng trệt";
@@ -1312,8 +1312,8 @@
     }
     if (n2DescEl) {
       n2DescEl.textContent = isZh
-        ? `由一樓 Seine 宴會廳迎賓入口進入紅毯主走道後，請往${isLeftWing ? "左側（單號區）" : "右側（雙號區）"}前進至第 ${rowNum} 排即可抵達第 ${padded} 桌。`
-        : `Từ Cổng Đón Khách Sảnh Seine bước vào Lối Đi Lễ Đường chính, rẽ sang ${isLeftWing ? "cánh trái" : "cánh phải"} và tiến lên hàng bàn thứ ${rowNum}.`;
+        ? `${isLeftWing ? "左側" : "右側"}第 ${rowNum} 排 → 第 ${padded} 桌。`
+        : `${isLeftWing ? "Cánh trái" : "Cánh phải"}, hàng ${rowNum} → Bàn ${padded}.`;
     }
 
     const companions = Array.isArray(rCfg.tableGuests) ? rCfg.tableGuests : [];
