@@ -1056,86 +1056,170 @@
 
     @media (max-width: 640px) {
       .seine-hall-canvas {
-        padding: 10px 6px;
+        padding: 8px 4px;
         border-radius: 10px;
+        overflow-x: hidden;
       }
       .seine-stage-banner {
-        padding: 8px 10px;
-        margin-bottom: 10px;
+        padding: 7px 8px;
+        margin-bottom: 8px;
+        max-width: 100%;
       }
       .seine-stage-title {
-        font-size: 11.5px;
+        font-size: 10.5px;
+        letter-spacing: 0.03em;
       }
       .seine-stage-sub {
-        font-size: 10px;
+        font-size: 9px;
       }
       .seine-wings-wrap {
-        grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr);
-        gap: 4px;
+        grid-template-columns: minmax(0, 1fr) 18px minmax(0, 1fr);
+        gap: 2px;
       }
       .seine-wing-grid {
-        gap: 8px 4px;
-        padding: 2px 0;
+        gap: 4px 2px;
+        padding: 1px 0;
       }
       .seine-aisle-col {
-        font-size: 9.5px;
-        letter-spacing: 0.08em;
-        padding: 6px 0;
+        font-size: 8px;
+        letter-spacing: 0.06em;
+        padding: 4px 0;
+        width: 18px;
       }
       .seine-table-wrap {
-        padding: 3px 1px;
-        border-radius: 8px;
+        padding: 2px 0;
+        border-radius: 6px;
       }
       .seine-table-ring {
-        width: 64px;
-        height: 64px;
+        width: 52px;
+        height: 52px;
       }
       .seine-table-circle {
-        width: 48px;
-        height: 48px;
-        padding: 2px;
-        border-width: 1.8px;
+        width: 38px;
+        height: 38px;
+        padding: 1px;
+        border-width: 1.5px;
       }
       .seine-table-num {
-        font-size: 10.5px;
+        font-size: 9px;
       }
       .seine-table-cap {
-        font-size: 9px;
-        margin-top: 1px;
+        font-size: 8px;
+        margin-top: 0;
       }
       .seine-seat-dot {
-        width: 5.5px;
-        height: 5.5px;
+        width: 4.5px;
+        height: 4.5px;
       }
       .seine-table-name-sticker {
-        font-size: 9.5px;
-        padding: 1.5px 5px;
-        max-width: 78px;
+        font-size: 8.5px;
+        padding: 1px 4px;
+        max-width: 62px;
       }
       .seine-table-tag {
-        font-size: 9px;
-        padding: 1px 4px;
-        max-width: 76px;
+        font-size: 8px;
+        padding: 1px 3px;
+        max-width: 60px;
       }
       .seine-center-interleaved-slot {
-        margin: -10px 0;
+        margin: -8px 0;
       }
       .seine-l-corridor {
-        min-height: 28px;
-        padding: 3px 6px;
-        font-size: 9.5px;
+        min-height: 22px;
+        padding: 2px 4px;
+        font-size: 8.5px;
       }
       .seine-l-door-badge {
-        font-size: 9px;
-        padding: 2px 6px;
+        font-size: 8px;
+        padding: 2px 5px;
       }
       .seine-bottom-bar {
         grid-template-columns: 1fr !important;
-        gap: 6px !important;
+        gap: 5px !important;
       }
       .seine-entrance-banner {
-        font-size: 11px;
-        padding: 6px 10px;
+        font-size: 10px;
+        padding: 5px 8px;
+      }
+      .seine-legend-bar {
+        font-size: 10.5px !important;
+        padding: 6px 8px !important;
+        gap: 4px !important;
+        flex-direction: column;
+        align-items: flex-start !important;
+      }
+      /* Hide wing headers on narrow screens to save space */
+      .seine-wing-header-text {
+        font-size: 9px !important;
+        margin-bottom: 3px !important;
+      }
+
+      /* === MOBILE INSPECTOR: Slide-up drawer === */
+      .seine-inspector {
+        position: fixed !important;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: auto !important;
+        z-index: 99998;
+        max-height: 65vh;
+        overflow-y: auto;
+        border-radius: 16px 16px 0 0 !important;
+        box-shadow: 0 -8px 32px rgba(60, 20, 20, 0.18) !important;
+        padding: 10px 14px calc(14px + env(safe-area-inset-bottom, 0px)) !important;
+        transform: translateY(calc(100% + 20px));
+        transition: transform 0.32s cubic-bezier(0.22, 0.68, 0, 1.05);
+        will-change: transform;
+        border: 1.5px solid var(--adm-border-strong);
+        border-bottom: none;
+        background: #fffdf9;
+      }
+      .seine-inspector.is-drawer-open {
+        transform: translateY(0);
+      }
+      /* Drawer grab handle */
+      .seine-inspector::before {
+        content: "";
+        display: block;
+        width: 36px;
+        height: 4px;
+        border-radius: 3px;
+        background: #c5b8a8;
+        margin: 0 auto 10px;
+      }
+      /* Backdrop overlay */
+      .seine-drawer-backdrop {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0, 0, 0, 0.3);
+        z-index: 99997;
+      }
+      .seine-drawer-backdrop.is-visible {
+        display: block;
+      }
+      /* Hide default "Chưa đặt tên" tags on mobile to save vertical space */
+      .seine-table-tag.is-default-tag {
+        display: none;
+      }
+      /* Mobile close button for drawer */
+      .seine-drawer-close-btn {
+        display: flex !important;
+        position: absolute;
+        top: 10px;
+        right: 12px;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 1.5px solid var(--adm-border-strong);
+        background: #fff;
+        color: var(--adm-crimson);
+        font-size: 16px;
+        font-weight: 700;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 2;
       }
     }
 
@@ -1622,6 +1706,9 @@
       border-radius: 12px;
       padding: 16px;
       box-shadow: 0 8px 24px rgba(60, 20, 20, 0.06);
+    }
+    .seine-drawer-close-btn {
+      display: none; /* hidden on desktop */
     }
     .seine-guest-pill {
       display: flex;
@@ -2366,7 +2453,7 @@
 
             <div class="seine-wings-wrap">
               <div>
-                <div style="text-align:center; font-size:11.5px; font-weight:700; color:var(--adm-muted); margin-bottom:6px;">
+                <div class="seine-wing-header-text" style="text-align:center; font-size:11.5px; font-weight:700; color:var(--adm-muted); margin-bottom:6px;">
                   ◀ CÁNH TRÁI SÂN KHẤU
                 </div>
                 <div class="seine-wing-grid" id="seine-left-wing"></div>
@@ -2375,7 +2462,7 @@
               <div class="seine-aisle-col">⤴ LỐI LÊN SÂN KHẤU CHỮ L ✨</div>
 
               <div>
-                <div style="text-align:center; font-size:11.5px; font-weight:700; color:var(--adm-muted); margin-bottom:6px;">
+                <div class="seine-wing-header-text" style="text-align:center; font-size:11.5px; font-weight:700; color:var(--adm-muted); margin-bottom:6px;">
                   CÁNH PHẢI SÂN KHẤU ▶
                 </div>
                 <div class="seine-wing-grid" id="seine-right-wing"></div>
@@ -2392,8 +2479,13 @@
             </div>
           </div>
 
+          <!-- MOBILE DRAWER BACKDROP -->
+          <div class="seine-drawer-backdrop" id="seine-drawer-backdrop"></div>
+
           <!-- CỘT PHẢI: CHI TIẾT BÀN ĐANG CHỌN & THÊM KHÁCH NHANH -->
           <div class="seine-inspector" id="seine-inspector-box">
+            <!-- Mobile close button (only visible on <=640px) -->
+            <button type="button" id="btn-close-seine-drawer" class="seine-drawer-close-btn" aria-label="Đóng" onclick="window.closeSeineDrawer&&window.closeSeineDrawer()">✕</button>
             <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px;">
               <h3 id="seine-insp-title" style="margin:0; font-size:16px; color:var(--adm-crimson);">🪑 Bàn 01</h3>
               <div style="display:flex; align-items:center; gap:6px;">
@@ -7287,6 +7379,46 @@
         if (showToast) notify("✅ Đã lưu cấu hình Sơ Đồ Bàn Tiệc Sảnh Seine!");
       }
 
+      // === Mobile Drawer for Seine Inspector ===
+      const seineDrawerBackdrop = document.getElementById("seine-drawer-backdrop");
+      const seineInspBox = document.getElementById("seine-inspector-box");
+
+      function openSeineDrawer() {
+        if (!seineInspBox) return;
+        seineInspBox.classList.add("is-drawer-open");
+        if (seineDrawerBackdrop) seineDrawerBackdrop.classList.add("is-visible");
+        document.body.style.overflow = "hidden";
+      }
+      function closeSeineDrawer() {
+        if (!seineInspBox) return;
+        seineInspBox.classList.remove("is-drawer-open");
+        if (seineDrawerBackdrop) seineDrawerBackdrop.classList.remove("is-visible");
+        document.body.style.overflow = "";
+      }
+      // Expose globally for inline onclick
+      window.closeSeineDrawer = closeSeineDrawer;
+      if (seineDrawerBackdrop) {
+        seineDrawerBackdrop.addEventListener("click", closeSeineDrawer);
+      }
+      // Swipe down to close drawer
+      (function() {
+        let touchStartY = 0;
+        if (!seineInspBox) return;
+        seineInspBox.addEventListener("touchstart", (e) => {
+          if (seineInspBox.scrollTop <= 0) {
+            touchStartY = e.touches[0].clientY;
+          } else {
+            touchStartY = 0;
+          }
+        }, { passive: true });
+        seineInspBox.addEventListener("touchmove", (e) => {
+          if (touchStartY > 0 && e.touches[0].clientY - touchStartY > 60) {
+            closeSeineDrawer();
+            touchStartY = 0;
+          }
+        }, { passive: true });
+      })();
+
       function renderSeineFloorplan() {
         if (!seineLeftWing || !seineRightWing) return;
         const total = Math.max(4, Math.min(52, parseInt(seatingConfig.totalTables || "38", 10) || 38));
@@ -7344,15 +7476,17 @@
               ? ""
               : "Chưa đặt tên";
 
+          const isDefaultTag = !grpKey && !customLabel;
           const groupTagHtml = groupTagText
-            ? `<div class="seine-table-tag" style="background:${grpInfo.bg}; color:${grpInfo.color};">${groupTagText}</div>`
+            ? `<div class="seine-table-tag${isDefaultTag ? " is-default-tag" : ""}" style="background:${grpInfo.bg}; color:${grpInfo.color};">${groupTagText}</div>`
             : "";
 
+          const isMobile = window.innerWidth <= 640;
           wrap.innerHTML = `
             <div class="seine-table-ring">
               ${dotsHtml}
               <div class="seine-table-circle ${isFull ? "is-full" : isPartial ? "is-partial" : ""}">
-                <div class="seine-table-num">Bàn ${String(i).padStart(2, "0")}</div>
+                <div class="seine-table-num">${isMobile ? String(i).padStart(2, "0") : "Bàn " + String(i).padStart(2, "0")}</div>
                 <div class="seine-table-cap">${used}/${cap}</div>
               </div>
             </div>
@@ -7361,21 +7495,17 @@
           `;
 
           wrap.addEventListener("click", () => {
-            const wasSelected = selectedSeineTable === tKey;
             selectedSeineTable = tKey;
             try {
               localStorage.setItem("td_admin_selected_table_v1", tKey);
             } catch (_) {}
             renderSeineFloorplan();
-            if (wasSelected && seineInspLabel) {
-              if (window.innerWidth <= 1024) {
-                const inspBox = document.getElementById("seine-inspector-box");
-                if (inspBox) inspBox.scrollIntoView({ behavior: "smooth", block: "start" });
-              }
-              seineInspLabel.focus();
-              seineInspLabel.select();
+            // On mobile (<=640px): open drawer panel
+            if (window.innerWidth <= 640) {
+              openSeineDrawer();
             } else if (window.innerWidth <= 1024) {
-              notify(`🪑 Đang chọn Bàn ${String(tKey).padStart(2, "0")} — chạm lần nữa để cuộn tới ô sửa bàn!`);
+              const inspBox = document.getElementById("seine-inspector-box");
+              if (inspBox) inspBox.scrollIntoView({ behavior: "smooth", block: "start" });
             }
           });
 
