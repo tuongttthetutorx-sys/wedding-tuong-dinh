@@ -1177,7 +1177,7 @@
     const stageLabel = isZh ? "STAGE • 主舞台" : "STAGE • SÂN KHẤU CHÍNH";
     const aisleLabel = isZh ? "L型紅毯走道" : "LỐI LÊN SÂN KHẤU (CHỮ L)";
     const door2Label = isZh ? "門 2 (迎賓入口)" : "CỬA 2 (ĐÓN KHÁCH)";
-    const wcLabel = isZh ? "◀ WC • 洗手間" : "◀ WC • NHÀ VỆ SINH";
+    const wcLabel = isZh ? "↙ WC • 洗手間" : "↙ WC • Nhà vệ sinh";
 
     let tablesSvg = "";
 
@@ -1265,8 +1265,8 @@
         ${tablesSvg}
 
         <!-- WC / Restroom Indicator (Bottom-Left Corner below Table 33) -->
-        <rect x="20" y="${bottomGateY - 6}" width="118" height="23" rx="4.5" fill="#fdf8ee" stroke="rgba(132, 21, 23, 0.45)" stroke-width="1.15" />
-        <text x="79" y="${bottomGateY + 8.5}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="9.5" font-weight="700" letter-spacing="0.8" fill="#841518">${wcLabel}</text>
+        <rect x="18" y="${bottomGateY - 4}" width="92" height="17" rx="4" fill="#fdf8ee" stroke="rgba(132, 21, 23, 0.42)" stroke-width="0.95" />
+        <text x="64" y="${bottomGateY + 7.2}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8" font-weight="700" letter-spacing="0.4" fill="#841518">${wcLabel}</text>
 
         <!-- Bottom Hall Entrance Indicator -->
         <line x1="${aisleCX - 34}" y1="${bottomGateY}" x2="${aisleCX + 34}" y2="${bottomGateY}" stroke="rgba(132, 21, 23, 0.32)" stroke-width="1.1" />
