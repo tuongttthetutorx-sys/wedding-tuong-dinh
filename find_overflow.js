@@ -19,3 +19,4 @@ const puppeteer = require("puppeteer");
   console.log(JSON.stringify(result, null, 2));
   await b.close();
 })();
+

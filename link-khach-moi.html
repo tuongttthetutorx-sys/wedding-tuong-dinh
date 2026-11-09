@@ -154,6 +154,8 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      min-width: 0;
+      overflow: hidden;
     }
     .adm-kpi-label {
       font-size: 12px;
@@ -1090,10 +1092,23 @@
         max-width: 100%;
         overflow: hidden;
       }
+      .adm-box-title {
+        font-size: 17px !important;
+        word-break: break-word;
+      }
+      .adm-box-desc {
+        word-break: break-word;
+      }
       /* Group chips wrapping */
       #custom-groups-chips-list {
         max-width: 100%;
         overflow-x: auto;
+      }
+      /* Global: prevent ANY element from pushing page wider */
+      .adm-panel,
+      .adm-panel * {
+        max-width: 100%;
+        box-sizing: border-box;
       }
     }
 
