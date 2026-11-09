@@ -1075,71 +1075,72 @@
 
   function renderArchitecturalRoundTablesSvg(activeTableNum, isZh, tableLabels) {
     // Seine Hall (Riverside Palace): 16m × 36m, 38 round tables (10 seats each)
-    // Layout: 3 columns per wing × 2 wings, center aisle (red carpet), stage at top
-    // Numbering: Bàn 01-19 left wing (odd rows top→bottom), Bàn 20-38 right wing
-    // Actually: interleaved — odd numbers left, even numbers right, row by row
-    // Row 1 (near stage): Left = Bàn 01, 03, 05 | Right = Bàn 02, 04, 06
-    // Row 2: Left = 07, 09, 11 | Right = 08, 10, 12 ... etc
-    // If >38 tables, extras fill from bottom up
+    // Layout: 2 columns per wing × 2 wings = 4 tables/row, 9 rows = 36 base
+    // Numbering: odd → left wing, even → right wing (row by row from stage)
+    //   Row 1: left=[01,03], right=[02,04]
+    //   Row 2: left=[05,07], right=[06,08] ... Row 9: left=[33,35], right=[34,36]
+    // Extra tables (37+): interleaved middle column, from bottom row up
 
     const tNum = activeTableNum > 0 ? activeTableNum : 0;
     const totalTables = 38;
 
     // SVG dimensions
-    const W = 520, H = 520;
+    const W = 520;
     const stageW = 200, stageH = 26;
     const stageX = (W - stageW) / 2, stageY = 22;
     const aisleW = 36;
     const aisleCX = W / 2;
 
-    // Table grid: 3 columns per wing, variable rows
-    // Left wing columns: 3 positions
-    // Right wing columns: 3 positions
-    const colSpacing = 68;
-    const rowSpacing = 64;
+    // Table grid: 2 columns per wing, 9 rows, 4 per row
+    const rowSpacing = 50;
     const tableR = 21;
     const chairR = 28;
 
-    // Left wing column X positions (from left wall inward toward aisle)
-    const leftCols = [62, 62 + colSpacing, 62 + colSpacing * 2]; // 62, 130, 198
-    // Right wing column X positions (from aisle outward toward right wall)
-    const rightCols = [W - 62 - colSpacing * 2, W - 62 - colSpacing, W - 62]; // 322, 390, 458
+    // Column X positions (2 per wing)
+    const leftCols  = [78, 178];  // outer-left, inner-left
+    const rightCols = [342, 442]; // inner-right, outer-right
 
-    // Row Y positions (from top below stage, going down)
-    const firstRowY = stageY + stageH + 52;
-    const maxRows = Math.ceil(totalTables / 6); // 38/6 = ~7 rows
+    // Middle X for extra interleaved tables
+    const leftMid  = (leftCols[0] + leftCols[1]) / 2;   // ~128
+    const rightMid = (rightCols[0] + rightCols[1]) / 2;  // ~392
 
-    // Build table positions array
-    // Numbering: row by row, left wing first (3 tables), right wing (3 tables)
-    // Row n: left = n*6-5, n*6-3, n*6-1 | right = n*6-4, n*6-2, n*6
-    // Actually simpler: sequential 1-38, filling left-right alternating
-    // From the floor plan: tables are numbered from stage to entrance
-    // Let's use a simple scheme: row by row from stage to entrance,
-    // within each row: left-outer, left-mid, left-inner, right-inner, right-mid, right-outer
+    const firstRowY = stageY + stageH + 52;  // ~100
+    const baseRows = 9;
+    const baseTables = baseRows * 4; // 36
 
+    // Build table positions
     const positions = [];
-    for (let row = 0; row < maxRows; row++) {
+
+    // Base tables 1–36: 4 per row (pos 0→leftOuter, 1→rightInner, 2→leftInner, 3→rightOuter)
+    for (let row = 0; row < baseRows; row++) {
       const cy = firstRowY + row * rowSpacing;
-      // Left wing (3 tables)
-      for (let c = 0; c < 3; c++) {
-        const tableNum = row * 6 + c + 1;
-        if (tableNum <= totalTables) {
-          positions.push({ num: tableNum, cx: leftCols[c], cy });
-        }
-      }
-      // Right wing (3 tables)
-      for (let c = 0; c < 3; c++) {
-        const tableNum = row * 6 + 3 + c + 1;
-        if (tableNum <= totalTables) {
-          positions.push({ num: tableNum, cx: rightCols[c], cy });
-        }
+      for (let p = 0; p < 4; p++) {
+        const tableNum = row * 4 + p + 1;
+        if (tableNum > totalTables) break;
+        let cx;
+        if (p === 0) cx = leftCols[0];
+        else if (p === 1) cx = rightCols[0];
+        else if (p === 2) cx = leftCols[1];
+        else             cx = rightCols[1];
+        positions.push({ num: tableNum, cx, cy });
       }
     }
 
-    // Determine visible rows for SVG height
-    const lastRow = Math.ceil(totalTables / 6) - 1;
-    // L-shaped aisle: vertical center + horizontal turn at bottom toward door 2 (right)
-    const turnY = firstRowY + lastRow * rowSpacing + 52;
+    // Extra tables 37+: interleaved between existing columns, from bottom row up
+    const extraCount = Math.max(0, totalTables - baseTables);
+    for (let e = 0; e < extraCount; e++) {
+      const tableNum = baseTables + e + 1;
+      const isOdd = tableNum % 2 === 1; // odd→left, even→right
+      const rowFromBottom = Math.floor(e / 2);
+      const rowIdx = baseRows - 1 - rowFromBottom;
+      const cy = firstRowY + rowIdx * rowSpacing;
+      const cx = isOdd ? leftMid : rightMid;
+      positions.push({ num: tableNum, cx, cy });
+    }
+
+    // L-shaped aisle: vertical center + horizontal bottom toward door 2 (right)
+    const lastRowY = firstRowY + (baseRows - 1) * rowSpacing;
+    const turnY = lastRowY + 50;
     const rightEnd = W - 18;
     const svgH = turnY + aisleW / 2 + 36;
     const tblLabels = tableLabels || {};
@@ -1334,12 +1335,17 @@
     // STATE B: TABLE ASSIGNED -> Clean editorial ledger + highlighted round table
     const tNum = parseInt(tableStr, 10) || 1;
     const padded = String(tNum).padStart(2, "0");
-    // Seine 38-table layout: 6 tables per row (3 left + 3 right)
-    // Tables 1-3 = row 1 left, 4-6 = row 1 right, 7-9 = row 2 left, 10-12 = row 2 right...
-    const rowIdx = Math.ceil(tNum / 6); // 1-based row number
-    const posInRow = ((tNum - 1) % 6); // 0-5 within the row
-    const isLeftWing = posInRow < 3; // 0,1,2 = left; 3,4,5 = right
-    const rowNum = rowIdx;
+    // Seine 38-table layout: 2 cols/wing × 9 rows = 36 base, extra xen kẽ
+    // Odd tables → left wing, even → right wing
+    const isLeftWing = tNum % 2 === 1;
+    let rowNum;
+    if (tNum <= 36) {
+      rowNum = Math.ceil(tNum / 4); // 4 per row → rows 1-9
+    } else {
+      // Extra tables fill from bottom up
+      const extraIdx = tNum - 37; // 0-based
+      rowNum = 9 - Math.floor(extraIdx / 2);
+    }
     const grpKey = params.get("group") || rCfg.group || "honored_guests";
     const customGrp =
       (rCfg.seatingConfig && rCfg.seatingConfig.groups && rCfg.seatingConfig.groups[grpKey]) ||
