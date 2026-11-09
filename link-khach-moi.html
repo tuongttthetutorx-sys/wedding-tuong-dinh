@@ -1364,18 +1364,120 @@
     .seine-seat-dot.is-full {
       background: #b91c1c;
     }
+    .seine-table-name-sticker {
+      margin-top: 3px;
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: #fff3cd;
+      color: #681115;
+      border: 1.5px solid #d49b35;
+      max-width: 132px;
+      text-align: center;
+      line-height: 1.2;
+      word-break: break-word;
+      box-shadow: 0 2px 5px rgba(104, 17, 21, 0.1);
+    }
     .seine-table-tag {
-      margin-top: 4px;
-      font-size: 10.8px;
+      margin-top: 3px;
+      font-size: 10.5px;
       font-weight: 600;
-      padding: 1px 6px;
+      padding: 1.5px 6px;
       border-radius: 5px;
       background: #f2ebe1;
       color: #5c4338;
-      max-width: 112px;
+      max-width: 126px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+    .seine-center-interleaved-slot {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: -18px 0;
+      padding: 2px 0;
+      position: relative;
+      z-index: 3;
+    }
+    .seine-center-interleaved-slot::before {
+      content: "";
+      position: absolute;
+      width: 68%;
+      height: 68%;
+      border: 1.5px dashed rgba(125, 21, 24, 0.22);
+      border-radius: 12px;
+      pointer-events: none;
+      z-index: -1;
+    }
+    .seine-interleaved-hint {
+      font-size: 10px;
+      font-weight: 700;
+      color: #8f1d21;
+      background: #fff8ec;
+      border: 1px dashed #d9a760;
+      border-radius: 999px;
+      padding: 1px 7px;
+      margin-bottom: 2px;
+    }
+    .seine-l-corridor {
+      grid-column: 1 / -1;
+      min-height: 40px;
+      margin: 2px 0;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .seine-l-corridor.is-right-door2 {
+      background: linear-gradient(90deg, rgba(166, 28, 28, 0.18), rgba(217, 179, 130, 0.28));
+      border-top: 1.5px dashed rgba(125, 21, 24, 0.45);
+      border-bottom: 1.5px dashed rgba(125, 21, 24, 0.45);
+      border-right: 3px solid #7d1518;
+      color: #7d1518;
+    }
+    .seine-l-corridor.is-left-marker {
+      background: rgba(242, 235, 225, 0.45);
+      border-top: 1px dashed rgba(125, 21, 24, 0.2);
+      border-bottom: 1px dashed rgba(125, 21, 24, 0.2);
+      color: var(--adm-muted);
+      justify-content: center;
+      font-weight: 600;
+    }
+    .seine-l-door-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #7d1518;
+      color: #fff8ec;
+      padding: 3px 8px;
+      border-radius: 5px;
+      font-size: 10.5px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .seine-quick-name-chip {
+      appearance: none;
+      border: 1px solid #d4b895;
+      background: #fffdf9;
+      color: #5c3b28;
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: 11.2px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .seine-quick-name-chip:hover {
+      background: #7d1518;
+      color: #fff;
+      border-color: #7d1518;
     }
     .seine-legend-bar {
       display: flex;
@@ -2148,7 +2250,7 @@
                 <div class="seine-wing-grid" id="seine-left-wing"></div>
               </div>
 
-              <div class="seine-aisle-col">✨ LỐI ĐI LỄ ĐƯỜNG CHÍNH (CENTER AISLE) ✨</div>
+              <div class="seine-aisle-col">⤴ LỐI LÊN SÂN KHẤU CHỮ L (TỪ CỬA 2 • DÃY 6) ✨</div>
 
               <div>
                 <div style="text-align:center; font-size:11.5px; font-weight:700; color:var(--adm-muted); margin-bottom:6px;">
@@ -2159,13 +2261,13 @@
             </div>
 
             <div class="seine-entrance-banner">
-              🚪 SẢNH ĐÓN KHÁCH BIỆT LẬP &amp; CỔNG VÀO (LOBBY &amp; ENTRANCE)
+              🚪 CỬA 2 (NGANG DÃY 6 BÊN PHẢI → RẼ CHỮ L LÊN SÂN KHẤU) &amp; CỔNG CHÍNH SẢNH SEINE
             </div>
           </div>
 
           <!-- CỘT PHẢI: CHI TIẾT BÀN ĐANG CHỌN & THÊM KHÁCH NHANH -->
           <div class="seine-inspector">
-            <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px;">
               <h3 id="seine-insp-title" style="margin:0; font-size:16px; color:var(--adm-crimson);">🪑 Bàn 01</h3>
               <div style="display:flex; align-items:center; gap:6px;">
                 <span id="seine-insp-badge" class="status-badge is-opened">0 / 10 ghế</span>
@@ -2192,16 +2294,77 @@
               </div>
             </div>
 
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:12px;">
+            <!-- KHỐI ĐẶT TÊN BÀN TRỰC QUAN -->
+            <div style="padding:10px 12px; border-radius:10px; background:#fbf5ea; border:1.5px solid #dcc3a1; margin-bottom:12px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:6px; margin-bottom:6px;">
+                <label class="slot-label" for="seine-insp-label" style="margin:0; color:var(--adm-crimson); font-weight:700; font-size:12.5px;">
+                  🏷️ Đặt Tên Bàn (hiển thị lên sơ đồ &amp; thiệp):
+                </label>
+                <button
+                  type="button"
+                  id="btn-apply-sample-table-names"
+                  class="btn-adm"
+                  style="height:24px; padding:0 8px; font-size:11px; background:#fffdf8;"
+                  title="Tự động điền tên các bàn (GĐ CR, TutorX, Haru, Gogi...) theo đúng ảnh sơ đồ bạn đã gửi"
+                >
+                  🪄 Điền mẫu theo ảnh sơ đồ
+                </button>
+              </div>
+
+              <div style="display:flex; gap:6px; margin-bottom:8px;">
+                <input
+                  type="text"
+                  id="seine-insp-label"
+                  class="adm-input"
+                  placeholder="Nhập tên bàn (VD: GĐ CR, TutorX, Haru, Dự Phòng...)"
+                  style="height:36px; font-size:13px; font-weight:700; flex:1;"
+                />
+                <button
+                  type="button"
+                  id="btn-save-seine-label"
+                  class="btn-adm primary"
+                  style="height:36px; padding:0 12px; font-size:12px; font-weight:700; white-space:nowrap;"
+                >
+                  💾 Lưu tên
+                </button>
+                <button
+                  type="button"
+                  id="btn-clear-seine-label"
+                  class="btn-adm"
+                  style="height:36px; padding:0 8px; font-size:12px;"
+                  title="Xóa tên bàn này"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div style="font-size:11px; color:var(--adm-muted); margin-bottom:4px; font-weight:600;">
+                ⚡ Bấm chọn nhanh tên bàn:
+              </div>
+              <div id="seine-quick-name-chips" style="display:flex; flex-wrap:wrap; gap:4px; margin-bottom:10px;">
+                <button type="button" class="seine-quick-name-chip" data-name="GĐ CR">GĐ CR</button>
+                <button type="button" class="seine-quick-name-chip" data-name="GĐ nội CD">GĐ nội CD</button>
+                <button type="button" class="seine-quick-name-chip" data-name="Bạn ba chánh">Bạn ba chánh</button>
+                <button type="button" class="seine-quick-name-chip" data-name="TutorX">TutorX</button>
+                <button type="button" class="seine-quick-name-chip" data-name="Veronica">Veronica</button>
+                <button type="button" class="seine-quick-name-chip" data-name="FromD">FromD</button>
+                <button type="button" class="seine-quick-name-chip" data-name="ĐH TƯỜNG">ĐH TƯỜNG</button>
+                <button type="button" class="seine-quick-name-chip" data-name="A6 nkkh">A6 nkkh</button>
+                <button type="button" class="seine-quick-name-chip" data-name="C.xuan-kimanh Tổng hợp">C.xuan-kimanh</button>
+                <button type="button" class="seine-quick-name-chip" data-name="Gogi vhm">Gogi vhm</button>
+                <button type="button" class="seine-quick-name-chip" data-name="Gogi STR">Gogi STR</button>
+                <button type="button" class="seine-quick-name-chip" data-name="Cấp 2 3 ĐINH">Cấp 2 3 ĐINH</button>
+                <button type="button" class="seine-quick-name-chip" data-name="Haru">Haru</button>
+                <button type="button" class="seine-quick-name-chip" data-name="Hàng xóm CR">Hàng xóm CR</button>
+                <button type="button" class="seine-quick-name-chip" data-name="Hàng xóm CD">Hàng xóm CD</button>
+                <button type="button" class="seine-quick-name-chip" data-name="Dự Phòng">Dự Phòng</button>
+              </div>
+
               <div>
-                <label class="slot-label" for="seine-insp-group">Khu vực / Nhóm của bàn:</label>
-                <select id="seine-insp-group" class="adm-select" style="height:36px; font-size:12.5px;">
+                <label class="slot-label" for="seine-insp-group" style="margin-bottom:3px;">Khu vực / Nhóm màu của bàn:</label>
+                <select id="seine-insp-group" class="adm-select" style="height:34px; font-size:12.2px; width:100%;">
                   <option value="">⚪ Chưa phân nhóm</option>
                 </select>
-              </div>
-              <div>
-                <label class="slot-label" for="seine-insp-label">Tên phụ / Ghi chú bàn:</label>
-                <input type="text" id="seine-insp-label" class="adm-input" placeholder="VD: Bạn ĐH, Đồng nghiệp..." style="height:36px; font-size:12.5px;" />
               </div>
             </div>
 
@@ -2303,7 +2466,7 @@
 
       const STORAGE_SEATING_CFG = "td_seating_config_v1";
       let seatingConfig = {
-        totalTables: 40,
+        totalTables: 38,
         seatsPerTable: 10,
         showTableGuests: true,
         tableMeta: {}
@@ -2315,6 +2478,13 @@
           if (parsedSeat && typeof parsedSeat === "object") {
             seatingConfig = { ...seatingConfig, ...parsedSeat };
           }
+        }
+        if (!localStorage.getItem("td_seine_38_migrated_v1")) {
+          if (seatingConfig.totalTables === 40) {
+            seatingConfig.totalTables = 38;
+          }
+          localStorage.setItem("td_seine_38_migrated_v1", "1");
+          localStorage.setItem(STORAGE_SEATING_CFG, JSON.stringify(seatingConfig));
         }
       } catch (_) {}
       let selectedSeineTable = "1";
@@ -6963,7 +7133,7 @@
         seineLeftWing.innerHTML = "";
         seineRightWing.innerHTML = "";
 
-        for (let i = 1; i <= total; i++) {
+        function buildTableWrap(i) {
           const tKey = String(i);
           const used = occ[tKey] || 0;
           const isFull = used >= cap;
@@ -6975,7 +7145,6 @@
           const wrap = document.createElement("div");
           wrap.className = "seine-table-wrap" + (selectedSeineTable === tKey ? " is-selected" : "");
 
-          // Build 10 seat dots in a circle around the table (radius = 40px from center 46,46)
           let dotsHtml = "";
           for (let s = 0; s < cap; s++) {
             const angle = (s / cap) * Math.PI * 2 - Math.PI / 2;
@@ -6985,11 +7154,25 @@
             dotsHtml += `<span class="seine-seat-dot ${dotCls}" style="left:${dx}px; top:${dy}px;"></span>`;
           }
 
-          const tagLabel = meta.label
-            ? meta.label
-            : grpKey
-              ? grpInfo.short
-              : "Chưa gán khu";
+          const customLabel = (meta.label || "").trim();
+          const safeCustomLabel = customLabel
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+
+          const nameStickerHtml = safeCustomLabel
+            ? `<div class="seine-table-name-sticker" title="Tên bàn: ${safeCustomLabel}">🏷️ ${safeCustomLabel}</div>`
+            : "";
+
+          const groupTagText = grpKey
+            ? grpInfo.short
+            : customLabel
+              ? ""
+              : "Chưa đặt tên";
+
+          const groupTagHtml = groupTagText
+            ? `<div class="seine-table-tag" style="background:${grpInfo.bg}; color:${grpInfo.color};">${groupTagText}</div>`
+            : "";
 
           wrap.innerHTML = `
             <div class="seine-table-ring">
@@ -6999,21 +7182,97 @@
                 <div class="seine-table-cap">${used}/${cap}</div>
               </div>
             </div>
-            <div class="seine-table-tag" style="background:${grpInfo.bg}; color:${grpInfo.color};">
-              ${tagLabel}
-            </div>
+            ${nameStickerHtml}
+            ${groupTagHtml}
           `;
 
           wrap.addEventListener("click", () => {
+            const wasSelected = selectedSeineTable === tKey;
             selectedSeineTable = tKey;
             renderSeineFloorplan();
+            if (wasSelected && seineInspLabel) {
+              seineInspLabel.focus();
+              seineInspLabel.select();
+            }
           });
 
-          // Odd tables → left wing, even → right wing
-          if (i % 2 === 1) {
-            seineLeftWing.appendChild(wrap);
-          } else {
-            seineRightWing.appendChild(wrap);
+          return wrap;
+        }
+
+        // Map extra tables (37+) to gaps between base rows (from bottom up: Row 8-9, Row 7-8, Row 5-6...)
+        const baseRows = 9;
+        const baseTables = baseRows * 4; // 36
+        const extraCount = Math.max(0, total - baseTables);
+        const gapOrder = [7, 6, 4, 3, 2, 1, 0, 5];
+        const extraByGap = {}; // gapIdx -> { left: tableNum, right: tableNum }
+
+        for (let e = 0; e < extraCount; e++) {
+          const tableNum = baseTables + e + 1;
+          const isOdd = tableNum % 2 === 1;
+          const pairIdx = Math.floor(e / 2);
+          const gapIdx = gapOrder[pairIdx % gapOrder.length];
+          if (!extraByGap[gapIdx]) extraByGap[gapIdx] = {};
+          if (isOdd) extraByGap[gapIdx].left = tableNum;
+          else extraByGap[gapIdx].right = tableNum;
+        }
+
+        // Render 9 base rows (max 9 tables per vertical column) + L-corridor at Row 6 + interleaved center tables
+        for (let row = 0; row < baseRows; row++) {
+          const leftOuter = row * 4 + 1;
+          const rightInner = row * 4 + 2;
+          const leftInner = row * 4 + 3;
+          const rightOuter = row * 4 + 4;
+
+          if (leftOuter <= total) seineLeftWing.appendChild(buildTableWrap(leftOuter));
+          if (leftInner <= total) seineLeftWing.appendChild(buildTableWrap(leftInner));
+          if (rightInner <= total) seineRightWing.appendChild(buildTableWrap(rightInner));
+          if (rightOuter <= total) seineRightWing.appendChild(buildTableWrap(rightOuter));
+
+          // Right after Row 6 (row === 5): insert L-shaped aisle entrance from Door 2
+          if (row === 5 && total >= 24) {
+            const leftCorridor = document.createElement("div");
+            leftCorridor.className = "seine-l-corridor is-left-marker";
+            leftCorridor.innerHTML = `<span>── Dãy 6 (Ngang lối rẽ chữ L từ Cửa 2) ──</span>`;
+            seineLeftWing.appendChild(leftCorridor);
+
+            const rightCorridor = document.createElement("div");
+            rightCorridor.className = "seine-l-corridor is-right-door2";
+            rightCorridor.innerHTML = `
+              <span>⤴ RẼ LÊN SÂN KHẤU (CHỮ L)</span>
+              <span class="seine-l-door-badge">🚪 CỬA 2 (DÃY 6) ◀</span>
+            `;
+            seineRightWing.appendChild(rightCorridor);
+          }
+
+          // If there is an interleaved center table between row and row+1 (e.g. Bàn 37 between 29,31,33,35)
+          const gapExtra = extraByGap[row];
+          if (gapExtra && (gapExtra.left || gapExtra.right)) {
+            const rTop = row;
+            const rBot = row + 1;
+            const leftFour = `${rTop * 4 + 1}·${rTop * 4 + 3}·${rBot * 4 + 1}·${rBot * 4 + 3}`;
+            const rightFour = `${rTop * 4 + 2}·${rTop * 4 + 4}·${rBot * 4 + 2}·${rBot * 4 + 4}`;
+
+            const leftCenterSlot = document.createElement("div");
+            leftCenterSlot.className = "seine-center-interleaved-slot";
+            if (gapExtra.left) {
+              const hint = document.createElement("div");
+              hint.className = "seine-interleaved-hint";
+              hint.textContent = `✦ Trung tâm 4 bàn (${leftFour})`;
+              leftCenterSlot.appendChild(hint);
+              leftCenterSlot.appendChild(buildTableWrap(gapExtra.left));
+            }
+            seineLeftWing.appendChild(leftCenterSlot);
+
+            const rightCenterSlot = document.createElement("div");
+            rightCenterSlot.className = "seine-center-interleaved-slot";
+            if (gapExtra.right) {
+              const hint = document.createElement("div");
+              hint.className = "seine-interleaved-hint";
+              hint.textContent = `✦ Trung tâm 4 bàn (${rightFour})`;
+              rightCenterSlot.appendChild(hint);
+              rightCenterSlot.appendChild(buildTableWrap(gapExtra.right));
+            }
+            seineRightWing.appendChild(rightCenterSlot);
           }
         }
 
@@ -7028,7 +7287,10 @@
         const seatedArr = (byTable && byTable[tKey]) || [];
         const meta = (seatingConfig.tableMeta && seatingConfig.tableMeta[tKey]) || {};
 
-        seineInspTitle.textContent = `🪑 Bàn ${String(tKey).padStart(2, "0")}`;
+        const customLbl = (meta.label || "").trim();
+        seineInspTitle.textContent = customLbl
+          ? `🪑 Bàn ${String(tKey).padStart(2, "0")} · ${customLbl}`
+          : `🪑 Bàn ${String(tKey).padStart(2, "0")}`;
         if (seineInspBadge) {
           seineInspBadge.textContent = `${used} / ${cap} ghế`;
           seineInspBadge.className =
@@ -7257,18 +7519,99 @@
         });
       }
 
+      function applyTableLabelForSelected(newLabel, showToastMsg = true) {
+        const tKey = String(selectedSeineTable || "1");
+        const cleanLbl = String(newLabel || "").trim();
+        if (!seatingConfig.tableMeta) seatingConfig.tableMeta = {};
+        seatingConfig.tableMeta[tKey] = {
+          ...(seatingConfig.tableMeta[tKey] || {}),
+          label: cleanLbl
+        };
+        if (seineInspLabel) seineInspLabel.value = cleanLbl;
+        renderSeineFloorplan();
+        buildRows();
+        renderSlotsTable();
+        saveSeatingConfigToServer(false);
+        if (showToastMsg) {
+          notify(
+            cleanLbl
+              ? `🏷️ Đã đặt tên Bàn ${String(tKey).padStart(2, "0")}: "${cleanLbl}"`
+              : `🏷️ Đã xóa tên riêng của Bàn ${String(tKey).padStart(2, "0")}`
+          );
+        }
+      }
+
       if (seineInspLabel) {
         seineInspLabel.addEventListener("change", () => {
-          const tKey = String(selectedSeineTable || "1");
-          if (!seatingConfig.tableMeta) seatingConfig.tableMeta = {};
-          seatingConfig.tableMeta[tKey] = {
-            ...(seatingConfig.tableMeta[tKey] || {}),
-            label: seineInspLabel.value.trim()
+          applyTableLabelForSelected(seineInspLabel.value, true);
+        });
+        seineInspLabel.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            applyTableLabelForSelected(seineInspLabel.value, true);
+          }
+        });
+      }
+
+      const btnSaveSeineLabel = document.getElementById("btn-save-seine-label");
+      if (btnSaveSeineLabel && seineInspLabel) {
+        btnSaveSeineLabel.addEventListener("click", () => {
+          applyTableLabelForSelected(seineInspLabel.value, true);
+        });
+      }
+
+      const btnClearSeineLabel = document.getElementById("btn-clear-seine-label");
+      if (btnClearSeineLabel) {
+        btnClearSeineLabel.addEventListener("click", () => {
+          applyTableLabelForSelected("", true);
+        });
+      }
+
+      document.querySelectorAll(".seine-quick-name-chip").forEach((chip) => {
+        chip.addEventListener("click", () => {
+          const name = chip.getAttribute("data-name") || "";
+          applyTableLabelForSelected(name, true);
+        });
+      });
+
+      const btnApplySampleTableNames = document.getElementById("btn-apply-sample-table-names");
+      if (btnApplySampleTableNames) {
+        btnApplySampleTableNames.addEventListener("click", () => {
+          const sampleMap = {
+            "3": { label: "GĐ CR", group: "groom_family" },
+            "2": { label: "GĐ nội CD", group: "bride_family" },
+            "8": { label: "Bạn ba chánh", group: "groom_relatives" },
+            "15": { label: "TutorX", group: "friends_colleagues" },
+            "14": { label: "Veronica", group: "friends_colleagues" },
+            "16": { label: "FromD", group: "friends_colleagues" },
+            "17": { label: "ĐH TƯỜNG", group: "friends_colleagues" },
+            "19": { label: "TutorX", group: "friends_colleagues" },
+            "18": { label: "A6 nkkh", group: "friends_colleagues" },
+            "20": { label: "C.xuan-kimanh Tổng hợp", group: "friends_colleagues" },
+            "21": { label: "Gogi vhm", group: "friends_colleagues" },
+            "23": { label: "Gogi STR", group: "friends_colleagues" },
+            "22": { label: "Cấp 2 3 ĐINH", group: "friends_colleagues" },
+            "24": { label: "Haru", group: "friends_colleagues" },
+            "31": { label: "Hàng xóm CR", group: "groom_relatives" },
+            "30": { label: "Hàng xóm CD", group: "bride_relatives" },
+            "33": { label: "Dự Phòng", group: "" },
+            "34": { label: "Hàng xóm CD", group: "bride_relatives" },
+            "36": { label: "Dự Phòng", group: "" }
           };
+          if (!seatingConfig.tableMeta) seatingConfig.tableMeta = {};
+          Object.keys(sampleMap).forEach((tKey) => {
+            const cur = seatingConfig.tableMeta[tKey] || {};
+            seatingConfig.tableMeta[tKey] = {
+              ...cur,
+              label: sampleMap[tKey].label,
+              group: cur.group || sampleMap[tKey].group
+            };
+          });
           renderSeineFloorplan();
           buildRows();
           renderSlotsTable();
-          saveSeatingConfigToServer(true);
+          saveSeatingConfigToServer(false);
+          notify("🪄 Đã điền tên các bàn theo đúng ảnh sơ đồ mẫu của bạn!");
         });
       }
 

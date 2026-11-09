@@ -4680,6 +4680,17 @@ body.is-directions-priority-mode #section-seating {
   color: var(--text-muted);
 }
 
+.seating-editorial-grid {
+  grid-template-columns: 0.66fr 1.34fr;
+  align-items: start;
+}
+
+@media (max-width: 820px) {
+  .seating-editorial-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .seating-svg-wrap {
   width: 100%;
   display: flex;
@@ -4690,7 +4701,7 @@ body.is-directions-priority-mode #section-seating {
 .seating-svg-wrap svg {
   width: 100%;
   height: auto;
-  max-height: 360px;
+  max-height: none;
   display: block;
 }
 
@@ -4736,7 +4747,9 @@ body.lang-zh .seating-chart-footer {
    REDESIGNED SEATING INFO CARD (Concise & Elegant)
    ===================================================================== */
 .seating-info-card {
-  padding: 28px 28px 24px;
+  position: sticky;
+  top: 86px;
+  padding: 24px 24px 22px;
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.62);
   border: 1px solid rgba(132, 21, 23, 0.15);
@@ -4744,6 +4757,12 @@ body.lang-zh .seating-chart-footer {
   flex-direction: column;
   justify-content: center;
   gap: 0;
+}
+
+@media (max-width: 820px) {
+  .seating-info-card {
+    position: static;
+  }
 }
 
 .seating-info-badge {

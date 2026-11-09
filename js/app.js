@@ -1073,47 +1073,78 @@
     honored_guests: { vi: "Khách Quý Gia Đình", zh: "貴賓席" }
   };
 
-  function renderArchitecturalRoundTablesSvg(activeTableNum, isZh, tableLabels) {
+  function renderArchitecturalRoundTablesSvg(activeTableNum, isZh, tableLabels, totalTablesOverride) {
     // Seine Hall (Riverside Palace): 16m × 36m, 38 round tables (10 seats each)
-    // Layout: 2 columns per wing × 2 wings = 4 tables/row, 9 rows = 36 base
+    // Layout: 2 columns per wing × 2 wings = 4 tables/row, max 9 rows = 36 base tables
     // Numbering: odd → left wing, even → right wing (row by row from stage)
-    //   Row 1: left=[01,03], right=[02,04]
-    //   Row 2: left=[05,07], right=[06,08] ... Row 9: left=[33,35], right=[34,36]
-    // Extra tables (37+): interleaved middle column, from bottom row up
+    //   Row 1: left=[01,03], right=[02,04] ... Row 6: left=[21,23], right=[22,24]
+    //   ═══ L-SHAPED AISLE FROM DOOR 2 (Right wall, below Row 6 → Center Aisle → Stage) ═══
+    //   Row 7: left=[25,27], right=[26,28]
+    //   Row 8: left=[29,31], right=[30,32]
+    //   Row 9: left=[33,35], right=[34,36]
+    // Extra tables (37+): placed in the exact center (quincunx) of 4 tables from bottom up:
+    //   Bàn 37 → center of (29, 31, 33, 35)
+    //   Bàn 38 → center of (30, 32, 34, 36)
+    //   Bàn 39 → center of (25, 27, 29, 31)
+    //   Bàn 40 → center of (26, 28, 30, 32), etc.
 
     const tNum = activeTableNum > 0 ? activeTableNum : 0;
-    const totalTables = 38;
+    const totalTables = Math.max(38, parseInt(totalTablesOverride, 10) || 38, tNum);
+    const tblLabels = tableLabels || {};
 
-    // SVG dimensions
-    const W = 520;
-    const stageW = 200, stageH = 26;
-    const stageX = (W - stageW) / 2, stageY = 22;
-    const aisleW = 36;
-    const aisleCX = W / 2;
+    const W = 560;
+    const stageW = 236, stageH = 32;
+    const stageX = (W - stageW) / 2, stageY = 18;
+    const aisleW = 44;
+    const aisleCX = W / 2; // 280
 
-    // Table grid: 2 columns per wing, 9 rows, 4 per row
-    const rowSpacing = 50;
-    const tableR = 21;
-    const chairR = 28;
+    const tableR = 22;
+    const chairR = 29;
 
-    // Column X positions (2 per wing)
-    const leftCols  = [78, 178];  // outer-left, inner-left
-    const rightCols = [342, 442]; // inner-right, outer-right
+    // 2 columns per wing with generous horizontal spread so center-interleaved table fits cleanly
+    const leftCols  = [68, 194];  // outer-left, inner-left
+    const rightCols = [366, 492]; // inner-right, outer-right
+    const leftMid   = (leftCols[0] + leftCols[1]) / 2;   // 131
+    const rightMid  = (rightCols[0] + rightCols[1]) / 2; // 429
 
-    // Middle X for extra interleaved tables
-    const leftMid  = (leftCols[0] + leftCols[1]) / 2;   // ~128
-    const rightMid = (rightCols[0] + rightCols[1]) / 2;  // ~392
-
-    const firstRowY = stageY + stageH + 52;  // ~100
     const baseRows = 9;
     const baseTables = baseRows * 4; // 36
+    const extraCount = Math.max(0, totalTables - baseTables);
 
-    // Build table positions
+    // Gap index g (0..7) is between row g and row g+1.
+    // Gap 5 is between Row 6 (idx 5) and Row 7 (idx 6) — reserved for L-aisle from Door 2.
+    // Extra tables fill gaps from bottom up: gap 7 (Row 8-9), gap 6 (Row 7-8), gap 4 (Row 5-6), etc.
+    const gapOrder = [7, 6, 4, 3, 2, 1, 0, 5];
+    const extraPlacements = [];
+    const gapsWithExtra = new Set();
+
+    for (let e = 0; e < extraCount; e++) {
+      const tableNum = baseTables + e + 1;
+      const isOdd = tableNum % 2 === 1;
+      const pairIdx = Math.floor(e / 2);
+      const gapIdx = gapOrder[pairIdx % gapOrder.length];
+      gapsWithExtra.add(gapIdx);
+      extraPlacements.push({ num: tableNum, isOdd, gapIdx });
+    }
+
+    // Compute Y coordinate for each of the 9 base rows
+    const normalGap = 68;
+    const staggerGap = 92; // expanded vertical gap when a 5th table sits in the center of 4 tables
+    const lAisleGap = 96;  // corridor below Row 6 (idx 5) for L-shaped entrance from Door 2
+
+    const rowY = [stageY + stageH + 48]; // Row 1 (idx 0)
+    for (let g = 0; g < baseRows - 1; g++) {
+      let gap = normalGap;
+      if (g === 5) gap = Math.max(lAisleGap, gapsWithExtra.has(g) ? staggerGap : 0);
+      else if (gapsWithExtra.has(g)) gap = staggerGap;
+      rowY.push(rowY[g] + gap);
+    }
+
     const positions = [];
 
-    // Base tables 1–36: 4 per row (pos 0→leftOuter, 1→rightInner, 2→leftInner, 3→rightOuter)
+    // 1. Place 36 base tables (max 9 per vertical column)
     for (let row = 0; row < baseRows; row++) {
-      const cy = firstRowY + row * rowSpacing;
+      const cy = rowY[row];
       for (let p = 0; p < 4; p++) {
         const tableNum = row * 4 + p + 1;
         if (tableNum > totalTables) break;
@@ -1121,33 +1152,31 @@
         if (p === 0) cx = leftCols[0];
         else if (p === 1) cx = rightCols[0];
         else if (p === 2) cx = leftCols[1];
-        else             cx = rightCols[1];
-        positions.push({ num: tableNum, cx, cy });
+        else cx = rightCols[1];
+        positions.push({ num: tableNum, cx, cy, isExtra: false });
       }
     }
 
-    // Extra tables 37+: interleaved between existing columns, from bottom row up
-    const extraCount = Math.max(0, totalTables - baseTables);
-    for (let e = 0; e < extraCount; e++) {
-      const tableNum = baseTables + e + 1;
-      const isOdd = tableNum % 2 === 1; // odd→left, even→right
-      const rowFromBottom = Math.floor(e / 2);
-      const rowIdx = baseRows - 1 - rowFromBottom;
-      const cy = firstRowY + rowIdx * rowSpacing;
+    // 2. Place extra tables (37, 38...) at the center of 4 surrounding tables
+    extraPlacements.forEach(({ num, isOdd, gapIdx }) => {
       const cx = isOdd ? leftMid : rightMid;
-      positions.push({ num: tableNum, cx, cy });
-    }
+      const cy = (rowY[gapIdx] + rowY[gapIdx + 1]) / 2;
+      positions.push({ num, cx, cy, isExtra: true });
+    });
 
-    // L-shaped aisle: vertical center + horizontal bottom toward door 2 (right)
-    const lastRowY = firstRowY + (baseRows - 1) * rowSpacing;
-    const turnY = lastRowY + 50;
-    const rightEnd = W - 18;
-    const svgH = turnY + aisleW / 2 + 36;
-    const tblLabels = tableLabels || {};
+    // L-shaped aisle geometry:
+    // Enters from Door 2 on the right wall between Row 6 (rowY[5]) and Row 7 (rowY[6]),
+    // goes horizontally left to aisleCX, then turns UP to the Stage!
+    const lTurnY = (rowY[5] + rowY[6]) / 2;
+    const topCarpetY = stageY + stageH + 6;
+    const rightDoorX = W - 14;
+    const lastRowY = rowY[baseRows - 1];
+    const bottomGateY = lastRowY + 46;
+    const svgH = bottomGateY + 26;
 
     const stageLabel = isZh ? "STAGE • 主舞台" : "STAGE • SÂN KHẤU CHÍNH";
-    const aisleLabel = isZh ? "紅毯主走道" : "LỐI ĐI LỄ ĐƯỜNG";
-    const entranceLabel = isZh ? "CỔNG ĐÓN KHÁCH SẢNH SEINE (TẦNG TRỆT) ↑" : "CỔNG ĐÓN KHÁCH SẢNH SEINE (TẦNG TRỆT) ↑";
+    const aisleLabel = isZh ? "L型紅毯走道" : "LỐI LÊN SÂN KHẤU (CHỮ L)";
+    const door2Label = isZh ? "門 2 (迎賓入口)" : "CỬA 2 (ĐÓN KHÁCH)";
 
     let tablesSvg = "";
 
@@ -1162,36 +1191,43 @@
         const rad = (deg * Math.PI) / 180;
         const chX = (cx + Math.cos(rad) * chairR).toFixed(1);
         const chY = (cy + Math.sin(rad) * chairR).toFixed(1);
-        const chairStroke = isMine ? "#841518" : "rgba(164, 112, 42, 0.42)";
-        const chairFill = isMine ? "rgba(198, 125, 8, 0.22)" : "rgba(250, 245, 234, 0.88)";
+        const chairStroke = isMine ? "#841518" : "rgba(164, 112, 42, 0.48)";
+        const chairFill = isMine ? "rgba(198, 125, 8, 0.26)" : "rgba(250, 245, 234, 0.92)";
         chairs += `<g transform="translate(${chX},${chY}) rotate(${deg + 90})">
-          <rect x="-4.2" y="-2.8" width="8.4" height="5.6" rx="2.2" fill="${chairFill}" stroke="${chairStroke}" stroke-width="${isMine ? "1.2" : "0.8"}" />
+          <rect x="-4.5" y="-3" width="9" height="6" rx="2.2" fill="${chairFill}" stroke="${chairStroke}" stroke-width="${isMine ? "1.3" : "0.85"}" />
         </g>`;
       }
 
       const halo = isMine
-        ? `<circle cx="${cx}" cy="${cy}" r="35" fill="none" stroke="rgba(198, 125, 8, 0.55)" stroke-width="1.5" stroke-dasharray="3 3">
-            <animate attributeName="r" values="34;37;34" dur="2s" repeatCount="indefinite" />
+        ? `<circle cx="${cx}" cy="${cy}" r="36" fill="none" stroke="rgba(198, 125, 8, 0.65)" stroke-width="1.8" stroke-dasharray="3.5 3">
+            <animate attributeName="r" values="35;39;35" dur="2s" repeatCount="indefinite" />
            </circle>`
         : "";
 
       const tableFill = isMine ? "#841518" : "#fdfaf3";
-      const tableStroke = isMine ? "#c67d08" : "rgba(164, 112, 42, 0.5)";
-      const innerStroke = isMine ? "rgba(255, 244, 214, 0.4)" : "rgba(164, 112, 42, 0.18)";
-      const textFill = isMine ? "#fffbf2" : "#6e4f3a";
-      const labelStr = isZh ? `${padded}` : `${padded}`;
-      const fontSize = isMine ? "10" : "9";
-      const tblName = tblLabels[String(num)] || "";
-      const truncName = tblName.length > 8 ? tblName.substring(0, 7) + "…" : tblName;
+      const tableStroke = isMine ? "#c67d08" : "rgba(164, 112, 42, 0.58)";
+      const innerStroke = isMine ? "rgba(255, 244, 214, 0.45)" : "rgba(164, 112, 42, 0.2)";
+      const textFill = isMine ? "#fffbf2" : "#5e3d28";
+      const fontSize = isMine ? "14" : "12.5";
+      const tblName = (tblLabels[String(num)] || "").trim();
+      const truncName = tblName.length > 12 ? tblName.substring(0, 11) + "…" : tblName;
+      const pillW = Math.max(38, Math.min(76, truncName.length * 5.6 + 12));
+
+      const nameBadgeSvg = truncName
+        ? `<g transform="translate(${cx}, ${cy + tableR + 5})">
+            <rect x="${(-pillW / 2).toFixed(1)}" y="-7" width="${pillW.toFixed(1)}" height="13" rx="4" fill="${isMine ? "#841518" : "#fffdf8"}" stroke="${isMine ? "#c67d08" : "rgba(132, 21, 23, 0.35)"}" stroke-width="0.9" />
+            <text x="0" y="2.2" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.8" font-weight="700" fill="${isMine ? "#fffbf2" : "#841518"}">${truncName}</text>
+          </g>`
+        : "";
 
       tablesSvg += `
         <g class="svg-round-table ${isMine ? "is-mine" : ""}">
           ${halo}
           ${chairs}
-          <circle cx="${cx}" cy="${cy}" r="${tableR}" fill="${tableFill}" stroke="${tableStroke}" stroke-width="${isMine ? "1.6" : "1"}" />
-          <circle cx="${cx}" cy="${cy}" r="${tableR - 4}" fill="none" stroke="${innerStroke}" stroke-width="0.65" />
-          <text x="${cx}" y="${cy + 3.2}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="${fontSize}" font-weight="700" fill="${textFill}">${labelStr}</text>
-          ${truncName ? `<text x="${cx}" y="${cy + 12}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="5" font-weight="600" fill="${isMine ? 'rgba(255,251,242,0.7)' : 'rgba(132,21,23,0.55)'}">${truncName}</text>` : ""}
+          <circle cx="${cx}" cy="${cy}" r="${tableR}" fill="${tableFill}" stroke="${tableStroke}" stroke-width="${isMine ? "1.8" : "1.15"}" />
+          <circle cx="${cx}" cy="${cy}" r="${tableR - 4}" fill="none" stroke="${innerStroke}" stroke-width="0.7" />
+          <text x="${cx}" y="${cy + 4.2}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="${fontSize}" font-weight="700" fill="${textFill}">${padded}</text>
+          ${nameBadgeSvg}
         </g>
       `;
     });
@@ -1199,26 +1235,37 @@
     return `
       <svg viewBox="0 0 ${W} ${svgH}" xmlns="http://www.w3.org/2000/svg" role="img">
         <!-- Stage -->
-        <rect x="${stageX}" y="${stageY}" width="${stageW}" height="${stageH}" rx="3" fill="#fdfaf3" stroke="rgba(132, 21, 23, 0.4)" stroke-width="1.1" />
-        <rect x="${stageX + 3}" y="${stageY + 2.5}" width="${stageW - 6}" height="${stageH - 5}" rx="2" fill="none" stroke="rgba(198, 125, 8, 0.3)" stroke-width="0.7" />
-        <text x="${aisleCX}" y="${stageY + 16}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="9.5" font-weight="700" letter-spacing="2" fill="#841518">${stageLabel}</text>
+        <rect x="${stageX}" y="${stageY}" width="${stageW}" height="${stageH}" rx="4" fill="#841518" stroke="#c67d08" stroke-width="1.3" />
+        <rect x="${stageX + 3.5}" y="${stageY + 3}" width="${stageW - 7}" height="${stageH - 6}" rx="2.5" fill="none" stroke="rgba(255, 240, 200, 0.45)" stroke-width="0.8" />
+        <text x="${aisleCX}" y="${stageY + 20}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="11.5" font-weight="700" letter-spacing="2" fill="#fff8ec">${stageLabel}</text>
 
-        <!-- L-shaped Aisle (Red Carpet): vertical center → horizontal right to Door 2 -->
-        <polygon points="${aisleCX - aisleW / 2},${stageY + stageH + 8} ${aisleCX + aisleW / 2},${stageY + stageH + 8} ${aisleCX + aisleW / 2},${turnY - aisleW / 2} ${rightEnd},${turnY - aisleW / 2} ${rightEnd},${turnY + aisleW / 2} ${aisleCX - aisleW / 2},${turnY + aisleW / 2}" fill="rgba(132, 21, 23, 0.06)" />
-        <!-- Outer wall (left + bottom) -->
-        <path d="M${aisleCX - aisleW / 2},${stageY + stageH + 8} L${aisleCX - aisleW / 2},${turnY + aisleW / 2} L${rightEnd},${turnY + aisleW / 2}" fill="none" stroke="rgba(132, 21, 23, 0.16)" stroke-width="0.8" stroke-dasharray="4 3" />
-        <!-- Inner wall (right + top of horizontal) -->
-        <path d="M${aisleCX + aisleW / 2},${stageY + stageH + 8} L${aisleCX + aisleW / 2},${turnY - aisleW / 2} L${rightEnd},${turnY - aisleW / 2}" fill="none" stroke="rgba(132, 21, 23, 0.16)" stroke-width="0.8" stroke-dasharray="4 3" />
-        <!-- Aisle label (vertical text) -->
-        <text x="${aisleCX}" y="${(stageY + stageH + 8 + turnY - aisleW) / 2}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.5" font-weight="700" letter-spacing="2.2" fill="rgba(132, 21, 23, 0.32)" transform="rotate(-90 ${aisleCX} ${(stageY + stageH + 8 + turnY - aisleW) / 2})">${aisleLabel}</text>
+        <!-- Lower Center Aisle (Rows 7–9 down to Bottom Gate) -->
+        <rect x="${aisleCX - aisleW / 2}" y="${lTurnY + aisleW / 2}" width="${aisleW}" height="${bottomGateY - (lTurnY + aisleW / 2) - 8}" fill="rgba(132, 21, 23, 0.035)" />
+        <line x1="${aisleCX - aisleW / 2}" y1="${lTurnY + aisleW / 2}" x2="${aisleCX - aisleW / 2}" y2="${bottomGateY - 8}" stroke="rgba(132, 21, 23, 0.14)" stroke-width="0.8" stroke-dasharray="4 3" />
+        <line x1="${aisleCX + aisleW / 2}" y1="${lTurnY + aisleW / 2}" x2="${aisleCX + aisleW / 2}" y2="${bottomGateY - 8}" stroke="rgba(132, 21, 23, 0.14)" stroke-width="0.8" stroke-dasharray="4 3" />
+
+        <!-- L-Shaped Stage March Carpet (From Door 2 below Row 6 → Left to Center Aisle → Up to Stage) -->
+        <polygon points="${aisleCX - aisleW / 2},${topCarpetY} ${aisleCX + aisleW / 2},${topCarpetY} ${aisleCX + aisleW / 2},${lTurnY - aisleW / 2} ${rightDoorX},${lTurnY - aisleW / 2} ${rightDoorX},${lTurnY + aisleW / 2} ${aisleCX - aisleW / 2},${lTurnY + aisleW / 2}" fill="rgba(132, 21, 23, 0.11)" />
+        <!-- L-Carpet Border Walls -->
+        <path d="M${aisleCX - aisleW / 2},${topCarpetY} L${aisleCX - aisleW / 2},${lTurnY + aisleW / 2} L${rightDoorX},${lTurnY + aisleW / 2}" fill="none" stroke="rgba(132, 21, 23, 0.38)" stroke-width="1.1" stroke-dasharray="5 3" />
+        <path d="M${aisleCX + aisleW / 2},${topCarpetY} L${aisleCX + aisleW / 2},${lTurnY - aisleW / 2} L${rightDoorX},${lTurnY - aisleW / 2}" fill="none" stroke="rgba(132, 21, 23, 0.38)" stroke-width="1.1" stroke-dasharray="5 3" />
+        <!-- L-Path Directional Guide Line (Door 2 → Center → Stage) -->
+        <path d="M${rightDoorX - 6},${lTurnY} L${aisleCX},${lTurnY} L${aisleCX},${topCarpetY + 12}" fill="none" stroke="rgba(132, 21, 23, 0.42)" stroke-width="1.3" stroke-dasharray="4 3" />
+        <polygon points="${aisleCX},${topCarpetY + 4} ${aisleCX - 5},${topCarpetY + 13} ${aisleCX + 5},${topCarpetY + 13}" fill="rgba(132, 21, 23, 0.55)" />
+
+        <!-- Vertical Aisle Label -->
+        <text x="${aisleCX - 8}" y="${(topCarpetY + lTurnY) / 2}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="9.5" font-weight="700" letter-spacing="1.8" fill="rgba(132, 21, 23, 0.52)" transform="rotate(-90 ${aisleCX - 8} ${(topCarpetY + lTurnY) / 2})">${aisleLabel}</text>
+
+        <!-- Door 2 Badge (Right end of L below Row 6) -->
+        <rect x="${rightDoorX - 96}" y="${lTurnY - 10}" width="92" height="20" rx="4" fill="#841518" />
+        <text x="${rightDoorX - 50}" y="${lTurnY + 3.5}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.5" font-weight="700" letter-spacing="0.8" fill="#fff8ec">◀ ${door2Label}</text>
 
         <!-- Round Tables -->
         ${tablesSvg}
 
-        <!-- Door 2 entrance (right end of L) -->
-        <line x1="${rightEnd}" y1="${turnY - 10}" x2="${rightEnd}" y2="${turnY + 10}" stroke="rgba(132, 21, 23, 0.35)" stroke-width="1" />
-        <polygon points="${rightEnd + 8},${turnY} ${rightEnd},${turnY - 5} ${rightEnd},${turnY + 5}" fill="rgba(132, 21, 23, 0.35)" />
-        <text x="${rightEnd + 2}" y="${turnY + aisleW / 2 + 12}" text-anchor="end" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="7" font-weight="600" fill="rgba(132, 21, 23, 0.45)">${isZh ? "入口 · 門2 →" : "CỬA 2 →"}</text>
+        <!-- Bottom Hall Entrance Indicator -->
+        <line x1="${aisleCX - 34}" y1="${bottomGateY}" x2="${aisleCX + 34}" y2="${bottomGateY}" stroke="rgba(132, 21, 23, 0.32)" stroke-width="1.1" />
+        <text x="${aisleCX}" y="${bottomGateY + 14}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="9" font-weight="700" letter-spacing="1.2" fill="rgba(132, 21, 23, 0.55)">${isZh ? "大廳正門 ↑" : "CỬA CHÍNH SẢNH SEINE ↑"}</text>
       </svg>
     `;
   }
@@ -1327,7 +1374,7 @@
         chartNoteEl.textContent = isZh ? "10人圓桌配置示意圖" : "Sơ đồ minh họa bàn tròn 10 ghế";
       }
       if (svgWrapEl) {
-        svgWrapEl.innerHTML = renderArchitecturalRoundTablesSvg(0, isZh, metaLabels);
+        svgWrapEl.innerHTML = renderArchitecturalRoundTablesSvg(0, isZh, metaLabels, seatCfg.totalTables || 38);
       }
       return;
     }
@@ -1335,16 +1382,25 @@
     // STATE B: TABLE ASSIGNED -> Clean editorial ledger + highlighted round table
     const tNum = parseInt(tableStr, 10) || 1;
     const padded = String(tNum).padStart(2, "0");
-    // Seine 38-table layout: 2 cols/wing × 9 rows = 36 base, extra xen kẽ
+    // Seine 38-table layout: 2 cols/wing × 9 rows = 36 base, extra xen kẽ trung tâm 4 bàn
     // Odd tables → left wing, even → right wing
     const isLeftWing = tNum % 2 === 1;
     let rowNum;
+    let surroundingStr = "";
     if (tNum <= 36) {
       rowNum = Math.ceil(tNum / 4); // 4 per row → rows 1-9
     } else {
-      // Extra tables fill from bottom up
-      const extraIdx = tNum - 37; // 0-based
-      rowNum = 9 - Math.floor(extraIdx / 2);
+      const gapOrder = [7, 6, 4, 3, 2, 1, 0, 5];
+      const extraIdx = tNum - 37;
+      const pairIdx = Math.floor(extraIdx / 2);
+      const gapIdx = gapOrder[pairIdx % gapOrder.length];
+      rowNum = `${gapIdx + 1}–${gapIdx + 2}`;
+      const rTop = gapIdx;
+      const rBot = gapIdx + 1;
+      const fourTables = isLeftWing
+        ? [rTop * 4 + 1, rTop * 4 + 3, rBot * 4 + 1, rBot * 4 + 3]
+        : [rTop * 4 + 2, rTop * 4 + 4, rBot * 4 + 2, rBot * 4 + 4];
+      surroundingStr = fourTables.map((n) => String(n).padStart(2, "0")).join(" · ");
     }
     const grpKey = params.get("group") || rCfg.group || "honored_guests";
     const customGrp =
@@ -1352,14 +1408,17 @@
       (window.SEAT_GROUPS && window.SEAT_GROUPS[grpKey]);
     const zInfo = SEAT_ZONE_I18N[grpKey] || SEAT_ZONE_I18N.honored_guests;
     const groupDisplay = customGrp ? (customGrp.label || customGrp.short) : (isZh ? zInfo.zh : zInfo.vi);
-    const customLabel = rCfg.tableLabel ? ` (${rCfg.tableLabel})` : "";
+    const resolvedTableLabel = (rCfg.tableLabel || metaLabels[String(tNum)] || "").trim();
+    const customLabel = resolvedTableLabel ? ` (${resolvedTableLabel})` : "";
     const pax = Math.max(1, parseInt(params.get("pax") || rCfg.pax || "1", 10) || 1);
 
     if (badgeEl) {
       badgeEl.textContent = isZh ? "SEINE 宴會廳 • 您的專屬桌次" : "SẢNH SEINE • VỊ TRÍ BÀN CỦA BẠN";
     }
     if (heroHeadingEl) {
-      heroHeadingEl.textContent = isZh ? `第 ${padded} 桌` : `Bàn ${padded}`;
+      heroHeadingEl.textContent = isZh
+        ? `第 ${padded} 桌${resolvedTableLabel ? ` · ${resolvedTableLabel}` : ""}`
+        : `Bàn ${padded}${resolvedTableLabel ? ` · ${resolvedTableLabel}` : ""}`;
     }
     if (guestLineEl) {
       guestLineEl.textContent = isZh
@@ -1376,11 +1435,11 @@
     }
     if (n1DescEl) {
       n1DescEl.textContent = isZh
-        ? `第 ${padded} 桌，10席自由入座。`
-        : `Bàn ${padded} • 10 ghế, ngồi tự do.`;
+        ? `第 ${padded} 桌${resolvedTableLabel ? `（${resolvedTableLabel}）` : ""}，10席自由入座。`
+        : `Bàn ${padded}${resolvedTableLabel ? ` (${resolvedTableLabel})` : ""} • 10 ghế, ngồi tự do.`;
     }
     if (n2PeriodEl) {
-      n2PeriodEl.textContent = isZh ? "入場動線 • 從門2進入" : "Lối vào từ Cửa 2 • Đi theo thảm đỏ chữ L";
+      n2PeriodEl.textContent = isZh ? "入場動線 • 從門2進入" : "Lối vào từ Cửa 2 (Dãy 6) • Đi theo thảm đỏ chữ L";
     }
     if (n2TitleEl) {
       n2TitleEl.textContent = isZh
@@ -1388,9 +1447,15 @@
         : `${isLeftWing ? "Cánh Trái Sân Khấu" : "Cánh Phải Sân Khấu"} • Hàng ${rowNum}`;
     }
     if (n2DescEl) {
-      n2DescEl.textContent = isZh
-        ? `門2 → 紅毯走道 → ${isLeftWing ? "左側" : "右側"}第 ${rowNum} 排 → 第 ${padded} 桌。`
-        : `Cửa 2 → Lối đi chữ L → ${isLeftWing ? "Cánh trái" : "Cánh phải"}, hàng ${rowNum} → Bàn ${padded}.`;
+      if (surroundingStr) {
+        n2DescEl.textContent = isZh
+          ? `門2 → ${isLeftWing ? "左側" : "右側"}（位於 ${surroundingStr} 桌正中央）→ 第 ${padded} 桌。`
+          : `Cửa 2 → ${isLeftWing ? "Cánh trái" : "Cánh phải"}, xen kẽ trung tâm 4 bàn (${surroundingStr}) → Bàn ${padded}.`;
+      } else {
+        n2DescEl.textContent = isZh
+          ? `門2（第6排旁）→ L型紅毯 → ${isLeftWing ? "左側" : "右側"}第 ${rowNum} 排 → 第 ${padded} 桌。`
+          : `Cửa 2 (ngang dãy 6) → Lối chữ L → ${isLeftWing ? "Cánh trái" : "Cánh phải"}, dãy ${rowNum} → Bàn ${padded}.`;
+      }
     }
 
     const companions = Array.isArray(rCfg.tableGuests) ? rCfg.tableGuests : [];
@@ -1407,10 +1472,12 @@
     }
 
     if (chartNoteEl) {
-      chartNoteEl.textContent = isZh ? `已標示：第 ${padded} 桌` : `Đang đánh dấu: Bàn ${padded}`;
+      chartNoteEl.textContent = isZh
+        ? `已標示：第 ${padded} 桌${resolvedTableLabel ? ` (${resolvedTableLabel})` : ""}`
+        : `Đang đánh dấu: Bàn ${padded}${resolvedTableLabel ? ` (${resolvedTableLabel})` : ""}`;
     }
     if (svgWrapEl) {
-      svgWrapEl.innerHTML = renderArchitecturalRoundTablesSvg(tNum, isZh, metaLabels);
+      svgWrapEl.innerHTML = renderArchitecturalRoundTablesSvg(tNum, isZh, metaLabels, seatCfg.totalTables || 38);
     }
   }
 
