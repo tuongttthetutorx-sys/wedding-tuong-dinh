@@ -4762,6 +4762,14 @@ body.lang-zh .seating-chart-footer {
 @media (max-width: 820px) {
   .seating-info-card {
     position: static;
+    padding: 16px 14px 14px;
+  }
+  .seating-chart-sheet {
+    padding: 14px 10px 12px;
+  }
+  .seating-info-guest {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
   }
 }
 

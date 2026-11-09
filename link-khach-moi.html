@@ -961,9 +961,68 @@
       .guest-item-card .mob-slot-actions {
         display: flex;
         flex-wrap: wrap;
-        gap: 4px;
+        gap: 6px;
         align-items: center;
         width: 100%;
+      }
+      .guest-item-card .mob-slot-actions .mode-switch-pill {
+        flex: 1 1 100%;
+        width: 100%;
+      }
+      .guest-item-card .mob-slot-actions > .btn-adm {
+        flex: 1 1 45%;
+        justify-content: center;
+      }
+      .guest-btn-group .mode-switch-pill {
+        flex: 1 1 100%;
+        width: 100%;
+      }
+      .guest-btn-group > .btn-adm {
+        flex: 1 1 calc(50% - 4px);
+        justify-content: center;
+      }
+      .guest-btn-group > .btn-adm.danger {
+        flex: 0 0 36px;
+      }
+
+      /* Compact Header, KPI & 2-Column Tabs on Mobile */
+      .adm-shell {
+        padding: 12px 10px 64px;
+      }
+      .adm-header {
+        margin-bottom: 12px;
+        padding-bottom: 10px;
+        gap: 8px;
+      }
+      .adm-brand h1 {
+        font-size: 19px;
+      }
+      .adm-kpi-grid {
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .adm-kpi-card {
+        padding: 10px 12px;
+      }
+      .adm-kpi-val {
+        font-size: 22px;
+      }
+      .adm-tabs {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+        margin-bottom: 12px;
+      }
+      .adm-tab-btn {
+        min-height: 38px;
+        padding: 6px 8px;
+        font-size: 11.8px;
+        justify-content: space-between;
+        width: 100%;
+      }
+      .adm-tab-btn:last-child {
+        grid-column: 1 / -1;
+        justify-content: center;
       }
 
       /* Slot num pill compact */
@@ -990,7 +1049,93 @@
       }
       .adm-box-head {
         flex-direction: column;
+        align-items: flex-start;
         gap: 8px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .seine-hall-canvas {
+        padding: 10px 6px;
+        border-radius: 10px;
+      }
+      .seine-stage-banner {
+        padding: 8px 10px;
+        margin-bottom: 10px;
+      }
+      .seine-stage-title {
+        font-size: 11.5px;
+      }
+      .seine-stage-sub {
+        font-size: 10px;
+      }
+      .seine-wings-wrap {
+        grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr);
+        gap: 4px;
+      }
+      .seine-wing-grid {
+        gap: 8px 4px;
+        padding: 2px 0;
+      }
+      .seine-aisle-col {
+        font-size: 9.5px;
+        letter-spacing: 0.08em;
+        padding: 6px 0;
+      }
+      .seine-table-wrap {
+        padding: 3px 1px;
+        border-radius: 8px;
+      }
+      .seine-table-ring {
+        width: 64px;
+        height: 64px;
+      }
+      .seine-table-circle {
+        width: 48px;
+        height: 48px;
+        padding: 2px;
+        border-width: 1.8px;
+      }
+      .seine-table-num {
+        font-size: 10.5px;
+      }
+      .seine-table-cap {
+        font-size: 9px;
+        margin-top: 1px;
+      }
+      .seine-seat-dot {
+        width: 5.5px;
+        height: 5.5px;
+      }
+      .seine-table-name-sticker {
+        font-size: 9.5px;
+        padding: 1.5px 5px;
+        max-width: 78px;
+      }
+      .seine-table-tag {
+        font-size: 9px;
+        padding: 1px 4px;
+        max-width: 76px;
+      }
+      .seine-center-interleaved-slot {
+        margin: -10px 0;
+      }
+      .seine-l-corridor {
+        min-height: 28px;
+        padding: 3px 6px;
+        font-size: 9.5px;
+      }
+      .seine-l-door-badge {
+        font-size: 9px;
+        padding: 2px 6px;
+      }
+      .seine-bottom-bar {
+        grid-template-columns: 1fr !important;
+        gap: 6px !important;
+      }
+      .seine-entrance-banner {
+        font-size: 11px;
+        padding: 6px 10px;
       }
     }
 
@@ -2237,7 +2382,7 @@
               </div>
             </div>
 
-            <div style="display:grid; grid-template-columns: auto 1fr; gap:10px; align-items:stretch; margin-top:14px;">
+            <div class="seine-bottom-bar" style="display:grid; grid-template-columns: auto 1fr; gap:10px; align-items:stretch; margin-top:14px;">
               <div style="display:inline-flex; align-items:center; justify-content:center; padding:8px 14px; border-radius:8px; background:#fdf8ee; border:1.5px solid #841518; color:#841518; font-size:12px; font-weight:700; white-space:nowrap;">
                 ◀ 🚻 WC • NHÀ VỆ SINH
               </div>
@@ -2248,7 +2393,7 @@
           </div>
 
           <!-- CỘT PHẢI: CHI TIẾT BÀN ĐANG CHỌN & THÊM KHÁCH NHANH -->
-          <div class="seine-inspector">
+          <div class="seine-inspector" id="seine-inspector-box">
             <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px;">
               <h3 id="seine-insp-title" style="margin:0; font-size:16px; color:var(--adm-crimson);">🪑 Bàn 01</h3>
               <div style="display:flex; align-items:center; gap:6px;">
@@ -2278,27 +2423,16 @@
 
             <!-- KHỐI ĐẶT TÊN BÀN TRỰC QUAN -->
             <div style="padding:10px 12px; border-radius:10px; background:#fbf5ea; border:1.5px solid #dcc3a1; margin-bottom:12px;">
-              <div style="display:flex; align-items:center; justify-content:space-between; gap:6px; margin-bottom:6px;">
-                <label class="slot-label" for="seine-insp-label" style="margin:0; color:var(--adm-crimson); font-weight:700; font-size:12.5px;">
-                  🏷️ Đặt Tên Bàn (hiển thị lên sơ đồ &amp; thiệp):
-                </label>
-                <button
-                  type="button"
-                  id="btn-apply-sample-table-names"
-                  class="btn-adm"
-                  style="height:24px; padding:0 8px; font-size:11px; background:#fffdf8;"
-                  title="Tự động điền tên các bàn (GĐ CR, TutorX, Haru, Gogi...) theo đúng ảnh sơ đồ bạn đã gửi"
-                >
-                  🪄 Điền mẫu theo ảnh sơ đồ
-                </button>
-              </div>
+              <label class="slot-label" for="seine-insp-label" style="margin:0 0 6px; color:var(--adm-crimson); font-weight:700; font-size:12.5px;">
+                🏷️ Đặt Tên Bàn (hiển thị lên sơ đồ &amp; thiệp):
+              </label>
 
               <div style="display:flex; gap:6px; margin-bottom:8px;">
                 <input
                   type="text"
                   id="seine-insp-label"
                   class="adm-input"
-                  placeholder="Nhập tên bàn (VD: GĐ CR, TutorX, Haru, Dự Phòng...)"
+                  placeholder="Nhập tên bàn (VD: GĐ CR, TutorX...)"
                   style="height:36px; font-size:13px; font-weight:700; flex:1;"
                 />
                 <button
@@ -2318,28 +2452,6 @@
                 >
                   ✕
                 </button>
-              </div>
-
-              <div style="font-size:11px; color:var(--adm-muted); margin-bottom:4px; font-weight:600;">
-                ⚡ Bấm chọn nhanh tên bàn:
-              </div>
-              <div id="seine-quick-name-chips" style="display:flex; flex-wrap:wrap; gap:4px; margin-bottom:10px;">
-                <button type="button" class="seine-quick-name-chip" data-name="GĐ CR">GĐ CR</button>
-                <button type="button" class="seine-quick-name-chip" data-name="GĐ nội CD">GĐ nội CD</button>
-                <button type="button" class="seine-quick-name-chip" data-name="Bạn ba chánh">Bạn ba chánh</button>
-                <button type="button" class="seine-quick-name-chip" data-name="TutorX">TutorX</button>
-                <button type="button" class="seine-quick-name-chip" data-name="Veronica">Veronica</button>
-                <button type="button" class="seine-quick-name-chip" data-name="FromD">FromD</button>
-                <button type="button" class="seine-quick-name-chip" data-name="ĐH TƯỜNG">ĐH TƯỜNG</button>
-                <button type="button" class="seine-quick-name-chip" data-name="A6 nkkh">A6 nkkh</button>
-                <button type="button" class="seine-quick-name-chip" data-name="C.xuan-kimanh Tổng hợp">C.xuan-kimanh</button>
-                <button type="button" class="seine-quick-name-chip" data-name="Gogi vhm">Gogi vhm</button>
-                <button type="button" class="seine-quick-name-chip" data-name="Gogi STR">Gogi STR</button>
-                <button type="button" class="seine-quick-name-chip" data-name="Cấp 2 3 ĐINH">Cấp 2 3 ĐINH</button>
-                <button type="button" class="seine-quick-name-chip" data-name="Haru">Haru</button>
-                <button type="button" class="seine-quick-name-chip" data-name="Hàng xóm CR">Hàng xóm CR</button>
-                <button type="button" class="seine-quick-name-chip" data-name="Hàng xóm CD">Hàng xóm CD</button>
-                <button type="button" class="seine-quick-name-chip" data-name="Dự Phòng">Dự Phòng</button>
               </div>
 
               <div>
@@ -7210,10 +7322,10 @@
           let dotsHtml = "";
           for (let s = 0; s < cap; s++) {
             const angle = (s / cap) * Math.PI * 2 - Math.PI / 2;
-            const dx = Math.round(46 + 40 * Math.cos(angle) - 4);
-            const dy = Math.round(46 + 40 * Math.sin(angle) - 4);
+            const px = (50 + 43.5 * Math.cos(angle)).toFixed(1);
+            const py = (50 + 43.5 * Math.sin(angle)).toFixed(1);
             const dotCls = isFull ? "is-full" : s < used ? "is-occupied" : "";
-            dotsHtml += `<span class="seine-seat-dot ${dotCls}" style="left:${dx}px; top:${dy}px;"></span>`;
+            dotsHtml += `<span class="seine-seat-dot ${dotCls}" style="left:${px}%; top:${py}%; transform:translate(-50%, -50%);"></span>`;
           }
 
           const customLabel = (meta.label || "").trim();
@@ -7256,8 +7368,14 @@
             } catch (_) {}
             renderSeineFloorplan();
             if (wasSelected && seineInspLabel) {
+              if (window.innerWidth <= 1024) {
+                const inspBox = document.getElementById("seine-inspector-box");
+                if (inspBox) inspBox.scrollIntoView({ behavior: "smooth", block: "start" });
+              }
               seineInspLabel.focus();
               seineInspLabel.select();
+            } else if (window.innerWidth <= 1024) {
+              notify(`🪑 Đang chọn Bàn ${String(tKey).padStart(2, "0")} — chạm lần nữa để cuộn tới ô sửa bàn!`);
             }
           });
 
@@ -7615,54 +7733,6 @@
       if (btnClearSeineLabel) {
         btnClearSeineLabel.addEventListener("click", () => {
           applyTableLabelForSelected("", true);
-        });
-      }
-
-      document.querySelectorAll(".seine-quick-name-chip").forEach((chip) => {
-        chip.addEventListener("click", () => {
-          const name = chip.getAttribute("data-name") || "";
-          applyTableLabelForSelected(name, true);
-        });
-      });
-
-      const btnApplySampleTableNames = document.getElementById("btn-apply-sample-table-names");
-      if (btnApplySampleTableNames) {
-        btnApplySampleTableNames.addEventListener("click", () => {
-          const sampleMap = {
-            "2": { label: "GĐ CR", group: "groom_family" },
-            "3": { label: "GĐ nội CD", group: "bride_family" },
-            "8": { label: "Bạn ba chánh", group: "groom_relatives" },
-            "14": { label: "TutorX", group: "friends_colleagues" },
-            "15": { label: "Veronica", group: "friends_colleagues" },
-            "16": { label: "FromD", group: "friends_colleagues" },
-            "17": { label: "ĐH TƯỜNG", group: "friends_colleagues" },
-            "18": { label: "TutorX", group: "friends_colleagues" },
-            "19": { label: "A6 nkkh", group: "friends_colleagues" },
-            "20": { label: "C.xuan-kimanh Tổng hợp", group: "friends_colleagues" },
-            "21": { label: "Gogi vhm", group: "friends_colleagues" },
-            "22": { label: "Gogi STR", group: "friends_colleagues" },
-            "23": { label: "Cấp 2 3 ĐINH", group: "friends_colleagues" },
-            "24": { label: "Haru", group: "friends_colleagues" },
-            "30": { label: "Hàng xóm CR", group: "groom_relatives" },
-            "31": { label: "Hàng xóm CD", group: "bride_relatives" },
-            "33": { label: "Dự Phòng", group: "" },
-            "35": { label: "Hàng xóm CD", group: "bride_relatives" },
-            "36": { label: "Dự Phòng", group: "" }
-          };
-          if (!seatingConfig.tableMeta) seatingConfig.tableMeta = {};
-          Object.keys(sampleMap).forEach((tKey) => {
-            const cur = seatingConfig.tableMeta[tKey] || {};
-            seatingConfig.tableMeta[tKey] = {
-              ...cur,
-              label: sampleMap[tKey].label,
-              group: cur.group || sampleMap[tKey].group
-            };
-          });
-          renderSeineFloorplan();
-          buildRows();
-          renderSlotsTable();
-          saveSeatingConfigToServer(false);
-          notify("🪄 Đã điền tên các bàn theo đúng ảnh sơ đồ mẫu của bạn!");
         });
       }
 
