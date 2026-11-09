@@ -163,7 +163,7 @@ const CORS_HEADERS = {
 
 function defaultSeatingConfig() {
   return {
-    totalTables: 40, // Sảnh Seine (Riverside Palace): 36-40 tables standard (up to 52 max)
+    totalTables: 38, // Sảnh Seine (Riverside Palace): 38 tables standard layout
     seatsPerTable: 10,
     showTableGuests: true,
     tableMeta: {}
@@ -390,7 +390,7 @@ export class WeddingAnalytics {
       tableGuests: seatingCfg.showTableGuests !== false ? tableGuests : [],
       tableOccupancy,
       seatingConfig: {
-        totalTables: seatingCfg.totalTables || 40,
+        totalTables: seatingCfg.totalTables || 38,
         seatsPerTable: seatingCfg.seatsPerTable || 10,
         showTableGuests: seatingCfg.showTableGuests !== false,
         tableMeta: seatingCfg.tableMeta || {}
@@ -646,7 +646,7 @@ export class WeddingAnalytics {
       const data = await this.loadData();
       const prevCfg = data.seatingConfig || defaultSeatingConfig();
       if (body.totalTables !== undefined) {
-        prevCfg.totalTables = Math.max(4, Math.min(60, parseInt(body.totalTables, 10) || 40));
+        prevCfg.totalTables = Math.max(4, Math.min(60, parseInt(body.totalTables, 10) || 38));
       }
       if (body.seatsPerTable !== undefined) {
         prevCfg.seatsPerTable = Math.max(4, Math.min(20, parseInt(body.seatsPerTable, 10) || 10));

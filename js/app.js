@@ -1074,95 +1074,144 @@
   };
 
   function renderArchitecturalRoundTablesSvg(activeTableNum, isZh) {
-    // Draws a refined cream-and-gold architectural layout (inspired by classical wedding table plans):
-    // Head Stage at top, Center Ceremony Aisle, and 12 representative 10-chair round tables (3 rows x 4 columns).
-    // If activeTableNum > 12, the row containing activeTableNum is dynamically labeled with its exact row numbers!
+    // Seine Hall (Riverside Palace): 16m × 36m, 38 round tables (10 seats each)
+    // Layout: 3 columns per wing × 2 wings, center aisle (red carpet), stage at top
+    // Numbering: Bàn 01-19 left wing (odd rows top→bottom), Bàn 20-38 right wing
+    // Actually: interleaved — odd numbers left, even numbers right, row by row
+    // Row 1 (near stage): Left = Bàn 01, 03, 05 | Right = Bàn 02, 04, 06
+    // Row 2: Left = 07, 09, 11 | Right = 08, 10, 12 ... etc
+    // If >38 tables, extras fill from bottom up
+
     const tNum = activeTableNum > 0 ? activeTableNum : 0;
-    const activeRow = tNum > 0 ? Math.ceil(Math.ceil(tNum / 2) / 2) : 0;
-    const baseStartRow = activeRow > 3 ? activeRow - 1 : 1;
-    const rows = [baseStartRow, baseStartRow + 1, baseStartRow + 2];
+    const totalTables = 38;
+
+    // SVG dimensions
+    const W = 520, H = 520;
+    const stageW = 200, stageH = 26;
+    const stageX = (W - stageW) / 2, stageY = 22;
+    const aisleW = 36;
+    const aisleCX = W / 2;
+
+    // Table grid: 3 columns per wing, variable rows
+    // Left wing columns: 3 positions
+    // Right wing columns: 3 positions
+    const colSpacing = 68;
+    const rowSpacing = 64;
+    const tableR = 21;
+    const chairR = 28;
+
+    // Left wing column X positions (from left wall inward toward aisle)
+    const leftCols = [62, 62 + colSpacing, 62 + colSpacing * 2]; // 62, 130, 198
+    // Right wing column X positions (from aisle outward toward right wall)
+    const rightCols = [W - 62 - colSpacing * 2, W - 62 - colSpacing, W - 62]; // 322, 390, 458
+
+    // Row Y positions (from top below stage, going down)
+    const firstRowY = stageY + stageH + 52;
+    const maxRows = Math.ceil(totalTables / 6); // 38/6 = ~7 rows
+
+    // Build table positions array
+    // Numbering: row by row, left wing first (3 tables), right wing (3 tables)
+    // Row n: left = n*6-5, n*6-3, n*6-1 | right = n*6-4, n*6-2, n*6
+    // Actually simpler: sequential 1-38, filling left-right alternating
+    // From the floor plan: tables are numbered from stage to entrance
+    // Let's use a simple scheme: row by row from stage to entrance,
+    // within each row: left-outer, left-mid, left-inner, right-inner, right-mid, right-outer
+
+    const positions = [];
+    for (let row = 0; row < maxRows; row++) {
+      const cy = firstRowY + row * rowSpacing;
+      // Left wing (3 tables)
+      for (let c = 0; c < 3; c++) {
+        const tableNum = row * 6 + c + 1;
+        if (tableNum <= totalTables) {
+          positions.push({ num: tableNum, cx: leftCols[c], cy });
+        }
+      }
+      // Right wing (3 tables)
+      for (let c = 0; c < 3; c++) {
+        const tableNum = row * 6 + 3 + c + 1;
+        if (tableNum <= totalTables) {
+          positions.push({ num: tableNum, cx: rightCols[c], cy });
+        }
+      }
+    }
+
+    // Determine visible rows for SVG height
+    const lastRow = Math.ceil(totalTables / 6) - 1;
+    const svgH = firstRowY + lastRow * rowSpacing + 70;
 
     const stageLabel = isZh ? "STAGE • 主舞台" : "STAGE • SÂN KHẤU CHÍNH";
     const aisleLabel = isZh ? "紅毯主走道" : "LỐI ĐI LỄ ĐƯỜNG";
+    const entranceLabel = isZh ? "CỔNG ĐÓN KHÁCH SẢNH SEINE (TẦNG TRỆT) ↑" : "CỔNG ĐÓN KHÁCH SẢNH SEINE (TẦNG TRỆT) ↑";
+
     let tablesSvg = "";
 
-    const colX = [82, 178, 342, 438];
-    const rowY = [126, 224, 322];
+    positions.forEach(({ num, cx, cy }) => {
+      const isMine = tNum > 0 && num === tNum;
+      const padded = String(num).padStart(2, "0");
 
-    rows.forEach((r, rIdx) => {
-      const cy = rowY[rIdx];
-      // Left wing odd tables: (r-1)*4 + 1, (r-1)*4 + 3
-      // Right wing even tables: (r-1)*4 + 2, (r-1)*4 + 4
-      const tblNums = [(r - 1) * 4 + 1, (r - 1) * 4 + 3, (r - 1) * 4 + 2, (r - 1) * 4 + 4];
+      // 10 chairs around each table
+      let chairs = "";
+      for (let ch = 0; ch < 10; ch++) {
+        const deg = ch * 36 - 90;
+        const rad = (deg * Math.PI) / 180;
+        const chX = (cx + Math.cos(rad) * chairR).toFixed(1);
+        const chY = (cy + Math.sin(rad) * chairR).toFixed(1);
+        const chairStroke = isMine ? "#841518" : "rgba(164, 112, 42, 0.42)";
+        const chairFill = isMine ? "rgba(198, 125, 8, 0.22)" : "rgba(250, 245, 234, 0.88)";
+        chairs += `<g transform="translate(${chX},${chY}) rotate(${deg + 90})">
+          <rect x="-4.2" y="-2.8" width="8.4" height="5.6" rx="2.2" fill="${chairFill}" stroke="${chairStroke}" stroke-width="${isMine ? "1.2" : "0.8"}" />
+        </g>`;
+      }
 
-      tblNums.forEach((num, cIdx) => {
-        const cx = colX[cIdx];
-        const isMine = tNum > 0 && num === tNum;
-        const padded = String(num).padStart(2, "0");
+      const halo = isMine
+        ? `<circle cx="${cx}" cy="${cy}" r="35" fill="none" stroke="rgba(198, 125, 8, 0.55)" stroke-width="1.5" stroke-dasharray="3 3">
+            <animate attributeName="r" values="34;37;34" dur="2s" repeatCount="indefinite" />
+           </circle>`
+        : "";
 
-        // 10 delicate chairs arranged in a circle around each round table (like classical architectural plan)
-        let chairs = "";
-        for (let ch = 0; ch < 10; ch++) {
-          const deg = ch * 36 - 90;
-          const rad = (deg * Math.PI) / 180;
-          const chX = (cx + Math.cos(rad) * 30.5).toFixed(1);
-          const chY = (cy + Math.sin(rad) * 30.5).toFixed(1);
-          const chairStroke = isMine ? "#841518" : "rgba(164, 112, 42, 0.48)";
-          const chairFill = isMine ? "rgba(198, 125, 8, 0.24)" : "rgba(250, 245, 234, 0.92)";
-          chairs += `<g transform="translate(${chX},${chY}) rotate(${deg + 90})">
-            <rect x="-4.6" y="-3.2" width="9.2" height="6.4" rx="2.4" fill="${chairFill}" stroke="${chairStroke}" stroke-width="${isMine ? "1.25" : "0.9"}" />
-          </g>`;
-        }
+      const tableFill = isMine ? "#841518" : "#fdfaf3";
+      const tableStroke = isMine ? "#c67d08" : "rgba(164, 112, 42, 0.5)";
+      const innerStroke = isMine ? "rgba(255, 244, 214, 0.4)" : "rgba(164, 112, 42, 0.18)";
+      const textFill = isMine ? "#fffbf2" : "#6e4f3a";
+      const labelStr = isZh ? `${padded}` : `${padded}`;
+      const fontSize = isMine ? "10" : "9";
 
-        const halo = isMine
-          ? `<circle class="svg-my-table-halo" cx="${cx}" cy="${cy}" r="38" fill="none" stroke="rgba(198, 125, 8, 0.55)" stroke-width="1.6" stroke-dasharray="3 3" />`
-          : "";
-
-        const tableFill = isMine ? "#841518" : "#fdfaf3";
-        const tableStroke = isMine ? "#c67d08" : "rgba(164, 112, 42, 0.58)";
-        const innerStroke = isMine ? "rgba(255, 244, 214, 0.45)" : "rgba(164, 112, 42, 0.22)";
-        const textFill = isMine ? "#fffbf2" : "#6e4f3a";
-        const labelStr = isZh ? `第${padded}桌` : `Bàn ${padded}`;
-
-        tablesSvg += `
-          <g class="svg-round-table ${isMine ? "is-mine" : ""}">
-            ${halo}
-            ${chairs}
-            <circle cx="${cx}" cy="${cy}" r="23" fill="${tableFill}" stroke="${tableStroke}" stroke-width="${isMine ? "1.8" : "1.15"}" />
-            <circle cx="${cx}" cy="${cy}" r="18.5" fill="none" stroke="${innerStroke}" stroke-width="0.75" />
-            <text x="${cx}" y="${cy + 3.5}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="${isMine ? "10.5" : "10"}" font-weight="700" fill="${textFill}">${labelStr}</text>
-          </g>
-        `;
-      });
+      tablesSvg += `
+        <g class="svg-round-table ${isMine ? "is-mine" : ""}">
+          ${halo}
+          ${chairs}
+          <circle cx="${cx}" cy="${cy}" r="${tableR}" fill="${tableFill}" stroke="${tableStroke}" stroke-width="${isMine ? "1.6" : "1"}" />
+          <circle cx="${cx}" cy="${cy}" r="${tableR - 4}" fill="none" stroke="${innerStroke}" stroke-width="0.65" />
+          <text x="${cx}" y="${cy + 3.2}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="${fontSize}" font-weight="700" fill="${textFill}">${labelStr}</text>
+        </g>
+      `;
     });
 
-    // 6 chairs behind the head stage table (classical architectural motif)
-    let headChairs = "";
-    for (let i = 0; i < 6; i++) {
-      const hx = 190 + i * 28;
-      headChairs += `<rect x="${hx - 6}" y="16" width="12" height="7" rx="2.5" fill="#faf5ea" stroke="rgba(164, 112, 42, 0.52)" stroke-width="0.95" />`;
-    }
-
     return `
-      <svg viewBox="0 0 520 382" xmlns="http://www.w3.org/2000/svg" role="img">
-        <!-- Head Stage Table -->
-        ${headChairs}
-        <rect x="164" y="25" width="192" height="28" rx="3" fill="#fdfaf3" stroke="rgba(132, 21, 23, 0.42)" stroke-width="1.15" />
-        <rect x="168" y="28.5" width="184" height="21" rx="2" fill="none" stroke="rgba(198, 125, 8, 0.32)" stroke-width="0.75" />
-        <text x="260" y="42.5" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="10.5" font-weight="700" letter-spacing="2.2" fill="#841518">${stageLabel}</text>
+      <svg viewBox="0 0 ${W} ${svgH}" xmlns="http://www.w3.org/2000/svg" role="img">
+        <!-- Stage -->
+        <rect x="${stageX}" y="${stageY}" width="${stageW}" height="${stageH}" rx="3" fill="#fdfaf3" stroke="rgba(132, 21, 23, 0.4)" stroke-width="1.1" />
+        <rect x="${stageX + 3}" y="${stageY + 2.5}" width="${stageW - 6}" height="${stageH - 5}" rx="2" fill="none" stroke="rgba(198, 125, 8, 0.3)" stroke-width="0.7" />
+        <text x="${aisleCX}" y="${stageY + 16}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="9.5" font-weight="700" letter-spacing="2" fill="#841518">${stageLabel}</text>
 
-        <!-- Center Ceremony Aisle -->
-        <line x1="234" y1="68" x2="234" y2="366" stroke="rgba(132, 21, 23, 0.18)" stroke-width="1" stroke-dasharray="4 4" />
-        <line x1="286" y1="68" x2="286" y2="366" stroke="rgba(132, 21, 23, 0.18)" stroke-width="1" stroke-dasharray="4 4" />
-        <text x="260" y="224" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="9.5" font-weight="700" letter-spacing="2.5" fill="rgba(132, 21, 23, 0.42)" transform="rotate(-90 260 224)">${aisleLabel}</text>
+        <!-- Center Aisle (Red Carpet) -->
+        <rect x="${aisleCX - aisleW / 2}" y="${stageY + stageH + 8}" width="${aisleW}" height="${svgH - stageY - stageH - 50}" rx="2" fill="rgba(132, 21, 23, 0.06)" stroke="none" />
+        <line x1="${aisleCX - aisleW / 2}" y1="${stageY + stageH + 8}" x2="${aisleCX - aisleW / 2}" y2="${svgH - 36}" stroke="rgba(132, 21, 23, 0.16)" stroke-width="0.8" stroke-dasharray="4 3" />
+        <line x1="${aisleCX + aisleW / 2}" y1="${stageY + stageH + 8}" x2="${aisleCX + aisleW / 2}" y2="${svgH - 36}" stroke="rgba(132, 21, 23, 0.16)" stroke-width="0.8" stroke-dasharray="4 3" />
+        <text x="${aisleCX}" y="${(stageY + stageH + svgH - 36) / 2}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.5" font-weight="700" letter-spacing="2.2" fill="rgba(132, 21, 23, 0.32)" transform="rotate(-90 ${aisleCX} ${(stageY + stageH + svgH - 36) / 2})">${aisleLabel}</text>
 
-        <!-- 10-Chair Round Tables -->
+        <!-- Round Tables -->
         ${tablesSvg}
+
+        <!-- Entrance indicator -->
+        <line x1="${aisleCX - 30}" y1="${svgH - 22}" x2="${aisleCX + 30}" y2="${svgH - 22}" stroke="rgba(132, 21, 23, 0.3)" stroke-width="1" />
+        <polygon points="${aisleCX},${svgH - 12} ${aisleCX - 6},${svgH - 22} ${aisleCX + 6},${svgH - 22}" fill="rgba(132, 21, 23, 0.3)" />
       </svg>
     `;
   }
 
-  function syncGuestSeatingUI() {
+    function syncGuestSeatingUI() {
     const secEl = document.getElementById("section-seating");
     if (!secEl) return;
     const rCfg = remoteGuestConfig || {};
@@ -1266,9 +1315,12 @@
     // STATE B: TABLE ASSIGNED -> Clean editorial ledger + highlighted round table
     const tNum = parseInt(tableStr, 10) || 1;
     const padded = String(tNum).padStart(2, "0");
-    const isLeftWing = tNum % 2 === 1;
-    const wingOrder = Math.ceil(tNum / 2);
-    const rowNum = Math.ceil(wingOrder / 2);
+    // Seine 38-table layout: 6 tables per row (3 left + 3 right)
+    // Tables 1-3 = row 1 left, 4-6 = row 1 right, 7-9 = row 2 left, 10-12 = row 2 right...
+    const rowIdx = Math.ceil(tNum / 6); // 1-based row number
+    const posInRow = ((tNum - 1) % 6); // 0-5 within the row
+    const isLeftWing = posInRow < 3; // 0,1,2 = left; 3,4,5 = right
+    const rowNum = rowIdx;
     const grpKey = params.get("group") || rCfg.group || "honored_guests";
     const customGrp =
       (rCfg.seatingConfig && rCfg.seatingConfig.groups && rCfg.seatingConfig.groups[grpKey]) ||
