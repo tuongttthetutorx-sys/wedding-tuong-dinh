@@ -1142,7 +1142,7 @@
 
     const positions = [];
 
-    // 1. Place 36 base tables (max 9 per vertical column)
+    // 1. Place 36 base tables sequentially left-to-right per row (Row 1: 01,02 left | 03,04 right)
     for (let row = 0; row < baseRows; row++) {
       const cy = rowY[row];
       for (let p = 0; p < 4; p++) {
@@ -1150,8 +1150,8 @@
         if (tableNum > totalTables) break;
         let cx;
         if (p === 0) cx = leftCols[0];
-        else if (p === 1) cx = rightCols[0];
-        else if (p === 2) cx = leftCols[1];
+        else if (p === 1) cx = leftCols[1];
+        else if (p === 2) cx = rightCols[0];
         else cx = rightCols[1];
         positions.push({ num: tableNum, cx, cy, isExtra: false });
       }
@@ -1382,25 +1382,19 @@
     // STATE B: TABLE ASSIGNED -> Clean editorial ledger + highlighted round table
     const tNum = parseInt(tableStr, 10) || 1;
     const padded = String(tNum).padStart(2, "0");
-    // Seine 38-table layout: 2 cols/wing × 9 rows = 36 base, extra xen kẽ trung tâm 4 bàn
-    // Odd tables → left wing, even → right wing
-    const isLeftWing = tNum % 2 === 1;
+    // Seine 38-table layout: 4 tables per row sequentially left-to-right (1,2 left | 3,4 right)
+    let isLeftWing;
     let rowNum;
-    let surroundingStr = "";
     if (tNum <= 36) {
-      rowNum = Math.ceil(tNum / 4); // 4 per row → rows 1-9
+      isLeftWing = ((tNum - 1) % 4) < 2;
+      rowNum = Math.ceil(tNum / 4); // rows 1-9
     } else {
+      isLeftWing = (tNum - 36) % 2 === 1;
       const gapOrder = [7, 6, 4, 3, 2, 1, 0, 5];
       const extraIdx = tNum - 37;
       const pairIdx = Math.floor(extraIdx / 2);
       const gapIdx = gapOrder[pairIdx % gapOrder.length];
       rowNum = `${gapIdx + 1}–${gapIdx + 2}`;
-      const rTop = gapIdx;
-      const rBot = gapIdx + 1;
-      const fourTables = isLeftWing
-        ? [rTop * 4 + 1, rTop * 4 + 3, rBot * 4 + 1, rBot * 4 + 3]
-        : [rTop * 4 + 2, rTop * 4 + 4, rBot * 4 + 2, rBot * 4 + 4];
-      surroundingStr = fourTables.map((n) => String(n).padStart(2, "0")).join(" · ");
     }
     const grpKey = params.get("group") || rCfg.group || "honored_guests";
     const customGrp =
@@ -1447,15 +1441,9 @@
         : `${isLeftWing ? "Cánh Trái Sân Khấu" : "Cánh Phải Sân Khấu"} • Hàng ${rowNum}`;
     }
     if (n2DescEl) {
-      if (surroundingStr) {
-        n2DescEl.textContent = isZh
-          ? `門2 → ${isLeftWing ? "左側" : "右側"}（位於 ${surroundingStr} 桌正中央）→ 第 ${padded} 桌。`
-          : `Cửa 2 → ${isLeftWing ? "Cánh trái" : "Cánh phải"}, xen kẽ trung tâm 4 bàn (${surroundingStr}) → Bàn ${padded}.`;
-      } else {
-        n2DescEl.textContent = isZh
-          ? `門2（第6排旁）→ L型紅毯 → ${isLeftWing ? "左側" : "右側"}第 ${rowNum} 排 → 第 ${padded} 桌。`
-          : `Cửa 2 (ngang dãy 6) → Lối chữ L → ${isLeftWing ? "Cánh trái" : "Cánh phải"}, dãy ${rowNum} → Bàn ${padded}.`;
-      }
+      n2DescEl.textContent = isZh
+        ? `門2 → L型紅毯 → ${isLeftWing ? "左側" : "右側"}第 ${rowNum} 排 → 第 ${padded} 桌。`
+        : `Cửa 2 → Lối chữ L → ${isLeftWing ? "Cánh trái" : "Cánh phải"}, dãy ${rowNum} → Bàn ${padded}.`;
     }
 
     const companions = Array.isArray(rCfg.tableGuests) ? rCfg.tableGuests : [];

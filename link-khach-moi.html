@@ -1398,57 +1398,34 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      margin: -18px 0;
-      padding: 2px 0;
+      margin: -22px 0;
+      padding: 0;
       position: relative;
       z-index: 3;
     }
-    .seine-center-interleaved-slot::before {
-      content: "";
-      position: absolute;
-      width: 68%;
-      height: 68%;
-      border: 1.5px dashed rgba(125, 21, 24, 0.22);
-      border-radius: 12px;
-      pointer-events: none;
-      z-index: -1;
-    }
-    .seine-interleaved-hint {
-      font-size: 10px;
-      font-weight: 700;
-      color: #8f1d21;
-      background: #fff8ec;
-      border: 1px dashed #d9a760;
-      border-radius: 999px;
-      padding: 1px 7px;
-      margin-bottom: 2px;
-    }
     .seine-l-corridor {
       grid-column: 1 / -1;
-      min-height: 40px;
+      min-height: 36px;
       margin: 2px 0;
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 6px 10px;
+      padding: 4px 10px;
       font-size: 11px;
       font-weight: 700;
     }
     .seine-l-corridor.is-right-door2 {
-      background: linear-gradient(90deg, rgba(166, 28, 28, 0.18), rgba(217, 179, 130, 0.28));
-      border-top: 1.5px dashed rgba(125, 21, 24, 0.45);
-      border-bottom: 1.5px dashed rgba(125, 21, 24, 0.45);
+      background: linear-gradient(90deg, rgba(166, 28, 28, 0.16), rgba(217, 179, 130, 0.24));
+      border-top: 1.5px dashed rgba(125, 21, 24, 0.4);
+      border-bottom: 1.5px dashed rgba(125, 21, 24, 0.4);
       border-right: 3px solid #7d1518;
       color: #7d1518;
     }
     .seine-l-corridor.is-left-marker {
-      background: rgba(242, 235, 225, 0.45);
-      border-top: 1px dashed rgba(125, 21, 24, 0.2);
-      border-bottom: 1px dashed rgba(125, 21, 24, 0.2);
-      color: var(--adm-muted);
-      justify-content: center;
-      font-weight: 600;
+      background: transparent;
+      border: none;
+      pointer-events: none;
     }
     .seine-l-door-badge {
       display: inline-flex;
@@ -2245,16 +2222,16 @@
             <div class="seine-wings-wrap">
               <div>
                 <div style="text-align:center; font-size:11.5px; font-weight:700; color:var(--adm-muted); margin-bottom:6px;">
-                  ◀ CÁNH TRÁI SÂN KHẤU (BÀN LẺ)
+                  ◀ CÁNH TRÁI SÂN KHẤU
                 </div>
                 <div class="seine-wing-grid" id="seine-left-wing"></div>
               </div>
 
-              <div class="seine-aisle-col">⤴ LỐI LÊN SÂN KHẤU CHỮ L (TỪ CỬA 2 • DÃY 6) ✨</div>
+              <div class="seine-aisle-col">⤴ LỐI LÊN SÂN KHẤU CHỮ L ✨</div>
 
               <div>
                 <div style="text-align:center; font-size:11.5px; font-weight:700; color:var(--adm-muted); margin-bottom:6px;">
-                  CÁNH PHẢI SÂN KHẤU (BÀN CHẴN) ▶
+                  CÁNH PHẢI SÂN KHẤU ▶
                 </div>
                 <div class="seine-wing-grid" id="seine-right-wing"></div>
               </div>
@@ -7216,11 +7193,11 @@
           else extraByGap[gapIdx].right = tableNum;
         }
 
-        // Render 9 base rows (max 9 tables per vertical column) + L-corridor at Row 6 + interleaved center tables
+        // Render 9 base rows sequentially left-to-right (Row 1: 01,02 left | 03,04 right)
         for (let row = 0; row < baseRows; row++) {
           const leftOuter = row * 4 + 1;
-          const rightInner = row * 4 + 2;
-          const leftInner = row * 4 + 3;
+          const leftInner = row * 4 + 2;
+          const rightInner = row * 4 + 3;
           const rightOuter = row * 4 + 4;
 
           if (leftOuter <= total) seineLeftWing.appendChild(buildTableWrap(leftOuter));
@@ -7232,33 +7209,23 @@
           if (row === 5 && total >= 24) {
             const leftCorridor = document.createElement("div");
             leftCorridor.className = "seine-l-corridor is-left-marker";
-            leftCorridor.innerHTML = `<span>── Dãy 6 (Ngang lối rẽ chữ L từ Cửa 2) ──</span>`;
             seineLeftWing.appendChild(leftCorridor);
 
             const rightCorridor = document.createElement("div");
             rightCorridor.className = "seine-l-corridor is-right-door2";
             rightCorridor.innerHTML = `
-              <span>⤴ RẼ LÊN SÂN KHẤU (CHỮ L)</span>
-              <span class="seine-l-door-badge">🚪 CỬA 2 (DÃY 6) ◀</span>
+              <span>⤴ LỐI CHỮ L</span>
+              <span class="seine-l-door-badge">🚪 CỬA 2 ◀</span>
             `;
             seineRightWing.appendChild(rightCorridor);
           }
 
-          // If there is an interleaved center table between row and row+1 (e.g. Bàn 37 between 29,31,33,35)
+          // If there is an interleaved center table between row and row+1
           const gapExtra = extraByGap[row];
           if (gapExtra && (gapExtra.left || gapExtra.right)) {
-            const rTop = row;
-            const rBot = row + 1;
-            const leftFour = `${rTop * 4 + 1}·${rTop * 4 + 3}·${rBot * 4 + 1}·${rBot * 4 + 3}`;
-            const rightFour = `${rTop * 4 + 2}·${rTop * 4 + 4}·${rBot * 4 + 2}·${rBot * 4 + 4}`;
-
             const leftCenterSlot = document.createElement("div");
             leftCenterSlot.className = "seine-center-interleaved-slot";
             if (gapExtra.left) {
-              const hint = document.createElement("div");
-              hint.className = "seine-interleaved-hint";
-              hint.textContent = `✦ Trung tâm 4 bàn (${leftFour})`;
-              leftCenterSlot.appendChild(hint);
               leftCenterSlot.appendChild(buildTableWrap(gapExtra.left));
             }
             seineLeftWing.appendChild(leftCenterSlot);
@@ -7266,10 +7233,6 @@
             const rightCenterSlot = document.createElement("div");
             rightCenterSlot.className = "seine-center-interleaved-slot";
             if (gapExtra.right) {
-              const hint = document.createElement("div");
-              hint.className = "seine-interleaved-hint";
-              hint.textContent = `✦ Trung tâm 4 bàn (${rightFour})`;
-              rightCenterSlot.appendChild(hint);
               rightCenterSlot.appendChild(buildTableWrap(gapExtra.right));
             }
             seineRightWing.appendChild(rightCenterSlot);
@@ -7578,24 +7541,24 @@
       if (btnApplySampleTableNames) {
         btnApplySampleTableNames.addEventListener("click", () => {
           const sampleMap = {
-            "3": { label: "GĐ CR", group: "groom_family" },
-            "2": { label: "GĐ nội CD", group: "bride_family" },
+            "2": { label: "GĐ CR", group: "groom_family" },
+            "3": { label: "GĐ nội CD", group: "bride_family" },
             "8": { label: "Bạn ba chánh", group: "groom_relatives" },
-            "15": { label: "TutorX", group: "friends_colleagues" },
-            "14": { label: "Veronica", group: "friends_colleagues" },
+            "14": { label: "TutorX", group: "friends_colleagues" },
+            "15": { label: "Veronica", group: "friends_colleagues" },
             "16": { label: "FromD", group: "friends_colleagues" },
             "17": { label: "ĐH TƯỜNG", group: "friends_colleagues" },
-            "19": { label: "TutorX", group: "friends_colleagues" },
-            "18": { label: "A6 nkkh", group: "friends_colleagues" },
+            "18": { label: "TutorX", group: "friends_colleagues" },
+            "19": { label: "A6 nkkh", group: "friends_colleagues" },
             "20": { label: "C.xuan-kimanh Tổng hợp", group: "friends_colleagues" },
             "21": { label: "Gogi vhm", group: "friends_colleagues" },
-            "23": { label: "Gogi STR", group: "friends_colleagues" },
-            "22": { label: "Cấp 2 3 ĐINH", group: "friends_colleagues" },
+            "22": { label: "Gogi STR", group: "friends_colleagues" },
+            "23": { label: "Cấp 2 3 ĐINH", group: "friends_colleagues" },
             "24": { label: "Haru", group: "friends_colleagues" },
-            "31": { label: "Hàng xóm CR", group: "groom_relatives" },
-            "30": { label: "Hàng xóm CD", group: "bride_relatives" },
+            "30": { label: "Hàng xóm CR", group: "groom_relatives" },
+            "31": { label: "Hàng xóm CD", group: "bride_relatives" },
             "33": { label: "Dự Phòng", group: "" },
-            "34": { label: "Hàng xóm CD", group: "bride_relatives" },
+            "35": { label: "Hàng xóm CD", group: "bride_relatives" },
             "36": { label: "Dự Phòng", group: "" }
           };
           if (!seatingConfig.tableMeta) seatingConfig.tableMeta = {};
