@@ -34,10 +34,17 @@
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
     }
+    html {
+      overflow-x: hidden;
+      width: 100%;
+      max-width: 100vw;
+    }
     body {
       overflow-x: hidden;
       overflow-y: auto;
       height: auto;
+      width: 100%;
+      max-width: 100vw;
       background: var(--adm-bg);
       color: var(--adm-text);
       font-family: "Be Vietnam Pro", -apple-system, BlinkMacSystemFont, sans-serif;
@@ -48,6 +55,8 @@
       max-width: 1080px;
       margin: 0 auto;
       padding: 24px 16px calc(72px + env(safe-area-inset-bottom, 0px));
+      width: 100%;
+      overflow-x: hidden;
     }
 
     /* 1. TOP HEADER BAR */
@@ -60,11 +69,15 @@
       padding-bottom: 18px;
       margin-bottom: 20px;
       border-bottom: 1px solid var(--adm-border);
+      max-width: 100%;
+      overflow: hidden;
     }
     .adm-brand {
       display: flex;
       align-items: center;
       gap: 12px;
+      min-width: 0;
+      overflow: hidden;
     }
     .adm-seal {
       width: 44px;
@@ -80,6 +93,10 @@
       box-shadow: 0 4px 12px rgba(125, 21, 24, 0.22);
       flex-shrink: 0;
     }
+    .adm-brand-text {
+      min-width: 0;
+      overflow: hidden;
+    }
     .adm-brand-text h1 {
       margin: 0;
       font-family: "Cormorant Garamond", serif;
@@ -87,6 +104,9 @@
       font-weight: 700;
       color: var(--adm-crimson);
       line-height: 1.15;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .adm-brand-sub {
       margin: 2px 0 0;
