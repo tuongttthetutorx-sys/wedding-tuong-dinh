@@ -1056,10 +1056,14 @@
 
     @media (max-width: 640px) {
       /* FORCE no horizontal overflow at every level */
+      html, body {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+      }
       .adm-shell,
       .adm-box,
       .seine-layout-grid {
-        max-width: 100vw !important;
+        max-width: 100% !important;
         overflow-x: hidden !important;
       }
       .seine-hall-canvas {
@@ -1067,11 +1071,13 @@
         border-radius: 10px;
         overflow: hidden;
         max-width: 100%;
+        box-sizing: border-box;
       }
       .seine-stage-banner {
         padding: 6px 6px;
         margin-bottom: 6px;
         max-width: 100%;
+        box-sizing: border-box;
       }
       .seine-stage-title {
         font-size: 10px;
@@ -1085,8 +1091,15 @@
         display: none !important;
       }
       .seine-wings-wrap {
-        grid-template-columns: minmax(0, 1fr) 16px minmax(0, 1fr);
+        grid-template-columns: minmax(0, 1fr) 14px minmax(0, 1fr);
         gap: 0;
+        max-width: 100%;
+        overflow: hidden;
+        box-sizing: border-box;
+      }
+      /* Each wing wrapper must not grow beyond half */
+      .seine-wings-wrap > div {
+        min-width: 0;
         max-width: 100%;
         overflow: hidden;
       }
@@ -1095,20 +1108,23 @@
         padding: 0;
         max-width: 100%;
         overflow: hidden;
+        /* Force each column to be exactly half, no wider */
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
       }
       .seine-aisle-col {
         font-size: 7px;
         letter-spacing: 0.04em;
         padding: 4px 0;
-        width: 16px;
-        min-width: 16px;
-        max-width: 16px;
+        width: 14px;
+        min-width: 14px;
+        max-width: 14px;
       }
       .seine-table-wrap {
         padding: 1px 0;
         border-radius: 6px;
         max-width: 100%;
         overflow: hidden;
+        min-width: 0;
       }
       .seine-table-ring {
         width: 44px;
@@ -1134,15 +1150,23 @@
         height: 3.5px;
         border-width: 0.5px;
       }
+      /* Name stickers must not push column wider */
       .seine-table-name-sticker {
-        font-size: 7.5px;
-        padding: 1px 3px;
-        max-width: 52px;
+        font-size: 7px;
+        padding: 0 2px;
+        max-width: 44px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        word-break: break-all;
       }
       .seine-table-tag {
         font-size: 7px;
-        padding: 0 3px;
-        max-width: 50px;
+        padding: 0 2px;
+        max-width: 44px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
       .seine-center-interleaved-slot {
         margin: -6px 0;
