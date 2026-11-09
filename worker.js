@@ -1297,6 +1297,22 @@ export default {
     }
 
     if (env.ASSETS) {
+      const cleanPath = url.pathname.replace(/\/+$/, "");
+      if (
+        cleanPath === "/link-khach-moi" ||
+        /^\/link-khach-moi\/(khach-moi|nhat-ky|che-do|in-qr|so-do-ban|guests|logs|thankyou|qr|seating)$/i.test(cleanPath) ||
+        /^\/(khach-moi|nhat-ky|che-do|in-qr|so-do-ban)$/i.test(cleanPath)
+      ) {
+        const assetUrl = new URL("/link-khach-moi.html", url.origin);
+        assetUrl.search = url.search;
+        return env.ASSETS.fetch(new Request(assetUrl.toString(), request));
+      }
+      if (/^\/link-khach-moi\/((css|js|assets)\/|index\.html)/i.test(url.pathname)) {
+        const strippedPath = url.pathname.replace(/^\/link-khach-moi/i, "");
+        const assetUrl = new URL(strippedPath, url.origin);
+        assetUrl.search = url.search;
+        return env.ASSETS.fetch(new Request(assetUrl.toString(), request));
+      }
       return env.ASSETS.fetch(request);
     }
 

@@ -1641,7 +1641,7 @@
         <span class="adm-tab-badge" id="badge-slots-count">0</span>
       </button>
       <button type="button" class="adm-tab-btn" data-tab="tab-seating">
-        🪑 Sơ Đồ Bàn Tiệc Sảnh Seine (36–40 Bàn)
+        🪑 Sơ Đồ Bàn Tiệc Sảnh Seine (38 Bàn)
         <span class="adm-tab-badge" id="badge-seated-count">0</span>
       </button>
     </nav>
@@ -2464,7 +2464,7 @@
           localStorage.setItem(STORAGE_SEATING_CFG, JSON.stringify(seatingConfig));
         }
       } catch (_) {}
-      let selectedSeineTable = "1";
+      let selectedSeineTable = localStorage.getItem("td_admin_selected_table_v1") || "1";
 
       const DEFAULT_SEAT_GROUPS = {
         "": { label: "⚪ Chưa phân nhóm", short: "Chưa gán", bg: "#f2ebe1", color: "#5c4338" },
@@ -2828,17 +2828,97 @@
       const isLocal = /^(file:|https?:\/\/(localhost|127\.0\.0\.1))/i.test(window.location.href);
       const baseOrigin = isLocal
         ? "https://thuantuongtieudinh.io.vn/"
-        : window.location.href.replace(/link-khach-moi(\.html)?.*$/i, "");
+        : window.location.origin + "/";
       const apiBase = isLocal ? "https://thuantuongtieudinh.io.vn" : "";
 
-      // TAB SWITCHING
+      // TAB SWITCHING WITH CLEAN "/" URL ROUTING & RELOAD PERSISTENCE
+      const TAB_TO_SLUG = {
+        "tab-guests": "khach-moi",
+        "tab-logs": "nhat-ky",
+        "tab-thankyou": "che-do",
+        "tab-qr": "in-qr",
+        "tab-seating": "so-do-ban"
+      };
+      const SLUG_TO_TAB = {
+        "khach-moi": "tab-guests",
+        "guests": "tab-guests",
+        "nhat-ky": "tab-logs",
+        "logs": "tab-logs",
+        "che-do": "tab-thankyou",
+        "thankyou": "tab-thankyou",
+        "in-qr": "tab-qr",
+        "qr": "tab-qr",
+        "so-do-ban": "tab-seating",
+        "seating": "tab-seating"
+      };
+      const STORAGE_ACTIVE_TAB = "td_admin_active_tab_v1";
+
+      function resolveTabFromUrlOrStorage() {
+        try {
+          const pathParts = window.location.pathname.replace(/\/+$/, "").split("/").filter(Boolean);
+          const lastSeg = (pathParts[pathParts.length - 1] || "").toLowerCase();
+          if (SLUG_TO_TAB[lastSeg]) return SLUG_TO_TAB[lastSeg];
+
+          const hashClean = window.location.hash.replace(/^#\/?/, "").trim().toLowerCase();
+          if (SLUG_TO_TAB[hashClean]) return SLUG_TO_TAB[hashClean];
+
+          const qTab = (new URLSearchParams(window.location.search).get("tab") || "").trim().toLowerCase();
+          if (SLUG_TO_TAB[qTab]) return SLUG_TO_TAB[qTab];
+          if (TAB_TO_SLUG[qTab]) return qTab;
+
+          const savedTab = localStorage.getItem(STORAGE_ACTIVE_TAB);
+          if (savedTab && TAB_TO_SLUG[savedTab]) return savedTab;
+        } catch (_) {}
+        return "tab-guests";
+      }
+
+      function activateAdminTab(targetId, updateHistory = true, replaceHistory = false) {
+        const validId = TAB_TO_SLUG[targetId] ? targetId : "tab-guests";
+        const slug = TAB_TO_SLUG[validId];
+        document.querySelectorAll(".adm-tab-btn").forEach((b) => {
+          b.classList.toggle("is-active", b.dataset.tab === validId);
+        });
+        document.querySelectorAll(".adm-panel").forEach((p) => {
+          p.classList.toggle("is-active", p.id === validId);
+        });
+        try {
+          localStorage.setItem(STORAGE_ACTIVE_TAB, validId);
+        } catch (_) {}
+
+        if (updateHistory) {
+          try {
+            if (window.location.protocol === "file:") {
+              const targetHash = "#/" + slug;
+              if (window.location.hash !== targetHash) {
+                if (replaceHistory) history.replaceState({ tab: validId }, "", targetHash);
+                else history.pushState({ tab: validId }, "", targetHash);
+              }
+            } else {
+              const targetPath = "/link-khach-moi/" + slug;
+              if (window.location.pathname !== targetPath) {
+                if (replaceHistory) history.replaceState({ tab: validId }, "", targetPath + window.location.search);
+                else history.pushState({ tab: validId }, "", targetPath + window.location.search);
+              }
+            }
+          } catch (_) {}
+        }
+      }
+
       document.querySelectorAll(".adm-tab-btn").forEach((btn) => {
         btn.addEventListener("click", () => {
-          const targetId = btn.dataset.tab;
-          document.querySelectorAll(".adm-tab-btn").forEach((b) => b.classList.toggle("is-active", b === btn));
-          document.querySelectorAll(".adm-panel").forEach((p) => p.classList.toggle("is-active", p.id === targetId));
+          activateAdminTab(btn.dataset.tab, true, false);
         });
       });
+
+      window.addEventListener("popstate", () => {
+        activateAdminTab(resolveTabFromUrlOrStorage(), false, false);
+      });
+      window.addEventListener("hashchange", () => {
+        activateAdminTab(resolveTabFromUrlOrStorage(), false, false);
+      });
+
+      // Immediately restore active tab on initial load
+      activateAdminTab(resolveTabFromUrlOrStorage(), true, true);
 
       // QUICK INSERT TAIWAN SAMPLE NAMES
       document.querySelectorAll("[data-insert]").forEach((el) => {
@@ -7166,6 +7246,9 @@
           wrap.addEventListener("click", () => {
             const wasSelected = selectedSeineTable === tKey;
             selectedSeineTable = tKey;
+            try {
+              localStorage.setItem("td_admin_selected_table_v1", tKey);
+            } catch (_) {}
             renderSeineFloorplan();
             if (wasSelected && seineInspLabel) {
               seineInspLabel.focus();
@@ -7596,7 +7679,37 @@
       }
 
       buildRows();
-      fetchAnalytics(false);
+
+      // Restore scroll position on reload so user doesn't jump back to top of guest list
+      const STORAGE_SCROLL_Y = "td_admin_scroll_y_v1";
+      const initialSavedScrollY = parseInt(sessionStorage.getItem(STORAGE_SCROLL_Y) || "0", 10) || 0;
+      let userHasManuallyScrolled = false;
+
+      function restoreSavedScrollIfNeeded() {
+        if (initialSavedScrollY > 0 && !userHasManuallyScrolled) {
+          requestAnimationFrame(() => {
+            window.scrollTo({ top: initialSavedScrollY, behavior: "instant" });
+          });
+        }
+      }
+
+      restoreSavedScrollIfNeeded();
+
+      let scrollSaveTimer = null;
+      window.addEventListener("wheel", () => { userHasManuallyScrolled = true; }, { passive: true });
+      window.addEventListener("touchmove", () => { userHasManuallyScrolled = true; }, { passive: true });
+      window.addEventListener("scroll", () => {
+        if (scrollSaveTimer) clearTimeout(scrollSaveTimer);
+        scrollSaveTimer = setTimeout(() => {
+          try {
+            sessionStorage.setItem(STORAGE_SCROLL_Y, String(Math.round(window.scrollY || 0)));
+          } catch (_) {}
+        }, 120);
+      }, { passive: true });
+
+      fetchAnalytics(false).finally(() => {
+        restoreSavedScrollIfNeeded();
+      });
       setInterval(() => {
         if (!document.hidden) fetchAnalytics(false);
       }, 15000);
