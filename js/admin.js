@@ -62,12 +62,24 @@
   const DEFAULT_SEAT_GROUPS = {
     "": { label: "⚪ Chưa phân nhóm", short: "Chưa gán", bg: "#f2ebe1", color: "#5c4338" },
     groom_family: { label: "👑 Gia đình Nhà Trai", short: "👑 GĐ Trai", bg: "#f9e6e6", color: "#7d1518" },
-    bride_family: { label: "👑 Gia đình Nhà Gái", short: "👑 GĐ Gái", bg: "#fde8e8", color: "#a61c1c" },
-    groom_relatives: { label: "🏮 Họ hàng Nhà Trai", short: "🏮 Họ Trai", bg: "#faeedb", color: "#9a5b13" },
-    bride_relatives: { label: "🏮 Họ hàng Nhà Gái", short: "🏮 Họ Gái", bg: "#fcebd9", color: "#b85d19" },
-    friends_colleagues: { label: "🥂 Bạn bè & Đồng nghiệp", short: "🥂 Bạn & ĐN", bg: "#e3f5ee", color: "#1b6b52" },
+    bride_family: { label: "👑 Gia đình Nhà Gái", short: "👑 GĐ Gái", bg: "#fde8e8", color: "#961717" },
+    groom_relatives: { label: "🏮 Họ hàng Nhà Trai", short: "🏮 Họ Trai", bg: "#faeedb", color: "#7a4508" },
+    bride_relatives: { label: "🏮 Họ hàng Nhà Gái", short: "🏮 Họ Gái", bg: "#fcebd9", color: "#8e3e08" },
+    friends_colleagues: { label: "🥂 Bạn bè & Đồng nghiệp", short: "🥂 Bạn & ĐN", bg: "#e3f5ee", color: "#135742" },
     honored_guests: { label: "✨ Khách mời / Khách quý", short: "✨ Khách quý", bg: "#efeaf8", color: "#5b3e85" }
   };
+
+  const LEGACY_CHIP_COLOR_UPGRADE = {
+    "#9a5b13": "#7a4508",
+    "#b85d19": "#8e3e08",
+    "#1b6b52": "#135742",
+    "#a61c1c": "#961717"
+  };
+
+  function normalizeGroupFgColor(hex) {
+    const k = String(hex || "").trim().toLowerCase();
+    return LEGACY_CHIP_COLOR_UPGRADE[k] || hex || "#5c4338";
+  }
 
   const STORAGE_SEAT_GROUPS = "td_seat_groups_v1";
   let SEAT_GROUPS = { ...DEFAULT_SEAT_GROUPS };
@@ -83,14 +95,14 @@
 
   const COLOR_PALETTES = {
     wine: { bg: "#f9e6e6", color: "#7d1518", icon: "🍷" },
-    crimson: { bg: "#fde8e8", color: "#a61c1c", icon: "🌹" },
-    amber: { bg: "#faeedb", color: "#9a5b13", icon: "🏮" },
-    orange: { bg: "#fcebd9", color: "#b85d19", icon: "🍊" },
-    emerald: { bg: "#e3f5ee", color: "#1b6b52", icon: "🌿" },
+    crimson: { bg: "#fde8e8", color: "#961717", icon: "🌹" },
+    amber: { bg: "#faeedb", color: "#7a4508", icon: "🏮" },
+    orange: { bg: "#fcebd9", color: "#8e3e08", icon: "🍊" },
+    emerald: { bg: "#e3f5ee", color: "#135742", icon: "🌿" },
     blue: { bg: "#e8f0fe", color: "#1a5276", icon: "🌊" },
     purple: { bg: "#efeaf8", color: "#5b3e85", icon: "🔮" },
-    pink: { bg: "#fcebf2", color: "#9b2c67", icon: "🌸" },
-    brown: { bg: "#f2ece6", color: "#6e4b37", icon: "🪵" },
+    pink: { bg: "#fcebf2", color: "#8f215c", icon: "🌸" },
+    brown: { bg: "#f2ece6", color: "#5e3e2c", icon: "🪵" },
     slate: { bg: "#edeef1", color: "#374151", icon: "🌫️" }
   };
 
@@ -219,7 +231,7 @@
       const chip = document.createElement("div");
       chip.className = "custom-group-chip";
       chip.style.setProperty("--chip-bg", gInfo.bg);
-      chip.style.setProperty("--chip-fg", gInfo.color);
+      chip.style.setProperty("--chip-fg", normalizeGroupFgColor(gInfo.color));
       chip.innerHTML = `
         <span>${gInfo.label}</span>
         <span class="custom-group-chip-count">(${cnt} ghế)</span>
@@ -5025,7 +5037,7 @@ body {
 
       const isDefaultTag = !grpKey && !customLabel;
       const groupTagHtml = groupTagText
-        ? `<div class="seine-table-tag${isDefaultTag ? " is-default-tag" : ""}" style="background:${grpInfo.bg}; color:${grpInfo.color};">${groupTagText}</div>`
+        ? `<div class="seine-table-tag${isDefaultTag ? " is-default-tag" : ""}" style="background:${grpInfo.bg}; color:${normalizeGroupFgColor(grpInfo.color)};">${groupTagText}</div>`
         : "";
 
       wrap.innerHTML = `
