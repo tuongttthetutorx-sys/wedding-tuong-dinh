@@ -2957,15 +2957,31 @@
         container.innerHTML = "";
 
         const groupCounts = {};
+        const seenGuestKeys = new Set();
+        const seenSlotCodes = new Set();
+
         savedGuests.forEach((g) => {
-          const grp = String(g.group || "").trim();
-          if (grp) groupCounts[grp] = (groupCounts[grp] || 0) + 1;
+          if (!g || !g.name) return;
+          const gk = normalizeNameKey(g.name);
+          if (gk) seenGuestKeys.add(gk);
+          const sc = String(g.slotCode || (g.slot ? makeSlotCode(g.slot) : "")).trim().toLowerCase();
+          if (sc) seenSlotCodes.add(sc);
+          const slotObj = sc && serverSlots[sc] ? serverSlots[sc] : null;
+          const grp = String(g.group || (slotObj && slotObj.group) || "").trim();
+          const pax = Math.max(1, parseInt(g.pax || (slotObj && slotObj.pax) || "1", 10) || 1);
+          if (grp) groupCounts[grp] = (groupCounts[grp] || 0) + pax;
         });
-        Object.values(serverSlots).forEach((s) => {
+
+        Object.keys(serverSlots).forEach((code) => {
+          const s = serverSlots[code];
+          if (!s) return;
+          const normCode = String(code).trim().toLowerCase();
+          if (seenSlotCodes.has(normCode)) return;
+          const sk = s.name ? normalizeNameKey(s.name) : "";
+          if (sk && seenGuestKeys.has(sk)) return;
           const grp = String(s.group || "").trim();
-          if (grp && (!s.name || !savedGuests.some((g) => normalizeNameKey(g.name) === normalizeNameKey(s.name)))) {
-            groupCounts[grp] = (groupCounts[grp] || 0) + 1;
-          }
+          const pax = Math.max(1, parseInt(s.pax || "1", 10) || 1);
+          if (grp) groupCounts[grp] = (groupCounts[grp] || 0) + pax;
         });
 
         keys.forEach((k) => {
@@ -2980,7 +2996,7 @@
           `;
           chip.innerHTML = `
             <span>${gInfo.label}</span>
-            <span style="font-size:11px; opacity:0.85; font-weight:700;">(${cnt})</span>
+            <span style="font-size:11px; opacity:0.85; font-weight:700;">(${cnt} ghế)</span>
             <button type="button" class="btn-group-delete" style="background:none; border:none; cursor:pointer; font-size:11.5px; color:${gInfo.color}; padding:0 2px; margin-left:2px; opacity:0.65;" title="Xóa nhóm này">✕</button>
           `;
 
@@ -5166,6 +5182,7 @@
         savedGuests = [];
         persistLocalGuests();
         buildRows();
+        if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
         try {
           await fetch(`${apiBase}/api/guests`, {
             method: "POST",
@@ -6873,6 +6890,7 @@
           persistLocalGuests();
           renderSlotsTable();
           buildRows();
+          if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
           try {
             await fetch(`${apiBase}/api/slots`, {
               method: "POST",
@@ -6959,6 +6977,7 @@
         renderSlotsTable();
         buildRows();
         updateSlotAssignPreview();
+        if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
 
         try {
           const res = await fetch(`${apiBase}/api/slots`, {
@@ -6979,6 +6998,7 @@
             if (Array.isArray(data.savedGuests)) mergeServerGuests(data.savedGuests);
             renderSlotsTable();
             buildRows();
+            if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
           }
         } catch (_) {}
 
@@ -7590,6 +7610,9 @@
         if (badgeSeatedEl) badgeSeatedEl.textContent = String(totalSeatedRecords);
         if (seineKpiSummary) {
           seineKpiSummary.textContent = `Đã xếp bàn: ${totalSeatedRecords} khách/nhóm • ${totalSeatedPax} / ${total * cap} ghế (${total} bàn × ${cap} ghế)`;
+        }
+        if (typeof renderCustomGroupsChips === "function") {
+          renderCustomGroupsChips();
         }
 
         seineLeftWing.innerHTML = "";
