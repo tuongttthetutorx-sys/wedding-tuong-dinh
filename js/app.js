@@ -3,7 +3,9 @@
    ========================================================================== */
 (function () {
   const CFG = window.WEDDING_CONFIG || {};
-  const SVGS = window.WEDDING_SVGS || {};
+  function getSvgs() {
+    return window.WEDDING_SVGS || {};
+  }
   const STORAGE_KEY_WISHES = "tuong_dinh_wedding_wishes_v1";
 
   /* Complete VI / 台灣道地繁體中文 (zh-TW) Bilingual UI Dictionary */
@@ -268,9 +270,10 @@
   function syncPulloutCardPreview() {
     const pullWrap = document.getElementById("env-pullout-svg");
     if (!pullWrap) return;
-    if (currentLang === "zh" && SVGS.card3) {
-      pullWrap.innerHTML = SVGS.card3.replace(/\bc3_/g, "pull3_");
-    } else if (SVGS.card1) {
+    const svgs = getSvgs();
+    if (currentLang === "zh" && svgs.card3) {
+      pullWrap.innerHTML = svgs.card3.replace(/\bc3_/g, "pull3_");
+    } else if (svgs.card1) {
       const display = guestName || I18N[currentLang].defaultGuest;
       const hasHanzi = /[\u4e00-\u9fff]/.test(display);
       const safeName = String(display)
@@ -280,23 +283,26 @@
       const cls = hasHanzi ? "card1-guest-text has-hanzi-guest" : "card1-guest-text";
       pullWrap.innerHTML =
         `<div class="card1-guest-slot"><span class="${cls}" data-base-font="clamp(12px,2.8vw,19px)" style="font-size:clamp(12px,2.8vw,19px);">${safeName}</span></div>` +
-        SVGS.card1.replace(/\bc1_/g, "pull1_");
+        svgs.card1.replace(/\bc1_/g, "pull1_");
       const pullGuest = pullWrap.querySelector(".card1-guest-text");
       const pullSlot = pullWrap.querySelector(".card1-guest-slot");
       fitGuestNameElement(pullGuest, pullSlot, 9.5);
     }
   }
 
-  /* 1. Inject Original Vector Artwork SVGs */
-  function mountArtworkSVGs() {
-    const map = [
-      ["svg-vo-front", SVGS.voFront],
-      ["svg-vo-back", SVGS.voBack],
-      ["svg-card-1", SVGS.card1],
-      ["svg-card-2", SVGS.card2],
-      ["svg-card-3", SVGS.card3]
-    ];
-    map.forEach(([id, svgMarkup]) => {
+  let cardsArtworkMounted = false;
+  let cardsArtworkPromise = null;
+
+  function mountCardsSVGs() {
+    if (cardsArtworkMounted) return;
+    const svgs = getSvgs();
+    if (!svgs.card1 && !svgs.card2 && !svgs.card3) return;
+    cardsArtworkMounted = true;
+    [
+      ["svg-card-1", svgs.card1],
+      ["svg-card-2", svgs.card2],
+      ["svg-card-3", svgs.card3]
+    ].forEach(([id, svgMarkup]) => {
       const el = document.getElementById(id);
       if (el && svgMarkup) {
         el.innerHTML = svgMarkup;
@@ -307,6 +313,55 @@
     indexCard2BorderGlyphs();
     bindCard1EasterEggs();
     bindCard3EasterEggs();
+    fitAllGuestNames();
+    if (envelopeOpened && triggerWelcomeGreetingIfReady) {
+      setTimeout(() => triggerWelcomeGreetingIfReady(), 240);
+    }
+  }
+
+  function ensureCardsArtworkLoaded() {
+    const svgs = getSvgs();
+    if (svgs.card1 || svgs.card2 || svgs.card3) {
+      mountCardsSVGs();
+      return Promise.resolve();
+    }
+    if (cardsArtworkPromise) return cardsArtworkPromise;
+    cardsArtworkPromise = new Promise((resolve) => {
+      const sc = document.createElement("script");
+      sc.src = "js/artwork-cards.js?v=65";
+      sc.async = true;
+      sc.onload = () => {
+        mountCardsSVGs();
+        resolve();
+      };
+      sc.onerror = () => resolve();
+      document.head.appendChild(sc);
+    });
+    return cardsArtworkPromise;
+  }
+
+  /* 1. Inject Original Vector Artwork SVGs (Envelope immediately; Cards lazy-loaded) */
+  function mountArtworkSVGs() {
+    const svgs = getSvgs();
+    [
+      ["svg-vo-front", svgs.voFront],
+      ["svg-vo-back", svgs.voBack]
+    ].forEach(([id, svgMarkup]) => {
+      const el = document.getElementById(id);
+      if (el && svgMarkup) {
+        el.innerHTML = svgMarkup;
+      }
+    });
+
+    if (svgs.card1 || svgs.card2 || svgs.card3) {
+      mountCardsSVGs();
+    } else if (envelopeOpened) {
+      ensureCardsArtworkLoaded();
+    } else if ("requestIdleCallback" in window) {
+      window.requestIdleCallback(() => ensureCardsArtworkLoaded(), { timeout: 1400 });
+    } else {
+      setTimeout(() => ensureCardsArtworkLoaded(), 550);
+    }
   }
 
   /* Group Card 2's 248 handwritten border strokes into their exact 50 English words (--wi: 0..49)
@@ -651,9 +706,23 @@
       const hitLayer = document.createElementNS(SVG_NS, "g");
       hitLayer.setAttribute("class", "c1-guests-hit-layer");
 
+      const bindSvgButton = (el, label, handler) => {
+        if (!el) return;
+        el.setAttribute("role", "button");
+        el.setAttribute("tabindex", "0");
+        el.setAttribute("aria-label", label);
+        el.addEventListener("click", handler);
+        el.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            handler(e);
+          }
+        });
+      };
+
       [
-        { table: "left", x: "70", y: "314", width: "46", height: "44" },
-        { table: "right", x: "224", y: "312", width: "46", height: "44" }
+        { table: "left", x: "70", y: "314", width: "46", height: "44", label: "Bàn tiệc khách mời bên trái" },
+        { table: "right", x: "224", y: "312", width: "46", height: "44", label: "Bàn tiệc khách mời bên phải" }
       ].forEach((zone) => {
         const rect = document.createElementNS(SVG_NS, "rect");
         rect.setAttribute("class", "c1-guest-hit");
@@ -663,9 +732,9 @@
         rect.setAttribute("width", zone.width);
         rect.setAttribute("height", zone.height);
         rect.setAttribute("rx", "6");
-        rect.addEventListener("click", (e) => {
+        bindSvgButton(rect, zone.label, (e) => {
           e.stopPropagation();
-          spawnGuestHearts(rect, e, 16);
+          spawnGuestHearts(rect, e.type === "click" ? e : null, 16);
         });
         hitLayer.appendChild(rect);
       });
@@ -677,29 +746,40 @@
     const pickXiu = createPhrasePicker("xiuxiu");
     const pickRight = createPhrasePicker("rightDogs");
 
-    if (xiuxiu) {
-      xiuxiu.addEventListener("click", (e) => {
-        e.stopPropagation();
-        spawnFloatingWhisper(xiuxiu, e, pickXiu(), false);
-        spawnGuestHearts(xiuxiu, e, 12);
+    const bindInteractiveSvg = (el, label, handler) => {
+      if (!el) return;
+      el.setAttribute("role", "button");
+      el.setAttribute("tabindex", "0");
+      el.setAttribute("aria-label", label);
+      el.addEventListener("click", handler);
+      el.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handler(e);
+        }
       });
-    }
+    };
 
-    if (rightDogs) {
-      rightDogs.addEventListener("click", (e) => {
-        e.stopPropagation();
-        spawnFloatingWhisper(rightDogs, e, pickRight(), false);
-        spawnGuestHearts(rightDogs, e, 14);
-      });
-    }
+    bindInteractiveSvg(xiuxiu, "Nhấn xem lời nhắn từ cún Xíu Xíu", (e) => {
+      e.stopPropagation();
+      const ev = e.type === "click" ? e : null;
+      spawnFloatingWhisper(xiuxiu, ev, pickXiu(), false);
+      spawnGuestHearts(xiuxiu, ev, 12);
+    });
 
-    if (couple) {
-      couple.addEventListener("click", (e) => {
-        e.stopPropagation();
-        spawnFloatingWhisper(couple, e, pickCouple(), true);
-        spawnGuestHearts(couple, e, 26);
-      });
-    }
+    bindInteractiveSvg(rightDogs, "Nhấn xem lời nhắn từ các bé cún", (e) => {
+      e.stopPropagation();
+      const ev = e.type === "click" ? e : null;
+      spawnFloatingWhisper(rightDogs, ev, pickRight(), false);
+      spawnGuestHearts(rightDogs, ev, 14);
+    });
+
+    bindInteractiveSvg(couple, "Nhấn xem lời chúc từ Cô dâu Tiểu Dinh và Chú rể Thuận Tường", (e) => {
+      e.stopPropagation();
+      const ev = e.type === "click" ? e : null;
+      spawnFloatingWhisper(couple, ev, pickCouple(), true);
+      spawnGuestHearts(couple, ev, 26);
+    });
 
     // One-time Welcome Thank-You Whisper & Lush Heart Shower from Bride & Groom right when viewer enters
     triggerWelcomeGreetingIfReady = function () {
@@ -786,18 +866,38 @@
     };
 
     if (crane) {
-      crane.addEventListener("click", (e) => {
+      const onCrane = (e) => {
         e.stopPropagation();
         svgWrap3.classList.remove("is-playing-entrance");
         void crane.offsetWidth;
         svgWrap3.classList.add("is-playing-entrance");
-        triggerCraneBlessing(crane, e);
+        triggerCraneBlessing(crane, e.type === "click" ? e : null);
+      };
+      crane.setAttribute("role", "button");
+      crane.setAttribute("tabindex", "0");
+      crane.setAttribute("aria-label", "Hạc tiên chúc phúc");
+      crane.addEventListener("click", onCrane);
+      crane.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onCrane(e);
+        }
       });
     }
     if (xi) {
-      xi.addEventListener("click", (e) => {
+      const onXi = (e) => {
         e.stopPropagation();
-        triggerCraneBlessing(xi, e);
+        triggerCraneBlessing(xi, e.type === "click" ? e : null);
+      };
+      xi.setAttribute("role", "button");
+      xi.setAttribute("tabindex", "0");
+      xi.setAttribute("aria-label", "Biểu tượng Song Hỷ chúc phúc");
+      xi.addEventListener("click", onXi);
+      xi.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onXi(e);
+        }
       });
     }
   }
@@ -1858,6 +1958,7 @@
 
     function flipToBack(dir = -1) {
       if (!stage || isFlipping || stage.classList.contains("is-opening")) return;
+      ensureCardsArtworkLoaded();
       clearFlipTimer();
       isFlipping = true;
       flipStartedAt = Date.now();
@@ -1912,6 +2013,7 @@
 
     function unsealAndPullOut() {
       if (!stage || stage.classList.contains("is-opening")) return;
+      ensureCardsArtworkLoaded();
       clearFlipTimer();
       clearHandoffState();
       isFlipping = false;
@@ -2105,9 +2207,7 @@
       };
 
       env3d.addEventListener("pointercancel", releasePress);
-      env3d.addEventListener("pointerleave", () => {
-        stage.classList.remove("is-pressing");
-      });
+      env3d.addEventListener("pointerleave", releasePress);
 
       // Synchronous iOS Safari / LINE / Zalo / Android gesture unlock on first touch
       env3d.addEventListener(

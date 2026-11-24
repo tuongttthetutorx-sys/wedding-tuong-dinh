@@ -30,7 +30,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,500;1,600&family=Dancing+Script:wght@600;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="css/styles.css?v=64" />
+  <link rel="stylesheet" href="css/styles.css?v=65" />
 
   <!-- Pre-printed numbered QR bookmark (?s=7-k3x9): look up the guest name & card mode assigned later in the admin page -->
   <style>html.td-slot-resolving body { visibility: hidden; }</style>
@@ -111,7 +111,7 @@
 
   <!-- Studio Stereo MP3 Soundtrack (Tặng Em Đoá Hoa Hồng)
        Real HTML5 <audio> plays on iPhone Media Channel even when hardware Silent Switch is ON! -->
-  <audio id="wedding-bgm" src="assets/tang-em-doa-hoa-hong.mp3?v=43" preload="auto" loop playsinline webkit-playsinline></audio>
+  <audio id="wedding-bgm" src="assets/tang-em-doa-hoa-hong.mp3?v=43" preload="metadata" loop playsinline webkit-playsinline></audio>
 
   <!-- Floating Top Stationery Navigation & Language Toggle -->
   <header class="floating-topbar" aria-label="Điều hướng thiệp cưới">
@@ -306,14 +306,14 @@
        ACT II & III: MAIN SCROLLABLE WEDDING INVITATION
        ======================================================================== -->
   <main class="invitation-main">
-    <header class="hero-prelude">
+    <div class="hero-prelude">
       <div class="hero-prelude-tag">
         <span>囍</span>
         <span data-i18n="heroTag">06 • 01 • 2027</span>
         <span>囍</span>
       </div>
       <h1 data-i18n="heroTitle">Thuận Tường &amp; Tiểu Dinh</h1>
-    </header>
+    </div>
 
     <!-- POST-WEDDING THANK YOU CARD & GOOGLE DRIVE PHOTO ALBUM (Active when thankYouMode=true or ?mode=thankyou) -->
     <section id="thank-you-showcase" class="thank-you-showcase" hidden aria-label="Thiệp Cảm Ơn &amp; Kho Ảnh Kỷ Niệm">
@@ -639,10 +639,10 @@
     </footer>
   </main>
 
-  <!-- Artwork Bundle & Interactive Scripts -->
-  <script src="js/config.js?v=56"></script>
-  <script src="js/artwork.js?v=56"></script>
-  <script src="js/audio.js?v=56"></script>
-  <script src="js/app.js?v=64"></script>
+  <!-- Artwork Bundle (Envelope critical; Cards lazy-loaded by app.js) & Interactive Scripts -->
+  <script src="js/config.js?v=65" defer></script>
+  <script src="js/artwork-envelope.js?v=65" defer></script>
+  <script src="js/audio.js?v=65" defer></script>
+  <script src="js/app.js?v=65" defer></script>
 </body>
 </html>

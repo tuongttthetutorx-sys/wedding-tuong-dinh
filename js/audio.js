@@ -38,7 +38,7 @@
       if (!el) {
         el = new Audio(cfgSrc);
         el.loop = true;
-        el.preload = "auto";
+        el.preload = "metadata";
         el.setAttribute("playsinline", "");
         el.setAttribute("webkit-playsinline", "");
       } else if (cfgSrc && el.getAttribute("src") !== cfgSrc) {
