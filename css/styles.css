@@ -4766,6 +4766,87 @@ body.is-directions-priority-mode #section-seating {
   display: block;
 }
 
+.seating-foyer-guide {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(132, 21, 23, 0.16);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 14px;
+}
+
+.seating-foyer-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 11px;
+  border-radius: 8px;
+  background: rgba(255, 253, 248, 0.85);
+  border: 1px solid rgba(132, 21, 23, 0.13);
+  min-width: 0;
+}
+
+.foyer-swatch-stage {
+  flex-shrink: 0;
+  width: 68px;
+  height: 44px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(132, 21, 23, 0.22);
+  display: flex;
+}
+
+.foyer-swatch-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  width: 100%;
+  height: 100%;
+}
+
+.foyer-swatch-bar i {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.foyer-photobooth-art {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.foyer-item-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.foyer-item-title {
+  font-family: var(--font-serif);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--crimson-ink);
+  line-height: 1.25;
+}
+
+.foyer-item-desc {
+  margin: 3px 0 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-muted);
+  text-wrap: pretty;
+}
+
+@media (max-width: 680px) {
+  .seating-foyer-guide {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .seating-foyer-item {
+    padding: 8px 10px;
+  }
+}
+
 .seating-chart-footer {
   margin-top: 10px;
   padding-top: 9px;
@@ -4784,6 +4865,9 @@ body.lang-zh .seating-chart-footer {
   font-family: var(--font-zh);
   text-transform: none;
   letter-spacing: 0.08em;
+}
+body.lang-zh .foyer-item-title {
+  font-family: var(--font-zh);
 }
 
 @keyframes seatTablePulse {
