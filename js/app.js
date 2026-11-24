@@ -1284,15 +1284,17 @@
     const aisleLabel = isZh ? "L型紅毯走道" : "LỐI LÊN SÂN KHẤU (CHỮ L)";
     const door2Label = isZh ? "2 號門 (入場)" : "CỔNG 2 (LỐI VÀO)";
     const wcLabel = isZh ? "↙ WC • 洗手間" : "↙ WC • Nhà vệ sinh";
-    const mainEntranceLabel = isZh ? "大廳正門" : "CỬA CHÍNH";
+    const vipLabel = isZh ? "VIP 室" : "PHÒNG VIP";
     const foyerTitle1 = isZh ? "迎賓大廳" : "SẢNH ĐÓN";
-    const foyerTitle2 = isZh ? "賓客簽到區" : "KHÁCH";
+    const foyerTitle2 = isZh ? "拍照打卡區" : "KHÁCH";
     const backdropTitle = isZh ? "主背板" : "BACKDROP";
     const backdropSub = isZh ? "合影拍照" : "Chụp ảnh";
     const photoTitle = isZh ? "拍貼機" : "PHOTOBOOTH";
     const photoSub = isZh ? "打卡留念" : "Check-in";
-    const foyerBottomNote1 = isZh ? "右側正門" : "Các cửa chính";
-    const foyerBottomNote2 = isZh ? "由2號門入席" : "đều ở bên phải";
+    const receptionTitle = isZh ? "迎賓簽到" : "RECEPTION";
+    const receptionSub = isZh ? "禮金桌" : "Đón khách";
+    const lobbyArrow1 = isZh ? "▲ 正門 / 大廳" : "▲ CỬA CHÍNH";
+    const lobbyArrow2 = isZh ? "右側入場方向" : "Từ Lobby lên";
 
     let tablesSvg = "";
 
@@ -1359,33 +1361,44 @@
         <line x1="${hallW}" y1="${stageY}" x2="${hallW}" y2="${lTurnY - aisleW / 2}" stroke="rgba(132, 21, 23, 0.34)" stroke-width="1.4" />
         <line x1="${hallW}" y1="${lTurnY + aisleW / 2}" x2="${hallW}" y2="${bottomBarY + 14}" stroke="rgba(132, 21, 23, 0.34)" stroke-width="1.4" />
 
-        <!-- Right-Side Exterior Reception Foyer (Cửa chính, Sảnh đón khách, Backdrop, Photobooth) -->
-        <rect x="${foyerX}" y="${stageY}" width="${foyerW}" height="${bottomBarY + 14 - stageY}" rx="6" fill="rgba(164, 112, 42, 0.06)" stroke="rgba(132, 21, 23, 0.28)" stroke-width="1" stroke-dasharray="4 3" />
+        <!-- Right-Side Exterior Zone (Matches official SEINE 38 BÀN.pdf: VIP top-right, Foyer/Backdrop/Photobooth mid-right, Cổng 2 Row 6-7, Reception Row 7-8, Lobby/Main Doors bottom-right) -->
+        <!-- VIP Room (Top-Right alongside Rows 1-2) -->
+        <rect x="${foyerX}" y="${stageY}" width="${foyerW}" height="${rowY[1] + 24 - stageY}" rx="6" fill="rgba(132, 21, 23, 0.04)" stroke="rgba(132, 21, 23, 0.24)" stroke-width="1" />
+        <text x="${foyerCX}" y="${(stageY + rowY[1] + 24) / 2 + 4}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="9.5" font-weight="700" letter-spacing="1" fill="rgba(132, 21, 23, 0.58)">${vipLabel}</text>
 
-        <!-- Main Entrance indicator on Right Edge -->
-        <rect x="${foyerX + 6}" y="${stageY + 14}" width="${foyerW - 12}" height="20" rx="4" fill="#fdf6ea" stroke="rgba(132, 21, 23, 0.45)" stroke-width="0.9" />
-        <text x="${foyerCX}" y="${stageY + 27}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.2" font-weight="700" letter-spacing="0.5" fill="#841518">◀ ${mainEntranceLabel}</text>
+        <!-- Reception Foyer Box (Rows 3 down to Bottom-Right Lobby entry) -->
+        <rect x="${foyerX}" y="${rowY[1] + 32}" width="${foyerW}" height="${bottomBarY + 14 - (rowY[1] + 32)}" rx="6" fill="rgba(164, 112, 42, 0.06)" stroke="rgba(132, 21, 23, 0.28)" stroke-width="1" stroke-dasharray="4 3" />
 
-        <!-- Reception Foyer Title -->
-        <text x="${foyerCX}" y="${rowY[1] - 10}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="9.2" font-weight="700" letter-spacing="0.8" fill="#841518">${foyerTitle1}</text>
-        <text x="${foyerCX}" y="${rowY[1] + 4}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="9.2" font-weight="700" letter-spacing="0.8" fill="#841518">${foyerTitle2}</text>
+        <!-- Reception Foyer Title (Row 3 top) -->
+        <text x="${foyerCX}" y="${rowY[2] - 18}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="9" font-weight="700" letter-spacing="0.8" fill="#841518">${foyerTitle1}</text>
+        <text x="${foyerCX}" y="${rowY[2] - 5}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="9" font-weight="700" letter-spacing="0.8" fill="#841518">${foyerTitle2}</text>
 
         <!-- Backdrop Photography Zone -->
-        <rect x="${foyerX + 7}" y="${rowY[2] - 24}" width="${foyerW - 14}" height="46" rx="5" fill="#fffdf8" stroke="rgba(164, 112, 42, 0.58)" stroke-width="1" />
-        <text x="${foyerCX}" y="${rowY[2] - 4}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.6" font-weight="700" letter-spacing="0.4" fill="#841518">${backdropTitle}</text>
-        <text x="${foyerCX}" y="${rowY[2] + 10}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8" font-weight="600" fill="#6b5344">${backdropSub}</text>
+        <rect x="${foyerX + 7}" y="${rowY[2] + 8}" width="${foyerW - 14}" height="44" rx="5" fill="#fffdf8" stroke="rgba(164, 112, 42, 0.58)" stroke-width="1" />
+        <text x="${foyerCX}" y="${rowY[2] + 27}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.6" font-weight="700" letter-spacing="0.4" fill="#841518">${backdropTitle}</text>
+        <text x="${foyerCX}" y="${rowY[2] + 40}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8" font-weight="600" fill="#6b5344">${backdropSub}</text>
 
         <!-- Photobooth Check-in Zone -->
-        <rect x="${foyerX + 7}" y="${rowY[3] + 18}" width="${foyerW - 14}" height="46" rx="5" fill="#fffdf8" stroke="rgba(164, 112, 42, 0.58)" stroke-width="1" />
-        <text x="${foyerCX}" y="${rowY[3] + 38}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.1" font-weight="700" letter-spacing="0.2" fill="#841518">${photoTitle}</text>
+        <rect x="${foyerX + 7}" y="${rowY[3] + 20}" width="${foyerW - 14}" height="44" rx="5" fill="#fffdf8" stroke="rgba(164, 112, 42, 0.58)" stroke-width="1" />
+        <text x="${foyerCX}" y="${rowY[3] + 39}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.1" font-weight="700" letter-spacing="0.2" fill="#841518">${photoTitle}</text>
         <text x="${foyerCX}" y="${rowY[3] + 52}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8" font-weight="600" fill="#6b5344">${photoSub}</text>
 
         <!-- Flow path from Foyer (Backdrop / Photobooth) down into Cổng 2 -->
         <path d="M${foyerCX},${rowY[3] + 68} L${foyerCX},${lTurnY} L${rightDoorX},${lTurnY}" fill="none" stroke="rgba(132, 21, 23, 0.45)" stroke-width="1.3" stroke-dasharray="4 3" />
 
-        <!-- Lower Foyer Note -->
-        <text x="${foyerCX}" y="${rowY[7] - 6}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.2" font-weight="700" fill="rgba(132, 21, 23, 0.72)">${foyerBottomNote1}</text>
-        <text x="${foyerCX}" y="${rowY[7] + 7}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8" font-weight="600" fill="#6b5344">${foyerBottomNote2}</text>
+        <!-- Reception Desk (Exact official PDF position: along right wall below Cổng 2 at Rows 7-8) -->
+        <rect x="${foyerX + 7}" y="${rowY[6] + 16}" width="${foyerW - 14}" height="46" rx="5" fill="#fdf6ea" stroke="rgba(132, 21, 23, 0.48)" stroke-width="1" />
+        <text x="${foyerCX}" y="${rowY[6] + 36}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.4" font-weight="700" letter-spacing="0.3" fill="#841518">${receptionTitle}</text>
+        <text x="${foyerCX}" y="${rowY[6] + 49}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8" font-weight="600" fill="#6b5344">${receptionSub}</text>
+
+        <!-- Flow path upward from Lobby / Main Entrance (Bottom-Right) toward Reception & Cổng 2 -->
+        <path d="M${foyerCX},${bottomBarY - 26} L${foyerCX},${rowY[6] + 66}" fill="none" stroke="rgba(132, 21, 23, 0.42)" stroke-width="1.2" stroke-dasharray="3 3" />
+        <path d="M${foyerCX},${rowY[6] + 12} L${foyerCX},${lTurnY + 4}" fill="none" stroke="rgba(132, 21, 23, 0.42)" stroke-width="1.2" stroke-dasharray="3 3" />
+
+        <!-- Bottom-Right Main Entrance from Lobby -->
+        <rect x="${foyerX + 5}" y="${bottomBarY - 22}" width="${foyerW - 10}" height="28" rx="4" fill="#fdf6ea" stroke="rgba(132, 21, 23, 0.45)" stroke-width="0.95" />
+        <text x="${foyerCX}" y="${bottomBarY - 10}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="7.8" font-weight="700" letter-spacing="0.3" fill="#841518">${lobbyArrow1}</text>
+        <text x="${foyerCX}" y="${bottomBarY + 1}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="7.5" font-weight="600" fill="#6b5344">${lobbyArrow2}</text>
 
         <!-- Lower Center Walkway (Rows 7–9, no bottom door) -->
         <rect x="${aisleCX - aisleW / 2}" y="${lTurnY + aisleW / 2}" width="${aisleW}" height="${lastRowY + 26 - (lTurnY + aisleW / 2)}" fill="rgba(132, 21, 23, 0.035)" />
@@ -1523,8 +1536,8 @@
     }
     if (chartFooterEl) {
       chartFooterEl.textContent = isZh
-        ? "迎賓大廳・拍貼機與主背板位於右側 → 請由 2 號門入場"
-        : "Sảnh đón khách • Photobooth & Backdrop ở bên phải → Vào sảnh tiệc bằng Cổng 2";
+        ? "迎賓大廳・背板與拍貼機位於右側 → 請由 2 號門入場"
+        : "Sảnh đón khách • Backdrop & Photobooth bên phải → Vào Cổng 2";
     }
 
     if (!tableStr) {

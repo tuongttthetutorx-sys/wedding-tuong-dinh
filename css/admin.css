@@ -1884,10 +1884,10 @@ table.adm-table {
   border: 1.5px dashed rgba(125, 21, 24, 0.34);
   border-radius: 8px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  justify-content: space-between;
-  padding: 12px 4px;
+  justify-content: flex-start;
+  padding: 20px 4px;
   writing-mode: vertical-rl;
   text-orientation: mixed;
   color: var(--adm-crimson);
@@ -1895,7 +1895,8 @@ table.adm-table {
   font-weight: 700;
   letter-spacing: 0.06em;
   user-select: none;
-  gap: 10px;
+  gap: 28px;
+  overflow: hidden;
 }
 .seine-foyer-pill {
   color: var(--adm-amber-ink);
