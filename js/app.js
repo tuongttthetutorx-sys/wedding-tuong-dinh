@@ -1283,18 +1283,14 @@
 
     const stageLabel = isZh ? "STAGE • 主舞台" : "STAGE • SÂN KHẤU CHÍNH";
     const aisleLabel = isZh ? "L型紅毯走道" : "LỐI LÊN SÂN KHẤU (CHỮ L)";
-    const door1Label = isZh ? "1 號門" : "CỔNG 1";
     const door2Label = isZh ? "2 號門 (入場)" : "CỔNG 2 (LỐI VÀO)";
     const wcLabel = isZh ? "↙ WC • 洗手間" : "↙ WC • Nhà vệ sinh";
     const vipLabel = isZh ? "VIP 室" : "PHÒNG VIP";
-    const foyerTitle = isZh ? "迎賓大廳 • 拍照區" : "SẢNH ĐÓN KHÁCH";
+    const foyerTitle = isZh ? "迎賓大廳" : "SẢNH ĐÓN KHÁCH";
     const backdropTitle = isZh ? "主背板" : "BACKDROP";
-    const backdropSub = isZh ? "暖棕色系主題" : "Tông màu Nâu";
-    const photoTitle = isZh ? "PHOTOBOOTH" : "PHOTOBOOTH";
-    const photoTime = isZh ? "18:00 開放" : "Từ 18:00";
-    const photoPosNote = isZh ? "2號門對面牆" : "Đối diện Cổng 2";
-    const galleryTitle = isZh ? "迎賓桌" : "BÀN GALLERY";
-    const gallerySub = isZh ? "簽到・相簿" : "Ký tên • Đón khách";
+    const photoTitle = isZh ? "拍貼機" : "PHOTOBOOTH";
+    const photoTime = isZh ? "18:00" : "18:00";
+    const galleryTitle = isZh ? "迎賓桌 GALLERY" : "BÀN GALLERY";
     const lobbyArrow1 = isZh ? "▲ 從大廳進入" : "▲ TỪ LOBBY";
     const lobbyArrow2 = isZh ? "右側迎賓方向" : "Lối lên sảnh";
 
@@ -1352,21 +1348,47 @@
       `;
     });
 
-    const galleryTopY = rowY[6] + 18;
-    const galleryH = 74;
-    const photoBoxW = 86;
-    const photoBoxX = foyerRight - photoBoxW - 4; // flush against opposite corridor wall (x = 618..704)
-    const photoBoxY = lTurnY - 46;
-    const photoBoxH = 92;
+    // Slim rectangular architectural dimensions matching real furniture proportions:
+    // 1. Backdrop (landscape rectangle, dark chocolate brown drapery + white sheer arch + white floral clouds)
+    const bdX = foyerX + 9;
+    const bdY = rowY[2] + 2;
+    const bdW = foyerW - 18; // 136px
+    const bdH = 82;
+    const bdCX = bdX + bdW / 2;
+
+    // 2. Bàn Gallery (slim vertical rectangle flush against hall right wall below Cổng 2)
+    const galX = foyerX + 4;
+    const galY = rowY[6] + 14;
+    const galW = 34;
+    const galH = 114;
+    const galCX = galX + galW / 2;
+    const galCY = galY + galH / 2;
+
+    // 3. Photobooth (sleek vertical rectangle flush against opposite corridor wall directly facing Cổng 2)
+    const photoBoxW = 46;
+    const photoBoxX = foyerRight - photoBoxW - 4; // x = 658..704
+    const photoBoxH = 128;
+    const photoBoxY = lTurnY - photoBoxH / 2;
     const photoCX = photoBoxX + photoBoxW / 2;
 
     return `
       <svg viewBox="0 0 ${W} ${svgH}" xmlns="http://www.w3.org/2000/svg" role="img">
         <defs>
-          <linearGradient id="seine-brown-backdrop" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#5a3a27" />
-            <stop offset="55%" stop-color="#764f38" />
-            <stop offset="100%" stop-color="#8f6549" />
+          <linearGradient id="seine-brown-drape" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#2e1910" />
+            <stop offset="22%" stop-color="#48291b" />
+            <stop offset="50%" stop-color="#5a3625" />
+            <stop offset="78%" stop-color="#46281a" />
+            <stop offset="100%" stop-color="#2c180f" />
+          </linearGradient>
+          <linearGradient id="seine-white-veil" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#fbf9f6" />
+            <stop offset="100%" stop-color="#ebe4da" />
+          </linearGradient>
+          <linearGradient id="seine-velvet-red" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#620912" />
+            <stop offset="50%" stop-color="#8b111e" />
+            <stop offset="100%" stop-color="#56070f" />
           </linearGradient>
         </defs>
 
@@ -1375,10 +1397,9 @@
         <rect x="${stageX + 3.5}" y="${stageY + 3}" width="${stageW - 7}" height="${stageH - 6}" rx="2.5" fill="none" stroke="rgba(255, 240, 200, 0.45)" stroke-width="0.8" />
         <text x="${aisleCX}" y="${stageY + 20}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="11.5" font-weight="700" letter-spacing="2" fill="#fff8ec">${stageLabel}</text>
 
-        <!-- Hall Right Partition Wall (Openings at Cổng 2 [Row 6-7] and Cổng 1 [Row 9]) -->
+        <!-- Hall Right Partition Wall (Single guest doorway opening at Cổng 2 between Row 6 & Row 7) -->
         <line x1="${hallW}" y1="${stageY}" x2="${hallW}" y2="${lTurnY - aisleW / 2}" stroke="rgba(132, 21, 23, 0.36)" stroke-width="1.4" />
-        <line x1="${hallW}" y1="${lTurnY + aisleW / 2}" x2="${hallW}" y2="${rowY[8] - 11}" stroke="rgba(132, 21, 23, 0.36)" stroke-width="1.4" />
-        <line x1="${hallW}" y1="${rowY[8] + 11}" x2="${hallW}" y2="${bottomBarY + 14}" stroke="rgba(132, 21, 23, 0.36)" stroke-width="1.4" />
+        <line x1="${hallW}" y1="${lTurnY + aisleW / 2}" x2="${hallW}" y2="${bottomBarY + 14}" stroke="rgba(132, 21, 23, 0.36)" stroke-width="1.4" />
 
         <!-- VIP Room (Top-Right alongside Rows 1-2) -->
         <rect x="${foyerX}" y="${stageY}" width="${foyerW}" height="${rowY[1] + 24 - stageY}" rx="6" fill="rgba(132, 21, 23, 0.04)" stroke="rgba(132, 21, 23, 0.24)" stroke-width="1" />
@@ -1390,45 +1411,80 @@
         <line x1="${foyerRight}" y1="${rowY[1] + 34}" x2="${foyerRight}" y2="${bottomBarY + 12}" stroke="rgba(132, 21, 23, 0.36)" stroke-width="1.5" />
 
         <!-- Corridor Title -->
-        <text x="${foyerCX}" y="${rowY[2] - 14}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="9.5" font-weight="700" letter-spacing="1" fill="#841518">${foyerTitle}</text>
+        <text x="${foyerCX}" y="${rowY[2] - 12}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="9.5" font-weight="700" letter-spacing="1" fill="#841518">${foyerTitle}</text>
 
-        <!-- BACKDROP (Warm Brown Color-Coded Representation, Upper Foyer Rows 3-4) -->
-        <rect x="${foyerX + 10}" y="${rowY[2] + 2}" width="${foyerW - 20}" height="74" rx="6" fill="url(#seine-brown-backdrop)" stroke="#d8b482" stroke-width="1.3" />
-        <rect x="${foyerX + 14}" y="${rowY[2] + 6}" width="${foyerW - 28}" height="66" rx="4" fill="none" stroke="rgba(255, 244, 224, 0.35)" stroke-width="0.8" />
-        <text x="${foyerCX}" y="${rowY[2] + 28}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="10.2" font-weight="700" letter-spacing="1" fill="#fff8ec">${backdropTitle}</text>
-        <text x="${foyerCX}" y="${rowY[2] + 43}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.6" font-weight="600" fill="#f3dfc4">${backdropSub}</text>
-        <!-- Symbolic Brown Color Swatches -->
-        <circle cx="${foyerCX - 16}" cy="${rowY[2] + 58}" r="4.5" fill="#432818" stroke="#fff8ec" stroke-width="0.9" />
-        <circle cx="${foyerCX}" cy="${rowY[2] + 58}" r="4.5" fill="#7c543c" stroke="#fff8ec" stroke-width="0.9" />
-        <circle cx="${foyerCX + 16}" cy="${rowY[2] + 58}" r="4.5" fill="#cba88a" stroke="#fff8ec" stroke-width="0.9" />
+        <!-- BACKDROP (Matches reference photo: deep espresso-brown pleated curtain + draped arch white sheer center + white floral clouds on both sides + dark platform) -->
+        <g>
+          <!-- Deep espresso brown curtain base -->
+          <rect x="${bdX}" y="${bdY}" width="${bdW}" height="${bdH}" rx="4" fill="url(#seine-brown-drape)" stroke="#bfa07a" stroke-width="1.1" />
+          <!-- Subtle vertical curtain pleats -->
+          <line x1="${bdX + 14}" y1="${bdY + 2}" x2="${bdX + 14}" y2="${bdY + bdH - 10}" stroke="rgba(255,235,215,0.08)" stroke-width="1.2" />
+          <line x1="${bdX + 28}" y1="${bdY + 2}" x2="${bdX + 28}" y2="${bdY + bdH - 10}" stroke="rgba(0,0,0,0.22)" stroke-width="1.2" />
+          <line x1="${bdX + 44}" y1="${bdY + 2}" x2="${bdX + 44}" y2="${bdY + 34}" stroke="rgba(255,235,215,0.08)" stroke-width="1.2" />
+          <line x1="${bdX + 92}" y1="${bdY + 2}" x2="${bdX + 92}" y2="${bdY + 34}" stroke="rgba(255,235,215,0.08)" stroke-width="1.2" />
+          <line x1="${bdX + 108}" y1="${bdY + 2}" x2="${bdX + 108}" y2="${bdY + bdH - 10}" stroke="rgba(0,0,0,0.22)" stroke-width="1.2" />
+          <line x1="${bdX + 122}" y1="${bdY + 2}" x2="${bdX + 122}" y2="${bdY + bdH - 10}" stroke="rgba(255,235,215,0.08)" stroke-width="1.2" />
+          <!-- Center arched white sheer veil -->
+          <path d="M${bdCX - 34},${bdY + bdH - 9} L${bdCX - 34},${bdY + 42} Q${bdCX},${bdY + 24} ${bdCX + 34},${bdY + 42} L${bdCX + 34},${bdY + bdH - 9} Z" fill="url(#seine-white-veil)" />
+          <!-- Sheer vertical fold lines -->
+          <line x1="${bdCX - 18}" y1="${bdY + 37}" x2="${bdCX - 18}" y2="${bdY + bdH - 10}" stroke="rgba(160,145,130,0.24)" stroke-width="0.9" />
+          <line x1="${bdCX}" y1="${bdY + 33}" x2="${bdCX}" y2="${bdY + bdH - 10}" stroke="rgba(160,145,130,0.22)" stroke-width="0.9" />
+          <line x1="${bdCX + 18}" y1="${bdY + 37}" x2="${bdCX + 18}" y2="${bdY + bdH - 10}" stroke="rgba(160,145,130,0.24)" stroke-width="0.9" />
+          <!-- Left white floral cloud cluster -->
+          <g fill="#fcfbf8" stroke="rgba(195,180,160,0.55)" stroke-width="0.55">
+            <circle cx="${bdX + 18}" cy="${bdY + bdH - 13}" r="7" />
+            <circle cx="${bdX + 27}" cy="${bdY + bdH - 14}" r="6" />
+            <circle cx="${bdX + 22}" cy="${bdY + bdH - 22}" r="6.5" />
+            <circle cx="${bdX + 16}" cy="${bdY + bdH - 29}" r="5.5" />
+            <circle cx="${bdX + 25}" cy="${bdY + bdH - 33}" r="4.8" />
+            <circle cx="${bdX + 20}" cy="${bdY + bdH - 40}" r="4.5" />
+            <circle cx="${bdX + 33}" cy="${bdY + bdH - 12}" r="4.8" />
+          </g>
+          <!-- Right white floral cloud cluster -->
+          <g fill="#fcfbf8" stroke="rgba(195,180,160,0.55)" stroke-width="0.55">
+            <circle cx="${bdX + bdW - 18}" cy="${bdY + bdH - 13}" r="7" />
+            <circle cx="${bdX + bdW - 27}" cy="${bdY + bdH - 14}" r="6" />
+            <circle cx="${bdX + bdW - 22}" cy="${bdY + bdH - 22}" r="6.5" />
+            <circle cx="${bdX + bdW - 16}" cy="${bdY + bdH - 29}" r="5.5" />
+            <circle cx="${bdX + bdW - 25}" cy="${bdY + bdH - 34}" r="4.8" />
+            <circle cx="${bdX + bdW - 19}" cy="${bdY + bdH - 41}" r="4.5" />
+            <circle cx="${bdX + bdW - 33}" cy="${bdY + bdH - 12}" r="4.8" />
+          </g>
+          <!-- Dark platform base -->
+          <rect x="${bdX + 1}" y="${bdY + bdH - 10}" width="${bdW - 2}" height="9" rx="2" fill="#231c18" />
+          <!-- Monogram & BACKDROP title -->
+          <text x="${bdCX}" y="${bdY + 17}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.6" font-weight="700" letter-spacing="1.2" fill="#f7e6ce">T &amp; D</text>
+          <text x="${bdCX}" y="${bdY + 28}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.8" font-weight="700" letter-spacing="1.1" fill="#fffdf9">${backdropTitle}</text>
+        </g>
 
-        <!-- PHOTOBOOTH (Opposite Cổng 2 on the far wall x=708, starts 18:00) -->
-        <rect x="${photoBoxX}" y="${photoBoxY}" width="${photoBoxW}" height="${photoBoxH}" rx="6" fill="#fffdf8" stroke="#841518" stroke-width="1.15" />
-        <!-- Mini Burgundy Velvet Heart Curtain Icon (Concept Ref 1) -->
-        <rect x="${photoCX - 14}" y="${photoBoxY + 7}" width="28" height="22" rx="3" fill="#7d111a" stroke="#c67d08" stroke-width="0.7" />
-        <path d="M${photoCX},${photoBoxY + 25} C${photoCX - 9},${photoBoxY + 19} ${photoCX - 10},${photoBoxY + 11} ${photoCX - 4},${photoBoxY + 11} C${photoCX - 1.5},${photoBoxY + 11} ${photoCX},${photoBoxY + 13} ${photoCX},${photoBoxY + 14.5} C${photoCX},${photoBoxY + 13} ${photoCX + 1.5},${photoBoxY + 11} ${photoCX + 4},${photoBoxY + 11} C${photoCX + 10},${photoBoxY + 11} ${photoCX + 9},${photoBoxY + 19} ${photoCX},${photoBoxY + 25} Z" fill="#faf0e4" />
-        <text x="${photoCX}" y="${photoBoxY + 42}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.4" font-weight="700" letter-spacing="0.2" fill="#841518">${photoTitle}</text>
-        <rect x="${photoCX - 28}" y="${photoBoxY + 48}" width="56" height="15" rx="7.5" fill="#841518" />
-        <text x="${photoCX}" y="${photoBoxY + 58.3}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="7.8" font-weight="700" fill="#fff8ec">${photoTime}</text>
-        <text x="${photoCX}" y="${photoBoxY + 77}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="7.6" font-weight="600" fill="#6b5344">${photoPosNote}</text>
+        <!-- PHOTOBOOTH (Slim vertical rectangle flush against opposite wall x=708, directly facing Cổng 2, starts 18:00) -->
+        <g>
+          <rect x="${photoBoxX}" y="${photoBoxY}" width="${photoBoxW}" height="${photoBoxH}" rx="4" fill="url(#seine-velvet-red)" stroke="#c67d08" stroke-width="1.1" />
+          <!-- Cream heart cutout drape motif inside rectangular booth -->
+          <path d="M${photoCX},${photoBoxY + 34} C${photoCX - 13},${photoBoxY + 25} ${photoCX - 14},${photoBoxY + 13} ${photoCX - 6},${photoBoxY + 12} C${photoCX - 2},${photoBoxY + 11.5} ${photoCX},${photoBoxY + 14.5} ${photoCX},${photoBoxY + 16.5} C${photoCX},${photoBoxY + 14.5} ${photoCX + 2},${photoBoxY + 11.5} ${photoCX + 6},${photoBoxY + 12} C${photoCX + 14},${photoBoxY + 13} ${photoCX + 13},${photoBoxY + 25} ${photoCX},${photoBoxY + 34} Z" fill="#f9efe3" />
+          <circle cx="${photoCX - 4}" cy="${photoBoxY + 19}" r="1.1" fill="#d97b89" />
+          <circle cx="${photoCX + 4.5}" cy="${photoBoxY + 18.5}" r="1" fill="#7ba67d" />
+          <circle cx="${photoCX + 1}" cy="${photoBoxY + 24}" r="1.1" fill="#e6a96b" />
+          <!-- Vertical PHOTOBOOTH label fitting sleek rectangular booth -->
+          <text x="${photoCX + 3}" y="${photoBoxY + 71}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.3" font-weight="700" letter-spacing="0.9" fill="#fff8ec" transform="rotate(-90 ${photoCX + 3} ${photoBoxY + 71})">${photoTitle}</text>
+          <!-- 18:00 badge at bottom of booth -->
+          <rect x="${photoBoxX + 5}" y="${photoBoxY + photoBoxH - 21}" width="${photoBoxW - 10}" height="15" rx="3" fill="#fff8ec" />
+          <text x="${photoCX}" y="${photoBoxY + photoBoxH - 10.7}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.2" font-weight="700" fill="#7d111a">${photoTime}</text>
+        </g>
 
-        <!-- Cross-corridor Alignment Line (Cổng 2 ↔ Opposite Wall Photobooth) -->
-        <line x1="${hallW + 16}" y1="${lTurnY}" x2="${photoBoxX - 2}" y2="${lTurnY}" stroke="rgba(132, 21, 23, 0.45)" stroke-width="1.2" stroke-dasharray="3 3" />
+        <!-- Cross-corridor alignment dashed line (Cổng 2 ↔ Opposite Photobooth) -->
+        <line x1="${hallW + 16}" y1="${lTurnY}" x2="${photoBoxX - 3}" y2="${lTurnY}" stroke="rgba(132, 21, 23, 0.42)" stroke-width="1.2" stroke-dasharray="3 3" />
 
-        <!-- BÀN GALLERY (Between Cổng 1 and Cổng 2, flush against Hall Right Wall at Rows 7-8) -->
-        <rect x="${foyerX + 4}" y="${galleryTopY}" width="72" height="${galleryH}" rx="5" fill="#fdf5e6" stroke="rgba(132, 21, 23, 0.52)" stroke-width="1.1" />
-        <text x="${foyerX + 40}" y="${galleryTopY + 30}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.4" font-weight="700" letter-spacing="0.3" fill="#841518">${galleryTitle}</text>
-        <text x="${foyerX + 40}" y="${galleryTopY + 44}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="7.6" font-weight="600" fill="#6b5344">${gallerySub}</text>
-        <text x="${foyerX + 40}" y="${galleryTopY + 58}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="7" font-weight="600" fill="#8c5004">(${isZh ? "1-2號門間" : "Giữa Cổng 1-2"})</text>
-
-        <!-- CỔNG 1 Marker (Row 9, below Bàn Gallery, secondary door — guests enter Cổng 2) -->
-        <rect x="${hallW - 14}" y="${rowY[8] - 9}" width="54" height="18" rx="4" fill="#fdf8ee" stroke="rgba(132, 21, 23, 0.42)" stroke-width="0.95" />
-        <text x="${hallW + 13}" y="${rowY[8] + 3}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="7.6" font-weight="700" fill="#7a5140">${door1Label}</text>
+        <!-- BÀN GALLERY (Slim vertical rectangle flush against Seine right wall below Cổng 2, matching official PDF table shape) -->
+        <g>
+          <rect x="${galX}" y="${galY}" width="${galW}" height="${galH}" rx="3.5" fill="#fdf5e6" stroke="rgba(132, 21, 23, 0.56)" stroke-width="1.15" />
+          <rect x="${galX + 3}" y="${galY + 3}" width="${galW - 6}" height="${galH - 6}" rx="2" fill="none" stroke="rgba(198, 125, 8, 0.35)" stroke-width="0.7" />
+          <text x="${galCX + 3}" y="${galCY}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.5" font-weight="700" letter-spacing="1.1" fill="#841518" transform="rotate(-90 ${galCX + 3} ${galCY})">${galleryTitle}</text>
+        </g>
 
         <!-- Guest Arrival Flow from Bottom-Right Lobby up Corridor → Gallery → Cổng 2 / Photobooth / Backdrop -->
-        <path d="M${photoCX},${bottomBarY - 26} L${photoCX},${lTurnY + 50}" fill="none" stroke="rgba(132, 21, 23, 0.36)" stroke-width="1.2" stroke-dasharray="3 3" />
-        <path d="M${foyerX + 40},${rowY[2] + 80} L${foyerX + 40},${lTurnY - 12}" fill="none" stroke="rgba(132, 21, 23, 0.36)" stroke-width="1.2" stroke-dasharray="3 3" />
-        <path d="M${foyerX + 40},${galleryTopY - 4} L${foyerX + 40},${lTurnY + 12}" fill="none" stroke="rgba(132, 21, 23, 0.36)" stroke-width="1.2" stroke-dasharray="3 3" />
+        <path d="M${foyerCX},${bottomBarY - 26} L${foyerCX},${lTurnY + 10}" fill="none" stroke="rgba(132, 21, 23, 0.34)" stroke-width="1.2" stroke-dasharray="3 3" />
+        <path d="M${foyerCX},${bdY + bdH + 6} L${foyerCX},${lTurnY - 6}" fill="none" stroke="rgba(132, 21, 23, 0.34)" stroke-width="1.2" stroke-dasharray="3 3" />
 
         <!-- Bottom-Right Lobby Entry Marker -->
         <rect x="${foyerRight - 84}" y="${bottomBarY - 22}" width="80" height="28" rx="4" fill="#fdf6ea" stroke="rgba(132, 21, 23, 0.45)" stroke-width="0.95" />
@@ -1569,35 +1625,6 @@
     if (chartKickerEl) {
       chartKickerEl.textContent = "RIVERSIDE PALACE • SEINE HALL";
     }
-    if (chartFooterEl) {
-      chartFooterEl.textContent = isZh
-        ? "迎賓桌位於 1、2 號門之間 • 拍貼機 (18:00) 在 2 號門對面 → 請由 2 號門入場"
-        : "Bàn Gallery giữa Cổng 1 & Cổng 2 • Photobooth (18:00) đối diện Cổng 2 → Vào Cổng 2";
-    }
-    const foyerBackdropTitleEl = document.getElementById("foyer-backdrop-title");
-    const foyerBackdropDescEl = document.getElementById("foyer-backdrop-desc");
-    const foyerPhotoTitleEl = document.getElementById("foyer-photobooth-title");
-    const foyerPhotoDescEl = document.getElementById("foyer-photobooth-desc");
-    if (foyerBackdropTitleEl) {
-      foyerBackdropTitleEl.textContent = isZh
-        ? "迎賓主背板 • 暖棕色系"
-        : "Backdrop chụp ảnh • Tông màu nâu";
-    }
-    if (foyerBackdropDescEl) {
-      foyerBackdropDescEl.textContent = isZh
-        ? "主色調為溫暖咖啡棕色系（提供參考，方便賓客搭配服裝合影）。"
-        : "Màu chủ đạo nâu ấm (tượng trưng để Quý Khách tiện chọn trang phục chụp hình).";
-    }
-    if (foyerPhotoTitleEl) {
-      foyerPhotoTitleEl.textContent = isZh
-        ? "拍貼機即拍即印 • 18:00 開放"
-        : "Photobooth lấy liền • Bắt đầu 18:00";
-    }
-    if (foyerPhotoDescEl) {
-      foyerPhotoDescEl.textContent = isZh
-        ? "位於 2 號門對面牆邊 • 酒紅絲絨愛心布幕與白色蝴蝶結四格拍貼。"
-        : "Đối diện Cổng 2 (bên kia tường) • Khung nhung đỏ trái tim & in dải ảnh gắn nơ trắng.";
-    }
 
     if (!tableStr) {
       // STATE A: NO TABLE ASSIGNED YET -> Graceful editorial notice on the main invitation
@@ -1701,7 +1728,7 @@
         : `Bàn ${padded}${resolvedTableLabel ? ` (${resolvedTableLabel})` : ""} • 10 ghế, ngồi tự do.`;
     }
     if (n2PeriodEl) {
-      n2PeriodEl.textContent = isZh ? "迎賓桌位於 1-2 號門間 • 拍貼機 (18:00) 在 2 號門對面" : "Bàn Gallery giữa Cổng 1 & 2 • Photobooth (18:00) đối diện Cổng 2";
+      n2PeriodEl.textContent = isZh ? "迎賓桌 • 拍貼機 (18:00) 在 2 號門對面" : "Bàn Gallery • Photobooth (18:00) đối diện Cổng 2";
     }
     if (n2TitleEl) {
       n2TitleEl.textContent = isZh
@@ -1710,8 +1737,8 @@
     }
     if (n2DescEl) {
       n2DescEl.textContent = isZh
-        ? `右側迎賓桌 → 拍貼機(18:00)/背板 → 由 2 號門進入 → L型紅毯 → ${isLeftWing ? "左側" : "右側"}第 ${rowNum} 排 → 第 ${padded} 桌。`
-        : `Qua Bàn Gallery (giữa Cổng 1-2) & Photobooth (18:00) → Vào Cổng 2 → Lối chữ L → ${isLeftWing ? "Cánh trái" : "Cánh phải"}, dãy ${rowNum} → Bàn ${padded}.`;
+        ? `迎賓桌 / 拍貼機(18:00) → 由 2 號門進入 → L型紅毯 → ${isLeftWing ? "左側" : "右側"}第 ${rowNum} 排 → 第 ${padded} 桌。`
+        : `Bàn Gallery & Photobooth (18:00) → Vào Cổng 2 → Lối chữ L → ${isLeftWing ? "Cánh trái" : "Cánh phải"}, dãy ${rowNum} → Bàn ${padded}.`;
     }
 
     const companions = Array.isArray(rCfg.tableGuests) ? rCfg.tableGuests : [];
