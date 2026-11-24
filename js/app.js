@@ -1145,6 +1145,8 @@
       if (guestName) qs.set("guest", guestName);
       const slotCode = (params.get("s") || "").trim().toLowerCase();
       if (slotCode) qs.set("slot", slotCode);
+      const urlTable = (params.get("table") || "").trim();
+      if (urlTable) qs.set("table", urlTable);
       qs.set("t", String(Date.now()));
       const isLoc = /^(file:|https?:\/\/(localhost|127\.0\.0\.1))/i.test(window.location.href);
       const apiOrigin = isLoc ? "https://thuantuongtieudinh.io.vn" : "";
@@ -1192,20 +1194,23 @@
     const totalTables = Math.max(38, parseInt(totalTablesOverride, 10) || 38, tNum);
     const tblLabels = tableLabels || {};
 
-    const W = 560;
+    const hallW = 548;
+    const foyerX = 556;
+    const foyerW = 86;
+    const W = foyerX + foyerW + 8; // 650 (banquet hall + right-side reception foyer)
     const stageW = 236, stageH = 32;
-    const stageX = (W - stageW) / 2, stageY = 18;
     const aisleW = 44;
-    const aisleCX = W / 2; // 280
+    const aisleCX = 276;
+    const stageX = aisleCX - stageW / 2, stageY = 18;
 
     const tableR = 22;
     const chairR = 29;
 
     // 2 columns per wing with generous horizontal spread so center-interleaved table fits cleanly
-    const leftCols  = [68, 194];  // outer-left, inner-left
-    const rightCols = [366, 492]; // inner-right, outer-right
-    const leftMid   = (leftCols[0] + leftCols[1]) / 2;   // 131
-    const rightMid  = (rightCols[0] + rightCols[1]) / 2; // 429
+    const leftCols  = [66, 190];  // outer-left, inner-left
+    const rightCols = [362, 486]; // inner-right, outer-right
+    const leftMid   = (leftCols[0] + leftCols[1]) / 2;   // 128
+    const rightMid  = (rightCols[0] + rightCols[1]) / 2; // 424
 
     const baseRows = 9;
     const baseTables = baseRows * 4; // 36
@@ -1265,19 +1270,29 @@
     });
 
     // L-shaped aisle geometry:
-    // Enters from Door 2 on the right wall between Row 6 (rowY[5]) and Row 7 (rowY[6]),
-    // goes horizontally left to aisleCX, then turns UP to the Stage!
+    // Enters from Cổng 2 on the right wall (from Right-Side Reception Foyer: Photobooth & Backdrop)
+    // between Row 6 (rowY[5]) and Row 7 (rowY[6]), goes horizontally left to aisleCX, then turns UP to the Stage!
     const lTurnY = (rowY[5] + rowY[6]) / 2;
     const topCarpetY = stageY + stageH + 6;
-    const rightDoorX = W - 14;
+    const rightDoorX = hallW;
+    const foyerCX = foyerX + foyerW / 2;
     const lastRowY = rowY[baseRows - 1];
-    const bottomGateY = lastRowY + 50;
-    const svgH = bottomGateY + 28;
+    const bottomBarY = lastRowY + 46;
+    const svgH = bottomBarY + 26;
 
     const stageLabel = isZh ? "STAGE • 主舞台" : "STAGE • SÂN KHẤU CHÍNH";
     const aisleLabel = isZh ? "L型紅毯走道" : "LỐI LÊN SÂN KHẤU (CHỮ L)";
-    const door2Label = isZh ? "門 2 (迎賓入口)" : "CỬA 2 (ĐÓN KHÁCH)";
+    const door2Label = isZh ? "2 號門 (入場)" : "CỔNG 2 (LỐI VÀO)";
     const wcLabel = isZh ? "↙ WC • 洗手間" : "↙ WC • Nhà vệ sinh";
+    const mainEntranceLabel = isZh ? "大廳正門" : "CỬA CHÍNH";
+    const foyerTitle1 = isZh ? "迎賓大廳" : "SẢNH ĐÓN";
+    const foyerTitle2 = isZh ? "賓客簽到區" : "KHÁCH";
+    const backdropTitle = isZh ? "主背板" : "BACKDROP";
+    const backdropSub = isZh ? "合影拍照" : "Chụp ảnh";
+    const photoTitle = isZh ? "拍貼機" : "PHOTOBOOTH";
+    const photoSub = isZh ? "打卡留念" : "Check-in";
+    const foyerBottomNote1 = isZh ? "右側正門" : "Các cửa chính";
+    const foyerBottomNote2 = isZh ? "由2號門入席" : "đều ở bên phải";
 
     let tablesSvg = "";
 
@@ -1340,39 +1355,111 @@
         <rect x="${stageX + 3.5}" y="${stageY + 3}" width="${stageW - 7}" height="${stageH - 6}" rx="2.5" fill="none" stroke="rgba(255, 240, 200, 0.45)" stroke-width="0.8" />
         <text x="${aisleCX}" y="${stageY + 20}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="11.5" font-weight="700" letter-spacing="2" fill="#fff8ec">${stageLabel}</text>
 
-        <!-- Lower Center Aisle (Rows 7–9 down to Bottom Gate) -->
-        <rect x="${aisleCX - aisleW / 2}" y="${lTurnY + aisleW / 2}" width="${aisleW}" height="${bottomGateY - (lTurnY + aisleW / 2) - 8}" fill="rgba(132, 21, 23, 0.035)" />
-        <line x1="${aisleCX - aisleW / 2}" y1="${lTurnY + aisleW / 2}" x2="${aisleCX - aisleW / 2}" y2="${bottomGateY - 8}" stroke="rgba(132, 21, 23, 0.14)" stroke-width="0.8" stroke-dasharray="4 3" />
-        <line x1="${aisleCX + aisleW / 2}" y1="${lTurnY + aisleW / 2}" x2="${aisleCX + aisleW / 2}" y2="${bottomGateY - 8}" stroke="rgba(132, 21, 23, 0.14)" stroke-width="0.8" stroke-dasharray="4 3" />
+        <!-- Hall Right Partition Wall (Solid above & below Cổng 2 doorway) -->
+        <line x1="${hallW}" y1="${stageY}" x2="${hallW}" y2="${lTurnY - aisleW / 2}" stroke="rgba(132, 21, 23, 0.34)" stroke-width="1.4" />
+        <line x1="${hallW}" y1="${lTurnY + aisleW / 2}" x2="${hallW}" y2="${bottomBarY + 14}" stroke="rgba(132, 21, 23, 0.34)" stroke-width="1.4" />
 
-        <!-- L-Shaped Stage March Carpet (From Door 2 below Row 6 → Left to Center Aisle → Up to Stage) -->
+        <!-- Right-Side Exterior Reception Foyer (Cửa chính, Sảnh đón khách, Backdrop, Photobooth) -->
+        <rect x="${foyerX}" y="${stageY}" width="${foyerW}" height="${bottomBarY + 14 - stageY}" rx="6" fill="rgba(164, 112, 42, 0.06)" stroke="rgba(132, 21, 23, 0.28)" stroke-width="1" stroke-dasharray="4 3" />
+
+        <!-- Main Entrance indicator on Right Edge -->
+        <rect x="${foyerX + 6}" y="${stageY + 14}" width="${foyerW - 12}" height="20" rx="4" fill="#fdf6ea" stroke="rgba(132, 21, 23, 0.45)" stroke-width="0.9" />
+        <text x="${foyerCX}" y="${stageY + 27}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.2" font-weight="700" letter-spacing="0.5" fill="#841518">◀ ${mainEntranceLabel}</text>
+
+        <!-- Reception Foyer Title -->
+        <text x="${foyerCX}" y="${rowY[1] - 10}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="9.2" font-weight="700" letter-spacing="0.8" fill="#841518">${foyerTitle1}</text>
+        <text x="${foyerCX}" y="${rowY[1] + 4}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="9.2" font-weight="700" letter-spacing="0.8" fill="#841518">${foyerTitle2}</text>
+
+        <!-- Backdrop Photography Zone -->
+        <rect x="${foyerX + 7}" y="${rowY[2] - 24}" width="${foyerW - 14}" height="46" rx="5" fill="#fffdf8" stroke="rgba(164, 112, 42, 0.58)" stroke-width="1" />
+        <text x="${foyerCX}" y="${rowY[2] - 4}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.6" font-weight="700" letter-spacing="0.4" fill="#841518">${backdropTitle}</text>
+        <text x="${foyerCX}" y="${rowY[2] + 10}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8" font-weight="600" fill="#6b5344">${backdropSub}</text>
+
+        <!-- Photobooth Check-in Zone -->
+        <rect x="${foyerX + 7}" y="${rowY[3] + 18}" width="${foyerW - 14}" height="46" rx="5" fill="#fffdf8" stroke="rgba(164, 112, 42, 0.58)" stroke-width="1" />
+        <text x="${foyerCX}" y="${rowY[3] + 38}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.1" font-weight="700" letter-spacing="0.2" fill="#841518">${photoTitle}</text>
+        <text x="${foyerCX}" y="${rowY[3] + 52}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8" font-weight="600" fill="#6b5344">${photoSub}</text>
+
+        <!-- Flow path from Foyer (Backdrop / Photobooth) down into Cổng 2 -->
+        <path d="M${foyerCX},${rowY[3] + 68} L${foyerCX},${lTurnY} L${rightDoorX},${lTurnY}" fill="none" stroke="rgba(132, 21, 23, 0.45)" stroke-width="1.3" stroke-dasharray="4 3" />
+
+        <!-- Lower Foyer Note -->
+        <text x="${foyerCX}" y="${rowY[7] - 6}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.2" font-weight="700" fill="rgba(132, 21, 23, 0.72)">${foyerBottomNote1}</text>
+        <text x="${foyerCX}" y="${rowY[7] + 7}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8" font-weight="600" fill="#6b5344">${foyerBottomNote2}</text>
+
+        <!-- Lower Center Walkway (Rows 7–9, no bottom door) -->
+        <rect x="${aisleCX - aisleW / 2}" y="${lTurnY + aisleW / 2}" width="${aisleW}" height="${lastRowY + 26 - (lTurnY + aisleW / 2)}" fill="rgba(132, 21, 23, 0.035)" />
+        <line x1="${aisleCX - aisleW / 2}" y1="${lTurnY + aisleW / 2}" x2="${aisleCX - aisleW / 2}" y2="${lastRowY + 26}" stroke="rgba(132, 21, 23, 0.14)" stroke-width="0.8" stroke-dasharray="4 3" />
+        <line x1="${aisleCX + aisleW / 2}" y1="${lTurnY + aisleW / 2}" x2="${aisleCX + aisleW / 2}" y2="${lastRowY + 26}" stroke="rgba(132, 21, 23, 0.14)" stroke-width="0.8" stroke-dasharray="4 3" />
+
+        <!-- L-Shaped Stage March Carpet (From Cổng 2 below Row 6 → Left to Center Aisle → Up to Stage) -->
         <polygon points="${aisleCX - aisleW / 2},${topCarpetY} ${aisleCX + aisleW / 2},${topCarpetY} ${aisleCX + aisleW / 2},${lTurnY - aisleW / 2} ${rightDoorX},${lTurnY - aisleW / 2} ${rightDoorX},${lTurnY + aisleW / 2} ${aisleCX - aisleW / 2},${lTurnY + aisleW / 2}" fill="rgba(132, 21, 23, 0.11)" />
         <!-- L-Carpet Border Walls -->
         <path d="M${aisleCX - aisleW / 2},${topCarpetY} L${aisleCX - aisleW / 2},${lTurnY + aisleW / 2} L${rightDoorX},${lTurnY + aisleW / 2}" fill="none" stroke="rgba(132, 21, 23, 0.38)" stroke-width="1.1" stroke-dasharray="5 3" />
         <path d="M${aisleCX + aisleW / 2},${topCarpetY} L${aisleCX + aisleW / 2},${lTurnY - aisleW / 2} L${rightDoorX},${lTurnY - aisleW / 2}" fill="none" stroke="rgba(132, 21, 23, 0.38)" stroke-width="1.1" stroke-dasharray="5 3" />
-        <!-- L-Path Directional Guide Line (Door 2 → Center → Stage) -->
+        <!-- L-Path Directional Guide Line (Cổng 2 → Center → Stage) -->
         <path d="M${rightDoorX - 6},${lTurnY} L${aisleCX},${lTurnY} L${aisleCX},${topCarpetY + 12}" fill="none" stroke="rgba(132, 21, 23, 0.42)" stroke-width="1.3" stroke-dasharray="4 3" />
         <polygon points="${aisleCX},${topCarpetY + 4} ${aisleCX - 5},${topCarpetY + 13} ${aisleCX + 5},${topCarpetY + 13}" fill="rgba(132, 21, 23, 0.55)" />
 
         <!-- Vertical Aisle Label -->
         <text x="${aisleCX - 8}" y="${(topCarpetY + lTurnY) / 2}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="9.5" font-weight="700" letter-spacing="1.8" fill="rgba(132, 21, 23, 0.52)" transform="rotate(-90 ${aisleCX - 8} ${(topCarpetY + lTurnY) / 2})">${aisleLabel}</text>
 
-        <!-- Door 2 Badge (Right end of L below Row 6) -->
-        <rect x="${rightDoorX - 96}" y="${lTurnY - 10}" width="92" height="20" rx="4" fill="#841518" />
-        <text x="${rightDoorX - 50}" y="${lTurnY + 3.5}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.5" font-weight="700" letter-spacing="0.8" fill="#fff8ec">◀ ${door2Label}</text>
+        <!-- Cổng 2 Entrance Badge (Bridging Right Foyer into L-Carpet below Row 6) -->
+        <rect x="${rightDoorX - 90}" y="${lTurnY - 10}" width="102" height="20" rx="4" fill="#841518" />
+        <text x="${rightDoorX - 39}" y="${lTurnY + 3.5}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.4" font-weight="700" letter-spacing="0.6" fill="#fff8ec">◀ ${door2Label}</text>
 
         <!-- Round Tables -->
         ${tablesSvg}
 
         <!-- WC / Restroom Indicator (Bottom-Left Corner below Table 33) -->
-        <rect x="18" y="${bottomGateY - 4}" width="92" height="17" rx="4" fill="#fdf8ee" stroke="rgba(132, 21, 23, 0.42)" stroke-width="0.95" />
-        <text x="64" y="${bottomGateY + 7.2}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8" font-weight="700" letter-spacing="0.4" fill="#841518">${wcLabel}</text>
-
-        <!-- Bottom Hall Entrance Indicator -->
-        <line x1="${aisleCX - 34}" y1="${bottomGateY}" x2="${aisleCX + 34}" y2="${bottomGateY}" stroke="rgba(132, 21, 23, 0.32)" stroke-width="1.1" />
-        <text x="${aisleCX}" y="${bottomGateY + 14}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="9" font-weight="700" letter-spacing="1.2" fill="rgba(132, 21, 23, 0.55)">${isZh ? "大廳正門 ↑" : "CỬA CHÍNH SẢNH SEINE ↑"}</text>
+        <rect x="18" y="${bottomBarY - 4}" width="94" height="18" rx="4" fill="#fdf8ee" stroke="rgba(132, 21, 23, 0.42)" stroke-width="0.95" />
+        <text x="65" y="${bottomBarY + 8}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.2" font-weight="700" letter-spacing="0.4" fill="#841518">${wcLabel}</text>
       </svg>
     `;
+  }
+
+  function normalizeTableLabelKey(str) {
+    return String(str || "")
+      .normalize("NFC")
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, " ");
+  }
+
+  function filterVisibleTableLabels(rawMeta, activeTableNum, labelMode) {
+    const mode = ["none", "own_only", "same_label", "all"].includes(labelMode)
+      ? labelMode
+      : "same_label";
+    const out = {};
+    if (!rawMeta || typeof rawMeta !== "object" || mode === "none") return out;
+
+    if (mode === "all") {
+      Object.keys(rawMeta).forEach((k) => {
+        const lbl = rawMeta[k] && rawMeta[k].label ? String(rawMeta[k].label).trim() : "";
+        if (lbl) out[k] = lbl;
+      });
+      return out;
+    }
+
+    const tKey = activeTableNum > 0 ? String(activeTableNum) : "";
+    if (!tKey) return out;
+    const ownLbl = rawMeta[tKey] && rawMeta[tKey].label ? String(rawMeta[tKey].label).trim() : "";
+    if (!ownLbl) return out;
+
+    if (mode === "own_only") {
+      out[tKey] = ownLbl;
+      return out;
+    }
+
+    // mode === "same_label": show ONLY tables sharing the exact same normalized label as the guest's table
+    const targetKey = normalizeTableLabelKey(ownLbl);
+    Object.keys(rawMeta).forEach((k) => {
+      const lbl = rawMeta[k] && rawMeta[k].label ? String(rawMeta[k].label).trim() : "";
+      if (lbl && normalizeTableLabelKey(lbl) === targetKey) {
+        out[k] = lbl;
+      }
+    });
+    return out;
   }
 
     function syncGuestSeatingUI() {
@@ -1407,13 +1494,14 @@
     const chartFooterEl = document.getElementById("seating-chart-footer");
     const svgWrapEl = document.getElementById("seating-svg-container");
 
-    // Build table labels from tableMeta: { "1": "GB CR", "2": "Gd nốiD", ... }
+    // Build visible table labels according to Admin privacy mode ("none" | "own_only" | "same_label" | "all")
     const seatCfg = rCfg.seatingConfig || {};
     const rawMeta = seatCfg.tableMeta || {};
-    const metaLabels = {};
-    Object.keys(rawMeta).forEach(k => {
-      if (rawMeta[k] && rawMeta[k].label) metaLabels[k] = rawMeta[k].label;
-    });
+    const labelMode = ["none", "own_only", "same_label", "all"].includes(seatCfg.tableLabelMode)
+      ? seatCfg.tableLabelMode
+      : "same_label";
+    const parsedTableNum = tableStr ? parseInt(tableStr, 10) || 0 : 0;
+    const metaLabels = filterVisibleTableLabels(rawMeta, parsedTableNum, labelMode);
 
     if (eyebrowEl) {
       eyebrowEl.textContent = isZh
@@ -1435,8 +1523,8 @@
     }
     if (chartFooterEl) {
       chartFooterEl.textContent = isZh
-        ? "Seine 宴會廳獨立迎賓入口（一樓）↑"
-        : "Cổng Đón Khách Sảnh Seine (Tầng Trệt) ↑";
+        ? "迎賓大廳・拍貼機與主背板位於右側 → 請由 2 號門入場"
+        : "Sảnh đón khách • Photobooth & Backdrop ở bên phải → Vào sảnh tiệc bằng Cổng 2";
     }
 
     if (!tableStr) {
@@ -1507,7 +1595,10 @@
       (window.SEAT_GROUPS && window.SEAT_GROUPS[grpKey]);
     const zInfo = SEAT_ZONE_I18N[grpKey] || SEAT_ZONE_I18N.honored_guests;
     const groupDisplay = customGrp ? (customGrp.label || customGrp.short) : (isZh ? zInfo.zh : zInfo.vi);
-    const resolvedTableLabel = (rCfg.tableLabel || metaLabels[String(tNum)] || "").trim();
+    const resolvedTableLabel =
+      labelMode === "none"
+        ? ""
+        : (metaLabels[String(tNum)] || rCfg.tableLabel || "").trim();
     const customLabel = resolvedTableLabel ? ` (${resolvedTableLabel})` : "";
     const pax = Math.max(1, parseInt(params.get("pax") || rCfg.pax || "1", 10) || 1);
 
@@ -1538,7 +1629,7 @@
         : `Bàn ${padded}${resolvedTableLabel ? ` (${resolvedTableLabel})` : ""} • 10 ghế, ngồi tự do.`;
     }
     if (n2PeriodEl) {
-      n2PeriodEl.textContent = isZh ? "入場動線 • 從門2進入" : "Lối vào từ Cửa 2 (Dãy 6) • Đi theo thảm đỏ chữ L";
+      n2PeriodEl.textContent = isZh ? "右側迎賓大廳（背板・拍貼機）• 由 2 號門入場" : "Sảnh đón khách bên phải (Backdrop • Photobooth) • Vào Cổng 2";
     }
     if (n2TitleEl) {
       n2TitleEl.textContent = isZh
@@ -1547,8 +1638,8 @@
     }
     if (n2DescEl) {
       n2DescEl.textContent = isZh
-        ? `門2 → L型紅毯 → ${isLeftWing ? "左側" : "右側"}第 ${rowNum} 排 → 第 ${padded} 桌。`
-        : `Cửa 2 → Lối chữ L → ${isLeftWing ? "Cánh trái" : "Cánh phải"}, dãy ${rowNum} → Bàn ${padded}.`;
+        ? `右側迎賓大廳 → 2號門 → L型紅毯 → ${isLeftWing ? "左側" : "右側"}第 ${rowNum} 排 → 第 ${padded} 桌。`
+        : `Sảnh đón khách bên phải → Cổng 2 → Lối chữ L → ${isLeftWing ? "Cánh trái" : "Cánh phải"}, dãy ${rowNum} → Bàn ${padded}.`;
     }
 
     const companions = Array.isArray(rCfg.tableGuests) ? rCfg.tableGuests : [];

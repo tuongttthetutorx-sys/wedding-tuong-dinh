@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Cormorant+Garamond:wght@600;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23721427'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='38' fill='%23fffbf2'%3E%E5%9B%8D%3C/text%3E%3C/svg%3E" />
   <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
-  <link rel="stylesheet" href="css/admin.css?v=66" />
+  <link rel="stylesheet" href="css/admin.css?v=67" />
 </head>
 <body>
   <div class="adm-shell">
@@ -594,6 +594,28 @@
           </div>
         </div>
 
+        <!-- CHẾ ĐỘ HIỂN THỊ TÊN BÀN TRÊN THIỆP MỜI KHÁCH -->
+        <div class="seine-label-mode-bar">
+          <div class="seine-label-mode-controls">
+            <label for="seine-table-label-mode" class="seine-label-mode-title">
+              🏷️ Tên bàn trên thiệp khách:
+            </label>
+            <select id="seine-table-label-mode" class="adm-select adm-select-sm seine-label-mode-select">
+              <option value="same_label">👥 Chỉ hiện các bàn cùng tên</option>
+              <option value="own_only">🎯 Chỉ hiện tên bàn của khách</option>
+              <option value="none">🙈 Ẩn tất cả tên bàn</option>
+              <option value="all">👁️ Hiện tên tất cả các bàn</option>
+            </select>
+            <label class="seine-all-toggle-label">
+              <input type="checkbox" id="seine-show-all-labels-toggle" />
+              <span>Hiện tất cả tên bàn</span>
+            </label>
+          </div>
+          <div id="seine-label-mode-hint" class="seine-label-mode-hint">
+            Khách chỉ thấy tên các bàn trùng tên với bàn của mình (link chung không lộ tên bàn).
+          </div>
+        </div>
+
         <!-- THIẾT LẬP & TỰ CHỈNH NHÓM KHÁCH (THÊM / BỚT / ĐỔI MÀU NHÓM TÙY Ý) -->
         <div class="custom-groups-panel">
           <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px;">
@@ -657,27 +679,38 @@
               <div class="seine-stage-sub">Sảnh Seine • Tầng Trệt (672m²) • Thuận Tường &amp; Tiểu Dinh</div>
             </div>
 
-            <div class="seine-wings-wrap">
-              <div>
-                <div class="seine-wing-header-text" style="text-align:center; font-size:11.5px; font-weight:700; color:var(--adm-muted); margin-bottom:6px;">
-                  ◀ CÁNH TRÁI SÂN KHẤU
+            <div class="seine-hall-body-grid">
+              <div class="seine-wings-wrap">
+                <div>
+                  <div class="seine-wing-header-text" style="text-align:center; font-size:12px; font-weight:700; color:var(--adm-muted); margin-bottom:6px;">
+                    ◀ CÁNH TRÁI SÂN KHẤU
+                  </div>
+                  <div class="seine-wing-grid" id="seine-left-wing"></div>
                 </div>
-                <div class="seine-wing-grid" id="seine-left-wing"></div>
+
+                <div class="seine-aisle-col">⤴ LỐI LÊN SÂN KHẤU CHỮ L ✨</div>
+
+                <div>
+                  <div class="seine-wing-header-text" style="text-align:center; font-size:12px; font-weight:700; color:var(--adm-muted); margin-bottom:6px;">
+                    CÁNH PHẢI SÂN KHẤU ▶
+                  </div>
+                  <div class="seine-wing-grid" id="seine-right-wing"></div>
+                </div>
               </div>
 
-              <div class="seine-aisle-col">⤴ LỐI LÊN SÂN KHẤU CHỮ L ✨</div>
-
-              <div>
-                <div class="seine-wing-header-text" style="text-align:center; font-size:11.5px; font-weight:700; color:var(--adm-muted); margin-bottom:6px;">
-                  CÁNH PHẢI SÂN KHẤU ▶
-                </div>
-                <div class="seine-wing-grid" id="seine-right-wing"></div>
-              </div>
+              <aside class="seine-right-foyer" aria-label="Khu sảnh đón khách bên phải">
+                <span class="seine-foyer-pill">🚪 Cửa chính bên phải</span>
+                <span class="seine-foyer-main">Sảnh Đón Khách · Backdrop · Photobooth</span>
+                <span class="seine-foyer-door">◀ Vào Cổng 2</span>
+              </aside>
             </div>
 
             <div class="seine-bottom-bar">
               <div class="seine-wc-badge">
                 ↙ 🚻 WC • Nhà vệ sinh
+              </div>
+              <div class="seine-foyer-mobile-note">
+                Sảnh đón khách · Backdrop &amp; Photobooth ở bên phải → Vào Cổng 2
               </div>
             </div>
           </div>
@@ -815,6 +848,6 @@
 
   <div id="puppy-toast" class="puppy-toast" role="status" aria-live="polite"></div>
 
-  <script src="js/admin.js?v=66" defer></script>
+  <script src="js/admin.js?v=67" defer></script>
 </body>
 </html>

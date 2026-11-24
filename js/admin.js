@@ -34,11 +34,14 @@
   };
   let globalConfigLoadedOnce = false;
 
+  const VALID_TABLE_LABEL_MODES = ["none", "own_only", "same_label", "all"];
   const STORAGE_SEATING_CFG = "td_seating_config_v1";
+  const STORAGE_LAST_RESTRICTED_LABEL_MODE = "td_last_restricted_label_mode_v1";
   let seatingConfig = {
     totalTables: 38,
     seatsPerTable: 10,
     showTableGuests: true,
+    tableLabelMode: "same_label",
     tableMeta: {}
   };
   try {
@@ -4878,6 +4881,31 @@ body {
   const badgeSeatedEl = document.getElementById("badge-seated-count");
   const seineTotalTablesInput = document.getElementById("seine-total-tables");
   const seineShowCompanionsChk = document.getElementById("seine-show-companions");
+  const seineTableLabelModeSel = document.getElementById("seine-table-label-mode");
+  const seineShowAllLabelsToggle = document.getElementById("seine-show-all-labels-toggle");
+  const seineLabelModeHintEl = document.getElementById("seine-label-mode-hint");
+
+  function syncTableLabelModeUI() {
+    const mode = VALID_TABLE_LABEL_MODES.includes(seatingConfig.tableLabelMode)
+      ? seatingConfig.tableLabelMode
+      : "same_label";
+    seatingConfig.tableLabelMode = mode;
+    if (seineTableLabelModeSel && document.activeElement !== seineTableLabelModeSel) {
+      seineTableLabelModeSel.value = mode;
+    }
+    if (seineShowAllLabelsToggle) {
+      seineShowAllLabelsToggle.checked = mode === "all";
+    }
+    if (seineLabelModeHintEl) {
+      const hints = {
+        same_label: "Khách chỉ thấy tên các bàn trùng tên với bàn của mình (link chung không lộ tên bàn).",
+        own_only: "Khách chỉ thấy tên đúng bàn mình ngồi; toàn bộ các bàn còn lại ẩn tên.",
+        none: "Ẩn hoàn toàn tên mọi bàn trên thiệp mời khách (chỉ hiển thị số bàn 01, 02...).",
+        all: "Đang bật hiện tên tất cả các bàn trên sơ đồ thiệp khách (tắt nút gạt để ẩn lại ngay)."
+      };
+      seineLabelModeHintEl.textContent = hints[mode] || hints.same_label;
+    }
+  }
   const seineKpiSummary = document.getElementById("seine-kpi-summary");
   const seineLeftWing = document.getElementById("seine-left-wing");
   const seineRightWing = document.getElementById("seine-right-wing");
@@ -4963,6 +4991,7 @@ body {
     if (seineShowCompanionsChk) {
       seineShowCompanionsChk.checked = seatingConfig.showTableGuests !== false;
     }
+    syncTableLabelModeUI();
 
     const { occ, byTable, totalSeatedRecords, totalSeatedPax } = computeTableStats();
     if (badgeSeatedEl) badgeSeatedEl.textContent = String(totalSeatedRecords);
@@ -5117,7 +5146,7 @@ body {
         rightCorridor.className = "seine-l-corridor is-right-door2";
         rightCorridor.innerHTML = `
           <span>⤴ LỐI CHỮ L</span>
-          <span class="seine-l-door-badge">🚪 CỬA 2 ◀</span>
+          <span class="seine-l-door-badge">🚪 CỔNG 2 ◀</span>
         `;
         seineRightWing.appendChild(rightCorridor);
       }
@@ -5369,6 +5398,48 @@ body {
     seineShowCompanionsChk.addEventListener("change", () => {
       seatingConfig.showTableGuests = seineShowCompanionsChk.checked;
       saveSeatingConfigToServer(true);
+    });
+  }
+
+  function applyTableLabelMode(nextMode) {
+    const valid = VALID_TABLE_LABEL_MODES.includes(nextMode) ? nextMode : "same_label";
+    if (valid !== "all") {
+      try {
+        localStorage.setItem(STORAGE_LAST_RESTRICTED_LABEL_MODE, valid);
+      } catch (_) {}
+    }
+    seatingConfig.tableLabelMode = valid;
+    syncTableLabelModeUI();
+    saveSeatingConfigToServer(false);
+    const toastMap = {
+      same_label: "👥 Đã chuyển thiệp khách sang: Chỉ hiện các bàn cùng tên!",
+      own_only: "🎯 Đã chuyển thiệp khách sang: Chỉ hiện tên bàn của khách!",
+      none: "🙈 Đã ẩn hoàn toàn tên bàn trên thiệp mời khách!",
+      all: "👁️ Đã bật hiện tên tất cả các bàn trên thiệp mời khách!"
+    };
+    notify(toastMap[valid] || "✅ Đã lưu chế độ hiển thị tên bàn!");
+  }
+
+  if (seineTableLabelModeSel) {
+    seineTableLabelModeSel.addEventListener("change", () => {
+      applyTableLabelMode(seineTableLabelModeSel.value);
+    });
+  }
+
+  if (seineShowAllLabelsToggle) {
+    seineShowAllLabelsToggle.addEventListener("change", () => {
+      if (seineShowAllLabelsToggle.checked) {
+        applyTableLabelMode("all");
+      } else {
+        let fallback = "same_label";
+        try {
+          const savedLast = localStorage.getItem(STORAGE_LAST_RESTRICTED_LABEL_MODE);
+          if (savedLast && savedLast !== "all" && VALID_TABLE_LABEL_MODES.includes(savedLast)) {
+            fallback = savedLast;
+          }
+        } catch (_) {}
+        applyTableLabelMode(fallback);
+      }
     });
   }
 

@@ -425,7 +425,8 @@ body {
 }
 .js-bulk-chk,
 .js-u-bulk-chk,
-#seine-show-companions {
+#seine-show-companions,
+#seine-show-all-labels-toggle {
   width: 24px;
   height: 24px;
   min-width: 24px;
@@ -434,6 +435,53 @@ body {
   cursor: pointer;
   flex-shrink: 0;
   margin: 0;
+}
+.seine-label-mode-bar {
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--adm-surface-warm);
+  border: 1.5px solid var(--adm-border-warm);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.seine-label-mode-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+.seine-label-mode-title {
+  font-size: 12.8px;
+  font-weight: 700;
+  color: var(--adm-crimson);
+  white-space: nowrap;
+}
+.seine-label-mode-select {
+  width: auto;
+  min-width: 230px;
+  flex: 1 1 230px;
+  max-width: 310px;
+}
+.seine-all-toggle-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 10px;
+  border-radius: 7px;
+  background: #fff;
+  border: 1px solid var(--adm-border-strong);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--adm-text);
+  cursor: pointer;
+  user-select: none;
+}
+.seine-label-mode-hint {
+  font-size: 12px;
+  color: var(--adm-muted);
+  line-height: 1.45;
 }
 .seine-pill-btn {
   min-height: 28px;
@@ -1449,10 +1497,28 @@ table.adm-table {
     font-size: 7.5px !important;
     padding: 1px 4px !important;
   }
+  .seine-hall-body-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 0 !important;
+  }
+  .seine-right-foyer {
+    display: none !important;
+  }
+  .seine-foyer-mobile-note {
+    display: inline-flex !important;
+    align-items: center;
+  }
+  .seine-label-mode-select {
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+  }
   .seine-bottom-bar {
     display: flex !important;
-    justify-content: flex-start !important;
+    flex-wrap: wrap !important;
+    justify-content: space-between !important;
     align-items: center !important;
+    gap: 6px !important;
     margin-top: 6px !important;
   }
   .seine-wc-badge {
@@ -1806,6 +1872,56 @@ table.adm-table {
   font-size: 11px;
   opacity: 0.88;
   margin-top: 2px;
+}
+.seine-hall-body-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px;
+  gap: 8px;
+  align-items: stretch;
+}
+.seine-right-foyer {
+  background: rgba(164, 112, 42, 0.08);
+  border: 1.5px dashed rgba(125, 21, 24, 0.34);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 4px;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  color: var(--adm-crimson);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  user-select: none;
+  gap: 10px;
+}
+.seine-foyer-pill {
+  color: var(--adm-amber-ink);
+  font-size: 10.5px;
+}
+.seine-foyer-main {
+  color: var(--adm-crimson);
+  font-size: 11px;
+}
+.seine-foyer-door {
+  background: var(--adm-crimson);
+  color: #fff8ec;
+  padding: 6px 3px;
+  border-radius: 5px;
+  font-size: 10.5px;
+}
+.seine-foyer-mobile-note {
+  display: none;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--adm-crimson);
+  background: rgba(164, 112, 42, 0.1);
+  border: 1px dashed rgba(125, 21, 24, 0.34);
+  border-radius: 5px;
+  padding: 3px 8px;
+  line-height: 1.3;
 }
 .seine-wings-wrap {
   display: grid;

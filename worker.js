@@ -161,11 +161,22 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Headers": "Content-Type"
 };
 
+const VALID_TABLE_LABEL_MODES = ["none", "own_only", "same_label", "all"];
+
+function normalizeTableLabelKey(str) {
+  return String(str || "")
+    .normalize("NFC")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
+}
+
 function defaultSeatingConfig() {
   return {
     totalTables: 38, // Sảnh Seine (Riverside Palace): 38 tables standard layout
     seatsPerTable: 10,
     showTableGuests: true,
+    tableLabelMode: "same_label", // "none" | "own_only" | "same_label" | "all"
     tableMeta: {}
   };
 }
@@ -270,12 +281,13 @@ export class WeddingAnalytics {
     return stored;
   }
 
-  resolveGuestConfig(data, guestName = "", slotCode = "") {
+  resolveGuestConfig(data, guestName = "", slotCode = "", tableHint = "") {
     const cfg = data.siteConfig || {};
     const seatingCfg = data.seatingConfig || defaultSeatingConfig();
     const k = normalizeGuestKey(guestName);
     const rawSlotCode = String(slotCode || "").trim().toLowerCase();
     const slotNum = rawSlotCode ? slotNumFromCode(rawSlotCode) : 0;
+    const cleanTableHint = String(tableHint || "").trim();
 
     // 1. Match guest by slotCode/slotNum first (fixed URL ?s=5-7n19), or by current name, or by previous name (aliases)
     let saved = null;
@@ -333,7 +345,7 @@ export class WeddingAnalytics {
     }
 
     const driveUrl = (saved && saved.driveUrl) || cfg.driveUrl || "";
-    const table = String((saved && saved.table) || (slotObj && slotObj.table) || "").trim();
+    const table = String((saved && saved.table) || (slotObj && slotObj.table) || cleanTableHint || "").trim();
     const tMeta = (table && seatingCfg.tableMeta && seatingCfg.tableMeta[table]) || {};
     const group =
       String((saved && saved.group) || (slotObj && slotObj.group) || tMeta.group || "").trim();
@@ -341,6 +353,30 @@ export class WeddingAnalytics {
       1,
       parseInt((saved && saved.pax) || (slotObj && slotObj.pax) || "1", 10) || 1
     );
+    const labelMode = VALID_TABLE_LABEL_MODES.includes(seatingCfg.tableLabelMode)
+      ? seatingCfg.tableLabelMode
+      : "same_label";
+    const guestLabelKey = normalizeTableLabelKey(tMeta.label || "");
+    const rawTableMeta = seatingCfg.tableMeta || {};
+    const filteredTableMeta = {};
+    if (labelMode === "all") {
+      Object.keys(rawTableMeta).forEach((k) => {
+        const m = rawTableMeta[k];
+        if (m && (m.label || m.group)) {
+          filteredTableMeta[k] = { label: m.label || "", group: m.group || "" };
+        }
+      });
+    } else if (labelMode === "same_label" && table && guestLabelKey) {
+      Object.keys(rawTableMeta).forEach((k) => {
+        const m = rawTableMeta[k];
+        if (m && m.label && normalizeTableLabelKey(m.label) === guestLabelKey) {
+          filteredTableMeta[k] = { label: m.label, group: m.group || "" };
+        }
+      });
+    } else if (labelMode === "own_only" && table && tMeta.label) {
+      filteredTableMeta[table] = { label: tMeta.label, group: tMeta.group || "" };
+    }
+    const visibleOwnLabel = labelMode === "none" ? "" : (tMeta.label || "");
 
     // Aggregate per-table occupancy & companions across savedGuests + unassigned slots
     const tableOccupancy = {};
@@ -386,14 +422,16 @@ export class WeddingAnalytics {
       table,
       group,
       pax,
-      tableLabel: tMeta.label || "",
+      tableLabel: visibleOwnLabel,
       tableGuests: seatingCfg.showTableGuests !== false ? tableGuests : [],
       tableOccupancy,
       seatingConfig: {
         totalTables: seatingCfg.totalTables || 38,
         seatsPerTable: seatingCfg.seatsPerTable || 10,
         showTableGuests: seatingCfg.showTableGuests !== false,
-        tableMeta: seatingCfg.tableMeta || {}
+        tableLabelMode: labelMode,
+        tableMeta: filteredTableMeta,
+        groups: seatingCfg.groups || undefined
       }
     };
   }
@@ -654,6 +692,9 @@ export class WeddingAnalytics {
       if (body.showTableGuests !== undefined) {
         prevCfg.showTableGuests = Boolean(body.showTableGuests);
       }
+      if (VALID_TABLE_LABEL_MODES.includes(body.tableLabelMode)) {
+        prevCfg.tableLabelMode = body.tableLabelMode;
+      }
       if (body.tableMeta && typeof body.tableMeta === "object") {
         prevCfg.tableMeta = { ...(prevCfg.tableMeta || {}), ...body.tableMeta };
       }
@@ -773,9 +814,10 @@ export class WeddingAnalytics {
     if (url.pathname === "/api/guest-config") {
       const guest = url.searchParams.get("guest") || "";
       const slot = url.searchParams.get("slot") || "";
+      const tableHint = url.searchParams.get("table") || "";
       const data = await this.loadData();
       return Response.json(
-        { ok: true, config: this.resolveGuestConfig(data, guest, slot) },
+        { ok: true, config: this.resolveGuestConfig(data, guest, slot, tableHint) },
         {
           headers: {
             ...CORS_HEADERS,
