@@ -1291,8 +1291,7 @@
     const photoTitle = isZh ? "拍貼機" : "PHOTOBOOTH";
     const photoTime = isZh ? "18:00" : "18:00";
     const galleryTitle = isZh ? "迎賓桌 GALLERY" : "BÀN GALLERY";
-    const lobbyArrow1 = isZh ? "▲ 從大廳進入" : "▲ TỪ LOBBY";
-    const lobbyArrow2 = isZh ? "右側迎賓方向" : "Lối lên sảnh";
+    const entranceLabel = isZh ? "↑ 迎賓入口" : "↑ LỐI VÀO";
 
     let tablesSvg = "";
 
@@ -1482,14 +1481,12 @@
           <text x="${galCX + 3}" y="${galCY}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.5" font-weight="700" letter-spacing="1.1" fill="#841518" transform="rotate(-90 ${galCX + 3} ${galCY})">${galleryTitle}</text>
         </g>
 
-        <!-- Guest Arrival Flow from Bottom-Right Lobby up Corridor → Gallery → Cổng 2 / Photobooth / Backdrop -->
-        <path d="M${foyerCX},${bottomBarY - 26} L${foyerCX},${lTurnY + 10}" fill="none" stroke="rgba(132, 21, 23, 0.34)" stroke-width="1.2" stroke-dasharray="3 3" />
+        <!-- Guest Arrival Flow from Bottom Entrance up Corridor → Gallery → Cổng 2 / Photobooth / Backdrop -->
+        <path d="M${foyerCX},${bottomBarY - 12} L${foyerCX},${lTurnY + 10}" fill="none" stroke="rgba(132, 21, 23, 0.34)" stroke-width="1.2" stroke-dasharray="3 3" />
         <path d="M${foyerCX},${bdY + bdH + 6} L${foyerCX},${lTurnY - 6}" fill="none" stroke="rgba(132, 21, 23, 0.34)" stroke-width="1.2" stroke-dasharray="3 3" />
 
-        <!-- Bottom-Right Lobby Entry Marker -->
-        <rect x="${foyerRight - 84}" y="${bottomBarY - 22}" width="80" height="28" rx="4" fill="#fdf6ea" stroke="rgba(132, 21, 23, 0.45)" stroke-width="0.95" />
-        <text x="${foyerRight - 44}" y="${bottomBarY - 10}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="7.8" font-weight="700" letter-spacing="0.3" fill="#841518">${lobbyArrow1}</text>
-        <text x="${foyerRight - 44}" y="${bottomBarY + 1}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="7.4" font-weight="600" fill="#6b5344">${lobbyArrow2}</text>
+        <!-- Clean Centered Corridor Entrance Label (No clunky box) -->
+        <text x="${foyerCX}" y="${bottomBarY + 5}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="9.2" font-weight="700" letter-spacing="1.4" fill="#841518">${entranceLabel}</text>
 
         <!-- Lower Center Walkway (Rows 7–9, no bottom door) -->
         <rect x="${aisleCX - aisleW / 2}" y="${lTurnY + aisleW / 2}" width="${aisleW}" height="${lastRowY + 26 - (lTurnY + aisleW / 2)}" fill="rgba(132, 21, 23, 0.035)" />
