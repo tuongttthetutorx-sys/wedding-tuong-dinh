@@ -17,15 +17,32 @@
       mapTitle: "Bản đồ Riverside Palace - 360D Bến Vân Đồn",
       envEyebrow: "Thiệp Mời Hôn Lễ • 06.01.2027",
       btnOpenEnv: "✨ Chạm Mở Thiệp Mời",
-      btnFlipFront: "↺ Lật xem mặt sau vỏ thiệp",
+      btnFlipFront: "↺ Chạm phong bì lật mở dấu sáp",
+      btnOpenSealHint: "✨ Chạm dấu sáp hoặc vuốt lên để mở thiệp",
       btnFlipBack: "↺ Lật lại mặt trước vỏ thiệp",
       envCreditHint: "Thiết kế thủ công bởi Cô dâu Tiểu Dinh & Chú rể Thuận Tường",
+      c2Epigraph: "“Từ bạn cùng lớp năm cấp 3…”",
+      c2Line1: "“Từ bạn cùng lớp thời trung học, chúng mình trở thành tình yêu của nhau.",
+      c2Line2: "Cùng nhau trưởng thành, thấu hiểu và tìm thấy hạnh phúc bên nhau.",
+      c2Line3: "Dẫu từng có những lần tranh cãi và thử thách, tụi mình vẫn nắm tay vượt qua.",
+      c2Line4: "Sau bảy năm rưỡi bên nhau, câu chuyện tiếp nối - nay là vợ chồng.”",
+      c2Pause: "Tạm dừng",
+      c2Resume: "Tiếp tục",
+      c2Copy: "Sao chép",
+      c2Copied: "Đã chép",
+      c2CloseAria: "Đóng câu chuyện viền thiệp",
+      c2FoldAria: "Thu gọn câu chuyện",
+      c2EdgeTop: "Phần 1: Từ bạn cùng lớp thời trung học, chúng mình trở thành tình yêu của nhau.",
+      c2EdgeRight: "Phần 2: Cùng nhau trưởng thành, thấu hiểu và tìm thấy hạnh phúc bên nhau.",
+      c2EdgeBottom: "Phần 3: Dẫu từng có những lần tranh cãi và thử thách, tụi mình vẫn nắm tay vượt qua.",
+      c2EdgeLeft: "Phần 4: Sau bảy năm rưỡi bên nhau, câu chuyện tiếp nối - nay là vợ chồng. T&D",
       navEnv: "Phong bì",
       navCardsMobile: "Thiệp mời",
       navCard1: "Thiệp mời tiệc",
       navCard2: "Lễ thành hôn",
       navCard3: "喜帖 (Hoa)",
       navVenue: "Bản đồ",
+      navSeating: "Bàn tiệc",
       heroTag: "06 • 01 • 2027",
       heroTitle: "Thuận Tường & Tiểu Dinh",
       capCard1: "Thiệp Mời Tiệc Chung Vui",
@@ -35,7 +52,7 @@
       cdEyebrow: "Đếm Ngược Ngày Chung Đôi",
       cdTitle: "Hẹn Gặp Quý Khách Tại Buổi Tiệc",
       cdSub: "18:00 • Thứ Tư, ngày 06 tháng 01 năm 2027 (Nhằm ngày 29 tháng 11 năm Bính Ngọ)",
-      cdVenueLine: "Riverside Palace — Sảnh Seine • 360D Bến Vân Đồn, TP. Hồ Chí Minh",
+      cdVenueLine: "Riverside Palace - Sảnh Seine • 360D Bến Vân Đồn, TP. Hồ Chí Minh",
       cdDays: "Ngày",
       cdHours: "Giờ",
       cdMins: "Phút",
@@ -52,16 +69,18 @@
       tl1Title: "Lễ Thành Hôn Tại Tư Gia",
       tl1Desc: "Nhà Trai (P. Phú Định) & Nhà Gái (P. Hoà Bình), TP. Hồ Chí Minh.",
       tl2Period: "Buổi tối cùng ngày • Đón khách 18:00 · Khai tiệc 19:00",
-      tl2Title: "Tiệc Cưới — Riverside Palace (Sảnh Seine)",
+      tl2Title: "Tiệc Cưới - Riverside Palace (Sảnh Seine)",
       tl2Desc: "360D Bến Vân Đồn, Phường Vĩnh Hội, TP. Hồ Chí Minh.",
       dpbTag: "CHẾ ĐỘ CHỈ ĐƯỜNG NGÀY CƯỚI • 06.01.2027",
       dpbTitle: "Chào mừng Quý Khách đến chung vui cùng Thuận Tường & Tiểu Dinh!",
       dpbDesc:
-        "Sơ đồ đường đi, hướng dẫn gửi xe và vị trí Sảnh Seine (Riverside Palace — 360D Bến Vân Đồn) đã được đưa lên đầu trang để thuận tiện di chuyển.",
+        "Bản đồ chỉ đường và vị trí Sảnh Seine (Riverside Palace - 360D Bến Vân Đồn) đã được đặt ở đầu trang để thuận tiện di chuyển.",
       btnOpenGmapsNav: "🧭 Mở Google Maps dẫn đường ngay",
       btnJumpToCards: "💌 Xem 3 tấm thiệp mời bên dưới ↓",
       btnStartRoute: "🧭 Chỉ đường Google Maps",
       btnCopyAddr: "📋 Copy địa chỉ",
+      btnStaticMap: "🗺️ Sơ đồ tĩnh",
+      btnRetryMap: "↻ Tải bản đồ trực tuyến",
       copiedAddr: "✅ Đã copy địa chỉ nhà hàng Riverside Palace (360D Bến Vân Đồn)!",
       imapBadge: "SƠ ĐỒ VẼ CHI TIẾT • WEDDING ROUTE MAP",
       imapTitle: "Sơ Đồ Đường Đi Đến Riverside Palace (Sảnh Seine)",
@@ -79,27 +98,44 @@
         "Qua Cầu Kênh Tẻ đi thẳng hết đường Khánh Hội → gặp bờ sông rẽ trái vào Bến Vân Đồn → đi thẳng qua giao lộ Nguyễn Khoái khoảng 250m là tới Riverside Palace.",
       rg4Title: "Hướng dẫn Gửi xe & Vào Sảnh Seine",
       rg4Body:
-        "🚗 Gửi xe & Taxi/Grab: Cổng giữ xe máy & ô tô nằm ngay mặt tiền 360D Bến Vân Đồn (Taxi/Grab chạy thẳng vào sảnh đón có mái che). 🏛️ Sảnh tiệc: Tiến vào sảnh chính tầng trệt theo bảng đón khách Thuận Tường & Tiểu Dinh — Sảnh Seine (Đón khách 18:00 · Khai tiệc 19:00).",
+        "🚗 Gửi xe & Taxi/Grab: Cổng giữ xe máy & ô tô nằm ngay mặt tiền 360D Bến Vân Đồn (Taxi/Grab chạy thẳng vào sảnh đón có mái che). 🏛️ Sảnh tiệc: Tiến vào sảnh chính tầng trệt theo bảng đón khách Thuận Tường & Tiểu Dinh - Sảnh Seine (Đón khách 18:00 · Khai tiệc 19:00).",
       scrollCue: "Vuốt xuống xem tiếp thiệp",
-      footerCredit: "Personally designed by the Bride & Groom — Tiểu Dinh & Thuận Tường",
+      footerCredit: "Thiết kế thủ công bởi Cô dâu Tiểu Dinh & Chú rể Thuận Tường",
       footerToolLink: "🔗 Công cụ tạo link tên Khách Mời (dành cho Cô dâu & Chú rể)"
     },
     zh: {
       docTitle: "囍 趙順祥 & 盧小瑩 婚禮喜帖 • 2027.01.06",
       musicAria: "開啟 / 關閉背景音樂",
       envAria: "輕觸或滑動以翻轉並開啟喜帖",
-      mapTitle: "Riverside Palace 婚宴地圖 — 胡志明市",
+      mapTitle: "Riverside Palace 婚宴地圖 - 胡志明市",
       envEyebrow: "謹訂良辰 • 喜帖敬邀 • 2027.01.06",
       btnOpenEnv: "✨ 輕觸開啟喜帖",
-      btnFlipFront: "↺ 翻看信封背面",
+      btnFlipFront: "↺ 輕觸信封翻看背面火漆印",
+      btnOpenSealHint: "✨ 輕觸火漆印或向上滑動開啟喜帖",
       btnFlipBack: "↺ 返回信封正面",
       envCreditHint: "新娘盧小瑩 & 新郎趙順祥 親手設計製作",
+      c2Epigraph: "「從高中同班同學到相愛相惜…」",
+      c2Line1: "「我們從高中同班同學開始，成為彼此的摯愛。",
+      c2Line2: "我們一起成長、彼此理解，在這段感情裡找到幸福。",
+      c2Line3: "儘管曾經歷過許多爭執與考驗，我們依然牽手走了過來。",
+      c2Line4: "走過七年半的歲月，我們的故事仍在繼續 - 如今成了夫妻。」",
+      c2Pause: "暫停",
+      c2Resume: "繼續",
+      c2Copy: "複製全文",
+      c2Copied: "已複製",
+      c2CloseAria: "關閉婚禮故事小卡",
+      c2FoldAria: "收合故事小卡",
+      c2EdgeTop: "第一段：我們從高中同班同學開始，成為彼此的摯愛。",
+      c2EdgeRight: "第二段：我們一起成長、彼此理解，在這段感情裡找到幸福。",
+      c2EdgeBottom: "第三段：儘管曾經歷過許多爭執與考驗，我們依然牽手走了過來。",
+      c2EdgeLeft: "第四段：走過七年半的歲月，我們的故事仍在繼續 - 如今成了夫妻。T&D",
       navEnv: "喜帖信封",
       navCardsMobile: "喜帖",
       navCard3: "中文喜帖",
       navCard1: "晚宴邀卡",
       navCard2: "成婚誌喜",
       navVenue: "婚宴地圖",
+      navSeating: "席位",
       heroTag: "二〇二七年 • 一月六日",
       heroTitle: "趙順祥 & 盧小瑩",
       capCard3: "傳統中文喜帖｜囍 永結同心",
@@ -109,7 +145,7 @@
       cdEyebrow: "良辰吉日 • 婚宴倒數",
       cdTitle: "誠摯邀請您 蒞臨見證我們的幸福",
       cdSub: "國曆 2027 年 1 月 6 日（星期三）18:00 迎賓・19:00 開席（農曆丙午年十一月二十九日）",
-      cdVenueLine: "RIVERSIDE PALACE — Seine 宴會廳 • 胡志明市永會坊檳雲屯街 360D 號",
+      cdVenueLine: "RIVERSIDE PALACE - Seine 宴會廳 • 胡志明市永會坊檳雲屯街 360D 號",
       cdDays: "天",
       cdHours: "時",
       cdMins: "分",
@@ -126,16 +162,18 @@
       tl1Title: "府上迎親暨結婚典禮",
       tl1Desc: "於男方府上（胡志明市富定坊）與女方府上（和平坊）舉行傳統迎親暨結婚典禮。",
       tl2Period: "同日晚間 • 18:00 迎賓入席 · 19:00 準時開席",
-      tl2Title: "婚禮晚宴 — RIVERSIDE PALACE（Seine 宴會廳）",
+      tl2Title: "婚禮晚宴 - RIVERSIDE PALACE（Seine 宴會廳）",
       tl2Desc: "胡志明市永會坊檳雲屯街 360D 號（Sảnh Seine）• 敬備喜筵，誠摯恭候蒞臨。",
       dpbTag: "婚宴當日快速導航模式 • 2027.01.06",
       dpbTitle: "誠摯歡迎 Quý Khách 蒞臨順祥 & 小瑩的婚禮晚宴！",
       dpbDesc:
-        "為方便您乘車或自駕前往，我們已將「Riverside Palace（Seine 宴會廳 — 360D Bến Vân Đồn）」手繪路線圖與交通指引置於頁面最上方。",
+        "為方便您乘車或自駕前往，我們已將 Riverside Palace（Seine 宴會廳 - 360D Bến Vân Đồn）路線指引與地圖置於頁面最上方。",
       btnOpenGmapsNav: "🧭 立即開啟 Google Maps 路線導航",
       btnJumpToCards: "💌 下滑瀏覽 3 張結婚喜帖 ↓",
       btnStartRoute: "🧭 開啟 Google 導航",
       btnCopyAddr: "📋 複製餐廳地址",
+      btnStaticMap: "🗺️ 靜態路線圖",
+      btnRetryMap: "↻ 重新載入線上地圖",
       copiedAddr: "✅ 已複製 Riverside Palace 餐廳地址（360D Bến Vân Đồn）！",
       imapBadge: "手繪交通路線圖 • WEDDING ROUTE MAP",
       imapTitle: "Riverside Palace（Seine 宴會廳）手繪交通指引圖",
@@ -152,9 +190,9 @@
         "過「Kênh Tẻ 橋」沿 Khánh Hội 街直行到底 → 遇河岸左轉進入「Bến Vân Đồn 大道」→ 經過 Nguyễn Khoái 路口直行約 250 公尺即達。",
       rg4Title: "停車與進入「Seine 宴會廳（Sảnh Seine）」指引",
       rg4Body:
-        "🚗 停車與計程車/Grab：360D Bến Vân Đồn 正門設有汽車與機車停車場（Grab 可直達正門有頂迎賓處）。🏛️ 宴會廳位置：進入一樓大廳後請依「順祥 & 小瑩 — Sảnh Seine（Seine 宴會廳）」指示牌入席（18:00 迎賓 · 19:00 開席）。",
+        "🚗 停車與計程車/Grab：360D Bến Vân Đồn 正門設有汽車與機車停車場（Grab 可直達正門有頂迎賓處）。🏛️ 宴會廳位置：進入一樓大廳後請依「順祥 & 小瑩 - Sảnh Seine（Seine 宴會廳）」指示牌入席（18:00 迎賓 · 19:00 開席）。",
       scrollCue: "下滑繼續瀏覽喜帖",
-      footerCredit: "Personally designed by the Bride & Groom — Tiểu Dinh & Thuận Tường",
+      footerCredit: "新娘盧小瑩 & 新郎趙順祥 親手設計製作",
       footerToolLink: "🔗 賓客專屬喜帖連結產生器（新人專用）"
     }
   };
@@ -572,17 +610,24 @@
 
     const vw = window.innerWidth || 390;
     const rect = anchorEl ? anchorEl.getBoundingClientRect() : null;
+    const cardEl = anchorEl && anchorEl.closest ? anchorEl.closest(".stationery-card") : null;
+    const cardRect = cardEl ? cardEl.getBoundingClientRect() : null;
     const rawX =
       e && e.clientX
         ? e.clientX
         : rect
           ? rect.left + rect.width / 2
           : vw / 2;
-    const rawY = rect
-      ? isTallFigure
-        ? rect.top - 4
-        : rect.top - 8
-      : (e && e.clientY ? e.clientY - 18 : 320);
+    const rawY =
+      vw <= 540 && cardRect && cardEl.id !== "card-2-article" && !e
+        ? Math.max(76, cardRect.top + 8)
+        : rect
+          ? isTallFigure
+            ? Math.max(84, rect.top - 16)
+            : Math.max(84, rect.top - 12)
+          : e && e.clientY
+            ? e.clientY - 18
+            : 320;
 
     const pill = document.createElement("div");
     pill.className = "floating-whisper";
@@ -859,20 +904,21 @@
               : "Cảm ơn bạn đã ghé xem thiệp cưới của tụi mình nhé ♥"
           };
 
-      spawnFloatingWhisper(couple, null, welcomePhrase, true, 5.2);
-      spawnGuestHearts(couple, null, 24);
+      const isCompactVw = (window.innerWidth || 390) <= 540;
+      spawnFloatingWhisper(couple, null, welcomePhrase, true, isCompactVw ? 4.0 : 5.2);
+      spawnGuestHearts(couple, null, isCompactVw ? 10 : 20);
 
-      const leftGuests = svgWrap.querySelector('.c1-guest-hit[data-table="left"]');
-      const rightGuests = svgWrap.querySelector('.c1-guest-hit[data-table="right"]');
+      if (!isCompactVw) {
+        const leftGuests = svgWrap.querySelector('.c1-guest-hit[data-table="left"]');
+        const rightGuests = svgWrap.querySelector('.c1-guest-hit[data-table="right"]');
+        setTimeout(() => {
+          if (leftGuests) spawnGuestHearts(leftGuests, null, 10);
+          if (rightGuests) spawnGuestHearts(rightGuests, null, 10);
+        }, 340);
+      }
       setTimeout(() => {
-        if (leftGuests) spawnGuestHearts(leftGuests, null, 14);
-        if (rightGuests) spawnGuestHearts(rightGuests, null, 14);
-      }, 340);
-      setTimeout(() => {
-        if (couple) spawnGuestHearts(couple, null, 20);
-        if (xiuxiu) spawnGuestHearts(xiuxiu, null, 8);
-        if (rightDogs) spawnGuestHearts(rightDogs, null, 8);
-      }, 780);
+        if (couple) spawnGuestHearts(couple, null, isCompactVw ? 8 : 16);
+      }, 720);
       setTimeout(() => {
         if (couple) spawnGuestHearts(couple, null, 18);
       }, 1350);
@@ -1032,7 +1078,11 @@
     </svg>`;
     for (let day = 1; day <= 31; day++) {
       if (day === 6) {
-        html += `<div class="cal-day is-wedding-day" data-day="6" style="--day-idx: 6" title="06.01.2027 — Chạm để thả tim Save the Date">${inkRingSvg}<span>6</span></div>`;
+        const day6Aria =
+          currentLang === "zh"
+            ? "2027年1月6日 - 輕觸慶祝結婚吉日"
+            : "06.01.2027 - Chạm để thả tim Lưu ngày cưới";
+        html += `<button type="button" class="cal-day is-wedding-day" data-day="6" style="--day-idx: 6" aria-label="${day6Aria}" title="${day6Aria}">${inkRingSvg}<span>6</span></button>`;
       } else {
         html += `<div class="cal-day" data-day="${day}" style="--day-idx: ${day}">${day}</div>`;
       }
@@ -1186,11 +1236,14 @@
 
   function applyResolvedGuestIdentity(cfgObj) {
     if (!cfgObj) return;
-    // Canonicalize legacy ?to=... URLs in the browser address bar to their permanent fixed ?s=slotCode link
+    // Canonicalize legacy ?to=... URLs in the browser address bar to their permanent fixed ?s=slotCode link while keeping mode/preview flags
     if (cfgObj.slotCode && !params.get("s") && window.history && window.history.replaceState) {
       try {
         params.set("s", cfgObj.slotCode);
-        const cleanSearch = `?s=${encodeURIComponent(cfgObj.slotCode)}`;
+        const nextParams = new URLSearchParams(window.location.search);
+        ["to", "guest", "khach", "name"].forEach((k) => nextParams.delete(k));
+        nextParams.set("s", cfgObj.slotCode);
+        const cleanSearch = `?${nextParams.toString()}`;
         window.history.replaceState(null, "", window.location.pathname + cleanSearch + window.location.hash);
       } catch (_) {}
     }
@@ -1403,15 +1456,15 @@
       const tableStroke = isMine ? "#d49a2a" : "#c7a982";
       const innerStroke = isMine ? "rgba(255, 244, 214, 0.5)" : "rgba(255, 244, 224, 0.28)";
       const textFill = "#fdf6ea";
-      const fontSize = isMine ? "14" : "12.5";
+      const fontSize = isMine ? "16.5" : "14.5";
       const tblName = (tblLabels[String(num)] || "").trim();
-      const truncName = tblName.length > 12 ? tblName.substring(0, 11) + "…" : tblName;
-      const pillW = Math.max(38, Math.min(76, truncName.length * 5.6 + 12));
+      const truncName = tblName.length > 11 ? tblName.substring(0, 10) + "…" : tblName;
+      const pillW = Math.max(46, Math.min(86, truncName.length * 6.5 + 14));
 
       const nameBadgeSvg = truncName
-        ? `<g transform="translate(${cx}, ${cy + tableR + 5})">
-            <rect x="${(-pillW / 2).toFixed(1)}" y="-7" width="${pillW.toFixed(1)}" height="13" rx="4" fill="${isMine ? "#841518" : "#fffdf8"}" stroke="${isMine ? "#d49a2a" : "rgba(90, 56, 37, 0.45)"}" stroke-width="0.9" />
-            <text x="0" y="2.2" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.8" font-weight="700" fill="${isMine ? "#fffbf2" : "#4e2f20"}">${truncName}</text>
+        ? `<g transform="translate(${cx}, ${cy + tableR + 6})">
+            <rect x="${(-pillW / 2).toFixed(1)}" y="-8" width="${pillW.toFixed(1)}" height="16" rx="4" fill="${isMine ? "#841518" : "#fffdf8"}" stroke="${isMine ? "#d49a2a" : "rgba(90, 56, 37, 0.48)"}" stroke-width="0.95" />
+            <text x="0" y="3.2" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="11" font-weight="700" fill="${isMine ? "#fffbf2" : "#4e2f20"}">${truncName}</text>
           </g>`
         : "";
 
@@ -1421,7 +1474,7 @@
           ${chairs}
           <circle cx="${cx}" cy="${cy}" r="${tableR}" fill="${tableFill}" stroke="${tableStroke}" stroke-width="${isMine ? "1.8" : "1.15"}" />
           <circle cx="${cx}" cy="${cy}" r="${tableR - 4}" fill="none" stroke="${innerStroke}" stroke-width="0.7" />
-          <text x="${cx}" y="${cy + 4.2}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="${fontSize}" font-weight="700" fill="${textFill}">${padded}</text>
+          <text x="${cx}" y="${cy + 5.2}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="${fontSize}" font-weight="700" fill="${textFill}">${padded}</text>
           ${nameBadgeSvg}
         </g>
       `;
@@ -1484,7 +1537,7 @@
         <!-- Stage -->
         <rect x="${stageX}" y="${stageY}" width="${stageW}" height="${stageH}" rx="4" fill="#841518" stroke="#c67d08" stroke-width="1.3" />
         <rect x="${stageX + 3.5}" y="${stageY + 3}" width="${stageW - 7}" height="${stageH - 6}" rx="2.5" fill="none" stroke="rgba(255, 240, 200, 0.45)" stroke-width="0.8" />
-        <text x="${aisleCX}" y="${stageY + 20}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="11.5" font-weight="700" letter-spacing="2" fill="#fff8ec">${stageLabel}</text>
+        <text x="${aisleCX}" y="${stageY + 21}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="13.5" font-weight="700" letter-spacing="1.6" fill="#fff8ec">${stageLabel}</text>
 
         <!-- Hall Right Partition Wall (Single guest doorway opening at Cổng 2 between Row 6 & Row 7) -->
         <line x1="${hallW}" y1="${stageY}" x2="${hallW}" y2="${lTurnY - aisleW / 2}" stroke="rgba(132, 21, 23, 0.36)" stroke-width="1.4" />
@@ -1492,7 +1545,7 @@
 
         <!-- VIP Room (Top-Right alongside Rows 1-2) -->
         <rect x="${foyerX}" y="${stageY}" width="${foyerW}" height="${rowY[1] + 24 - stageY}" rx="6" fill="rgba(132, 21, 23, 0.04)" stroke="rgba(132, 21, 23, 0.24)" stroke-width="1" />
-        <text x="${foyerCX}" y="${(stageY + rowY[1] + 24) / 2 + 4}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="10" font-weight="700" letter-spacing="1.2" fill="rgba(132, 21, 23, 0.56)">${vipLabel}</text>
+        <text x="${foyerCX}" y="${(stageY + rowY[1] + 24) / 2 + 4.5}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="12" font-weight="700" letter-spacing="1.1" fill="rgba(132, 21, 23, 0.72)">${vipLabel}</text>
 
         <!-- Right-Side Reception Corridor (Between Hall Wall x=548 and Opposite Wall x=708) -->
         <rect x="${foyerX}" y="${rowY[1] + 32}" width="${foyerW}" height="${bottomBarY + 14 - (rowY[1] + 32)}" rx="6" fill="rgba(164, 112, 42, 0.05)" stroke="rgba(132, 21, 23, 0.22)" stroke-width="1" stroke-dasharray="4 3" />
@@ -1500,7 +1553,7 @@
         <line x1="${foyerRight}" y1="${rowY[1] + 34}" x2="${foyerRight}" y2="${bottomBarY + 12}" stroke="rgba(132, 21, 23, 0.36)" stroke-width="1.5" />
 
         <!-- Corridor Title -->
-        <text x="${foyerCX}" y="${rowY[2] - 12}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="9.5" font-weight="700" letter-spacing="1" fill="#841518">${foyerTitle}</text>
+        <text x="${foyerCX}" y="${rowY[2] - 11}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="11.5" font-weight="700" letter-spacing="0.8" fill="#841518">${foyerTitle}</text>
 
         <!-- BACKDROP (Matches reference photo: deep espresso-brown pleated curtain + draped arch white sheer center + white floral clouds on both sides + dark platform) -->
         <g>
@@ -1542,8 +1595,8 @@
           <!-- Dark platform base -->
           <rect x="${bdX + 1}" y="${bdY + bdH - 10}" width="${bdW - 2}" height="9" rx="2" fill="#231c18" />
           <!-- Monogram & BACKDROP title -->
-          <text x="${bdCX}" y="${bdY + 17}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.6" font-weight="700" letter-spacing="1.2" fill="#f7e6ce">T &amp; D</text>
-          <text x="${bdCX}" y="${bdY + 28}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.8" font-weight="700" letter-spacing="1.1" fill="#fffdf9">${backdropTitle}</text>
+          <text x="${bdCX}" y="${bdY + 17}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="10.2" font-weight="700" letter-spacing="1" fill="#f7e6ce">T &amp; D</text>
+          <text x="${bdCX}" y="${bdY + 30}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="10.5" font-weight="700" letter-spacing="0.9" fill="#fffdf9">${backdropTitle}</text>
         </g>
 
         <!-- PHOTOBOOTH (Slim vertical rectangle flush against opposite wall x=708, directly facing Cổng 2, starts 18:00) -->
@@ -1555,10 +1608,10 @@
           <circle cx="${photoCX + 4.5}" cy="${photoBoxY + 18.5}" r="1" fill="#7ba67d" />
           <circle cx="${photoCX + 1}" cy="${photoBoxY + 24}" r="1.1" fill="#e6a96b" />
           <!-- Vertical PHOTOBOOTH label fitting sleek rectangular booth -->
-          <text x="${photoCX + 3}" y="${photoBoxY + 71}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.3" font-weight="700" letter-spacing="0.9" fill="#fff8ec" transform="rotate(-90 ${photoCX + 3} ${photoBoxY + 71})">${photoTitle}</text>
+          <text x="${photoCX + 3.5}" y="${photoBoxY + 71}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="10.2" font-weight="700" letter-spacing="0.8" fill="#fff8ec" transform="rotate(-90 ${photoCX + 3.5} ${photoBoxY + 71})">${photoTitle}</text>
           <!-- 18:00 badge at bottom of booth -->
-          <rect x="${photoBoxX + 5}" y="${photoBoxY + photoBoxH - 21}" width="${photoBoxW - 10}" height="15" rx="3" fill="#fff8ec" />
-          <text x="${photoCX}" y="${photoBoxY + photoBoxH - 10.7}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.2" font-weight="700" fill="#7d111a">${photoTime}</text>
+          <rect x="${photoBoxX + 4}" y="${photoBoxY + photoBoxH - 22}" width="${photoBoxW - 8}" height="16" rx="3" fill="#fff8ec" />
+          <text x="${photoCX}" y="${photoBoxY + photoBoxH - 10.2}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="10" font-weight="700" fill="#7d111a">${photoTime}</text>
         </g>
 
         <!-- Cross-corridor alignment dashed line (Cổng 2 ↔ Opposite Photobooth) -->
@@ -1568,7 +1621,7 @@
         <g>
           <rect x="${galX}" y="${galY}" width="${galW}" height="${galH}" rx="3.5" fill="#fdf5e6" stroke="rgba(132, 21, 23, 0.56)" stroke-width="1.15" />
           <rect x="${galX + 3}" y="${galY + 3}" width="${galW - 6}" height="${galH - 6}" rx="2" fill="none" stroke="rgba(198, 125, 8, 0.35)" stroke-width="0.7" />
-          <text x="${galCX + 3}" y="${galCY}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.5" font-weight="700" letter-spacing="1.1" fill="#841518" transform="rotate(-90 ${galCX + 3} ${galCY})">${galleryTitle}</text>
+          <text x="${galCX + 3.5}" y="${galCY}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="10.2" font-weight="700" letter-spacing="0.8" fill="#841518" transform="rotate(-90 ${galCX + 3.5} ${galCY})">${galleryTitle}</text>
         </g>
 
         <!-- Guest Arrival Flow from Bottom Entrance up Corridor → Gallery → Cổng 2 / Photobooth / Backdrop -->
@@ -1576,7 +1629,7 @@
         <path d="M${foyerCX},${bdY + bdH + 6} L${foyerCX},${lTurnY - 6}" fill="none" stroke="rgba(132, 21, 23, 0.34)" stroke-width="1.2" stroke-dasharray="3 3" />
 
         <!-- Clean Centered Corridor Entrance Label (No clunky box) -->
-        <text x="${foyerCX}" y="${bottomBarY + 5}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="9.2" font-weight="700" letter-spacing="1.4" fill="#841518">${entranceLabel}</text>
+        <text x="${foyerCX}" y="${bottomBarY + 6}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="11.5" font-weight="700" letter-spacing="1.1" fill="#841518">${entranceLabel}</text>
 
         <!-- Lower Center Walkway (Rows 7–9, no bottom door) -->
         <rect x="${aisleCX - aisleW / 2}" y="${lTurnY + aisleW / 2}" width="${aisleW}" height="${lastRowY + 26 - (lTurnY + aisleW / 2)}" fill="rgba(132, 21, 23, 0.035)" />
@@ -1593,18 +1646,18 @@
         <polygon points="${aisleCX},${topCarpetY + 4} ${aisleCX - 5},${topCarpetY + 13} ${aisleCX + 5},${topCarpetY + 13}" fill="rgba(132, 21, 23, 0.55)" />
 
         <!-- Vertical Aisle Label -->
-        <text x="${aisleCX - 8}" y="${(topCarpetY + lTurnY) / 2}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="9.5" font-weight="700" letter-spacing="1.8" fill="rgba(132, 21, 23, 0.52)" transform="rotate(-90 ${aisleCX - 8} ${(topCarpetY + lTurnY) / 2})">${aisleLabel}</text>
+        <text x="${aisleCX - 8}" y="${(topCarpetY + lTurnY) / 2}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="11.5" font-weight="700" letter-spacing="1.4" fill="rgba(132, 21, 23, 0.68)" transform="rotate(-90 ${aisleCX - 8} ${(topCarpetY + lTurnY) / 2})">${aisleLabel}</text>
 
         <!-- Cổng 2 Entrance Badge (Bridging Right Foyer into L-Carpet below Row 6) -->
-        <rect x="${rightDoorX - 88}" y="${lTurnY - 10}" width="102" height="20" rx="4" fill="#841518" />
-        <text x="${rightDoorX - 37}" y="${lTurnY + 3.5}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.4" font-weight="700" letter-spacing="0.6" fill="#fff8ec">◀ ${door2Label}</text>
+        <rect x="${rightDoorX - 102}" y="${lTurnY - 12}" width="116" height="24" rx="4" fill="#841518" />
+        <text x="${rightDoorX - 44}" y="${lTurnY + 4}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="10.2" font-weight="700" letter-spacing="0.4" fill="#fff8ec">◀ ${door2Label}</text>
 
         <!-- Round Tables -->
         ${tablesSvg}
 
         <!-- WC / Restroom Indicator (Bottom-Left Corner below Table 33) -->
-        <rect x="18" y="${bottomBarY - 4}" width="94" height="18" rx="4" fill="#fdf8ee" stroke="rgba(132, 21, 23, 0.42)" stroke-width="0.95" />
-        <text x="65" y="${bottomBarY + 8}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.2" font-weight="700" letter-spacing="0.4" fill="#841518">${wcLabel}</text>
+        <rect x="14" y="${bottomBarY - 6}" width="116" height="22" rx="4" fill="#fdf8ee" stroke="rgba(132, 21, 23, 0.42)" stroke-width="0.95" />
+        <text x="72" y="${bottomBarY + 9}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="10.2" font-weight="700" letter-spacing="0.3" fill="#841518">${wcLabel}</text>
       </svg>
     `;
   }
@@ -1941,6 +1994,46 @@
     return locSec;
   }
 
+  let mapFallbackActive = params.get("map_fallback") === "1";
+
+  function syncVenueMapFallbackUI(locKey, forceFallback) {
+    const validLoc = ["groom", "bride", "venue"].includes(locKey) ? locKey : "venue";
+    const isZh = currentLang === "zh";
+    const loc = getMorningLocationData(validLoc);
+    const iframe = document.getElementById("venue-map-iframe");
+    const fallbackEl = document.getElementById("venue-map-fallback");
+    const fbImg = document.getElementById("venue-map-fallback-img");
+    const fbTitle = document.getElementById("venue-map-fb-title");
+    const fbAddr = document.getElementById("venue-map-fb-addr");
+    const fbLink = document.getElementById("venue-map-fb-link");
+    const toggleBtn = document.getElementById("btn-toggle-static-map");
+
+    const showFallback =
+      Boolean(forceFallback) ||
+      mapFallbackActive ||
+      params.get("map_fallback") === "1" ||
+      (typeof navigator !== "undefined" && navigator.onLine === false);
+
+    if (iframe) iframe.hidden = showFallback;
+    if (fallbackEl) fallbackEl.hidden = !showFallback;
+    if (fbImg) fbImg.hidden = validLoc !== "venue";
+    if (fbTitle) fbTitle.textContent = loc.name;
+    if (fbAddr) fbAddr.textContent = loc.addr;
+    if (fbLink) {
+      fbLink.href = loc.directionsUrl;
+      fbLink.textContent = isZh ? "🧭 開啟 Google 地圖導航" : "🧭 Chỉ đường Google Maps";
+    }
+    if (toggleBtn) {
+      toggleBtn.textContent = showFallback
+        ? isZh
+          ? "🗺️ 線上地圖"
+          : "🗺️ Bản đồ trực tuyến"
+        : isZh
+          ? "🗺️ 靜態圖"
+          : "🗺️ Sơ đồ tĩnh";
+    }
+  }
+
   function switchMorningMapLocation(locKey, shouldScrollMap) {
     const validLoc = ["groom", "bride", "venue"].includes(locKey) ? locKey : "groom";
     activeMorningMapLoc = validLoc;
@@ -1953,13 +2046,14 @@
         const isMatch = btn.dataset.mapLoc === validLoc;
         btn.classList.toggle("is-active", isMatch);
         btn.setAttribute("aria-selected", isMatch ? "true" : "false");
+        btn.setAttribute("tabindex", isMatch ? "0" : "-1");
       });
     }
 
     const itineraryEl = document.getElementById("morning-itinerary-list");
     if (itineraryEl) {
-      itineraryEl.querySelectorAll("[data-stop-loc]").forEach((item) => {
-        item.classList.toggle("is-map-focused", item.dataset.stopLoc === validLoc);
+      itineraryEl.querySelectorAll(".morning-stop-item[data-stop-group]").forEach((item) => {
+        item.classList.toggle("is-map-focused", item.dataset.stopGroup === validLoc);
       });
     }
 
@@ -1972,6 +2066,8 @@
       }
       iframe.setAttribute("title", loc.name);
     }
+
+    syncVenueMapFallbackUI(validLoc, false);
 
     const nameEl = document.getElementById("morning-map-active-name");
     const addrEl = document.getElementById("morning-map-active-addr");
@@ -2011,6 +2107,24 @@
         if (!btn) return;
         switchMorningMapLocation(btn.dataset.mapLoc, false);
       });
+      tabsWrap.addEventListener("keydown", (e) => {
+        if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+        const orderedTabs = Array.from(tabsWrap.querySelectorAll(".morning-map-tab")).sort(
+          (a, b) =>
+            (parseInt(a.style.order || "0", 10) || 0) -
+            (parseInt(b.style.order || "0", 10) || 0)
+        );
+        const curIdx = orderedTabs.indexOf(document.activeElement);
+        if (curIdx < 0) return;
+        e.preventDefault();
+        const nextIdx =
+          (curIdx + (e.key === "ArrowRight" ? 1 : -1) + orderedTabs.length) % orderedTabs.length;
+        const nextBtn = orderedTabs[nextIdx];
+        if (nextBtn) {
+          nextBtn.focus();
+          switchMorningMapLocation(nextBtn.dataset.mapLoc, false);
+        }
+      });
     }
 
     const itineraryEl = document.getElementById("morning-itinerary-list");
@@ -2022,13 +2136,48 @@
           copyTextWithToast(loc.copyText, loc.copiedToast);
           return;
         }
-        if (e.target.closest("a, button")) return;
-        const stopItem = e.target.closest("[data-stop-loc]");
-        if (stopItem && stopItem.dataset.stopLoc) {
-          switchMorningMapLocation(stopItem.dataset.stopLoc, false);
+        const focusBtn = e.target.closest("[data-stop-loc]");
+        if (focusBtn && focusBtn.dataset.stopLoc) {
+          switchMorningMapLocation(focusBtn.dataset.stopLoc, false);
         }
       });
     }
+
+    const toggleStaticBtn = document.getElementById("btn-toggle-static-map");
+    if (toggleStaticBtn) {
+      toggleStaticBtn.addEventListener("click", () => {
+        mapFallbackActive = !mapFallbackActive;
+        syncVenueMapFallbackUI(activeMorningMapLoc || "venue", mapFallbackActive);
+      });
+    }
+    const retryIframeBtn = document.getElementById("btn-retry-map-iframe");
+    if (retryIframeBtn) {
+      retryIframeBtn.addEventListener("click", () => {
+        mapFallbackActive = false;
+        const iframe = document.getElementById("venue-map-iframe");
+        if (iframe) {
+          const src = iframe.getAttribute("src");
+          if (src) iframe.setAttribute("src", src);
+        }
+        syncVenueMapFallbackUI(activeMorningMapLoc || "venue", false);
+      });
+    }
+    const mapIframeEl = document.getElementById("venue-map-iframe");
+    if (mapIframeEl) {
+      mapIframeEl.addEventListener("error", () => {
+        mapFallbackActive = true;
+        syncVenueMapFallbackUI(activeMorningMapLoc || "venue", true);
+      });
+    }
+    window.addEventListener("offline", () => {
+      syncVenueMapFallbackUI(activeMorningMapLoc || "venue", true);
+    });
+    window.addEventListener("online", () => {
+      if (params.get("map_fallback") !== "1") {
+        mapFallbackActive = false;
+        syncVenueMapFallbackUI(activeMorningMapLoc || "venue", false);
+      }
+    });
 
     const jumpBtn = document.getElementById("btn-mv-jump-itinerary");
     if (jumpBtn) {
@@ -2056,6 +2205,7 @@
     const groom = mv.groom || {};
     const bride = mv.bride || {};
 
+    bindMorningGuestEvents();
     document.body.classList.toggle("is-morning-guest-mode", isActive);
 
     const vipCard = document.getElementById("morning-vip-card");
@@ -2074,7 +2224,7 @@
         morningTl.innerHTML = "";
       }
       if (mapTabs) mapTabs.hidden = true;
-      if (mapFooter) mapFooter.hidden = true;
+      if (mapFooter) mapFooter.hidden = false;
       if (dpbDefault) dpbDefault.hidden = false;
       if (dpbMorning) dpbMorning.hidden = true;
 
@@ -2090,12 +2240,21 @@
           if (dict.mapTitle) iframe.setAttribute("title", dict.mapTitle);
         }
       }
+      const venueLoc = getMorningLocationData("venue");
+      const nameEl = document.getElementById("morning-map-active-name");
+      const addrEl = document.getElementById("morning-map-active-addr");
+      const dirEl = document.getElementById("morning-map-dir-link");
+      if (nameEl) nameEl.textContent = venueLoc.name;
+      if (addrEl) addrEl.textContent = venueLoc.addr;
+      if (dirEl) {
+        dirEl.href = venueLoc.directionsUrl;
+        dirEl.textContent = isZh ? "🧭 導航" : "🧭 Chỉ đường";
+      }
+      syncVenueMapFallbackUI("venue", false);
       if (refreshCountdownDisplay) refreshCountdownDisplay();
       updateGoogleCalendarLink();
       return;
     }
-
-    bindMorningGuestEvents();
 
     // Hide VIP prelude in Directions Priority (banner is already at top) or Post-Wedding Thank You mode
     if (vipCard) {
@@ -2192,10 +2351,10 @@
       const btnCopyLabel = isZh ? "📋 複製" : "📋 Copy";
 
       const stopVenueHtml = (idx) => `
-        <div class="timeline-item morning-stop-item" data-stop-loc="venue" style="--tl-idx: ${idx}">
+        <div class="timeline-item morning-stop-item" data-stop-group="venue" style="--tl-idx: ${idx}">
           <span class="timeline-node is-evening" aria-hidden="true"></span>
           <span class="timeline-period">${isZh ? "18:00 迎賓 · 19:00 開席" : "Buổi tối · Đón khách 18:00 · Khai tiệc 19:00"}</span>
-          <h3>${isZh ? "婚禮晚宴 - Riverside Palace（Seine 宴會廳）" : "Tiệc Cưới - Riverside Palace (Sảnh Seine)"}</h3>
+          <button type="button" class="morning-stop-focus-btn" data-stop-loc="venue" title="${isZh ? "查看地圖" : "Xem trên bản đồ"}">${isZh ? "婚禮晚宴 - Riverside Palace（Seine 宴會廳）" : "Tiệc Cưới - Riverside Palace (Sảnh Seine)"}</button>
           <p class="morning-addr-main">${escapeHtmlMorning(venueLoc.addr)}</p>
           <div class="morning-stop-actions">
             <a href="${escapeHtmlMorning(venueLoc.directionsUrl)}" target="_blank" rel="noopener noreferrer" class="venue-action-btn is-primary">${btnDirLabel}</a>
@@ -2206,13 +2365,13 @@
 
       if (morningMode === "bride") {
         morningTl.innerHTML = `
-          <div class="timeline-item morning-stop-item" data-stop-loc="bride" style="--tl-idx: 0">
+          <div class="timeline-item morning-stop-item" data-stop-group="bride" style="--tl-idx: 0">
             <span class="timeline-node is-morning-home" aria-hidden="true"></span>
             <div class="morning-period-row">
               <span class="timeline-period">${isZh ? "06:00 - 06:30 · 迎親典禮與遊戲" : "06:00 - 06:30 · Tập trung & đón dâu"}</span>
               ${startBadge}
             </div>
-            <h3>${isZh ? "女方府上（新娘家）" : "Tư Gia Nhà Gái"}</h3>
+            <button type="button" class="morning-stop-focus-btn" data-stop-loc="bride" title="${isZh ? "查看地圖" : "Xem trên bản đồ"}">${isZh ? "女方府上（新娘家）" : "Tư Gia Nhà Gái"}</button>
             <p class="morning-addr-main">${escapeHtmlMorning(brideRealAddr)}</p>
             <p class="morning-map-hint">${escapeHtmlMorning(bridePinLine)}</p>
             <div class="morning-stop-actions">
@@ -2221,10 +2380,10 @@
             </div>
           </div>
 
-          <div class="timeline-item morning-stop-item" data-stop-loc="groom" style="--tl-idx: 1">
+          <div class="timeline-item morning-stop-item" data-stop-group="groom" style="--tl-idx: 1">
             <span class="timeline-node is-morning-home" aria-hidden="true"></span>
             <span class="timeline-period">${isZh ? "09:00 前 · 成婚禮 & ~10:00 午宴" : "Trước 09:00 · Lễ Thành Hôn & tiệc ~10:00"}</span>
-            <h3>${isZh ? "男方府上（新郎家）" : "Tư Gia Nhà Trai"}</h3>
+            <button type="button" class="morning-stop-focus-btn" data-stop-loc="groom" title="${isZh ? "查看地圖" : "Xem trên bản đồ"}">${isZh ? "男方府上（新郎家）" : "Tư Gia Nhà Trai"}</button>
             <p class="morning-addr-main">${escapeHtmlMorning(groomLoc.addr)}</p>
             <p class="morning-step-note">${isZh ? "約 10:00 禮成，誠邀留步於男方府上共進午宴。" : "Xong lễ ~10:00, mời dùng tiệc thân mật tại Nhà Trai."}</p>
             <div class="morning-stop-actions">
@@ -2237,13 +2396,13 @@
         `;
       } else {
         morningTl.innerHTML = `
-          <div class="timeline-item morning-stop-item" data-stop-loc="groom" style="--tl-idx: 0">
+          <div class="timeline-item morning-stop-item" data-stop-group="groom" style="--tl-idx: 0">
             <span class="timeline-node is-morning-home" aria-hidden="true"></span>
             <div class="morning-period-row">
               <span class="timeline-period">${isZh ? "05:30 集合 · ~06:00 出發" : "05:30 tập trung · ~06:00 xuất phát"}</span>
               ${morningMode === "groom" ? startBadge : ""}
             </div>
-            <h3>${isZh ? "男方府上（新郎家）" : "Tư Gia Nhà Trai"}</h3>
+            <button type="button" class="morning-stop-focus-btn" data-stop-loc="groom" title="${isZh ? "查看地圖" : "Xem trên bản đồ"}">${isZh ? "男方府上（新郎家）" : "Tư Gia Nhà Trai"}</button>
             <p class="morning-addr-main">${escapeHtmlMorning(groomLoc.addr)}</p>
             <div class="morning-stop-actions">
               <a href="${escapeHtmlMorning(groomLoc.directionsUrl)}" target="_blank" rel="noopener noreferrer" class="venue-action-btn is-primary">${btnDirLabel}</a>
@@ -2251,10 +2410,10 @@
             </div>
           </div>
 
-          <div class="timeline-item morning-stop-item" data-stop-loc="bride" style="--tl-idx: 1">
+          <div class="timeline-item morning-stop-item" data-stop-group="bride" style="--tl-idx: 1">
             <span class="timeline-node is-morning-home" aria-hidden="true"></span>
             <span class="timeline-period">${isZh ? "~06:30 · 迎親典禮與遊戲" : "~06:30 · Lễ Vu Quy & trò chơi"}</span>
-            <h3>${isZh ? "女方府上（新娘家）" : "Tư Gia Nhà Gái"}</h3>
+            <button type="button" class="morning-stop-focus-btn" data-stop-loc="bride" title="${isZh ? "查看地圖" : "Xem trên bản đồ"}">${isZh ? "女方府上（新娘家）" : "Tư Gia Nhà Gái"}</button>
             <p class="morning-addr-main">${escapeHtmlMorning(brideRealAddr)}</p>
             <p class="morning-map-hint">${escapeHtmlMorning(bridePinLine)}</p>
             <div class="morning-stop-actions">
@@ -2263,10 +2422,10 @@
             </div>
           </div>
 
-          <div class="timeline-item morning-stop-item" data-stop-loc="groom" style="--tl-idx: 2">
+          <div class="timeline-item morning-stop-item" data-stop-group="groom" style="--tl-idx: 2">
             <span class="timeline-node is-morning-home" aria-hidden="true"></span>
             <span class="timeline-period">${isZh ? "09:00 前返抵 · ~10:00 用餐" : "Trước 09:00 · Lễ Thành Hôn & tiệc ~10:00"}</span>
-            <h3>${isZh ? "返抵男方府上 & 午宴" : "Về Tư Gia Nhà Trai & dùng tiệc"}</h3>
+            <button type="button" class="morning-stop-focus-btn" data-stop-loc="groom" title="${isZh ? "查看地圖" : "Xem trên bản đồ"}">${isZh ? "返抵男方府上 & 午宴" : "Về Tư Gia Nhà Trai & dùng tiệc"}</button>
             <p class="morning-step-note">${isZh ? "行成婚禮後約 10:00 禮成，邀請親友於男方家用餐。" : "Làm lễ xong ~10:00, mời dùng tiệc thân mật tại Nhà Trai."}</p>
           </div>
 
@@ -2275,14 +2434,23 @@
       }
     }
 
-    // 4. Localize Map Switcher Tabs & Sync Active Map Location
+    // 4. Localize Map Switcher Tabs & Sync Active Map Location (Ordered chronologically for bride vs groom)
     if (mapTabs) {
-      const tabLabels = isZh
-        ? { groom: "男方家 · 05:30", bride: "女方家 · 06:30", venue: "晚宴 · 18:00" }
-        : { groom: "Nhà Trai · 05:30", bride: "Nhà Gái · 06:30", venue: "Tiệc Tối · 18:00" };
+      const isBrideStart = morningMode === "bride";
+      const tabLabels = isBrideStart
+        ? isZh
+          ? { bride: "女方家 · 06:00", groom: "男方家 · ~09:00", venue: "晚宴 · 18:00" }
+          : { bride: "Nhà Gái · 06:00", groom: "Nhà Trai · ~09:00", venue: "Tiệc Tối · 18:00" }
+        : isZh
+          ? { groom: "男方家 · 05:30", bride: "女方家 · ~06:30", venue: "晚宴 · 18:00" }
+          : { groom: "Nhà Trai · 05:30", bride: "Nhà Gái · ~06:30", venue: "Tiệc Tối · 18:00" };
+      const tabOrder = isBrideStart
+        ? { bride: "1", groom: "2", venue: "3" }
+        : { groom: "1", bride: "2", venue: "3" };
       mapTabs.querySelectorAll(".morning-map-tab").forEach((btn) => {
         const k = btn.dataset.mapLoc;
         if (tabLabels[k]) btn.textContent = tabLabels[k];
+        if (tabOrder[k]) btn.style.order = tabOrder[k];
       });
     }
     const defaultLoc = activeMorningMapLoc || (morningMode === "bride" ? "bride" : "groom");
@@ -2310,17 +2478,35 @@
       const bGroom = document.getElementById("dpb-btn-groom");
       const bBride = document.getElementById("dpb-btn-bride");
       const bVenue = document.getElementById("dpb-btn-venue");
+      const isBrideStart = morningMode === "bride";
       if (bGroom) {
         bGroom.href = groomLoc.directionsUrl;
-        bGroom.textContent = isZh ? "🏠 導航至男方家 (05:30)" : "🏠 Nhà Trai (05:30)";
+        bGroom.textContent = isBrideStart
+          ? isZh
+            ? "🏠 返男方家 (~09:00)"
+            : "🏠 Về Nhà Trai (~09:00)"
+          : isZh
+            ? "🏠 導航至男方家 (05:30)"
+            : "🏠 Nhà Trai (05:30)";
+        bGroom.style.order = isBrideStart ? "2" : "1";
+        bGroom.className = isBrideStart ? "dpb-btn secondary" : "dpb-btn primary";
       }
       if (bBride) {
         bBride.href = brideLoc.directionsUrl;
-        bBride.textContent = isZh ? "🏡 導航至女方家 (06:30)" : "🏡 Nhà Gái (06:30)";
+        bBride.textContent = isBrideStart
+          ? isZh
+            ? "🏡 導航至女方家 (06:00)"
+            : "🏡 Nhà Gái (06:00)"
+          : isZh
+            ? "🏡 導航至女方家 (~06:30)"
+            : "🏡 Nhà Gái (~06:30)";
+        bBride.style.order = isBrideStart ? "1" : "2";
+        bBride.className = "dpb-btn primary";
       }
       if (bVenue) {
         bVenue.href = venueLoc.directionsUrl;
         bVenue.textContent = isZh ? "🥂 晚宴 Riverside Palace (18:00)" : "🥂 Riverside Palace (18:00)";
+        bVenue.style.order = "3";
       }
     }
 
@@ -2400,6 +2586,18 @@
     }
 
     const tySection = document.getElementById("thank-you-showcase");
+    document.body.classList.toggle("is-thankyou-mode", isThankYou);
+    const cdSecHide = document.getElementById("section-countdown");
+    const locSecHide = document.getElementById("section-location");
+    const seatSecHide = document.getElementById("section-seating");
+    const navMapHide = document.getElementById("nav-map-pill");
+    const navSeatHide = document.getElementById("nav-seating-pill");
+    if (cdSecHide) cdSecHide.hidden = isThankYou;
+    if (locSecHide) locSecHide.hidden = isThankYou;
+    if (seatSecHide) seatSecHide.hidden = isThankYou;
+    if (navMapHide) navMapHide.hidden = isThankYou;
+    if (navSeatHide) navSeatHide.hidden = isThankYou;
+
     if (!tySection) return;
     tySection.hidden = !isThankYou;
     if (!isThankYou) return;
@@ -2407,6 +2605,7 @@
     const eyebrow = document.getElementById("ty-eyebrow");
     const heading = document.getElementById("ty-heading");
     const body = document.getElementById("ty-body");
+    const sigEl = document.getElementById("ty-signature");
     const driveWrap = document.getElementById("ty-drive-wrap");
     const driveBtn = document.getElementById("ty-drive-btn");
     const driveLabel = document.getElementById("ty-drive-label");
@@ -2436,8 +2635,12 @@
         ? rawZh.replace(/\{guest\}|\{ten\}|貴賓/gi, displayGuest)
         : rawVi.replace(/Quý\s+Khách|\{guest\}|\{ten\}/gi, displayGuest);
     }
+    if (sigEl) {
+      sigEl.textContent = isZh ? "趙順祥 & 盧小瑩 • 2027.01.06" : "Thuận Tường & Tiểu Dinh • 06.01.2027";
+    }
 
-    const driveUrl = (params.get("drive") || rCfg.driveUrl || cfg.googleDrivePhotoUrl || "").trim();
+    const rawDriveUrl = (params.get("drive") || rCfg.driveUrl || cfg.googleDrivePhotoUrl || "").trim();
+    const driveUrl = /1ExampleWeddingPhotos/i.test(rawDriveUrl) ? "" : rawDriveUrl;
     if (driveWrap && driveBtn) {
       if (driveUrl) {
         driveWrap.style.display = "";
@@ -2465,7 +2668,9 @@
     document.documentElement.lang = currentLang === "zh" ? "zh-TW" : "vi";
 
     document.querySelectorAll(".lang-btn").forEach((btn) => {
-      btn.classList.toggle("is-active", btn.dataset.lang === currentLang);
+      const active = btn.dataset.lang === currentLang;
+      btn.classList.toggle("is-active", active);
+      btn.setAttribute("aria-pressed", active ? "true" : "false");
     });
 
     const dict = I18N[currentLang];
@@ -2504,6 +2709,25 @@
         el.textContent = text;
       }
     });
+
+    const c2EdgeKeys = {
+      top: "c2EdgeTop",
+      right: "c2EdgeRight",
+      bottom: "c2EdgeBottom",
+      left: "c2EdgeLeft"
+    };
+    document.querySelectorAll("#card-2-article .c2-edge-hit").forEach((el) => {
+      const k = c2EdgeKeys[el.dataset.edge];
+      if (k && dict[k]) el.setAttribute("aria-label", dict[k]);
+    });
+    const foldSigEl = document.getElementById("btn-fold-sig");
+    if (foldSigEl && dict.c2FoldAria) foldSigEl.setAttribute("aria-label", dict.c2FoldAria);
+    const closeEnEl = document.getElementById("btn-close-border-en");
+    if (closeEnEl && dict.c2CloseAria) closeEnEl.setAttribute("aria-label", dict.c2CloseAria);
+    const touchCueEl = document.getElementById("env-touch-cue");
+    if (touchCueEl) {
+      touchCueEl.textContent = envelopeFlipped ? dict.btnOpenSealHint : dict.btnFlipFront;
+    }
 
     updateGuestNameDisplay();
     renderJan2027Calendar();
@@ -2725,6 +2949,9 @@
       flipStartedAt = Date.now();
       envelopeFlipped = true;
       trackGuestActivity("flip_back");
+      if (touchCue && I18N[currentLang]) {
+        touchCue.textContent = I18N[currentLang].btnOpenSealHint;
+      }
 
       stage.style.setProperty("--flip-dir", String(dir >= 0 ? 1 : -1));
       stage.classList.remove(
@@ -2751,6 +2978,9 @@
       isFlipping = true;
       flipStartedAt = Date.now();
       envelopeFlipped = false;
+      if (touchCue && I18N[currentLang]) {
+        touchCue.textContent = I18N[currentLang].btnFlipFront;
+      }
 
       if (typeof dirOverride === "number") {
         stage.style.setProperty("--flip-dir", String(dirOverride >= 0 ? 1 : -1));
@@ -3048,11 +3278,12 @@
     if (touchCue) {
       touchCue.addEventListener("click", (e) => {
         e.stopPropagation();
+        if (window.weddingMusic) window.weddingMusic.startFromGesture();
         if (isFlipping) return;
         if (!envelopeFlipped) {
           flipToBack(-1);
         } else {
-          flipToFront();
+          unsealAndPullOut();
         }
       });
     }
@@ -3080,20 +3311,12 @@
         const cdSec = document.getElementById("section-countdown");
         if (cdSec) {
           delete cdSec.dataset.entrancePlayed;
-          cdSec.classList.remove("is-playing-entrance");
-          cdSec.classList.add("is-awaiting-entrance");
+          cdSec.classList.remove("is-playing-entrance", "is-awaiting-entrance");
         }
         const locSec = document.getElementById("section-location");
         if (locSec) {
           delete locSec.dataset.entrancePlayed;
-          locSec.classList.remove("is-playing-entrance");
-          locSec.classList.add("is-awaiting-entrance");
-        }
-        const imapSec = document.getElementById("illustrated-map-section");
-        if (imapSec) {
-          delete imapSec.dataset.entrancePlayed;
-          imapSec.classList.remove("is-playing-map-entrance");
-          imapSec.classList.add("is-awaiting-map-entrance");
+          locSec.classList.remove("is-playing-entrance", "is-awaiting-entrance");
         }
         if (scrollCueBtn) scrollCueBtn.classList.remove("is-visible");
         if (flapStage) flapStage.classList.remove("is-behind");
@@ -3113,6 +3336,9 @@
         stage.classList.remove("is-dismissed");
         window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
         document.body.classList.add("envelope-locked");
+        if (touchCue && I18N[currentLang]) {
+          touchCue.textContent = I18N[currentLang].btnFlipFront;
+        }
         if (syncTopbarNavUI) syncTopbarNavUI();
         requestAnimationFrame(fitAllGuestNames);
       });
@@ -3124,6 +3350,7 @@
         if (!window.weddingMusic) return;
         const playing = window.weddingMusic.toggleFromGesture();
         musicBtn.classList.toggle("is-playing", playing);
+        musicBtn.setAttribute("aria-pressed", playing ? "true" : "false");
       });
     }
 
@@ -3190,10 +3417,29 @@
           }
         });
       },
-      { threshold: 0.28 }
+      { threshold: 0.14 }
     );
     cards.forEach((c) => cardObserver.observe(c));
     window.addEventListener("scroll", triggerScrollRevealCheck, { passive: true });
+
+    let postOpenFailsafeArmed = false;
+    setInterval(() => {
+      if (!envelopeOpened || document.body.classList.contains("is-table-preparing")) {
+        postOpenFailsafeArmed = false;
+        return;
+      }
+      triggerScrollRevealCheck();
+      if (!postOpenFailsafeArmed) {
+        postOpenFailsafeArmed = true;
+        setTimeout(() => {
+          if (!envelopeOpened || document.body.classList.contains("is-table-preparing")) return;
+          document.querySelectorAll(".stationery-card.will-reveal:not(.is-visible)").forEach((c) => {
+            revealCard(c);
+          });
+          if (checkAct3UtilitiesEntrance) checkAct3UtilitiesEntrance();
+        }, 1200);
+      }
+    }, 450);
   }
 
   /* 6b. Card 2 Quiet-Luxury Fountain-Pen Handwriting, Hot-Foil Glint & Editorial Epigraph
@@ -3205,6 +3451,8 @@
     const reader = document.getElementById("c2-border-reader");
     const copyEnBtn = document.getElementById("btn-copy-border-en");
     const copyLabel = document.getElementById("c2-copy-label");
+    const pauseTourBtn = document.getElementById("btn-pause-border-tour");
+    const pauseLabel = document.getElementById("c2-pause-label");
     const closeEnBtn = document.getElementById("btn-close-border-en");
     const foldSigBtn = document.getElementById("btn-fold-sig");
     if (!card2 || !secretWrap || !whisperBtn || !reader) return;
@@ -3219,6 +3467,7 @@
     let penTimer = null;
     let activeEdge = "top";
     let tourInterval = null;
+    let isTourPaused = false;
     let manualPauseUntil = 0;
     let copyResetTimer = null;
 
@@ -3306,11 +3555,17 @@
       }
     }
 
+    function syncPauseBtnUI() {
+      const dict = I18N[currentLang] || I18N.vi;
+      if (pauseTourBtn) pauseTourBtn.setAttribute("aria-pressed", isTourPaused ? "true" : "false");
+      if (pauseLabel) pauseLabel.textContent = isTourPaused ? dict.c2Resume : dict.c2Pause;
+    }
+
     function startClockwiseTour() {
       stopClockwiseTour();
-      if (reducedMotion) return;
+      if (reducedMotion || isTourPaused) return;
       tourInterval = setInterval(() => {
-        if (Date.now() < manualPauseUntil) return;
+        if (isTourPaused || Date.now() < manualPauseUntil) return;
         const idx = EDGES.indexOf(activeEdge);
         const nextEdge = EDGES[(idx + 1) % EDGES.length];
         focusEdge(nextEdge, 0);
@@ -3329,24 +3584,42 @@
       reader.hidden = false;
       whisperBtn.setAttribute("aria-expanded", "true");
       focusEdge(initialEdge || "top", isManualPick ? 10000 : 0);
+      syncPauseBtnUI();
       startClockwiseTour();
     }
 
-    function closeReader() {
+    function closeReader(returnFocus = false) {
       secretWrap.classList.remove("is-open");
       reader.hidden = true;
       whisperBtn.setAttribute("aria-expanded", "false");
       stopClockwiseTour();
       manualPauseUntil = 0;
       delete card2.dataset.focusEdge;
+      if (returnFocus) whisperBtn.focus();
     }
 
     whisperBtn.addEventListener("click", () => {
       openReader("top", false);
     });
 
-    if (closeEnBtn) closeEnBtn.addEventListener("click", closeReader);
-    if (foldSigBtn) foldSigBtn.addEventListener("click", closeReader);
+    if (pauseTourBtn) {
+      pauseTourBtn.addEventListener("click", () => {
+        isTourPaused = !isTourPaused;
+        syncPauseBtnUI();
+        if (isTourPaused) stopClockwiseTour();
+        else startClockwiseTour();
+      });
+    }
+
+    if (closeEnBtn) closeEnBtn.addEventListener("click", () => closeReader(true));
+    if (foldSigBtn) foldSigBtn.addEventListener("click", () => closeReader(true));
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && secretWrap.classList.contains("is-open")) {
+        e.preventDefault();
+        closeReader(true);
+      }
+    });
 
     hitEls.forEach((hit) => {
       hit.addEventListener("click", (e) => {
@@ -3373,26 +3646,24 @@
 
     if (copyEnBtn) {
       copyEnBtn.addEventListener("click", async () => {
-        const originalEn =
-          "“We began as classmates in high school and became each other’s love. " +
-          "We grew together, understood each other, and found happiness in our relationship. " +
-          "Despite many arguments and challenges, we made it through that chapter. " +
-          "After seven and a half years, our story continues — now as husband and wife.” — T&D";
+        const dict = I18N[currentLang] || I18N.vi;
+        const localizedStory =
+          `${dict.c2Line1} ${dict.c2Line2} ${dict.c2Line3} ${dict.c2Line4} - T&D`;
         try {
-          await navigator.clipboard.writeText(originalEn);
+          await navigator.clipboard.writeText(localizedStory);
         } catch (_) {
           const ta = document.createElement("textarea");
-          ta.value = originalEn;
+          ta.value = localizedStory;
           document.body.appendChild(ta);
           ta.select();
           document.execCommand("copy");
           ta.remove();
         }
         if (copyLabel) {
-          copyLabel.textContent = "Copied";
+          copyLabel.textContent = dict.c2Copied || "Đã chép";
           if (copyResetTimer) clearTimeout(copyResetTimer);
           copyResetTimer = setTimeout(() => {
-            copyLabel.textContent = "Copy";
+            copyLabel.textContent = (I18N[currentLang] || I18N.vi).c2Copy || "Sao chép";
           }, 2400);
         }
       });
@@ -3414,7 +3685,7 @@
     const vh = window.innerHeight || 900;
     document.querySelectorAll(".stationery-card").forEach((card) => {
       const rect = card.getBoundingClientRect();
-      if (rect.top < vh * 0.68 && rect.bottom > 60) {
+      if (rect.top < vh * 0.9 && rect.bottom > 0) {
         revealCard(card);
       }
     });
@@ -3493,20 +3764,12 @@
     renderJan2027Calendar();
     updateGoogleCalendarLink();
 
-    // One-Time Luxury Entrance Choreography for #section-countdown, #section-location & #illustrated-map-section
+    // One-Time Entrance Choreography for #section-countdown & #section-location (never block scroll with opacity: 0)
     const cdSec = document.getElementById("section-countdown");
     const locSec = document.getElementById("section-location");
-    const imapSec = document.getElementById("illustrated-map-section");
-    const imapLandmark = document.getElementById("imap-riverside-landmark");
 
     const reducedMotion =
       window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    if (!reducedMotion) {
-      if (cdSec) cdSec.classList.add("is-awaiting-entrance");
-      if (locSec) locSec.classList.add("is-awaiting-entrance");
-      if (imapSec) imapSec.classList.add("is-awaiting-map-entrance");
-    }
 
     function playCountdownSectionEntrance() {
       if (!cdSec || cdSec.dataset.entrancePlayed === "1") return;
@@ -3537,63 +3800,19 @@
       }, 640);
     }
 
-    function triggerRiversideLandmarkCelebration(ev) {
-      const pinAnchor =
-        document.getElementById("imap-riverside-pin-dot") || imapLandmark;
-      if (!pinAnchor) return;
-      const isZh = currentLang === "zh";
-      const phrase = isZh
-        ? {
-            ornament: "囍",
-            speaker: "Riverside Palace · Seine 宴會廳",
-            words: "360D Bến Vân Đồn · 18:00 迎賓 · 19:00 開席 ♥"
-          }
-        : {
-            ornament: "囍",
-            speaker: "Riverside Palace · Sảnh Seine",
-            words: "360D Bến Vân Đồn · Đón khách 18:00 · Khai tiệc 19:00 ♥"
-          };
-      spawnFloatingWhisper(pinAnchor, ev || null, phrase, true, 4.4);
-      spawnGuestHearts(pinAnchor, ev || null, 20);
-    }
-
-    function playIllustratedMapEntrance() {
-      if (!imapSec || imapSec.dataset.entrancePlayed === "1") return;
-      imapSec.dataset.entrancePlayed = "1";
-      imapSec.classList.remove("is-awaiting-map-entrance");
-      imapSec.classList.add("is-playing-map-entrance");
-
-      setTimeout(() => {
-        triggerRiversideLandmarkCelebration(null);
-      }, 660);
-    }
-
-    if (imapLandmark) {
-      imapLandmark.addEventListener("click", (e) => {
-        e.stopPropagation();
-        triggerRiversideLandmarkCelebration(e);
-      });
-    }
-
     checkAct3UtilitiesEntrance = function () {
       if (!envelopeOpened || document.body.classList.contains("is-table-preparing")) return;
       const vh = window.innerHeight || 860;
       if (cdSec && cdSec.dataset.entrancePlayed !== "1") {
         const r = cdSec.getBoundingClientRect();
-        if (r.top < vh * 0.8 && r.bottom > 60) {
+        if (r.top < vh * 0.85 && r.bottom > 0) {
           playCountdownSectionEntrance();
         }
       }
       if (locSec && locSec.dataset.entrancePlayed !== "1") {
         const r = locSec.getBoundingClientRect();
-        if (r.top < vh * 0.82 && r.bottom > 60) {
+        if (r.top < vh * 0.85 && r.bottom > 0) {
           playLocationSectionEntrance();
-        }
-      }
-      if (imapSec && imapSec.dataset.entrancePlayed !== "1") {
-        const r = imapSec.getBoundingClientRect();
-        if (r.top < vh * 0.84 && r.bottom > 50) {
-          playIllustratedMapEntrance();
         }
       }
     };
@@ -3608,16 +3827,13 @@
               playCountdownSectionEntrance();
             } else if (entry.target === locSec) {
               playLocationSectionEntrance();
-            } else if (entry.target === imapSec) {
-              playIllustratedMapEntrance();
             }
           });
         },
-        { threshold: 0.16 }
+        { threshold: 0.14 }
       );
       if (cdSec) act3Observer.observe(cdSec);
       if (locSec) act3Observer.observe(locSec);
-      if (imapSec) act3Observer.observe(imapSec);
     }
 
     // Download .ics Calendar File (Localized for VI & 台灣繁體中文)
@@ -3699,45 +3915,6 @@
         showToast(I18N[currentLang].copiedAddr);
       });
     }
-
-    // Illustrated Wedding Map Fullscreen Lightbox & Jump-to-Cards Button
-    const zoomBtn = document.getElementById("btn-zoom-imap");
-    const imapTrigger = document.getElementById("imap-canvas-trigger");
-    const lightbox = document.getElementById("imap-lightbox");
-    const lightboxBody = document.getElementById("imap-lightbox-body");
-    const closeLbBtn = document.getElementById("btn-close-imap-lightbox");
-    const closeLbBg = document.getElementById("imap-lightbox-close-bg");
-
-    const openImapLightbox = () => {
-      if (!lightbox || !lightboxBody || !imapTrigger) return;
-      const svgEl = imapTrigger.querySelector("svg");
-      if (svgEl) {
-        lightboxBody.innerHTML = "";
-        const clone = svgEl.cloneNode(true);
-        clone.style.minWidth = "720px";
-        clone.style.width = "100%";
-        clone.style.height = "auto";
-        lightboxBody.appendChild(clone);
-      }
-      lightbox.hidden = false;
-    };
-
-    const closeImapLightbox = () => {
-      if (lightbox) lightbox.hidden = true;
-    };
-
-    if (zoomBtn) zoomBtn.addEventListener("click", openImapLightbox);
-    if (imapTrigger) {
-      imapTrigger.addEventListener("click", openImapLightbox);
-      imapTrigger.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          openImapLightbox();
-        }
-      });
-    }
-    if (closeLbBtn) closeLbBtn.addEventListener("click", closeImapLightbox);
-    if (closeLbBg) closeLbBg.addEventListener("click", closeImapLightbox);
 
     const jumpCardsBtn = document.getElementById("btn-jump-to-cards");
     if (jumpCardsBtn) {

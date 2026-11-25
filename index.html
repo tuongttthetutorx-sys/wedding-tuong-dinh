@@ -30,7 +30,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,500;1,600&family=Dancing+Script:wght@600;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="css/styles.css?v=72" />
+  <link rel="stylesheet" href="css/styles.css?v=73" />
 
   <!-- Pre-printed numbered QR bookmark (?s=7-k3x9): look up the guest name & card mode assigned later in the admin page -->
   <style>html.td-slot-resolving body { visibility: hidden; }</style>
@@ -137,16 +137,16 @@
         </svg>
         <span data-i18n="navVenue">Bản đồ</span>
       </a>
-      <a href="#section-seating" id="nav-seating-pill" class="nav-pill is-desktop-pill" data-i18n="navSeating">Bàn tiệc</a>
+      <a href="#section-seating" id="nav-seating-pill" class="nav-pill" data-i18n="navSeating">Bàn tiệc</a>
     </nav>
     <div class="lang-switch" role="group" aria-label="Chọn ngôn ngữ VI / 中文">
-      <button type="button" class="lang-btn is-active" data-lang="vi">VI</button>
-      <button type="button" class="lang-btn" data-lang="zh">中文</button>
+      <button type="button" class="lang-btn is-active" data-lang="vi" aria-pressed="true">VI</button>
+      <button type="button" class="lang-btn" data-lang="zh" aria-pressed="false">中文</button>
     </div>
   </header>
 
   <!-- Floating Music Control -->
-  <button type="button" id="music-toggle" class="music-fab" aria-label="Bật / Tắt nhạc nền cưới" title="Bật / Tắt nhạc nền">
+  <button type="button" id="music-toggle" class="music-fab" aria-pressed="false" aria-label="Bật / Tắt nhạc nền cưới" title="Bật / Tắt nhạc nền">
     <span class="music-bars" aria-hidden="true">
       <span></span><span></span><span></span><span></span>
     </span>
@@ -295,6 +295,12 @@
         </div>
       </div>
     </div>
+
+    <div class="env-cue-wrap">
+      <button type="button" id="env-touch-cue" class="env-touch-cue" data-i18n="btnFlipFront">
+        ↺ Chạm phong bì lật mở dấu sáp
+      </button>
+    </div>
   </section>
 
   <!-- Access Paused Overlay (shown only when WEDDING_CONFIG.isPublished === false or ?preview=paused) -->
@@ -358,7 +364,7 @@
             Album ảnh &amp; khoảnh khắc kỷ niệm ngày cưới để Quý Khách xem lại và tải ảnh chất lượng gốc
           </p>
         </div>
-        <div class="thank-you-signature">Thuận Tường &amp; Tiểu Dinh • 06.01.2027</div>
+        <div class="thank-you-signature" id="ty-signature">Thuận Tường &amp; Tiểu Dinh • 06.01.2027</div>
       </div>
     </section>
 
@@ -410,40 +416,44 @@
           <div id="svg-card-2" class="card-svg-stage"></div>
 
           <!-- Discreet Tactile Zones Along the 4 Handwritten Margins of Card 2 -->
-          <button type="button" class="c2-edge-hit is-top" data-edge="top" aria-label="We began as classmates in high school and became each other’s love."></button>
-          <button type="button" class="c2-edge-hit is-right" data-edge="right" aria-label="We grew together, understood each other, and found happiness in our relationship."></button>
-          <button type="button" class="c2-edge-hit is-bottom" data-edge="bottom" aria-label="Despite many arguments and challenges, we made it through that chapter."></button>
-          <button type="button" class="c2-edge-hit is-left" data-edge="left" aria-label="After seven and a half years, our story continues — now as husband and wife. T&D"></button>
+          <button type="button" class="c2-edge-hit is-top" data-edge="top" aria-label="Câu chuyện viền thiệp - Phần 1"></button>
+          <button type="button" class="c2-edge-hit is-right" data-edge="right" aria-label="Câu chuyện viền thiệp - Phần 2"></button>
+          <button type="button" class="c2-edge-hit is-bottom" data-edge="bottom" aria-label="Câu chuyện viền thiệp - Phần 3"></button>
+          <button type="button" class="c2-edge-hit is-left" data-edge="left" aria-label="Câu chuyện viền thiệp - Phần 4"></button>
         </article>
 
-        <!-- Understated Editorial Epigraph (blossoms in-place into the 4-line original English note when tapped) -->
+        <!-- Understated Editorial Epigraph (blossoms in-place into localized story when tapped) -->
         <div id="c2-border-secret" class="c2-border-secret">
           <button type="button" id="c2-border-whisper-btn" class="c2-epigraph-trigger" aria-expanded="false">
-            <span class="c2-epigraph-excerpt">“We began as classmates…”</span>
+            <span class="c2-epigraph-excerpt" id="c2-epigraph-excerpt" data-i18n="c2Epigraph">“Từ bạn cùng lớp năm cấp 3…”</span>
             <span class="c2-epigraph-dot" aria-hidden="true">·</span>
             <span class="c2-epigraph-sig">T &amp; D</span>
           </button>
 
           <div id="c2-border-reader" class="c2-border-reader" hidden>
             <blockquote class="c2-verse-poem">
-              <p class="c2-verse-line is-active" data-edge="top">“We began as classmates in high school and became each other’s love.</p>
-              <p class="c2-verse-line" data-edge="right">We grew together, understood each other, and found happiness in our relationship.</p>
-              <p class="c2-verse-line" data-edge="bottom">Despite many arguments and challenges, we made it through that chapter.</p>
-              <p class="c2-verse-line" data-edge="left">After seven and a half years, our story continues — now as husband and wife.”</p>
+              <p class="c2-verse-line is-active" data-edge="top" data-i18n="c2Line1">“Từ bạn cùng lớp thời trung học, chúng mình trở thành tình yêu của nhau.</p>
+              <p class="c2-verse-line" data-edge="right" data-i18n="c2Line2">Cùng nhau trưởng thành, thấu hiểu và tìm thấy hạnh phúc bên nhau.</p>
+              <p class="c2-verse-line" data-edge="bottom" data-i18n="c2Line3">Dẫu từng có những lần tranh cãi và thử thách, tụi mình vẫn nắm tay vượt qua.</p>
+              <p class="c2-verse-line" data-edge="left" data-i18n="c2Line4">Sau bảy năm rưỡi bên nhau, câu chuyện tiếp nối - nay là vợ chồng.”</p>
             </blockquote>
 
             <div class="c2-verse-colophon">
-              <button type="button" id="btn-fold-sig" class="c2-verse-sig-btn" aria-label="Fold quote">— T &amp; D —</button>
+              <button type="button" id="btn-fold-sig" class="c2-verse-sig-btn" aria-label="Thu gọn lời tựa">- T &amp; D -</button>
+              <span class="c2-verse-sep" aria-hidden="true">·</span>
+              <button type="button" id="btn-pause-border-tour" class="c2-verse-action" aria-pressed="false">
+                <span id="c2-pause-label" data-i18n="c2Pause">Tạm dừng</span>
+              </button>
               <span class="c2-verse-sep" aria-hidden="true">·</span>
               <button type="button" id="btn-copy-border-en" class="c2-verse-action">
                 <svg width="11.5" height="11.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <rect x="9" y="9" width="13" height="13" rx="2"></rect>
                   <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                 </svg>
-                <span id="c2-copy-label">Copy</span>
+                <span id="c2-copy-label" data-i18n="c2Copy">Sao chép</span>
               </button>
               <span class="c2-verse-sep" aria-hidden="true">·</span>
-              <button type="button" id="btn-close-border-en" class="c2-verse-action c2-verse-close" aria-label="Close">×</button>
+              <button type="button" id="btn-close-border-en" class="c2-verse-action c2-verse-close" aria-label="Đóng">×</button>
             </div>
           </div>
         </div>
@@ -470,10 +480,6 @@
         <div class="countdown-layout">
           <div class="cd-editorial-col">
             <div class="cd-heading-block">
-              <span class="cd-eyebrow">
-                <span class="cd-xi-mark" aria-hidden="true">囍</span>
-                <span data-i18n="cdEyebrow">Đếm Ngược Ngày Chung Đôi</span>
-              </span>
               <h2 data-i18n="cdTitle">Hẹn Gặp Quý Khách Tại Buổi Tiệc</h2>
               <p class="cd-sub-main" data-i18n="cdSub">
                 18:00 • Thứ Tư, ngày 06 tháng 01 năm 2027 (Nhằm ngày 29 tháng 11 năm Bính Ngọ)
@@ -562,7 +568,6 @@
         </div>
 
         <div class="section-heading">
-          <span class="eyebrow" data-i18n="venueEyebrow">Thời Gian &amp; Địa Điểm</span>
           <h2 data-i18n="venueTitle">Lịch Trình Hôn Lễ &amp; Sơ Đồ Chỉ Đường</h2>
           <p data-i18n="venueSub">
             Sự hiện diện của Quý Khách là niềm vinh hạnh lớn lao cho gia đình chúng tôi.
@@ -630,12 +635,29 @@
               referrerpolicy="no-referrer-when-downgrade"
               src="https://maps.google.com/maps?q=Riverside%20Palace%20360D%20B%E1%BA%BFn%20V%C3%A2n%20%C4%90%E1%BB%93n%20H%E1%BB%93%20Ch%C3%AD%20Minh&t=&z=16&ie=UTF8&iwloc=&output=embed"
             ></iframe>
+            <div class="venue-map-fallback" id="venue-map-fallback" hidden>
+              <img
+                id="venue-map-fallback-img"
+                src="assets/ban-do-riverside-palace.png"
+                alt="Bản đồ chỉ đường Riverside Palace - 360D Bến Vân Đồn"
+                class="venue-map-fallback-img"
+              />
+              <div class="venue-map-fallback-card" id="venue-map-fallback-card">
+                <strong id="venue-map-fb-title">Riverside Palace (Sảnh Seine)</strong>
+                <span id="venue-map-fb-addr">360D Bến Vân Đồn, P. Vĩnh Hội, TP. Hồ Chí Minh</span>
+                <div class="venue-map-fallback-actions">
+                  <a id="venue-map-fb-link" href="https://www.google.com/maps/dir/?api=1&destination=Riverside+Palace+360D+Ben+Van+Don+Ho+Chi+Minh" target="_blank" rel="noopener noreferrer" class="morning-map-link is-primary" data-i18n="btnStartRoute">🧭 Chỉ đường Google Maps</a>
+                  <button type="button" id="btn-retry-map-iframe" class="venue-action-btn" data-i18n="btnRetryMap">↻ Tải bản đồ trực tuyến</button>
+                </div>
+              </div>
+            </div>
             <div class="morning-map-footer" id="morning-map-footer" hidden>
               <div class="morning-map-footer-info">
                 <strong id="morning-map-active-name"></strong>
                 <span id="morning-map-active-addr"></span>
               </div>
               <div class="morning-map-footer-actions">
+                <button type="button" id="btn-toggle-static-map" class="venue-action-btn" data-i18n="btnStaticMap">🗺️ Sơ đồ tĩnh</button>
                 <a id="morning-map-dir-link" href="#section-location" target="_blank" rel="noopener noreferrer" class="morning-map-link is-primary"></a>
               </div>
             </div>
@@ -648,7 +670,6 @@
            =================================================================== -->
       <section class="venue-section seating-section" id="section-seating">
         <div class="section-heading">
-          <span class="eyebrow" id="seating-eyebrow">Sơ Đồ Bàn Tiệc • Sảnh Seine</span>
           <h2 id="seating-main-title">Vị Trí Bàn Tiệc</h2>
           <p id="seating-main-sub">Sảnh Seine • Riverside Palace • Bàn tròn 10 khách</p>
         </div>
@@ -688,15 +709,15 @@
     <footer class="wedding-footer">
       <div class="footer-monogram">囍 • T &amp; D • 06.01.2027</div>
       <p class="footer-credit" data-i18n="footerCredit">
-        Personally designed by the Bride &amp; Groom — Tiểu Dinh &amp; Thuận Tường
+        Thiết kế thủ công bởi Cô dâu Tiểu Dinh &amp; Chú rể Thuận Tường
       </p>
     </footer>
   </main>
 
   <!-- Artwork Bundle (Envelope critical; Cards lazy-loaded by app.js) & Interactive Scripts -->
-  <script src="js/config.js?v=67" defer></script>
+  <script src="js/config.js?v=68" defer></script>
   <script src="js/artwork-envelope.js?v=65" defer></script>
   <script src="js/audio.js?v=65" defer></script>
-  <script src="js/app.js?v=74" defer></script>
+  <script src="js/app.js?v=75" defer></script>
 </body>
 </html>

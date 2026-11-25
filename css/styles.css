@@ -122,6 +122,12 @@ body:not(.envelope-locked):not(.is-table-preparing):not(.is-table-cascading)
   pointer-events: none;
 }
 
+body:not(.envelope-locked) .floating-topbar:focus-within {
+  opacity: 1 !important;
+  transform: translate3d(-50%, 0, 0) scale(1) !important;
+  pointer-events: auto !important;
+}
+
 .topbar-nav {
   display: flex;
   align-items: center;
@@ -265,11 +271,20 @@ body.lang-zh .nav-pill-zh-first {
 .scroll-invite-cue:focus-visible,
 .envelope-3d:focus-visible,
 .venue-action-btn:focus-visible,
+.morning-stop-focus-btn:focus-visible,
+.morning-map-tab:focus-visible,
+.morning-map-link:focus-visible,
+.cal-day.is-wedding-day:focus-visible,
 .c2-epigraph-trigger:focus-visible,
 .c2-verse-action:focus-visible,
 .c2-verse-sig-btn:focus-visible {
   outline: 2px solid var(--crimson-ink);
   outline-offset: 2px;
+}
+
+.env-touch-cue:focus-visible {
+  outline: 2px solid #f7e4b4;
+  outline-offset: 3px;
 }
 
 .lang-btn.is-active {
@@ -445,7 +460,7 @@ body.lang-zh .nav-pill-zh-first {
 /* Outer 2D Hand-Lift Rig (keeps perspective center fixed while providing subtle organic hand lift) */
 .envelope-lift-rig {
   width: min(91vw, 590px);
-  width: min(91vw, 590px, calc((100dvh - 136px) * 1.38));
+  width: min(91vw, 590px, calc((100dvh - 168px) * 1.38));
   aspect-ratio: 510.24 / 368.50;
   position: relative;
   z-index: 2;
@@ -546,6 +561,48 @@ body.lang-zh .nav-pill-zh-first {
     transform: translate3d(0, 14px, 0) scale3d(1.02, 1.02, 1);
     opacity: 0.96;
   }
+}
+
+.env-cue-wrap {
+  position: relative;
+  z-index: 4;
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  transition: opacity 0.28s ease, transform 0.28s ease;
+}
+
+.envelope-stage.is-opening .env-cue-wrap,
+.envelope-stage.is-pulling-free .env-cue-wrap,
+.envelope-stage.is-curtain-bloom .env-cue-wrap,
+.envelope-stage.is-dismissed .env-cue-wrap {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(6px);
+}
+
+.env-touch-cue {
+  appearance: none;
+  border: 1px solid rgba(244, 219, 165, 0.45);
+  background: rgba(54, 4, 14, 0.42);
+  color: #fff6e5;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.3;
+  min-height: 40px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 6px 18px rgba(24, 2, 7, 0.34);
+  transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+.env-touch-cue:hover {
+  background: rgba(78, 8, 22, 0.64);
+  border-color: rgba(248, 228, 178, 0.72);
+  transform: translateY(-1px);
 }
 
 .envelope-scene {
@@ -2720,7 +2777,7 @@ body[data-whisper-theme="velvet"] .floating-whisper .fw-words {
   font-size: clamp(15.8px, 4vw, 17.6px);
   line-height: 1.54;
   letter-spacing: 0.01em;
-  color: rgba(74, 21, 23, 0.5);
+  color: rgba(68, 22, 24, 0.8);
   cursor: pointer;
   user-select: text;
   -webkit-user-select: text;
@@ -2729,11 +2786,12 @@ body[data-whisper-theme="velvet"] .floating-whisper .fw-words {
 }
 
 .c2-verse-line:hover {
-  color: rgba(132, 21, 23, 0.82);
+  color: var(--crimson-ink);
 }
 
 .c2-verse-line.is-active {
   color: var(--crimson-ink);
+  font-weight: 600;
 }
 
 .c2-verse-colophon {
@@ -2742,7 +2800,7 @@ body[data-whisper-theme="velvet"] .floating-whisper .fw-words {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  color: rgba(132, 21, 23, 0.58);
+  color: rgba(96, 18, 22, 0.86);
 }
 
 .c2-verse-sig-btn,
@@ -2947,11 +3005,13 @@ body.lang-zh .cd-eyebrow {
 
 .cd-unit {
   text-align: center;
-  padding: 22px 10px 19px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.68);
-  border: 1px solid rgba(132, 21, 23, 0.18);
-  box-shadow: inset 0 0 0 3px rgba(250, 246, 238, 0.85), inset 0 0 0 4px rgba(198, 125, 8, 0.14);
+  padding: 20px 10px 17px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.42);
+  border: none;
+  border-top: 1px solid rgba(132, 21, 23, 0.16);
+  border-bottom: 2px solid rgba(132, 21, 23, 0.24);
+  box-shadow: none;
 }
 
 .cd-num {
@@ -2976,11 +3036,12 @@ body.lang-zh .cd-eyebrow {
 
 /* Mini Keepsake Calendar January 2027 */
 .keepsake-calendar {
-  padding: 20px 20px 18px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.68);
-  border: 1px solid rgba(132, 21, 23, 0.18);
-  box-shadow: inset 0 0 0 4px rgba(250, 246, 238, 0.88), inset 0 0 0 5px rgba(198, 125, 8, 0.16);
+  padding: 12px 6px 10px 22px;
+  border-radius: 0;
+  background: transparent;
+  border: none;
+  border-left: 1px dashed rgba(132, 21, 23, 0.22);
+  box-shadow: none;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -3051,6 +3112,12 @@ body.lang-zh .cal-footer-note {
 }
 
 .cal-day.is-wedding-day {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
   background: var(--crimson-ink);
   color: var(--ivory-ink);
   font-weight: 700;
@@ -3076,10 +3143,10 @@ body.lang-zh .cal-footer-note {
 }
 
 .day-schedule-ledger {
-  padding: 22px 24px 24px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.62);
-  border: 1px solid rgba(132, 21, 23, 0.15);
+  padding: 6px 4px 10px;
+  border-radius: 0;
+  background: transparent;
+  border: none;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -3220,6 +3287,62 @@ body.lang-zh .day-schedule-badge {
   flex: 1;
   min-height: 260px;
   border: 0;
+}
+
+.venue-map-frame iframe[hidden] {
+  display: none !important;
+}
+
+.venue-map-fallback {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  background: #fbf6ec;
+}
+
+.venue-map-fallback[hidden] {
+  display: none !important;
+}
+
+.venue-map-fallback-img {
+  display: block;
+  width: 100%;
+  height: 215px;
+  object-fit: cover;
+  border-bottom: 1px solid rgba(132, 21, 23, 0.14);
+}
+
+.venue-map-fallback-card {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.venue-map-fallback-card strong {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--crimson-ink);
+  line-height: 1.3;
+}
+
+body.lang-zh .venue-map-fallback-card strong {
+  font-family: var(--font-zh);
+}
+
+.venue-map-fallback-card span {
+  font-size: 12.8px;
+  color: var(--text-muted);
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.venue-map-fallback-actions {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 /* RSVP & Wishes Guestbook */
@@ -3381,9 +3504,14 @@ body.lang-zh .day-schedule-badge {
 .footer-credit {
   margin: 4px 0 12px;
   font-family: var(--font-serif);
-  font-style: italic;
+  font-style: normal;
   font-size: 16px;
   color: var(--text-main);
+}
+
+body.lang-zh .footer-credit {
+  font-family: var(--font-zh);
+  font-size: 15px;
 }
 
 .footer-tools-link {
@@ -3415,6 +3543,12 @@ body.lang-zh .day-schedule-badge {
 
   .cd-heading-block {
     text-align: center;
+  }
+
+  .keepsake-calendar {
+    border-left: none;
+    border-top: 1px dashed rgba(132, 21, 23, 0.22);
+    padding: 18px 6px 8px;
   }
 
   .invitation-main {
@@ -3616,7 +3750,31 @@ body.lang-zh .day-schedule-badge {
   }
 
   .day-schedule-ledger {
-    padding: 18px 17px 20px;
+    padding: 4px 2px 8px;
+  }
+
+  .env-cue-wrap {
+    margin-top: 14px;
+  }
+
+  .env-touch-cue {
+    font-size: 12.8px;
+    padding: 7px 15px;
+    min-height: 38px;
+  }
+
+  .thank-you-paper {
+    padding: 26px 18px 24px;
+  }
+
+  .thank-you-drive-btn {
+    width: 100%;
+    max-width: 100%;
+    white-space: normal;
+    text-align: center;
+    padding: 13px 16px;
+    line-height: 1.35;
+    box-sizing: border-box;
   }
 
   .timeline-period {
@@ -3634,6 +3792,10 @@ body.lang-zh .day-schedule-badge {
   .venue-map-frame,
   .venue-map-frame iframe {
     min-height: 255px;
+  }
+
+  .venue-map-fallback-img {
+    height: 185px;
   }
 
   .wedding-footer {
@@ -3659,7 +3821,6 @@ body.lang-zh .day-schedule-badge {
     max-width: 290px;
   }
 
-  .btn-open-envelope,
   .btn-flip-envelope {
     width: 100%;
     justify-content: center;
@@ -3879,11 +4040,29 @@ body.lang-zh .thank-you-heading {
   color: var(--crimson-ink);
 }
 
+body.is-thankyou-mode #section-countdown,
+body.is-thankyou-mode #section-location,
+body.is-thankyou-mode #section-seating,
+body.is-thankyou-mode #morning-vip-card,
+body.is-thankyou-mode #nav-map-pill,
+body.is-thankyou-mode #nav-seating-pill {
+  display: none !important;
+}
+
+body.is-thankyou-mode #thank-you-showcase {
+  margin-bottom: 36px;
+}
+
 /* ==========================================================================
-   15. WEDDING-DAY PRIORITY DIRECTIONS MODE, ILLUSTRATED MAP & ROUTE GUIDES
+   15. WEDDING-DAY PRIORITY DIRECTIONS MODE & ROUTE GUIDES
    ========================================================================== */
 
-/* When Priority Directions Mode is active, elevate #section-location to the very top of the page right below the couple's name */
+/* Streamline wedding-day directions mode: calm concierge (no sparkles/countdown), surface next stop + map + seating */
+body.is-directions-priority-mode #ambient-canvas,
+body.is-directions-priority-mode #section-countdown {
+  display: none !important;
+}
+
 body.is-directions-priority-mode .invitation-table,
 body.is-directions-priority-mode .invitation-main {
   display: flex;
@@ -3903,8 +4082,8 @@ body.is-directions-priority-mode #section-location {
   order: 2;
   width: min(1008px, 100%);
   margin: 4px auto 32px;
-  border: 2px solid rgba(132, 21, 23, 0.28);
-  box-shadow: 0 20px 52px rgba(68, 12, 16, 0.14);
+  border: 1px solid rgba(132, 21, 23, 0.2);
+  box-shadow: var(--card-shadow);
 }
 
 body.is-directions-priority-mode #section-seating {
@@ -3920,12 +4099,6 @@ body.is-directions-priority-mode #thank-you-showcase {
 
 body.is-directions-priority-mode .cards-stream {
   order: 5;
-}
-
-body.is-directions-priority-mode #section-countdown {
-  order: 6;
-  width: min(1008px, 100%);
-  margin: 32px auto 28px;
 }
 
 body.is-directions-priority-mode .wedding-footer {
@@ -3977,6 +4150,7 @@ body.is-directions-priority-mode .wedding-footer {
   font-size: clamp(22px, 3.4vw, 28px);
   font-weight: 700;
   color: #ffffff;
+  text-wrap: balance;
 }
 
 body.lang-zh .dpb-title {
@@ -4072,195 +4246,7 @@ body.lang-zh .dpb-title {
   background: #650f12;
 }
 
-/* Bespoke Illustrated Wedding Map Section */
-.illustrated-map-section {
-  margin-top: 28px;
-  padding-top: 26px;
-  border-top: 1px dashed rgba(132, 21, 23, 0.22);
-}
 
-.imap-header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
-.imap-badge {
-  display: inline-block;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  color: var(--gold-ink);
-  margin-bottom: 4px;
-}
-
-.imap-title {
-  margin: 0;
-  font-family: var(--font-serif);
-  font-size: clamp(20px, 2.8vw, 25px);
-  font-weight: 700;
-  color: var(--crimson-ink);
-}
-
-body.lang-zh .imap-title {
-  font-family: var(--font-zh);
-}
-
-.imap-sub {
-  margin: 4px 0 0;
-  font-size: 13.2px;
-  color: var(--text-muted);
-}
-
-.imap-canvas-frame {
-  position: relative;
-  border-radius: 14px;
-  overflow: hidden;
-  border: 1.5px solid rgba(132, 21, 23, 0.22);
-  background: #fbf6ec;
-  box-shadow: 0 10px 28px rgba(70, 16, 18, 0.08);
-  cursor: zoom-in;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.imap-canvas-frame:hover {
-  box-shadow: 0 14px 34px rgba(70, 16, 18, 0.13);
-}
-
-.wedding-route-svg {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-/* 3 Detailed Route Cards + Hall/Parking Card (2x2 Grid) */
-.route-cards-grid {
-  margin-top: 16px;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.route-guide-card {
-  padding: 14px 16px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.76);
-  border: 1px solid rgba(132, 21, 23, 0.15);
-}
-
-.route-guide-card.is-hall-guide {
-  background: linear-gradient(135deg, rgba(132, 21, 23, 0.06) 0%, rgba(212, 170, 99, 0.12) 100%);
-  border-color: rgba(132, 21, 23, 0.26);
-}
-
-.rg-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
-}
-
-.rg-num {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: var(--crimson-ink);
-  color: #fff9ef;
-  font-size: 12px;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-
-.rg-head h4 {
-  margin: 0;
-  font-size: 14.2px;
-  font-weight: 700;
-  color: var(--crimson-ink);
-}
-
-.route-guide-card p {
-  margin: 0;
-  font-size: 13px;
-  line-height: 1.58;
-  color: var(--text-main);
-}
-
-/* Fullscreen Lightbox for Illustrated Map */
-.imap-lightbox {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-}
-
-.imap-lightbox[hidden] {
-  display: none !important;
-}
-
-.imap-lightbox-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(24, 6, 8, 0.82);
-  backdrop-filter: blur(5px);
-}
-
-.imap-lightbox-card {
-  position: relative;
-  z-index: 1;
-  width: min(1120px, 96vw);
-  max-height: 92vh;
-  background: #fbf6ec;
-  border-radius: 14px;
-  border: 2px solid #d5b887;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.imap-lightbox-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 12px 18px;
-  background: var(--crimson-ink);
-  color: #fff9ef;
-  font-size: 14px;
-}
-
-.imap-lightbox-close {
-  appearance: none;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  padding: 5px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.imap-lightbox-body {
-  padding: 12px;
-  overflow: auto;
-}
-
-@media (max-width: 760px) {
-  .route-cards-grid {
-    grid-template-columns: 1fr;
-  }
-}
 
 /* ==========================================================================
    16. ONE-TIME LUXURY ENTRANCE CHOREOGRAPHY FOR ACT III
@@ -4331,35 +4317,6 @@ body.lang-zh .imap-title {
   opacity: 0.85;
 }
 
-/* Awaiting entrance state before guest scrolls to #section-countdown */
-#section-countdown.is-awaiting-entrance .cd-heading-block {
-  opacity: 0;
-  transform: translateY(14px);
-}
-
-#section-countdown.is-awaiting-entrance .cd-unit {
-  opacity: 0;
-  transform: translateY(18px) scale(0.95);
-}
-
-#section-countdown.is-awaiting-entrance .keepsake-calendar {
-  opacity: 0;
-  transform: translateY(16px);
-}
-
-#section-countdown.is-awaiting-entrance .cal-day[data-day] {
-  opacity: 0;
-  transform: scale(0.72);
-}
-
-#section-countdown.is-awaiting-entrance .cal-ink-ring-path {
-  stroke-dashoffset: 160;
-}
-
-#section-countdown.is-awaiting-entrance .cal-ink-ring-gold {
-  stroke-dashoffset: 150;
-}
-
 /* Playing one-time entrance choreography when #section-countdown enters viewport */
 #section-countdown.is-playing-entrance .cd-heading-block {
   animation: act3FadeUp 0.72s cubic-bezier(0.22, 1, 0.36, 1) 0.05s both;
@@ -4409,42 +4366,6 @@ body.lang-zh .imap-title {
   animation: eveningLanternPulse 2.8s ease-in-out infinite;
 }
 
-/* Flowing dashed route trail on the bespoke Illustrated Wedding Map */
-.imap-route-line {
-  animation: imapRouteDashFlow 1.5s linear infinite;
-}
-
-.imap-hero-landmark {
-  cursor: pointer;
-}
-
-.imap-sonar-ring {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: imapSonarWave 2.6s ease-out infinite;
-}
-
-/* Awaiting entrance state before guest scrolls to #section-location */
-#section-location.is-awaiting-entrance .section-heading,
-#section-location.is-awaiting-entrance .day-schedule-header {
-  opacity: 0;
-  transform: translateY(14px);
-}
-
-#section-location.is-awaiting-entrance .timeline-list.is-same-day-rail::before {
-  transform: scaleY(0);
-}
-
-#section-location.is-awaiting-entrance .timeline-item {
-  opacity: 0;
-  transform: translateX(-14px);
-}
-
-#section-location.is-awaiting-entrance .venue-map-frame {
-  opacity: 0;
-  transform: translateY(16px) scale(0.98);
-}
-
 /* Playing one-time entrance when #section-location enters viewport */
 #section-location.is-playing-entrance .section-heading {
   animation: act3FadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.04s both;
@@ -4473,48 +4394,11 @@ body.lang-zh .imap-title {
   animation: mapFrameUnfurl 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.32s both;
 }
 
-/* Illustrated Map & Route Cards one-time entrance choreography when #illustrated-map-section enters view */
-#illustrated-map-section.is-awaiting-map-entrance .imap-canvas-frame {
-  opacity: 0;
-  transform: translateY(18px) scale(0.985);
-}
-
-#illustrated-map-section.is-awaiting-map-entrance .imap-bridge-group {
-  opacity: 0;
-}
-
-#illustrated-map-section.is-awaiting-map-entrance .imap-hero-landmark {
-  opacity: 0;
-}
-
-#illustrated-map-section.is-awaiting-map-entrance .route-guide-card {
-  opacity: 0;
-  transform: translateY(16px);
-}
-
-#illustrated-map-section.is-playing-map-entrance .imap-canvas-frame {
-  animation: mapFrameUnfurl 0.82s cubic-bezier(0.22, 1, 0.36, 1) 0.06s both;
-}
-
-#illustrated-map-section.is-playing-map-entrance .imap-bridge-group {
-  animation: imapBridgeFadeIn 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: calc(var(--br-idx, 0) * 140ms + 220ms);
-}
-
-#illustrated-map-section.is-playing-map-entrance .imap-hero-landmark {
-  animation: imapHeroLandmarkDrop 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.46s both;
-}
-
-#illustrated-map-section.is-playing-map-entrance .route-guide-card {
-  animation: act3FadeUp 0.68s cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: calc(var(--rg-idx, 0) * 120ms + 360ms);
-}
-
-/* Keyframes for Act III Entrance Choreography */
+/* Keyframes for Act III Entrance Choreography (keep opacity: 1 at start to avoid blank scroll flash) */
 @keyframes act3FadeUp {
   from {
-    opacity: 0;
-    transform: translateY(15px);
+    opacity: 1;
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -4524,12 +4408,12 @@ body.lang-zh .imap-title {
 
 @keyframes cdUnitRiseIn {
   0% {
-    opacity: 0;
-    transform: translateY(18px) scale(0.94);
+    opacity: 1;
+    transform: translateY(8px) scale(0.98);
   }
   70% {
     opacity: 1;
-    transform: translateY(-2px) scale(1.015);
+    transform: translateY(-2px) scale(1.01);
   }
   100% {
     opacity: 1;
@@ -4548,8 +4432,8 @@ body.lang-zh .imap-title {
 
 @keyframes calDayCascadeIn {
   from {
-    opacity: 0;
-    transform: scale(0.72);
+    opacity: 1;
+    transform: scale(0.92);
   }
   to {
     opacity: 1;
@@ -4559,12 +4443,12 @@ body.lang-zh .imap-title {
 
 @keyframes calWeddingDayStamp {
   0% {
-    opacity: 0;
-    transform: scale(1.48);
+    opacity: 1;
+    transform: scale(1.22);
   }
   65% {
     opacity: 1;
-    transform: scale(0.92);
+    transform: scale(0.95);
   }
   100% {
     opacity: 1;
@@ -4605,8 +4489,8 @@ body.lang-zh .imap-title {
 
 @keyframes timelineItemSlideIn {
   from {
-    opacity: 0;
-    transform: translateX(-14px);
+    opacity: 1;
+    transform: translateX(-8px);
   }
   to {
     opacity: 1;
@@ -4640,59 +4524,12 @@ body.lang-zh .imap-title {
 
 @keyframes mapFrameUnfurl {
   from {
-    opacity: 0;
-    transform: translateY(16px) scale(0.982);
+    opacity: 1;
+    transform: translateY(8px) scale(0.99);
   }
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes imapRouteDashFlow {
-  from {
-    stroke-dashoffset: 24;
-  }
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-@keyframes imapBridgeFadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes imapHeroLandmarkDrop {
-  0% {
-    opacity: 0;
-    transform: translate(424px, 192px) scale(0.78);
-  }
-  66% {
-    opacity: 1;
-    transform: translate(424px, 231px) scale(1.04);
-  }
-  84% {
-    transform: translate(424px, 223px) scale(0.99);
-  }
-  100% {
-    opacity: 1;
-    transform: translate(424px, 226px) scale(1);
-  }
-}
-
-@keyframes imapSonarWave {
-  0% {
-    transform: scale(0.75);
-    opacity: 0.85;
-  }
-  100% {
-    transform: scale(2.15);
-    opacity: 0;
   }
 }
 
@@ -4712,10 +4549,10 @@ body.lang-zh .imap-title {
 }
 
 .seating-chart-sheet {
-  padding: 18px 20px 16px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.62);
-  border: 1px solid rgba(132, 21, 23, 0.15);
+  padding: 6px 6px 8px;
+  border-radius: 0;
+  background: transparent;
+  border: none;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -4819,10 +4656,11 @@ body.lang-zh .foyer-item-title {
 .seating-info-card {
   position: sticky;
   top: 86px;
-  padding: 24px 24px 22px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.62);
-  border: 1px solid rgba(132, 21, 23, 0.15);
+  padding: 6px 22px 10px 2px;
+  border-radius: 0;
+  background: transparent;
+  border: none;
+  border-right: 1px dashed rgba(132, 21, 23, 0.2);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -4832,10 +4670,13 @@ body.lang-zh .foyer-item-title {
 @media (max-width: 820px) {
   .seating-info-card {
     position: static;
-    padding: 16px 14px 14px;
+    border-right: none;
+    border-bottom: 1px dashed rgba(132, 21, 23, 0.2);
+    padding: 4px 2px 14px;
+    margin-bottom: 6px;
   }
   .seating-chart-sheet {
-    padding: 14px 10px 12px;
+    padding: 6px 2px 8px;
   }
   .seating-info-guest {
     margin-bottom: 10px;
@@ -4895,7 +4736,7 @@ body.lang-zh .seating-info-badge {
 .seating-info-body .seating-note-muted {
   font-size: 12.8px;
   color: var(--text-muted);
-  font-style: italic;
+  font-style: normal;
 }
 
 /* =====================================================================
@@ -5023,7 +4864,34 @@ body.is-morning-guest-mode #section-location .venue-map-frame iframe {
 .morning-stop-item {
   padding: 2px 4px 2px 0;
   border-radius: 8px;
+}
+
+.morning-stop-focus-btn {
+  appearance: none;
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0 0 4px;
+  text-align: left;
+  font-family: var(--font-serif);
+  font-size: clamp(19px, 2.4vw, 22px);
+  font-weight: 700;
+  color: var(--crimson-ink);
+  line-height: 1.25;
   cursor: pointer;
+  transition: color 0.16s ease;
+}
+
+.morning-stop-focus-btn:hover {
+  color: #5b0c10;
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
+}
+
+body.lang-zh .morning-stop-focus-btn {
+  font-family: var(--font-zh);
+  font-size: 18.5px;
 }
 
 .morning-stop-item .timeline-node {
@@ -5170,6 +5038,8 @@ body.lang-zh .morning-map-footer-info strong {
 
 .morning-map-footer-actions {
   display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
   flex-shrink: 0;
 }
 

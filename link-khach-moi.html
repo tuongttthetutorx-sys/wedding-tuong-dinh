@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Cormorant+Garamond:wght@600;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23721427'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='38' fill='%23fffbf2'%3E%E5%9B%8D%3C/text%3E%3C/svg%3E" />
   <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
-  <link rel="stylesheet" href="css/admin.css?v=69" />
+  <link rel="stylesheet" href="css/admin.css?v=70" />
 </head>
 <body>
   <div class="adm-shell">
@@ -18,7 +18,7 @@
       <div class="adm-brand">
         <div class="adm-seal" aria-hidden="true">囍</div>
         <div class="adm-brand-text">
-          <h1>Quản Lý Thiệp Cưới — Thuận Tường &amp; Tiểu Dinh</h1>
+          <h1>Quản Lý Thiệp Cưới - Thuận Tường &amp; Tiểu Dinh</h1>
           <p class="adm-brand-sub">
             <span class="live-dot" aria-hidden="true"></span>
             <span id="stats-updated-label">Đang kết nối trực tiếp máy chủ...</span>
@@ -31,6 +31,17 @@
         <button type="button" id="btn-reset-stats" class="btn-adm danger" style="display:none;" title="Xóa lịch sử lượt xem thử về 0 (Giữ nguyên danh sách khách)">🗑️ Reset lượt xem</button>
       </div>
     </header>
+
+    <div id="admin-auth-banner" class="adm-auth-banner" hidden role="region" aria-label="Xác thực quản trị">
+      <div class="adm-auth-info">
+        <strong>🔐 Máy chủ yêu cầu Mã khóa Admin</strong>
+        <span id="admin-auth-msg">Nhập mã khóa quản trị (ADMIN_KEY) để tải và lưu thay đổi lên máy chủ.</span>
+      </div>
+      <form id="admin-auth-form" class="adm-auth-form">
+        <input type="password" id="admin-auth-key-input" class="adm-input adm-auth-input" placeholder="Nhập mã khóa Admin..." autocomplete="current-password" />
+        <button type="submit" id="btn-admin-unlock" class="btn-adm primary">Mở khóa</button>
+      </form>
+    </div>
 
     <!-- 2. 4 KPI CARDS (MỨC 2A) -->
     <section class="adm-kpi-grid" aria-label="Thống kê tổng quan">
@@ -52,8 +63,8 @@
       <div class="adm-kpi-card">
         <span class="adm-kpi-label">Quốc gia truy cập</span>
         <div class="country-pills" id="kpi-countries">
-          <span class="country-pill">🇻🇳 VN: 0</span>
-          <span class="country-pill">🇹🇼 TW: 0</span>
+          <span class="country-pill"><span class="country-code-badge">VN</span> 0</span>
+          <span class="country-pill"><span class="country-code-badge">TW</span> 0</span>
         </div>
         <span class="adm-kpi-foot">Tự động định vị theo mạng</span>
       </div>
@@ -173,14 +184,14 @@
         <!-- THANH LỌC & TÌM KIẾM -->
         <div class="guest-toolbar">
           <div class="filter-chips" id="guest-filter-chips">
-            <button type="button" class="filter-chip is-active" data-filter="all">Tất cả (414)</button>
-            <button type="button" class="filter-chip" data-filter="named">✅ Đã có tên</button>
-            <button type="button" class="filter-chip" data-filter="unnamed">🔢 Chưa có tên</button>
-            <button type="button" class="filter-chip" data-filter="opened">✨ Đã xem thiệp</button>
+            <button type="button" class="filter-chip is-active" data-filter="named">✅ Đã có tên</button>
+            <button type="button" class="filter-chip" data-filter="unnamed">🔢 QR chưa gán tên (<span id="chip-unnamed-count">414</span>)</button>
+            <button type="button" class="filter-chip" data-filter="all">Tất cả (414)</button>
+            <button type="button" class="filter-chip" data-filter="opened">✨ Đã xem</button>
             <button type="button" class="filter-chip" data-filter="pending">⏳ Chưa mở</button>
-            <button type="button" class="filter-chip" data-filter="directions">📍 Đang bật Chỉ Đường</button>
-            <button type="button" class="filter-chip" data-filter="morning">🌅 Mời Lễ Sáng (05:30)</button>
-            <button type="button" class="filter-chip" data-filter="thankyou">📸 Đang bật Lời Cảm Ơn</button>
+            <button type="button" class="filter-chip" data-filter="morning">🌅 Lễ Sáng (05:30)</button>
+            <button type="button" class="filter-chip" data-filter="directions">📍 Chỉ Đường</button>
+            <button type="button" class="filter-chip" data-filter="thankyou">📸 Cảm Ơn</button>
           </div>
           <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
             <select id="guest-group-filter" class="adm-select adm-select-compact" aria-label="Lọc danh sách theo nhóm khách" title="Lọc danh sách theo Nhóm khách">
@@ -217,11 +228,11 @@
           </div>
 
           <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px;">
-            <div style="display:inline-flex; flex-wrap:wrap; align-items:center; gap:5px; background:#fff; padding:4px 8px; border-radius:8px; border:1px solid var(--adm-border);">
-              <span style="font-size:12px; font-weight:600; color:var(--adm-muted);">Hoặc chọn theo khoảng:</span>
+            <div class="bulk-range-inline">
+              <span style="font-size:12px; font-weight:600; color:var(--adm-muted);">Chọn khoảng:</span>
               <select id="bulk-range-type" class="seat-inline-select" aria-label="Chọn kiểu khoảng số hàng loạt">
-                <option value="order">Thứ tự # trên DS (#1 → #414)</option>
-                <option value="slot">Số QR in trên thẻ (Số 1 → Số 414)</option>
+                <option value="order">Thứ tự trên DS (#1..#414)</option>
+                <option value="slot">Số QR trên thẻ (Số 1..414)</option>
               </select>
               <input type="number" id="bulk-range-from" class="seat-inline-pax" aria-label="Từ số" min="1" max="9999" placeholder="Từ" style="width:62px;" />
               <span style="font-size:12px; color:var(--adm-muted);">→</span>
@@ -370,9 +381,9 @@
       <div class="adm-box">
         <div class="adm-box-head">
           <div>
-            <h2 class="adm-box-title">🖨️ Thiết Kế Thẻ Phụ Rời Mini (Không Đóng Khung) • In Giấy Can Mờ Vellum / Giấy Kem</h2>
+            <h2 class="adm-box-title">🖨️ Thiết Kế Thẻ Phụ Rời Mini (Không Đóng Khung) • Giấy Can Mờ / Giấy Kem</h2>
             <p class="adm-box-desc">
-              Thiết kế <strong>thanh mảnh, hoàn toàn không đóng khung</strong> (chuẩn phong cách Wedding Suite cao cấp). Hỗ trợ xuất tờ A4 gồm <strong>20 Thẻ Phụ Mini (5cm × 6cm)</strong> có sẵn dấu cắt góc máy xén hoặc <strong>nếp gấp máng đầu thiệp (0đ không cần mua ghim kẹp)</strong>.
+              Thiết kế thanh mảnh, hoàn toàn không đóng khung. Hỗ trợ dàn trang A4 chuẩn 6–24 thẻ/tờ (có dấu cắt góc máy xén hoặc nếp gấp máng đầu thiệp).
             </p>
           </div>
         </div>
@@ -380,32 +391,32 @@
         <div class="qr-studio-grid">
           <div>
             <div style="display:flex; flex-direction:column; gap:12px;">
-              <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:10px;">
+              <div class="qr-form-grid-2">
                 <div>
-                  <label for="qr-layout-style" style="display:block; font-size:12.5px; font-weight:600; margin-bottom:5px;">1. Kiểu Thẻ Phụ QR (Không cần mua ghim kẹp):</label>
+                  <label for="qr-layout-style" class="qr-field-label">1. Kiểu Thẻ Phụ QR:</label>
                   <select id="qr-layout-style" class="adm-select">
-                    <option value="square_qr" selected>🟦 Thẻ Vuông QR Cỡ Lớn (6×6cm • 1 hàng 3 thẻ • 12 thẻ/tờ A4 • Đẹp &amp; Rõ Nhất)</option>
-                    <option value="square_qr_xl">🗺️ Thẻ Vuông QR + Bản Đồ Cỡ Rộng (9×9cm • 1 hàng 2 thẻ • 6 thẻ/tờ A4 • Đọc Bản Đồ Cực Rõ)</option>
-                    <option value="square_qr_sm">🟦 Thẻ Vuông QR Tiết Kiệm (4.5×4.5cm • 1 hàng 4 thẻ • 24 thẻ/tờ A4)</option>
-                    <option value="pinterest_strip">🔖 Dải Bookmark Dọc Thon Dài (3.1×9cm • 18 dải/tờ A4 có lề an toàn)</option>
-                    <option value="frameless">✨ Thẻ Phụ Chữ Nhật Không Khung (4.6×5.4cm • 20 thẻ/tờ A4)</option>
-                    <option value="fold_tab">📐 Thẻ Có Nếp Gấp Máng Đầu Thiệp (20 thẻ/tờ A4)</option>
-                    <option value="flap_seal">💌 Tem Dán Mặt Trong Nắp Phong Bì Đỏ</option>
+                    <option value="square_qr" selected>🟦 Thẻ Vuông 6×6cm (12 thẻ/tờ A4 - Khuyên dùng)</option>
+                    <option value="square_qr_xl">🗺️ Thẻ Vuông + Bản Đồ 9×9cm (6 thẻ/tờ A4)</option>
+                    <option value="square_qr_sm">🟦 Thẻ Vuông Tiết Kiệm 4.5×4.5cm (24 thẻ/tờ A4)</option>
+                    <option value="pinterest_strip">🔖 Bookmark Dọc 3.1×9cm (18 dải/tờ A4)</option>
+                    <option value="frameless">✨ Chữ Nhật Không Khung 4.6×5.4cm (20 thẻ/tờ A4)</option>
+                    <option value="fold_tab">📐 Thẻ Gấp Máng Đầu Thiệp (20 thẻ/tờ A4)</option>
+                    <option value="flap_seal">💌 Tem Nắp Trong Phong Bì Đỏ (18 tem/tờ A4)</option>
                   </select>
                 </div>
                 <div>
-                  <label for="qr-preset-select" style="display:block; font-size:12.5px; font-weight:600; margin-bottom:5px;">2. Chọn đích đến khi khách quét Mã QR:</label>
+                  <label for="qr-preset-select" class="qr-field-label">2. Đích đến khi khách quét QR:</label>
                   <select id="qr-preset-select" class="adm-select">
-                    <option value="directions">📍 Bản Đồ Chỉ Đường &amp; Thiệp Online (Khuyên dùng)</option>
-                    <option value="gmaps">🧭 Mở thẳng App Google Maps dẫn tới Riverside Palace</option>
-                    <option value="invite">💌 Mở Phong Bì Thiệp Cưới Online 3D (thuantuongtieudinh.io.vn)</option>
-                    <option value="custom">🔗 Link khách mời riêng (hoặc tự nhập link bên dưới)</option>
+                    <option value="directions">📍 Bản Đồ &amp; Thiệp Online (Khuyên dùng)</option>
+                    <option value="gmaps">🧭 Mở thẳng Google Maps Riverside Palace</option>
+                    <option value="invite">💌 Mở Phong Bì Thiệp Cưới 3D</option>
+                    <option value="custom">🔗 Link riêng hoặc tự nhập bên dưới</option>
                   </select>
                 </div>
               </div>
 
               <div>
-                <label for="qr-url-input" style="display:block; font-size:12.5px; font-weight:600; margin-bottom:5px;">Đường dẫn (Link) nhúng trong Mã QR:</label>
+                <label for="qr-url-input" class="qr-field-label">Đường dẫn (Link) nhúng trong Mã QR:</label>
                 <input
                   type="url"
                   id="qr-url-input"
@@ -414,17 +425,17 @@
                 />
               </div>
 
-              <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:10px;">
+              <div class="qr-form-grid-2">
                 <div>
-                  <label for="qr-caption-style" style="display:block; font-size:12.5px; font-weight:600; margin-bottom:5px;">3. Ngôn ngữ dòng chữ trên thẻ:</label>
+                  <label for="qr-caption-style" class="qr-field-label">3. Ngôn ngữ dòng chữ trên thẻ:</label>
                   <select id="qr-caption-style" class="adm-select">
-                    <option value="bilingual">🇻🇳+🇹🇼 Song ngữ: Chỉ đường &amp; Thiệp · 掃碼導航</option>
-                    <option value="vi">🇻🇳 Tiếng Việt: Quét mã mở Bản Đồ Chỉ Đường</option>
-                    <option value="zh">🇹🇼 Tiếng Trung: 掃碼開啟婚宴地圖導航</option>
+                    <option value="bilingual">[VI + 繁中] Song ngữ: Chỉ đường &amp; 掃碼導航</option>
+                    <option value="vi">[VI] Tiếng Việt: Quét mã mở Bản Đồ Chỉ Đường</option>
+                    <option value="zh">[繁中] Tiếng Trung: 掃碼開啟婚宴地圖導航</option>
                   </select>
                 </div>
                 <div>
-                  <label for="qr-guest-badge" style="display:block; font-size:12.5px; font-weight:600; margin-bottom:5px;">4. Tên khách (Để trống nếu in hàng loạt):</label>
+                  <label for="qr-guest-badge" class="qr-field-label">4. Tên khách (Để trống nếu in hàng loạt):</label>
                   <input
                     type="text"
                     id="qr-guest-badge"
@@ -452,7 +463,7 @@
                     alt="Bản đồ Riverside Palace mặt sau"
                     style="width:88px; height:88px; object-fit:cover; border-radius:8px; border:1px solid #d9c3a3; background:#fbf7f2; flex-shrink:0;"
                   />
-                  <div style="flex:1; min-width:240px;">
+                  <div style="flex:1; min-width:220px;">
                     <div style="font-weight:700; font-size:14px; color:#8e2b3a; margin-bottom:4px;">
                       🗺️ In Mặt Sau: Bản Đồ Riverside Palace (Khớp Tọa Độ 100% Với Mặt QR)
                     </div>
@@ -480,7 +491,7 @@
                   🔢 Cách 1 (Khuyên dùng): In Trước Bookmark Đánh Số (Số 1, Số 2...) — Điền Tên Khách Sau!
                 </div>
                 <div style="font-size:12.5px; color:#5a3e2b; margin-bottom:10px; line-height:1.48;">
-                  Mỗi Bookmark có <strong>1 mã QR riêng</strong> và in to <strong>Số 1, Số 2...</strong> ở phần nếp gấp phía sau. Bạn cứ in sẵn hàng loạt (18 chiếc/tờ A4), sau này bỏ <strong>Số mấy</strong> vào phong bì của ai thì bạn gõ tên người đó tại <strong>Tab 1 (Danh Sách Khách &amp; Tạo Link)</strong> là xong!
+                  Mỗi Bookmark có <strong>1 mã QR riêng</strong> và in to <strong>Số 1, Số 2...</strong> ở phần nếp gấp phía sau. Bạn cứ in sẵn hàng loạt (theo đúng số thẻ/tờ A4 đang chọn), sau này bỏ <strong>Số mấy</strong> vào phong bì của ai thì bạn gõ tên người đó tại <strong>Tab 1 (Danh Sách Khách &amp; Tạo Link)</strong> là xong!
                 </div>
                 <div class="slot-print-row">
                   <div>
@@ -496,38 +507,38 @@
                   </button>
                 </div>
                 <div style="margin-top:8px;">
-                  <label for="slot-flap-center-style" class="slot-label">Hoa văn ở chính giữa phần gập phía sau (Số thứ tự đã được thu nhỏ xíu ở góc trái):</label>
-                  <select id="slot-flap-center-style" class="adm-select" style="font-size:12.5px;">
-                    <option value="xi_emblem" selected>✨ ───  ✦  囍  ✦  ─── (Hoa văn Hỷ đối xứng • Gập xuôi hay ngược đều thuận mắt)</option>
-                    <option value="with_love">💌 ✦  With Love  ·  T &amp; D  ✦ (Lời nhắn ngọt ngào kiểu Âu)</option>
-                    <option value="monogram_date">💍 ✦  Tường &amp; Dinh  ·  06.01.2027  ✦ (Tên &amp; Ngày cưới thanh mảnh)</option>
-                    <option value="blank">⚪ Để trống hoàn toàn (Chỉ có số nhỏ xíu ở góc trái)</option>
+                  <label for="slot-flap-center-style" class="slot-label">Hoa văn ở chính giữa phần gập phía sau:</label>
+                  <select id="slot-flap-center-style" class="adm-select">
+                    <option value="xi_emblem" selected>✨ ─── ✦ 囍 ✦ ─── (Hoa văn Hỷ đối xứng)</option>
+                    <option value="with_love">💌 ✦ With Love · T &amp; D ✦ (Lời nhắn kiểu Âu)</option>
+                    <option value="monogram_date">💍 ✦ Tường &amp; Dinh · 06.01.2027 ✦</option>
+                    <option value="blank">⚪ Để trống (Chỉ giữ số thứ tự nhỏ góc trái)</option>
                   </select>
                 </div>
                 <div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-top:8px;">
                   <span style="font-size:12px; color:#6d4c3d; font-weight:600;">Chọn nhanh số lượng:</span>
-                  <button type="button" class="btn-adm js-slot-quick-range" data-sheets="1" data-count="12" style="height:26px; padding:0 8px; font-size:11.5px;">1 tờ A4 (12 chiếc)</button>
-                  <button type="button" class="btn-adm js-slot-quick-range" data-sheets="3" data-count="36" style="height:26px; padding:0 8px; font-size:11.5px;">3 tờ A4 (36 chiếc)</button>
-                  <button type="button" class="btn-adm js-slot-quick-range" data-sheets="6" data-count="72" style="height:26px; padding:0 8px; font-size:11.5px;">6 tờ A4 (72 chiếc)</button>
-                  <button type="button" class="btn-adm js-slot-quick-range" data-sheets="35" data-count="414" style="height:26px; padding:0 8px; font-size:11.5px;">Toàn bộ (414 chiếc)</button>
+                  <button type="button" class="btn-adm js-slot-quick-range" data-sheets="1" style="min-height:28px; padding:2px 8px; font-size:11.5px;">1 tờ A4 (12 chiếc)</button>
+                  <button type="button" class="btn-adm js-slot-quick-range" data-sheets="3" style="min-height:28px; padding:2px 8px; font-size:11.5px;">3 tờ A4 (36 chiếc)</button>
+                  <button type="button" class="btn-adm js-slot-quick-range" data-sheets="6" style="min-height:28px; padding:2px 8px; font-size:11.5px;">6 tờ A4 (72 chiếc)</button>
+                  <button type="button" class="btn-adm js-slot-quick-range" data-count="414" style="min-height:28px; padding:2px 8px; font-size:11.5px;">Toàn bộ (414 chiếc)</button>
                 </div>
               </div>
 
-              <!-- KHỐI 2: DÀN TRANG A4 KẾT HỢP ĐỦ TỔNG SỐ LƯỢNG (VD: 414 CHIẾC = 23 TỜ A4): KHÁCH ĐÃ CÓ TÊN + QR ĐÁNH SỐ -->
+              <!-- KHỐI 2: DÀN TRANG A4 KẾT HỢP ĐỦ TỔNG SỐ LƯỢNG -->
               <div style="margin-top:8px; padding:14px 16px; border-radius:10px; background:#fbf6ee; border:1.5px solid var(--adm-crimson);">
-                <div style="font-weight:700; font-size:14px; color:var(--adm-crimson); margin-bottom:5px;">
-                  ✨ In Gộp Đủ Tổng Số Lượng (Mặc Định 414 Chiếc = 23 Tờ A4): Ghép "Khách Đã Có Tên" + "QR Đánh Số"
+                <div id="qr-batch-title-sync" style="font-weight:700; font-size:14px; color:var(--adm-crimson); margin-bottom:5px;">
+                  ✨ In Gộp Đủ 414 Chiếc (35 Tờ A4): Ghép "Khách Đã Có Tên" + "QR Đánh Số"
                 </div>
-                <div style="font-size:12.5px; color:var(--adm-muted); margin-bottom:10px; line-height:1.5;">
-                  Bạn chỉ cần điền những khách <strong>đã có tên</strong> vào khung bên trái, và chọn <strong>Tổng số lượng muốn in (VD: 414 cái)</strong>. Hệ thống sẽ in các khách đã có tên trước, rồi <strong>tự động bù phần còn thiếu bằng Bookmark QR Đánh Số (<code>#01, #02...</code>)</strong> cho đủ đúng <strong>414 chiếc (23 tờ A4 khít rạt)</strong>!
+                <div id="qr-batch-desc-sync" style="font-size:12.5px; color:var(--adm-muted); margin-bottom:10px; line-height:1.5;">
+                  Điền danh sách khách <strong>đã có tên</strong> bên dưới và chọn tổng số lượng cần in. Hệ thống in các khách đã có tên trước, rồi tự động bù phần còn thiếu bằng Bookmark QR Đánh Số (<code>#01, #02...</code>) theo đúng khổ giấy đang chọn.
                 </div>
-                <div style="display:grid; grid-template-columns: 1.15fr 0.85fr; gap:12px; align-items:start;">
+                <div class="qr-batch-split-grid">
                   <div>
-                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:4px;">
                       <label for="qr-batch-guests" style="font-size:12px; font-weight:600; color:var(--adm-text);">
-                        1. Danh sách khách ĐÃ CÓ TÊN (<span id="qr-batch-named-count">0</span> khách):
+                        1. Khách ĐÃ CÓ TÊN (<span id="qr-batch-named-count">0</span> khách):
                       </label>
-                      <button type="button" id="btn-fill-saved-guests-qr" class="btn-adm" style="height:26px; padding:0 8px; font-size:11.5px;">
+                      <button type="button" id="btn-fill-saved-guests-qr" class="btn-adm" style="min-height:28px; padding:2px 8px; font-size:11.5px;">
                         📥 Lấy từ DS Khách Đã Lưu
                       </button>
                     </div>
@@ -539,10 +550,10 @@
                     ></textarea>
                   </div>
                   <div style="display:flex; flex-direction:column; gap:8px;">
-                    <div style="display:grid; grid-template-columns: 1fr 110px; gap:8px;">
+                    <div class="qr-batch-count-grid">
                       <div>
                         <label for="qr-batch-generic-count" style="display:block; font-size:12px; font-weight:600; color:var(--adm-text); margin-bottom:4px;">
-                          2. Tổng SL Bookmark cần in:
+                          2. Tổng SL cần in:
                         </label>
                         <input
                           type="number"
@@ -568,44 +579,44 @@
                       </div>
                     </div>
                     <div style="display:flex; flex-wrap:wrap; gap:5px;">
-                      <button type="button" class="btn-adm js-batch-total-preset" data-total="414" style="height:24px; padding:0 8px; font-size:11px;">414 cái (23 tờ A4)</button>
-                      <button type="button" class="btn-adm js-batch-total-preset" data-total="396" style="height:24px; padding:0 8px; font-size:11px;">396 cái (22 tờ A4)</button>
-                      <button type="button" class="btn-adm js-batch-total-preset" data-total="432" style="height:24px; padding:0 8px; font-size:11px;">432 cái (24 tờ A4)</button>
+                      <button type="button" class="btn-adm js-batch-total-preset" data-total="414" style="min-height:26px; padding:2px 8px; font-size:11px;">414 cái (35 tờ A4)</button>
+                      <button type="button" class="btn-adm js-batch-total-preset" data-total="408" style="min-height:26px; padding:2px 8px; font-size:11px;">408 cái (34 tờ A4)</button>
+                      <button type="button" class="btn-adm js-batch-total-preset" data-total="420" style="min-height:26px; padding:2px 8px; font-size:11px;">420 cái (35 tờ A4)</button>
                     </div>
                     <div>
                       <label for="qr-batch-fill-mode" style="display:block; font-size:12px; font-weight:600; color:var(--adm-text); margin-bottom:4px;">
-                        3. Phần còn thiếu sẽ tự bù bằng:
+                        3. Phần thiếu sẽ bù bằng:
                       </label>
-                      <select id="qr-batch-fill-mode" class="adm-select" style="font-size:12.2px;">
-                        <option value="numbered" selected>🔢 Bookmark QR Đánh Số (#01, #02... + 囍) để gán tên sau</option>
-                        <option value="generic">🌐 Bookmark QR Chung (Không đánh số)</option>
+                      <select id="qr-batch-fill-mode" class="adm-select">
+                        <option value="numbered" selected>🔢 QR Đánh Số (#01, #02...) để gán tên sau</option>
+                        <option value="generic">🌐 QR Chung (Không đánh số)</option>
                       </select>
                     </div>
                     <div>
                       <label for="qr-batch-name-pos" style="display:block; font-size:12px; font-weight:600; color:var(--adm-text); margin-bottom:4px;">
-                        4. Vị trí in tên của những khách đã có tên:
+                        4. Vị trí in tên khách:
                       </label>
-                      <select id="qr-batch-name-pos" class="adm-select" style="font-size:12.2px;">
-                        <option value="flap_only" selected>Chỉ in TO ở phần gập phía sau (Mặt trước tối giản)</option>
-                        <option value="flap_and_front">Hiện cả trên thân trước &amp; phần gập sau</option>
+                      <select id="qr-batch-name-pos" class="adm-select">
+                        <option value="flap_only" selected>Chỉ in ở phần gập sau (Mặt trước tối giản)</option>
+                        <option value="flap_and_front">In ở cả mặt trước &amp; phần gập sau</option>
                       </select>
                     </div>
                   </div>
                 </div>
                 <div id="qr-batch-live-summary" style="margin-top:10px; padding:9px 12px; border-radius:8px; background:#f4ead8; border:1px solid #d9c3a3; font-size:12.6px; color:#5a2424; font-weight:600;">
-                  📊 Tổng cộng: 414 chiếc (23 tờ A4)
+                  📊 Tổng cộng: 414 chiếc (35 tờ A4)
                 </div>
-                <button type="button" id="btn-print-mixed-a4" class="btn-adm primary lg" style="margin-top:10px; height:44px; width:100%; font-size:13.8px;">
-                  🖨️ Xuất Đủ 414 Bookmark Ra 23 Tờ A4 (Khách Đã Có Tên + QR Đánh Số)
+                <button type="button" id="btn-print-mixed-a4" class="btn-adm primary lg" style="margin-top:10px; min-height:44px; height:auto; width:100%; font-size:13.8px; padding:8px 14px;">
+                  🖨️ Xuất Đủ 414 Thẻ Ra 35 Tờ A4 (Khách Đã Có Tên + QR Đánh Số)
                 </button>
               </div>
             </div>
 
             <div class="qr-saving-tips">
-              <h3>💡 Bí Quyết Bỏ Thẻ Phụ Vào Phong Bì SANG NHẤT Mà Tốn 0 Đồng Tiền Ghim Kẹp:</h3>
+              <h3>💡 Bí Quyết Bỏ Thẻ Phụ Vào Phong Bì Không Cần Mua Ghim Kẹp:</h3>
               <div>
-                <strong>• Cách 1 — Đặt Nằm Tự Nhiên Trên Tờ Thiệp Số 1 (0đ phụ kiện • 90% Studio dùng):</strong> Bộ 3 tờ thiệp của bạn vốn đã xếp chồng tự nhiên trong phong bì mà không cần kẹp. Bạn chỉ cần đặt tấm <strong>Thẻ Phụ Mini (5cm × 6cm)</strong> nằm ngay ngắn ở chính giữa trên mặt tờ thiệp đầu tiên rồi đút vào phong bì. Phong bì giữ chặt xấp thiệp nên khi khách rút ra là thấy thẻ QR ngay trên cùng — <strong>không tốn 1 xu tiền ghim và không sợ ghim kim loại làm cấn/hằn rách phong bì khi xếp chồng!</strong><br />
-                <strong>• Cách 2 — Gấp Mép 1.2cm Máng Lên Đầu Tờ Thiệp (0đ phụ kiện • Như Bookmark):</strong> Chọn chế độ <strong>"🔖 Thẻ Có Nếp Gấp Máng Đầu Thiệp"</strong> ở mục số 1 trên. Khi in trên <strong>Giấy Can Mờ (Vellum)</strong>, phần đầu thẻ có sẵn 1 khoảng 1.2cm để bạn lấy tay miết gập ra mặt sau và <strong>máng/ngoắc trực tiếp lên cạnh trên của tờ thiệp số 1</strong> — giữ thẻ cố định 100% mà không tốn tiền mua ghim!
+                <strong>• Cách 1 - Đặt tự nhiên trên Tờ 1:</strong> Đặt thẻ QR ngay giữa trên mặt tờ thiệp đầu tiên rồi đút vào phong bì. Khi khách rút thiệp ra sẽ thấy ngay thẻ QR mà không cần ghim kim loại làm cấn giấy.<br />
+                <strong>• Cách 2 - Gấp mép máng lên đầu thiệp:</strong> Chọn kiểu <strong>"📐 Thẻ Gấp Máng Đầu Thiệp"</strong> ở mục 1 trên, miết nếp gấp 1.2cm ở đầu thẻ để máng trực tiếp lên cạnh trên tờ thiệp số 1.
               </div>
             </div>
           </div>
@@ -627,7 +638,7 @@
       <div class="adm-box">
         <div class="adm-box-head">
           <div>
-            <h2 class="adm-box-title">🪑 Sơ Đồ Bàn Tiệc Sảnh Seine — Riverside Palace</h2>
+            <h2 class="adm-box-title">🪑 Sơ Đồ Bàn Tiệc Sảnh Seine - Riverside Palace</h2>
             <p class="adm-box-desc">
               Sắp xếp bàn tròn 10 khách sảnh Seine &amp; phân nhóm khách tự động theo sơ đồ.
             </p>
@@ -906,6 +917,6 @@
 
   <div id="puppy-toast" class="puppy-toast" role="status" aria-live="polite"></div>
 
-  <script src="js/admin.js?v=70" defer></script>
+  <script src="js/admin.js?v=71" defer></script>
 </body>
 </html>

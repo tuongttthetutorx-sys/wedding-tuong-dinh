@@ -1,4 +1,6 @@
 .git
+.impeccable
+*.bak
 wrangler.jsonc
 worker.js
 Mo-Xem-Thu-Thiep.bat

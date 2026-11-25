@@ -74,7 +74,7 @@ window.WEDDING_CONFIG = {
      ========================================================================== */
   isPublished: true,
   thankYouMode: false,
-  googleDrivePhotoUrl: "https://drive.google.com/drive/folders/1ExampleWeddingPhotosTuongDinh2027",
+  googleDrivePhotoUrl: "",
   thankYouMessageVI:
     "Sự hiện diện, lời chúc phúc và tình cảm nồng ấm của Quý Khách trong ngày chung đôi 06.01.2027 là niềm vinh hạnh và món quà vô giá đối với gia đình chúng tôi. Thuận Tường & Tiểu Dinh xin gửi lời cảm ơn chân thành nhất, kính chúc Quý Khách cùng Gia đình luôn dồi dào sức khỏe, bình an và hạnh phúc!",
   thankYouMessageZH:

@@ -12,11 +12,12 @@
 
   let savedGuests = [];
   let visitLogsByGuest = {};
-  let currentFilter = "all";
+  let currentFilter = "named";
   // Numbered QR bookmarks (print first, assign guest later): code -> { num, name, lang, assignedAt }
   let serverSlots = {};
   const TOTAL_INVITE_TARGET = 414;
   const STORAGE_SLOT_MAX_PRINTED = "td_slot_max_printed_v1";
+  const STORAGE_ADMIN_KEY = "td_admin_key_v1";
   let slotMaxPrinted = TOTAL_INVITE_TARGET;
   try {
     slotMaxPrinted = Math.max(
@@ -479,10 +480,105 @@
   const globalStatusEl = document.getElementById("global-config-status");
 
   const isLocal = /^(file:|https?:\/\/(localhost|127\.0\.0\.1))/i.test(window.location.href);
+  const isLocalHttp = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(window.location.origin);
   const baseOrigin = isLocal
     ? "https://thuantuongtieudinh.io.vn/"
     : window.location.origin + "/";
+  const previewOrigin = isLocalHttp
+    ? window.location.origin + "/"
+    : /^file:/i.test(window.location.href)
+      ? "index.html"
+      : baseOrigin;
   const apiBase = isLocal ? "https://thuantuongtieudinh.io.vn" : "";
+
+  function isPlaceholderDriveUrl(val = "") {
+    return /1ExampleWeddingPhotos/i.test(String(val || "").trim());
+  }
+
+  function getSessionAdminKey() {
+    try {
+      return String(sessionStorage.getItem(STORAGE_ADMIN_KEY) || "").trim();
+    } catch (_) {
+      return "";
+    }
+  }
+
+  function setSessionAdminKey(k) {
+    try {
+      if (k) sessionStorage.setItem(STORAGE_ADMIN_KEY, String(k).trim());
+      else sessionStorage.removeItem(STORAGE_ADMIN_KEY);
+    } catch (_) {}
+  }
+
+  const adminAuthBannerEl = document.getElementById("admin-auth-banner");
+  const adminAuthFormEl = document.getElementById("admin-auth-form");
+  const adminAuthKeyInp = document.getElementById("admin-auth-key-input");
+  const adminAuthMsgEl = document.getElementById("admin-auth-msg");
+
+  function showAdminAuthBanner(msg) {
+    if (!adminAuthBannerEl) return;
+    adminAuthBannerEl.hidden = false;
+    if (adminAuthMsgEl && msg) adminAuthMsgEl.textContent = msg;
+    if (adminAuthKeyInp) {
+      adminAuthKeyInp.focus();
+    }
+  }
+
+  function hideAdminAuthBanner() {
+    if (adminAuthBannerEl) adminAuthBannerEl.hidden = true;
+  }
+
+  if (adminAuthFormEl) {
+    adminAuthFormEl.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const val = (adminAuthKeyInp ? adminAuthKeyInp.value : "").trim();
+      if (!val) {
+        notify("⚠️ Hãy nhập mã khóa Admin.");
+        if (adminAuthKeyInp) adminAuthKeyInp.focus();
+        return;
+      }
+      setSessionAdminKey(val);
+      fetchAnalytics(true);
+    });
+  }
+
+  async function adminApiFetch(path, { method = "GET", body, cache } = {}) {
+    const headers = { "X-Admin-Action": "1" };
+    const adminKey = getSessionAdminKey();
+    if (adminKey) headers["X-Admin-Key"] = adminKey;
+    const init = { method, headers };
+    if (cache) init.cache = cache;
+    if (body !== undefined) {
+      headers["Content-Type"] = "application/json";
+      init.body = JSON.stringify(body);
+    }
+    try {
+      const res = await fetch(`${apiBase}${path}`, init);
+      let data = null;
+      try {
+        data = await res.json();
+      } catch (_) {}
+      if (res.status === 401 || (data && data.authRequired)) {
+        const msg = (data && data.error) || "Cần nhập mã khóa Admin để tiếp tục.";
+        showAdminAuthBanner(msg);
+        return { ok: false, status: 401, authRequired: true, error: msg, data };
+      }
+      if (!res.ok || (data && data.ok === false)) {
+        const errMsg = (data && data.error) || `Lỗi máy chủ (HTTP ${res.status})`;
+        return { ok: false, status: res.status, error: errMsg, data };
+      }
+      if (path.startsWith("/api/stats")) {
+        hideAdminAuthBanner();
+      }
+      return { ok: true, status: res.status, data };
+    } catch (_) {
+      return {
+        ok: false,
+        status: 0,
+        error: "Không thể kết nối máy chủ"
+      };
+    }
+  }
 
   // TAB SWITCHING WITH CLEAN "/" URL ROUTING & RELOAD PERSISTENCE
   const TAB_TO_SLUG = {
@@ -786,6 +882,21 @@
     const nextMode = modeVal === "__keep__" ? undefined : modeVal;
     const nextMorning = morningVal === "__keep__" ? undefined : normalizeMorningMode(morningVal);
 
+    if (nextMode === "thankyou") {
+      const candidateDrive =
+        (globalDriveInput && globalDriveInput.value.trim()) || globalSiteConfig.driveUrl || "";
+      if (isPlaceholderDriveUrl(candidateDrive)) {
+        notify("⚠️ Link Google Drive vẫn là link mẫu. Hãy xóa hoặc dán link thật trước khi bật Cảm Ơn!");
+        return false;
+      }
+    }
+
+    const prevSavedGuestsSnap = savedGuests.map((g) => ({ ...g }));
+    const prevSlotsSnap = {};
+    Object.keys(serverSlots).forEach((k) => {
+      prevSlotsSnap[k] = { ...serverSlots[k] };
+    });
+
     const guestNamesToUpdate = [];
     savedGuests = savedGuests.map((g) => {
       const k = normalizeNameKey(g.name);
@@ -829,6 +940,7 @@
       slotItemsToUpdate.push({ code, num: n });
     });
 
+    const selectedSnap = Array.from(window._bulkSelectedSet);
     window._bulkSelectedSet.clear();
     const rFrom = document.getElementById("bulk-range-from");
     const rTo = document.getElementById("bulk-range-to");
@@ -841,23 +953,41 @@
     if (typeof renderSlotsTable === "function") renderSlotsTable();
     if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
 
-    try {
-      await fetch(`${apiBase}/api/seating`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "bulk_assign",
-          guestNames: guestNamesToUpdate,
-          slotItems: slotItemsToUpdate,
-          ...(nextGroup !== undefined ? { group: nextGroup } : {}),
-          ...(nextTable !== undefined ? { table: nextTable } : {}),
-          ...(nextMode !== undefined ? { mode: nextMode } : {}),
-          ...(nextMorning !== undefined ? { morning: nextMorning } : {})
-        })
-      });
-    } catch (_) {}
+    const apiRes = await adminApiFetch("/api/seating", {
+      method: "POST",
+      body: {
+        action: "bulk_assign",
+        guestNames: guestNamesToUpdate,
+        slotItems: slotItemsToUpdate,
+        ...(nextGroup !== undefined ? { group: nextGroup } : {}),
+        ...(nextTable !== undefined ? { table: nextTable } : {}),
+        ...(nextMode !== undefined ? { mode: nextMode } : {}),
+        ...(nextMorning !== undefined ? { morning: nextMorning } : {})
+      }
+    });
 
-    notify(`⚡ Đã áp dụng hàng loạt cho ${totalSelected} mục thành công!`);
+    if (!apiRes.ok) {
+      savedGuests = prevSavedGuestsSnap;
+      serverSlots = prevSlotsSnap;
+      window._bulkSelectedSet = new Set(selectedSnap);
+      persistLocalGuests();
+      if (typeof persistLocalSlots === "function") persistLocalSlots();
+      buildRows();
+      if (typeof renderSlotsTable === "function") renderSlotsTable();
+      if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
+      notify(`⚠️ Chưa lưu được lên máy chủ (${apiRes.error}). Vui lòng thử lại!`);
+      return false;
+    }
+
+    const cap = seatingConfig.seatsPerTable || 10;
+    const occAfter = nextTable ? computeTableStats().occ : null;
+    if (nextTable && occAfter && (occAfter[nextTable] || 0) > cap) {
+      notify(
+        `⚠️ Đã xếp ${totalSelected} mục vào Bàn ${String(nextTable).padStart(2, "0")} — lưu ý bàn đang có ${occAfter[nextTable]}/${cap} ghế (vượt sức chứa)!`
+      );
+    } else {
+      notify(`⚡ Đã áp dụng hàng loạt cho ${totalSelected} mục thành công!`);
+    }
     return true;
   }
 
@@ -1006,27 +1136,24 @@
       if (!window._slotNormSyncedOnce && savedGuests.length > 0) {
         window._slotNormSyncedOnce = true;
         setTimeout(async () => {
-          try {
-            for (const g of savedGuests) {
-              if (!g || !g.slotCode || !g.name) continue;
-              await fetch(`${apiBase}/api/slots`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  action: "assign",
-                  code: g.slotCode,
-                  name: g.name,
-                  lang: g.lang || (/[\u4e00-\u9fff]/.test(g.name) ? "zh" : "vi"),
-                  note: g.note || "",
-                  mode: g.mode || "invite",
-                  morning: normalizeMorningMode(g.morning),
-                  group: g.group || "",
-                  table: g.table || "",
-                  pax: g.pax || 1
-                })
-              }).catch(() => {});
-            }
-          } catch (_) {}
+          for (const g of savedGuests) {
+            if (!g || !g.slotCode || !g.name) continue;
+            await adminApiFetch("/api/slots", {
+              method: "POST",
+              body: {
+                action: "assign",
+                code: g.slotCode,
+                name: g.name,
+                lang: g.lang || (/[\u4e00-\u9fff]/.test(g.name) ? "zh" : "vi"),
+                note: g.note || "",
+                mode: g.mode || "invite",
+                morning: normalizeMorningMode(g.morning),
+                group: g.group || "",
+                table: g.table || "",
+                pax: g.pax || 1
+              }
+            });
+          }
         }, 300);
       }
     }
@@ -1134,27 +1261,27 @@
 
     clearTimeout(noteSaveTimers[key]);
     noteSaveTimers[key] = setTimeout(async () => {
-      try {
-        await fetch(`${apiBase}/api/guests`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            action: "update_note",
-            name,
-            note: cleanNote
-          })
-        });
-        if (targetRecord) {
-          await fetch(`${apiBase}/api/guests`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              action: "add",
-              guests: [targetRecord]
-            })
-          });
+      const apiRes = await adminApiFetch("/api/guests", {
+        method: "POST",
+        body: {
+          action: "update_note",
+          name,
+          note: cleanNote
         }
-      } catch (_) {}
+      });
+      if (!apiRes.ok) {
+        notify(`⚠️ Chưa lưu được ghi chú cho "${name}" (${apiRes.error}).`);
+        return;
+      }
+      if (targetRecord) {
+        await adminApiFetch("/api/guests", {
+          method: "POST",
+          body: {
+            action: "add",
+            guests: [targetRecord]
+          }
+        });
+      }
     }, showToastNow ? 50 : 450);
 
     if (showToastNow) {
@@ -1167,10 +1294,33 @@
   }
 
   function notify(msg) {
+    toast.innerHTML = "";
     toast.textContent = msg;
     toast.classList.add("is-shown");
     clearTimeout(timer);
-    timer = setTimeout(() => toast.classList.remove("is-shown"), 2600);
+    timer = setTimeout(() => toast.classList.remove("is-shown"), 3200);
+  }
+
+  function notifyWithUndo(msg, onUndo) {
+    toast.innerHTML = "";
+    const span = document.createElement("span");
+    span.textContent = msg;
+    toast.appendChild(span);
+    if (typeof onUndo === "function") {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "toast-undo-btn";
+      btn.textContent = "↩️ Hoàn tác";
+      btn.addEventListener("click", () => {
+        toast.classList.remove("is-shown");
+        clearTimeout(timer);
+        onUndo();
+      });
+      toast.appendChild(btn);
+    }
+    toast.classList.add("is-shown");
+    clearTimeout(timer);
+    timer = setTimeout(() => toast.classList.remove("is-shown"), 6000);
   }
 
   async function copyText(str, okMsg) {
@@ -1189,14 +1339,14 @@
 
   function formatCountryFlag(code) {
     const c = String(code || "VN").toUpperCase();
-    if (c === "VN") return "🇻🇳 Việt Nam";
-    if (c === "TW") return "🇹🇼 Đài Loan";
-    if (c === "US") return "🇺🇸 Mỹ";
-    if (c === "SG") return "🇸🇬 Singapore";
-    if (c === "AU") return "🇦🇺 Úc";
-    if (c === "JP") return "🇯🇵 Nhật Bản";
-    if (c === "KR") return "🇰🇷 Hàn Quốc";
-    return "🌍 " + c;
+    if (c === "VN") return "VN - Việt Nam";
+    if (c === "TW") return "TW - Đài Loan";
+    if (c === "US") return "US - Mỹ";
+    if (c === "SG") return "SG - Singapore";
+    if (c === "AU") return "AU - Úc";
+    if (c === "JP") return "JP - Nhật Bản";
+    if (c === "KR") return "KR - Hàn Quốc";
+    return c;
   }
 
   function formatExactAndRelativeTime(iso) {
@@ -1222,6 +1372,17 @@
   async function setGuestModeOnServer(name, nextMode) {
     const key = normalizeNameKey(name);
     const driveVal = (globalDriveInput && globalDriveInput.value.trim()) || "";
+    if (nextMode === "thankyou" && isPlaceholderDriveUrl(driveVal || globalSiteConfig.driveUrl)) {
+      notify("⚠️ Link Google Drive vẫn là link mẫu, hãy xóa hoặc dán link thật trước khi bật Cảm Ơn!");
+      return false;
+    }
+
+    const prevSaved = savedGuests.map((g) => ({ ...g }));
+    const prevSlotsSnap = {};
+    Object.keys(serverSlots).forEach((k) => {
+      prevSlotsSnap[k] = { ...serverSlots[k] };
+    });
+
     let linkedSlotCode = "";
     savedGuests = savedGuests.map((g) => {
       if (normalizeNameKey(g.name) === key) {
@@ -1237,30 +1398,45 @@
     persistLocalGuests();
     buildRows();
     if (typeof renderSlotsTable === "function") renderSlotsTable();
-    try {
-      await fetch(`${apiBase}/api/guests`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "toggle_mode",
-          name,
-          mode: nextMode,
-          driveUrl: driveVal
-        })
-      });
-    } catch (_) {}
+
+    const apiRes = await adminApiFetch("/api/guests", {
+      method: "POST",
+      body: {
+        action: "toggle_mode",
+        name,
+        mode: nextMode,
+        driveUrl: driveVal
+      }
+    });
+    if (!apiRes.ok) {
+      savedGuests = prevSaved;
+      serverSlots = prevSlotsSnap;
+      persistLocalGuests();
+      persistLocalSlots();
+      buildRows();
+      if (typeof renderSlotsTable === "function") renderSlotsTable();
+      notify(`⚠️ Chưa đổi được chế độ trên máy chủ (${apiRes.error}).`);
+      return false;
+    }
     notify(
       nextMode === "thankyou"
         ? `📸 Đã bật "Thiệp Cảm Ơn" cho link của "${name}"!`
         : nextMode === "directions"
-          ? `📍 Đã bật "Chế Độ Chỉ Đường Ngày Cưới (Đẩy Bản Đồ lên đầu)" cho "${name}"!`
+          ? `📍 Đã bật "Chế Độ Chỉ Đường Ngày Cưới" cho "${name}"!`
           : `💌 Đã chuyển link của "${name}" về chế độ Thiệp Mời!`
     );
+    return true;
   }
 
   async function setGuestMorningOnServer(name, nextMorningRaw) {
     const key = normalizeNameKey(name);
     const nextMorning = normalizeMorningMode(nextMorningRaw);
+    const prevSaved = savedGuests.map((g) => ({ ...g }));
+    const prevSlotsSnap = {};
+    Object.keys(serverSlots).forEach((k) => {
+      prevSlotsSnap[k] = { ...serverSlots[k] };
+    });
+
     let linkedSlotCode = "";
     savedGuests = savedGuests.map((g) => {
       if (normalizeNameKey(g.name) === key) {
@@ -1271,47 +1447,64 @@
     });
     if (linkedSlotCode && serverSlots[linkedSlotCode]) {
       serverSlots[linkedSlotCode].morning = nextMorning;
-      persistLocalSlots();
     }
     Object.keys(serverSlots).forEach((code) => {
       const s = serverSlots[code];
       if (s && s.name && normalizeNameKey(s.name) === key) {
         s.morning = nextMorning;
-        persistLocalSlots();
       }
     });
+    persistLocalSlots();
     persistLocalGuests();
     buildRows();
     if (typeof renderSlotsTable === "function") renderSlotsTable();
-    try {
-      await fetch(`${apiBase}/api/guests`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "toggle_morning",
-          name,
-          morning: nextMorning
-        })
-      });
-    } catch (_) {}
+
+    const apiRes = await adminApiFetch("/api/guests", {
+      method: "POST",
+      body: {
+        action: "toggle_morning",
+        name,
+        morning: nextMorning
+      }
+    });
+    if (!apiRes.ok) {
+      savedGuests = prevSaved;
+      serverSlots = prevSlotsSnap;
+      persistLocalSlots();
+      persistLocalGuests();
+      buildRows();
+      if (typeof renderSlotsTable === "function") renderSlotsTable();
+      notify(`⚠️ Chưa lưu được chế độ Lễ Sáng (${apiRes.error}).`);
+      return false;
+    }
     notify(
       nextMorning === "groom"
         ? `🏠 Đã bật mời "Lễ Sáng Nhà Trai (05:30) + Tiệc Tối" cho "${name}"!`
         : nextMorning === "bride"
-          ? `🏡 Đã bật mời "Lễ Sáng Nhà Gái (05:30) + Tiệc Tối" cho "${name}"!`
+          ? `🏡 Đã bật mời "Lễ Sáng Nhà Gái (06:00) + Tiệc Tối" cho "${name}"!`
           : nextMorning === "both"
-            ? `🌅 Đã bật mời "Lễ Sáng (05:30) + Tiệc Tối (Đầy đủ 2 nhà)" cho "${name}"!`
+            ? `🌅 Đã bật mời "Lễ Sáng (05:30) + Tiệc Tối (Cả 2 nhà)" cho "${name}"!`
             : `🌙 Đã chuyển "${name}" về chế độ Chỉ Tiệc Tối (18:00)!`
     );
+    return true;
   }
 
-  async function updateGuestSeatOnServer(name, nextGroup, nextTable, nextPax, showToast = true) {
+  async function updateGuestSeatOnServer(name, nextGroup, nextTable, nextPax, showToast = true, options = {}) {
     const key = normalizeNameKey(name);
     let linkedSlotCode = "";
     const cleanPax = Math.max(1, Math.min(20, parseInt(nextPax || "1", 10) || 1));
     const cleanTable = String(nextTable || "");
     const tMeta = (cleanTable && seatingConfig.tableMeta && seatingConfig.tableMeta[cleanTable]) || {};
-    const effectiveGroup = nextGroup || tMeta.group || "";
+    const explicitGroup = options && options.source === "group";
+    const effectiveGroup = explicitGroup
+      ? String(nextGroup || "").trim()
+      : String(nextGroup || "").trim() || tMeta.group || "";
+
+    const prevSaved = savedGuests.map((g) => ({ ...g }));
+    const prevSlotsSnap = {};
+    Object.keys(serverSlots).forEach((k) => {
+      prevSlotsSnap[k] = { ...serverSlots[k] };
+    });
 
     let matched = false;
     savedGuests = savedGuests.map((g) => {
@@ -1335,7 +1528,6 @@
       serverSlots[linkedSlotCode].group = effectiveGroup;
       serverSlots[linkedSlotCode].table = cleanTable;
       serverSlots[linkedSlotCode].pax = cleanPax;
-      persistLocalSlots();
     }
     Object.keys(serverSlots).forEach((code) => {
       const s = serverSlots[code];
@@ -1343,44 +1535,61 @@
         s.group = effectiveGroup;
         s.table = cleanTable;
         s.pax = cleanPax;
-        persistLocalSlots();
       }
     });
 
+    persistLocalSlots();
     persistLocalGuests();
     buildRows();
     if (typeof renderSlotsTable === "function") renderSlotsTable();
     if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
 
-    if (showToast) {
-      notify(
-        cleanTable
-          ? `🪑 Đã xếp "${name}" vào Bàn ${String(cleanTable).padStart(2, "0")} (${cleanPax} ghế)!`
-          : `🪑 Đã gỡ "${name}" khỏi bàn tiệc!`
-      );
+    const apiRes = await adminApiFetch("/api/guests", {
+      method: "POST",
+      body: {
+        action: "update_seat",
+        name,
+        group: effectiveGroup,
+        table: cleanTable,
+        pax: cleanPax
+      }
+    });
+    if (!apiRes.ok) {
+      savedGuests = prevSaved;
+      serverSlots = prevSlotsSnap;
+      persistLocalSlots();
+      persistLocalGuests();
+      buildRows();
+      if (typeof renderSlotsTable === "function") renderSlotsTable();
+      if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
+      notify(`⚠️ Chưa lưu được xếp bàn cho "${name}" (${apiRes.error}).`);
+      return false;
     }
 
-    try {
-      const res = await fetch(`${apiBase}/api/guests`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "update_seat",
-          name,
-          group: effectiveGroup,
-          table: cleanTable,
-          pax: cleanPax
-        })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (Array.isArray(data.savedGuests)) {
-          mergeServerGuests(data.savedGuests);
-          buildRows();
-          if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
-        }
+    const data = apiRes.data;
+    if (data && Array.isArray(data.savedGuests)) {
+      mergeServerGuests(data.savedGuests);
+      buildRows();
+      if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
+    }
+
+    if (showToast) {
+      const cap = seatingConfig.seatsPerTable || 10;
+      const occAfter = cleanTable ? computeTableStats().occ : {};
+      const usedAfter = cleanTable ? occAfter[cleanTable] || 0 : 0;
+      if (cleanTable && usedAfter > cap) {
+        notify(
+          `⚠️ Đã xếp "${name}" vào Bàn ${String(cleanTable).padStart(2, "0")} — lưu ý bàn hiện có ${usedAfter}/${cap} ghế (vượt ${usedAfter - cap} ghế)!`
+        );
+      } else {
+        notify(
+          cleanTable
+            ? `🪑 Đã xếp "${name}" vào Bàn ${String(cleanTable).padStart(2, "0")} (${cleanPax} ghế)!`
+            : `🪑 Đã gỡ "${name}" khỏi bàn tiệc!`
+        );
       }
-    } catch (_) {}
+    }
+    return true;
   }
 
   async function renameGuestKeepSlot(slotNum, oldName, newName) {
@@ -1443,57 +1652,90 @@
       visitLogsByGuest[newKey] = (visitLogsByGuest[newKey] || []).concat(visitLogsByGuest[oldKey]);
     }
 
+    const prevSaved = savedGuests.map((g) => ({ ...g }));
+    const prevSlotsSnap = {};
+    Object.keys(serverSlots).forEach((k) => {
+      prevSlotsSnap[k] = { ...serverSlots[k] };
+    });
+
     persistLocalGuests();
     if (typeof persistLocalSlots === "function") persistLocalSlots();
     buildRows();
     if (typeof renderSlotsTable === "function") renderSlotsTable();
     if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
 
+    const rRes = await adminApiFetch("/api/guests", {
+      method: "POST",
+      body: {
+        action: "rename",
+        oldName: cleanOld,
+        newName: cleanNew,
+        slot: n,
+        slotCode: code,
+        lang: newLang,
+        note: (updatedRecord && updatedRecord.note) || ""
+      }
+    });
+    if (!rRes.ok) {
+      savedGuests = prevSaved;
+      serverSlots = prevSlotsSnap;
+      persistLocalGuests();
+      if (typeof persistLocalSlots === "function") persistLocalSlots();
+      buildRows();
+      if (typeof renderSlotsTable === "function") renderSlotsTable();
+      if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
+      notify(`⚠️ Chưa đổi được tên trên máy chủ (${rRes.error}).`);
+      return false;
+    }
+
+    const sRes = await adminApiFetch("/api/slots", {
+      method: "POST",
+      body: {
+        action: "assign",
+        code,
+        name: cleanNew,
+        lang: newLang,
+        note: (updatedRecord && updatedRecord.note) || "",
+        mode: (updatedRecord && updatedRecord.mode) || "invite",
+        morning: normalizeMorningMode(updatedRecord && updatedRecord.morning),
+        group: (updatedRecord && updatedRecord.group) || "",
+        table: (updatedRecord && updatedRecord.table) || "",
+        pax: (updatedRecord && updatedRecord.pax) || 1
+      }
+    });
+    if (!sRes.ok) {
+      notify(`⚠️ Đã đổi tên khách nhưng đồng bộ thẻ #${n} báo lỗi (${sRes.error}).`);
+      return true;
+    }
     notify(
       `✅ Đã đổi tên thành "${cleanNew}" — Link & Mã QR #${n} (?s=${code}) giữ nguyên cố định 100%!`
     );
-
-    try {
-      await fetch(`${apiBase}/api/guests`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "rename",
-          oldName: cleanOld,
-          newName: cleanNew,
-          slot: n,
-          slotCode: code,
-          lang: newLang,
-          note: (updatedRecord && updatedRecord.note) || ""
-        })
-      });
-      await fetch(`${apiBase}/api/slots`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "assign",
-          code,
-          name: cleanNew,
-          lang: newLang,
-          note: (updatedRecord && updatedRecord.note) || "",
-          mode: (updatedRecord && updatedRecord.mode) || "invite",
-          morning: normalizeMorningMode(updatedRecord && updatedRecord.morning),
-          group: (updatedRecord && updatedRecord.group) || "",
-          table: (updatedRecord && updatedRecord.table) || "",
-          pax: (updatedRecord && updatedRecord.pax) || 1
-        })
-      });
-    } catch (_) {}
     return true;
   }
 
-  async function removeGuestFromList(name, slotNum) {
+  async function removeGuestFromList(name, slotNum, skipConfirm = false) {
     const key = normalizeNameKey(name);
     const targetGuest = savedGuests.find(
       (g) => (slotNum && Number(g.slot) === Number(slotNum)) || normalizeNameKey(g.name) === key
     );
     const resolvedSlot = Number(slotNum || (targetGuest && targetGuest.slot) || 0);
     const resolvedCode = resolvedSlot > 0 ? makeSlotCode(resolvedSlot) : "";
+
+    if (!skipConfirm) {
+      const msg =
+        resolvedSlot > 0
+          ? `Xóa tên "${name}" khỏi thẻ #${resolvedSlot}?\n(Link & Mã QR #${resolvedSlot} sẽ trở về mục Chưa có tên.)`
+          : `Xác nhận xóa "${name}" khỏi danh sách?`;
+      if (!window.confirm(msg)) return false;
+    }
+
+    const backupGuest = targetGuest ? { ...targetGuest } : null;
+    const backupSlot = resolvedCode && serverSlots[resolvedCode] ? { ...serverSlots[resolvedCode] } : null;
+    const prevSaved = savedGuests.map((g) => ({ ...g }));
+    const prevSlotsSnap = {};
+    Object.keys(serverSlots).forEach((k) => {
+      prevSlotsSnap[k] = { ...serverSlots[k] };
+    });
 
     savedGuests = savedGuests.filter(
       (g) => !(resolvedSlot > 0 && Number(g.slot) === resolvedSlot) && normalizeNameKey(g.name) !== key
@@ -1506,30 +1748,81 @@
     buildRows();
     if (typeof renderSlotsTable === "function") renderSlotsTable();
     if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
-    try {
-      await fetch(`${apiBase}/api/guests`, {
+
+    const rRes = await adminApiFetch("/api/guests", {
+      method: "POST",
+      body: { action: "remove", name }
+    });
+    if (!rRes.ok) {
+      savedGuests = prevSaved;
+      serverSlots = prevSlotsSnap;
+      persistLocalGuests();
+      if (typeof persistLocalSlots === "function") persistLocalSlots();
+      buildRows();
+      if (typeof renderSlotsTable === "function") renderSlotsTable();
+      if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
+      notify(`⚠️ Chưa xóa được trên máy chủ (${rRes.error}).`);
+      return false;
+    }
+
+    if (resolvedCode) {
+      await adminApiFetch("/api/slots", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "remove", name })
+        body: { action: "clear", code: resolvedCode }
       });
-      if (resolvedCode) {
-        await fetch(`${apiBase}/api/slots`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "clear", code: resolvedCode })
-        });
-      }
-    } catch (_) {}
-    notify(
+    }
+
+    const doneText =
       resolvedSlot > 0
-        ? `🗑️ Đã xóa tên "${name}" — Thẻ #${resolvedSlot} (?s=${resolvedCode}) đã trở về danh sách Chưa có tên.`
-        : `🗑️ Đã xóa "${name}" khỏi danh sách.`
-    );
+        ? `🗑️ Đã xóa "${name}" khỏi thẻ #${resolvedSlot}.`
+        : `🗑️ Đã xóa "${name}" khỏi danh sách.`;
+
+    if (backupGuest) {
+      notifyWithUndo(doneText, async () => {
+        savedGuests.push(backupGuest);
+        if (resolvedCode && backupSlot) serverSlots[resolvedCode] = backupSlot;
+        persistLocalGuests();
+        if (typeof persistLocalSlots === "function") persistLocalSlots();
+        buildRows();
+        if (typeof renderSlotsTable === "function") renderSlotsTable();
+        if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
+        const undoRes = await adminApiFetch("/api/guests", {
+          method: "POST",
+          body: { action: "add", guests: [backupGuest] }
+        });
+        if (!undoRes.ok) {
+          notify(`⚠️ Không hoàn tác được lên máy chủ (${undoRes.error}).`);
+          return;
+        }
+        if (resolvedCode) {
+          await adminApiFetch("/api/slots", {
+            method: "POST",
+            body: {
+              action: "assign",
+              code: resolvedCode,
+              name: backupGuest.name,
+              lang: backupGuest.lang || "vi",
+              note: backupGuest.note || "",
+              mode: backupGuest.mode || "invite",
+              morning: normalizeMorningMode(backupGuest.morning),
+              group: backupGuest.group || "",
+              table: backupGuest.table || "",
+              pax: backupGuest.pax || 1
+            }
+          });
+        }
+        notify(`↩️ Đã khôi phục "${backupGuest.name}" về thẻ #${resolvedSlot || "?"}!`);
+      });
+    } else {
+      notify(doneText);
+    }
+    return true;
   }
 
   function buildRows() {
     ensureGuestSlotsNormalized();
     const base = baseOrigin.replace(/\?.*$/, "");
+    const previewBase = previewOrigin.replace(/\?.*$/, "");
     const isGuestsTabActive = activeAdminTabId === "tab-guests";
     if (!isGuestsTabActive) {
       if (cardsContainer.childElementCount > 0) cardsContainer.innerHTML = "";
@@ -1540,6 +1833,8 @@
     savedCountEl.textContent = String(savedGuests.length);
     const unnamedCountEl = document.getElementById("unnamed-slot-count");
     if (unnamedCountEl) unnamedCountEl.textContent = String(unnamedCount);
+    const chipUnnamedEl = document.getElementById("chip-unnamed-count");
+    if (chipUnnamedEl) chipUnnamedEl.textContent = String(unnamedCount);
     badgeSavedEl.textContent = `${savedGuests.length}/${TOTAL_INVITE_TARGET}`;
 
     const q = (searchInput ? searchInput.value : "").trim().toLowerCase();
@@ -1662,7 +1957,7 @@
         previewQs.set("mode", effectiveMode);
       }
       previewQs.set("notrack", "1");
-      const previewUrl = `${base}?${previewQs.toString()}`;
+      const previewUrl = `${previewBase}?${previewQs.toString()}`;
 
       const inviteMsg =
         isTyEffective
@@ -1744,7 +2039,17 @@
 
       const card = document.createElement("div");
       card.className = "guest-item-card";
-      const msgBtnLabel = effectiveLang === "zh" ? "💬 Copy lời mời LINE" : "💬 Copy lời mời Zalo";
+      const msgBtnLabel = effectiveLang === "zh" ? "💬 LINE" : "💬 Zalo";
+      window._expandedGuestRows = window._expandedGuestRows || {};
+      const isRowDrawerOpen = Boolean(window._expandedGuestRows[key]);
+      const tableSummaryText = guestTable
+        ? `🪑 Bàn ${String(guestTable).padStart(2, "0")}${guestPax > 1 ? ` (${guestPax})` : ""}`
+        : "";
+      const modeBadgeHtml = isTyEffective
+        ? `<span class="guest-summary-chip">📸 Cảm Ơn</span>`
+        : isDirEffective
+          ? `<span class="guest-summary-chip">📍 Chỉ Đường</span>`
+          : "";
 
       card.innerHTML = `
         <div class="guest-top-row">
@@ -1758,84 +2063,98 @@
                 title="Tích chọn để phân nhóm hoặc xếp bàn hàng loạt"
               />
               <span class="guest-idx" title="Số thứ tự thẻ & Mã QR cố định">#${slotNum}</span>
-              <span class="guest-name-text js-guest-name" title="Bấm ✏️ Sửa tên để đổi tên khách (Link & QR giữ nguyên cố định)"></span>
-              <button
-                type="button"
-                class="btn-adm js-edit-name-btn"
-                style="height:26px; padding:0 8px; font-size:11.5px;"
-                title="Sửa tên khách này (Link ?s=${slotCode} và mã QR đã in vẫn giữ nguyên cố định 100%)"
-              >✏️ Sửa tên</button>
-              <span class="js-edit-name-wrap" style="display:none; align-items:center; gap:5px;">
-                <input
-                  type="text"
-                  class="slot-inline-input js-edit-name-input"
-                  aria-label="Nhập tên mới cho thẻ #${slotNum}"
-                  style="width:195px; height:30px; font-weight:700;"
-                  placeholder="Nhập tên khách mới..."
-                />
-                <button type="button" class="btn-adm primary js-save-name-btn" style="height:30px; padding:0 10px; font-size:11.5px;">💾 Lưu</button>
-                <button type="button" class="btn-adm js-cancel-name-btn" style="height:30px; padding:0 8px; font-size:11.5px;">Hủy</button>
-              </span>
+              <span class="guest-name-text js-guest-name" title="Bấm ⚙️ Tùy chỉnh hoặc nhấp đúp để sửa tên"></span>
               <span class="lang-tag">${effectiveLang === "zh" ? "繁體中文" : "VI"}</span>
-              <span class="lang-tag" title="Mã QR & Link cố định vĩnh viễn: ?s=${slotCode}">🔢 QR số ${slotNum} · Link cố định</span>
               ${guestMorning ? `<span class="morning-status-badge">${getMorningBadgeText(guestMorning)}</span>` : ""}
+              ${tableSummaryText ? `<span class="guest-summary-chip">${tableSummaryText}</span>` : ""}
+              ${modeBadgeHtml}
+              ${privateNote ? `<span class="guest-summary-chip js-note-preview" title="Ghi chú riêng">📝</span>` : ""}
               ${statusBadgeHtml}
-              <label class="guest-private-note-wrap ${privateNote ? "has-note" : ""}" title="Ghi chú riêng cho Cô Dâu & Chú Rể (Khách mời tuyệt đối KHÔNG thấy ghi chú này)">
-                <span class="guest-private-note-icon" aria-hidden="true">📝</span>
-                <input
-                  type="text"
-                  class="guest-private-note-input js-guest-note-input"
-                  aria-label="Ghi chú riêng cho ${safeAttrName}"
-                  placeholder="Ghi chú riêng (VD: Con dì Ý, bạn ĐH...)"
-                />
-              </label>
-              <div class="seat-inline-bar" title="Phân nhóm khách & xếp vào Bàn Tiệc Sảnh Seine">
-                <select class="seat-inline-select js-guest-group-select" aria-label="Nhóm khách của ${safeAttrName}">
-                  ${buildGroupSelectOptions(guestGroup)}
-                </select>
-                <select class="seat-inline-select ${guestTable ? "has-table" : ""} js-guest-table-select" aria-label="Bàn tiệc của ${safeAttrName}">
-                  ${buildTableSelectOptions(guestTable, tableOccMap)}
-                </select>
-                <input
-                  type="number"
-                  min="1"
-                  max="15"
-                  class="seat-inline-pax js-guest-pax-input"
-                  aria-label="Số ghế của ${safeAttrName}"
-                  value="${guestPax}"
-                  title="Số ghế (Pax) của khách/gia đình này trong bàn"
-                />
-              </div>
             </div>
             <div class="guest-url-line js-url-preview"></div>
           </div>
 
           <div class="guest-actions-col">
             <div class="guest-btn-group">
-              <div class="mode-switch-pill" title="Chuyển đổi trực tiếp giữa Thiệp Mời, Chỉ Đường Ngày Cưới (Đẩy Bản Đồ lên đầu) và Thiệp Cảm Ơn ngay trên link cũ đã gửi">
-                <button type="button" class="mode-switch-btn js-mode-invite ${effectiveMode === "invite" ? "is-active-invite" : ""}">💌 Thiệp Mời</button>
-                <button type="button" class="mode-switch-btn js-mode-dir ${isDirEffective ? "is-active-dir" : ""}" title="Đẩy Sơ Đồ Đường Đi & Google Maps lên đầu trang, tự động mở sẵn bao thư">📍 Chỉ Đường</button>
-                <button type="button" class="mode-switch-btn js-mode-ty ${isTyEffective ? "is-active-ty" : ""}">📸 Cảm Ơn</button>
-              </div>
-              <select
-                class="morning-inline-select ${guestMorning ? "has-morning" : ""} js-guest-morning-select"
-                aria-label="Chế độ mời Lễ Sáng 05:30 cho ${safeAttrName}"
-                title="Bật chế độ thiệp riêng cho khách mời tham dự Lễ Sáng (05:30 tại Tư Gia Nhà Trai & Nhà Gái + Tiệc Tối)"
-              >
-                ${buildMorningSelectOptions(guestMorning)}
-              </select>
-              <button type="button" class="btn-adm primary js-copy-link">📋 Copy Link</button>
-              <button type="button" class="btn-adm js-copy-msg">${msgBtnLabel}</button>
-              <button type="button" class="btn-adm js-open-guest-qr" title="Tạo & tải Mã QR đẹp riêng cho khách này">📱 Mã QR</button>
+              <button type="button" class="btn-adm primary js-copy-link" title="Copy link cố định (?s=${slotCode})">📋 Copy Link</button>
+              <button type="button" class="btn-adm js-copy-msg" title="Copy lời mời kèm link cố định">${msgBtnLabel}</button>
               <a class="btn-adm js-preview" target="_blank" rel="noopener" title="Mở xem thử (Không tính vào lượt xem)">👁️ Xem thử</a>
-              <button type="button" class="btn-adm danger js-remove-guest" aria-label="Xóa tên ${safeAttrName} khỏi thẻ #${slotNum}" title="Xóa tên khách khỏi thẻ #${slotNum} (Đưa thẻ #${slotNum} về mục Chưa có tên)">✕</button>
+              <button type="button" class="btn-adm js-toggle-drawer" aria-expanded="${isRowDrawerOpen ? "true" : "false"}" title="Sửa tên, ghi chú, xếp bàn, đổi chế độ, mã QR hoặc xóa">⚙️ Tùy chỉnh</button>
             </div>
+          </div>
+        </div>
+
+        <div class="guest-card-drawer js-row-drawer" ${isRowDrawerOpen ? "" : "hidden"}>
+          <div class="guest-drawer-left">
+            <button
+              type="button"
+              class="btn-adm js-edit-name-btn"
+              style="height:30px; padding:0 10px; font-size:12px;"
+              title="Sửa tên khách (Link ?s=${slotCode} & QR giữ nguyên 100%)"
+            >✏️ Sửa tên</button>
+            <span class="js-edit-name-wrap" style="display:none; align-items:center; gap:5px;">
+              <input
+                type="text"
+                class="slot-inline-input js-edit-name-input"
+                aria-label="Nhập tên mới cho thẻ #${slotNum}"
+                style="width:195px; height:32px; font-weight:700;"
+                placeholder="Nhập tên khách mới..."
+              />
+              <button type="button" class="btn-adm primary js-save-name-btn" style="height:32px; padding:0 10px; font-size:12px;">💾 Lưu</button>
+              <button type="button" class="btn-adm js-cancel-name-btn" style="height:32px; padding:0 8px; font-size:12px;">Hủy</button>
+            </span>
+
+            <label class="guest-private-note-wrap ${privateNote ? "has-note" : ""}" title="Ghi chú riêng cho Cô Dâu & Chú Rể (Khách không thấy)">
+              <span class="guest-private-note-icon" aria-hidden="true">📝</span>
+              <input
+                type="text"
+                class="guest-private-note-input js-guest-note-input"
+                aria-label="Ghi chú riêng cho ${safeAttrName}"
+                placeholder="Ghi chú riêng..."
+              />
+            </label>
+
+            <div class="seat-inline-bar" title="Phân nhóm khách & xếp vào Bàn Tiệc Sảnh Seine">
+              <select class="seat-inline-select js-guest-group-select" aria-label="Nhóm khách của ${safeAttrName}">
+                ${buildGroupSelectOptions(guestGroup)}
+              </select>
+              <select class="seat-inline-select ${guestTable ? "has-table" : ""} js-guest-table-select" aria-label="Bàn tiệc của ${safeAttrName}">
+                ${buildTableSelectOptions(guestTable, tableOccMap)}
+              </select>
+              <input
+                type="number"
+                min="1"
+                max="15"
+                class="seat-inline-pax js-guest-pax-input"
+                aria-label="Số ghế của ${safeAttrName}"
+                value="${guestPax}"
+                title="Số ghế (Pax)"
+              />
+            </div>
+          </div>
+
+          <div class="guest-drawer-right">
+            <div class="mode-switch-pill" title="Chuyển đổi trực tiếp trên link đã gửi">
+              <button type="button" class="mode-switch-btn js-mode-invite ${effectiveMode === "invite" ? "is-active-invite" : ""}">💌 Thiệp Mời</button>
+              <button type="button" class="mode-switch-btn js-mode-dir ${isDirEffective ? "is-active-dir" : ""}">📍 Chỉ Đường</button>
+              <button type="button" class="mode-switch-btn js-mode-ty ${isTyEffective ? "is-active-ty" : ""}">📸 Cảm Ơn</button>
+            </div>
+            <select
+              class="morning-inline-select ${guestMorning ? "has-morning" : ""} js-guest-morning-select"
+              aria-label="Chế độ mời Lễ Sáng cho ${safeAttrName}"
+            >
+              ${buildMorningSelectOptions(guestMorning)}
+            </select>
+            <button type="button" class="btn-adm js-open-guest-qr">📱 Mã QR</button>
+            <button type="button" class="btn-adm danger js-remove-guest" aria-label="Xóa tên ${safeAttrName} khỏi thẻ #${slotNum}">🗑️ Xóa tên</button>
           </div>
         </div>
         <div class="guest-sessions-wrap js-sessions-wrap"></div>
       `;
 
       const nameSpanEl = card.querySelector(".js-guest-name");
+      const rowDrawerEl = card.querySelector(".js-row-drawer");
+      const toggleDrawerBtn = card.querySelector(".js-toggle-drawer");
       const editBtnEl = card.querySelector(".js-edit-name-btn");
       const editWrapEl = card.querySelector(".js-edit-name-wrap");
       const editInputEl = card.querySelector(".js-edit-name-input");
@@ -1845,8 +2164,24 @@
       nameSpanEl.textContent = name;
       card.querySelector(".js-url-preview").textContent = fullUrl;
       card.querySelector(".js-preview").href = previewUrl;
+      const noteChipEl = card.querySelector(".js-note-preview");
+      if (noteChipEl) noteChipEl.textContent = `📝 ${privateNote}`;
+
+      if (toggleDrawerBtn && rowDrawerEl) {
+        toggleDrawerBtn.addEventListener("click", () => {
+          const nextOpen = rowDrawerEl.hidden;
+          rowDrawerEl.hidden = !nextOpen;
+          window._expandedGuestRows[key] = nextOpen;
+          toggleDrawerBtn.setAttribute("aria-expanded", nextOpen ? "true" : "false");
+        });
+      }
 
       const openInlineRename = () => {
+        if (rowDrawerEl && rowDrawerEl.hidden) {
+          rowDrawerEl.hidden = false;
+          window._expandedGuestRows[key] = true;
+          if (toggleDrawerBtn) toggleDrawerBtn.setAttribute("aria-expanded", "true");
+        }
         nameSpanEl.style.display = "none";
         editBtnEl.style.display = "none";
         editWrapEl.style.display = "inline-flex";
@@ -1914,18 +2249,19 @@
       const grpSelectEl = card.querySelector(".js-guest-group-select");
       const tblSelectEl = card.querySelector(".js-guest-table-select");
       const paxInputEl = card.querySelector(".js-guest-pax-input");
-      const triggerGuestSeatChange = () => {
+      const triggerGuestSeatChange = (sourceField) => {
         updateGuestSeatOnServer(
           name,
           grpSelectEl ? grpSelectEl.value : "",
           tblSelectEl ? tblSelectEl.value : "",
           paxInputEl ? paxInputEl.value : "1",
-          true
+          true,
+          { source: sourceField }
         );
       };
-      if (grpSelectEl) grpSelectEl.addEventListener("change", triggerGuestSeatChange);
-      if (tblSelectEl) tblSelectEl.addEventListener("change", triggerGuestSeatChange);
-      if (paxInputEl) paxInputEl.addEventListener("change", triggerGuestSeatChange);
+      if (grpSelectEl) grpSelectEl.addEventListener("change", () => triggerGuestSeatChange("group"));
+      if (tblSelectEl) tblSelectEl.addEventListener("change", () => triggerGuestSeatChange("table"));
+      if (paxInputEl) paxInputEl.addEventListener("change", () => triggerGuestSeatChange("pax"));
 
       const sessionsWrap = card.querySelector(".js-sessions-wrap");
       if (!sessions.length) {
@@ -2105,7 +2441,7 @@
           slotPreviewParams.set("mode", effectiveMode);
         }
         slotPreviewParams.set("notrack", "1");
-        const previewUrl = `${base}?${slotPreviewParams.toString()}`;
+        const previewUrl = `${previewBase}?${slotPreviewParams.toString()}`;
 
         const statusBadgeHtml = hasOpened
           ? `<span class="status-badge is-viewed">👀 Đã quét (${sessions.length} lần • Chưa có tên)</span>`
@@ -2224,18 +2560,19 @@
         const uGrpSel = card.querySelector(".js-u-slot-group");
         const uTblSel = card.querySelector(".js-u-slot-table");
         const uPaxInp = card.querySelector(".js-u-slot-pax");
-        const triggerUSlotSeat = () => {
+        const triggerUSlotSeat = (sourceField) => {
           setSlotSeat(
             n,
             uGrpSel ? uGrpSel.value : "",
             uTblSel ? uTblSel.value : "",
             uPaxInp ? uPaxInp.value : "1",
-            true
+            true,
+            { source: sourceField }
           );
         };
-        if (uGrpSel) uGrpSel.addEventListener("change", triggerUSlotSeat);
-        if (uTblSel) uTblSel.addEventListener("change", triggerUSlotSeat);
-        if (uPaxInp) uPaxInp.addEventListener("change", triggerUSlotSeat);
+        if (uGrpSel) uGrpSel.addEventListener("change", () => triggerUSlotSeat("group"));
+        if (uTblSel) uTblSel.addEventListener("change", () => triggerUSlotSeat("table"));
+        if (uPaxInp) uPaxInp.addEventListener("change", () => triggerUSlotSeat("pax"));
 
         
         // Mobile collapsible toggle for unnamed slot card
@@ -2448,6 +2785,12 @@
       }
     });
 
+    const prevSaved = savedGuests.map((g) => ({ ...g }));
+    const prevSlotsSnap = {};
+    Object.keys(serverSlots).forEach((k) => {
+      prevSlotsSnap[k] = { ...serverSlots[k] };
+    });
+
     persistLocalGuests();
     persistLocalSlots();
     listArea.value = "";
@@ -2456,30 +2799,47 @@
     if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
     updateAddGuestNextSlotHint();
 
-    notify(`✨ Đã gán tên cho ${newOrUpdatedGuests.length} khách vào các số QR tiếp theo thành công!`);
+    const gRes = await adminApiFetch("/api/guests", {
+      method: "POST",
+      body: { action: "add", guests: newOrUpdatedGuests }
+    });
+    if (!gRes.ok) {
+      savedGuests = prevSaved;
+      serverSlots = prevSlotsSnap;
+      persistLocalGuests();
+      persistLocalSlots();
+      listArea.value = names.join("\n");
+      buildRows();
+      if (typeof renderSlotsTable === "function") renderSlotsTable();
+      if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
+      updateAddGuestNextSlotHint();
+      notify(`⚠️ Chưa lưu được khách lên máy chủ (${gRes.error}).`);
+      return;
+    }
 
-    try {
-      await fetch(`${apiBase}/api/guests`, {
+    for (const s of slotsToUpdate) {
+      await adminApiFetch("/api/slots", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "add", guests: newOrUpdatedGuests })
+        body: { action: "set_name", code: s.code, name: s.name, lang: s.lang, note: s.note, group: s.group, morning: s.morning }
       });
-      for (const s of slotsToUpdate) {
-        await fetch(`${apiBase}/api/slots`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "set_name", code: s.code, name: s.name, lang: s.lang, note: s.note, group: s.group, morning: s.morning })
-        }).catch(() => {});
-      }
-    } catch (_) {}
+    }
+    notify(`✨ Đã thêm ${newOrUpdatedGuests.length} khách vào danh sách & đồng bộ máy chủ!`);
   }
 
   async function fetchAnalytics(showToast) {
     const subLabel = document.getElementById("stats-updated-label");
     try {
-      const res = await fetch(`${apiBase}/api/stats?t=${Date.now()}`, { cache: "no-store" });
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      const data = await res.json();
+      const apiRes = await adminApiFetch(`/api/stats?t=${Date.now()}`, { cache: "no-store" });
+      if (!apiRes.ok) {
+        if (apiRes.authRequired) {
+          subLabel.textContent = "🔐 Cần nhập mã khóa Admin để xem thống kê trực tuyến.";
+        } else {
+          subLabel.textContent = `⚠️ Không thể đồng bộ (${apiRes.error}) - Hiển thị dữ liệu đã lưu trên máy.`;
+          if (showToast) notify(`⚠️ ${apiRes.error}`);
+        }
+        return;
+      }
+      const data = apiRes.data;
       if (!data || !data.stats) throw new Error("Invalid stats");
       const st = data.stats;
 
@@ -2495,7 +2855,9 @@
         if (!globalConfigLoadedOnce) {
           globalConfigLoadedOnce = true;
           if (globalTySelect) globalTySelect.value = resolvedGlobalMode;
-          if (globalDriveInput && globalSiteConfig.driveUrl) globalDriveInput.value = globalSiteConfig.driveUrl;
+          if (globalDriveInput && globalSiteConfig.driveUrl && !isPlaceholderDriveUrl(globalSiteConfig.driveUrl)) {
+            globalDriveInput.value = globalSiteConfig.driveUrl;
+          }
           if (globalTyViInput && globalSiteConfig.thankYouVI) globalTyViInput.value = globalSiteConfig.thankYouVI;
           if (globalTyZhInput && globalSiteConfig.thankYouZH) globalTyZhInput.value = globalSiteConfig.thankYouZH;
         }
@@ -2512,11 +2874,10 @@
       if (Array.isArray(st.savedGuests) && st.savedGuests.length > 0) {
         mergeServerGuests(st.savedGuests);
       } else if (savedGuests.length > 0) {
-        fetch(`${apiBase}/api/guests`, {
+        adminApiFetch("/api/guests", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "add", guests: savedGuests })
-        }).catch(() => {});
+          body: { action: "add", guests: savedGuests }
+        });
       }
 
       if (st.slots && typeof st.slots === "object") {
@@ -2562,9 +2923,9 @@
         .reduce((acc, k) => acc + (countries[k] || 0), 0);
 
       document.getElementById("kpi-countries").innerHTML = `
-        <span class="country-pill">🇻🇳 VN: ${vnCount}</span>
-        <span class="country-pill">🇹🇼 TW: ${twCount}</span>
-        ${otherCount > 0 ? `<span class="country-pill">🌍 Khác: ${otherCount}</span>` : ""}
+        <span class="country-pill"><span class="country-code-badge">VN</span> ${vnCount}</span>
+        <span class="country-pill"><span class="country-code-badge">TW</span> ${twCount}</span>
+        ${otherCount > 0 ? `<span class="country-pill">Khác: ${otherCount}</span>` : ""}
       `;
 
       renderVisitLogsTable(visitLogs);
@@ -2588,7 +2949,7 @@
         "Đang đồng bộ trực tiếp • Cập nhật lúc " + new Date().toLocaleTimeString("vi-VN");
       if (showToast) notify("✅ Đã cập nhật số liệu mới nhất!");
     } catch (_) {
-      subLabel.textContent = "Đang đồng bộ dữ liệu máy chủ...";
+      subLabel.textContent = "⚠️ Không thể kết nối máy chủ - Đang dùng dữ liệu lưu tạm trên máy.";
     }
   }
 
@@ -2669,64 +3030,83 @@
     ) {
       return;
     }
-    try {
-      const res = await fetch(`${apiBase}/api/reset`, { method: "POST" });
-      if (res.ok) {
-        await fetchAnalytics(false);
-        notify("🗑️ Đã đặt bộ đếm lượt xem về 0!");
-      }
-    } catch (_) {
-      notify("⚠️ Không thể kết nối máy chủ, vui lòng thử lại.");
+    const apiRes = await adminApiFetch("/api/reset", {
+      method: "POST",
+      body: { confirm: "RESET_ANALYTICS" }
+    });
+    if (!apiRes.ok) {
+      notify(`⚠️ Không xóa được lịch sử lượt xem (${apiRes.error}).`);
+      return;
     }
+    await fetchAnalytics(false);
+    notify("🗑️ Đã đặt bộ đếm lượt xem về 0!");
   });
 
   document.getElementById("btn-clear-guests").addEventListener("click", async () => {
     if (!savedGuests.length) return;
     if (!window.confirm("Bạn có chắc muốn xóa toàn bộ danh sách khách mời đã lưu không?")) return;
+    const prevSaved = savedGuests.map((g) => ({ ...g }));
     savedGuests = [];
     persistLocalGuests();
     buildRows();
     if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
-    try {
-      await fetch(`${apiBase}/api/guests`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "clear" })
-      });
-    } catch (_) {}
+    const apiRes = await adminApiFetch("/api/guests", {
+      method: "POST",
+      body: { action: "clear", confirm: "CLEAR_ALL_GUESTS" }
+    });
+    if (!apiRes.ok) {
+      savedGuests = prevSaved;
+      persistLocalGuests();
+      buildRows();
+      if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
+      notify(`⚠️ Chưa xóa được trên máy chủ (${apiRes.error}).`);
+      return;
+    }
     notify("🗑️ Đã xóa trống danh sách khách mời.");
   });
 
   document.getElementById("btn-save-global-config").addEventListener("click", async () => {
     const selectedMode = (globalTySelect && globalTySelect.value) || "invite";
+    const rawDriveUrl = globalDriveInput ? globalDriveInput.value.trim() : "";
+    if (isPlaceholderDriveUrl(rawDriveUrl)) {
+      notify("⚠️ Link Google Drive đang là link mẫu, vui lòng xóa hoặc dán link thư mục thật!");
+      if (globalDriveInput) globalDriveInput.focus();
+      return;
+    }
+    if (
+      selectedMode === "thankyou" &&
+      !rawDriveUrl &&
+      !window.confirm(
+        "Chưa nhập link thư mục Google Drive — Thiệp Cảm Ơn sẽ tạm ẩn nút Xem Ảnh cho đến khi bạn cập nhật link. Vẫn bật Thiệp Cảm Ơn?"
+      )
+    ) {
+      return;
+    }
     const payload = {
       globalMode: selectedMode,
       globalThankYou: selectedMode === "thankyou",
       globalDirections: selectedMode === "directions",
-      driveUrl: globalDriveInput ? globalDriveInput.value.trim() : "",
+      driveUrl: rawDriveUrl,
       thankYouVI: globalTyViInput ? globalTyViInput.value.trim() : "",
       thankYouZH: globalTyZhInput ? globalTyZhInput.value.trim() : ""
     };
-    try {
-      const res = await fetch(`${apiBase}/api/config`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-      if (res.ok) {
-        globalConfigLoadedOnce = false;
-        await fetchAnalytics(false);
-        notify(
-          selectedMode === "thankyou"
-            ? "📸 Đã bật Lời Cảm Ơn trên TẤT CẢ các link đã gửi!"
-            : selectedMode === "directions"
-              ? "📍 Đã bật Chế Độ Chỉ Đường Ngày Cưới (Đẩy Bản Đồ lên đầu) cho TẤT CẢ các link đã gửi!"
-              : "💾 Đã lưu cài đặt chế độ link & Kho Ảnh!"
-        );
-      }
-    } catch (_) {
-      notify("⚠️ Không thể kết nối máy chủ, vui lòng thử lại.");
+    const apiRes = await adminApiFetch("/api/config", {
+      method: "POST",
+      body: payload
+    });
+    if (!apiRes.ok) {
+      notify(`⚠️ Chưa lưu được cài đặt chế độ (${apiRes.error}).`);
+      return;
     }
+    globalConfigLoadedOnce = false;
+    await fetchAnalytics(false);
+    notify(
+      selectedMode === "thankyou"
+        ? "📸 Đã bật Lời Cảm Ơn trên TẤT CẢ các link đã gửi!"
+        : selectedMode === "directions"
+          ? "📍 Đã bật Chế Độ Chỉ Đường Ngày Cưới cho TẤT CẢ các link đã gửi!"
+          : "💾 Đã lưu cài đặt chế độ link & Kho Ảnh!"
+    );
   });
 
   document.getElementById("btn-generate").addEventListener("click", handleAddGuests);
@@ -4246,6 +4626,31 @@ html, body {
     if (btnPrintQrSheet) {
       btnPrintQrSheet.textContent = `🖨️ Xuất Tờ A4 Theo Đúng Cấu Hình Đang Xem (${cfg.shortName} / Tờ A4)`;
     }
+    const batchTitleSync = document.getElementById("qr-batch-title-sync");
+    if (batchTitleSync) {
+      batchTitleSync.textContent = `✨ In Gộp Đủ ${targetTotal} Chiếc (${sheets} Tờ A4): Ghép "Khách Đã Có Tên" + "QR Đánh Số"`;
+    }
+    const batchDescSync = document.getElementById("qr-batch-desc-sync");
+    if (batchDescSync) {
+      batchDescSync.innerHTML =
+        remainder > 0
+          ? `Điền danh sách khách <strong>đã có tên</strong> bên dưới. Hệ thống in <strong>${namedCount} khách</strong> trước rồi tự bù <strong>${remainder} Bookmark QR Đánh Số</strong> cho đủ <strong>${targetTotal} thẻ (${sheets} tờ A4 · ${cfg.itemsPerSheet} thẻ/tờ)</strong>.`
+          : `Đang in đủ <strong>${namedCount} thẻ có tên</strong> trên <strong>${sheets} tờ A4</strong> (${cfg.itemsPerSheet} thẻ/tờ).`;
+    }
+    document.querySelectorAll(".js-batch-total-preset").forEach((btn) => {
+      const t = parseInt(btn.getAttribute("data-total") || "414", 10) || 414;
+      const s = Math.ceil(t / cfg.itemsPerSheet);
+      btn.textContent = `${t} cái (${s} tờ A4)`;
+    });
+    document.querySelectorAll(".js-slot-quick-range").forEach((btn) => {
+      const sheetsMult = parseInt(btn.getAttribute("data-sheets") || "0", 10);
+      if (sheetsMult > 0) {
+        btn.textContent = `${sheetsMult} tờ A4 (${sheetsMult * cfg.itemsPerSheet} chiếc)`;
+      } else {
+        const rawC = parseInt(btn.getAttribute("data-count") || "414", 10) || 414;
+        btn.textContent = `Toàn bộ (${rawC} chiếc · ${Math.ceil(rawC / cfg.itemsPerSheet)} tờ)`;
+      }
+    });
     const mapBackSyncInfo = document.getElementById("map-back-sync-info");
     if (mapBackSyncInfo) {
       const sizeNote =
@@ -4548,14 +4953,6 @@ html, body {
   const slotPrintFromInput = document.getElementById("slot-print-from");
   const slotPrintToInput = document.getElementById("slot-print-to");
   const btnPrintSlots = document.getElementById("btn-print-slots");
-  const slotAssignNumInput = document.getElementById("slot-assign-num");
-  const slotAssignNameInput = document.getElementById("slot-assign-name");
-  const slotAssignNoteInput = document.getElementById("slot-assign-note");
-  const btnAssignSlot = document.getElementById("btn-assign-slot");
-  const slotAssignPreview = document.getElementById("slot-assign-preview");
-  const slotSearchInput = document.getElementById("slot-search-input");
-  const slotTableBody = document.getElementById("slot-table-body");
-  const btnJumpToSlots = document.getElementById("btn-jump-to-slots");
 
   // Deterministic 4-char alphanumeric code for slot number N (e.g. 1 -> "1-k3x9")
   function makeSlotCode(num) {
@@ -4641,8 +5038,9 @@ html, body {
   // Advance default print range if already printed earlier
   if (slotMaxPrinted > 0 && slotPrintFromInput && slotPrintToInput) {
     const nextStart = slotMaxPrinted + 1;
+    const defaultCfg = getLayoutSheetConfig((qrLayoutStyle && qrLayoutStyle.value) || "square_qr");
     slotPrintFromInput.value = String(nextStart);
-    slotPrintToInput.value = String(nextStart + 17);
+    slotPrintToInput.value = String(nextStart + defaultCfg.itemsPerSheet - 1);
   }
 
   function getSlotUrl(num) {
@@ -4651,9 +5049,9 @@ html, body {
     return `${base}?s=${encodeURIComponent(code)}`;
   }
 
-  async function setSlotSeat(num, nextGroup, nextTable, nextPax, showToast = true) {
+  async function setSlotSeat(num, nextGroup, nextTable, nextPax, showToast = true, options = {}) {
     const n = parseInt(num, 10);
-    if (!n || n < 1 || n > 9999) return;
+    if (!n || n < 1 || n > 9999) return false;
     const code = makeSlotCode(n);
     const prev = serverSlots[code] || {};
     const assignedName = prev.name ? String(prev.name).trim() : "";
@@ -4661,7 +5059,16 @@ html, body {
     const cleanPax = Math.max(1, Math.min(20, parseInt(nextPax || "1", 10) || 1));
     const cleanTable = String(nextTable || "");
     const tMeta = (cleanTable && seatingConfig.tableMeta && seatingConfig.tableMeta[cleanTable]) || {};
-    const effectiveGroup = nextGroup || tMeta.group || "";
+    const explicitGroup = options && options.source === "group";
+    const effectiveGroup = explicitGroup
+      ? String(nextGroup || "").trim()
+      : String(nextGroup || "").trim() || tMeta.group || "";
+
+    const prevSaved = savedGuests.map((g) => ({ ...g }));
+    const prevSlotsSnap = {};
+    Object.keys(serverSlots).forEach((k) => {
+      prevSlotsSnap[k] = { ...serverSlots[k] };
+    });
 
     serverSlots[code] = {
       num: n,
@@ -4706,45 +5113,75 @@ html, body {
     renderSlotsTable();
     if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
 
-    if (showToast) {
-      const displayName = assignedName || `QR #${String(n).padStart(2, "0")}`;
-      notify(
-        cleanTable
-          ? `🪑 Đã xếp "${displayName}" vào Bàn ${String(cleanTable).padStart(2, "0")} (${cleanPax} ghế)!`
-          : `🪑 Đã gỡ "${displayName}" khỏi bàn tiệc!`
-      );
+    const apiRes = await adminApiFetch("/api/slots", {
+      method: "POST",
+      body: {
+        action: "set_seat",
+        code,
+        group: effectiveGroup,
+        table: cleanTable,
+        pax: cleanPax
+      }
+    });
+    if (!apiRes.ok) {
+      savedGuests = prevSaved;
+      serverSlots = prevSlotsSnap;
+      persistLocalSlots();
+      persistLocalGuests();
+      renderSlotsTable();
+      buildRows();
+      if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
+      notify(`⚠️ Chưa lưu được xếp bàn QR Số ${n} (${apiRes.error}).`);
+      return false;
     }
 
-    try {
-      const res = await fetch(`${apiBase}/api/slots`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "set_seat",
-          code,
-          group: effectiveGroup,
-          table: cleanTable,
-          pax: cleanPax
-        })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.slots) mergeServerSlots(data.slots);
-        if (Array.isArray(data.savedGuests)) mergeServerGuests(data.savedGuests);
-        renderSlotsTable();
-        buildRows();
-        if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
+    const data = apiRes.data;
+    if (data && data.slots) mergeServerSlots(data.slots);
+    if (data && Array.isArray(data.savedGuests)) mergeServerGuests(data.savedGuests);
+    renderSlotsTable();
+    buildRows();
+    if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
+
+    if (showToast) {
+      const displayName = assignedName || `QR #${String(n).padStart(2, "0")}`;
+      const cap = seatingConfig.seatsPerTable || 10;
+      const occAfter = cleanTable ? computeTableStats().occ : {};
+      const usedAfter = cleanTable ? occAfter[cleanTable] || 0 : 0;
+      if (cleanTable && usedAfter > cap) {
+        notify(
+          `⚠️ Đã xếp "${displayName}" vào Bàn ${String(cleanTable).padStart(2, "0")} — lưu ý bàn hiện có ${usedAfter}/${cap} ghế (vượt ${usedAfter - cap} ghế)!`
+        );
+      } else {
+        notify(
+          cleanTable
+            ? `🪑 Đã xếp "${displayName}" vào Bàn ${String(cleanTable).padStart(2, "0")} (${cleanPax} ghế)!`
+            : `🪑 Đã gỡ "${displayName}" khỏi bàn tiệc!`
+        );
       }
-    } catch (_) {}
+    }
+    return true;
   }
 
   async function setSlotMode(num, nextMode) {
     const n = parseInt(num, 10);
-    if (!n || n < 1 || n > 9999) return;
+    if (!n || n < 1 || n > 9999) return false;
+    if (
+      nextMode === "thankyou" &&
+      isPlaceholderDriveUrl((globalDriveInput && globalDriveInput.value.trim()) || globalSiteConfig.driveUrl)
+    ) {
+      notify("⚠️ Link Google Drive vẫn là link mẫu, hãy xóa hoặc dán link thật trước khi bật Cảm Ơn!");
+      return false;
+    }
     const code = makeSlotCode(n);
     const prev = serverSlots[code] || {};
     const assignedName = prev.name ? String(prev.name).trim() : "";
     const lang = prev.lang || (/[\u4e00-\u9fff]/.test(assignedName) ? "zh" : "vi");
+
+    const prevSaved = savedGuests.map((g) => ({ ...g }));
+    const prevSlotsSnap = {};
+    Object.keys(serverSlots).forEach((k) => {
+      prevSlotsSnap[k] = { ...serverSlots[k] };
+    });
 
     serverSlots[code] = {
       num: n,
@@ -4773,24 +5210,30 @@ html, body {
     persistLocalSlots();
     renderSlotsTable();
 
-    try {
-      const res = await fetch(`${apiBase}/api/slots`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "set_mode",
-          code,
-          mode: nextMode
-        })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.slots) mergeServerSlots(data.slots);
-        if (Array.isArray(data.savedGuests)) mergeServerGuests(data.savedGuests);
-        renderSlotsTable();
-        buildRows();
+    const apiRes = await adminApiFetch("/api/slots", {
+      method: "POST",
+      body: {
+        action: "set_mode",
+        code,
+        mode: nextMode
       }
-    } catch (_) {}
+    });
+    if (!apiRes.ok) {
+      savedGuests = prevSaved;
+      serverSlots = prevSlotsSnap;
+      persistLocalSlots();
+      persistLocalGuests();
+      renderSlotsTable();
+      buildRows();
+      notify(`⚠️ Chưa đổi được chế độ cho QR Số ${n} (${apiRes.error}).`);
+      return false;
+    }
+
+    const data = apiRes.data;
+    if (data && data.slots) mergeServerSlots(data.slots);
+    if (data && Array.isArray(data.savedGuests)) mergeServerGuests(data.savedGuests);
+    renderSlotsTable();
+    buildRows();
 
     const targetLabel = assignedName ? `QR Số ${n} (${assignedName})` : `QR Số ${n}`;
     notify(
@@ -4800,16 +5243,23 @@ html, body {
           ? `📍 Đã bật "Chỉ Đường Ngày Cưới" cho ${targetLabel}!`
           : `💌 Đã chuyển ${targetLabel} về chế độ Thiệp Mời!`
     );
+    return true;
   }
 
   async function setSlotMorning(num, nextMorningRaw) {
     const n = parseInt(num, 10);
-    if (!n || n < 1 || n > 9999) return;
+    if (!n || n < 1 || n > 9999) return false;
     const code = makeSlotCode(n);
     const prev = serverSlots[code] || {};
     const assignedName = prev.name ? String(prev.name).trim() : "";
     const lang = prev.lang || (/[\u4e00-\u9fff]/.test(assignedName) ? "zh" : "vi");
     const nextMorning = normalizeMorningMode(nextMorningRaw);
+
+    const prevSaved = savedGuests.map((g) => ({ ...g }));
+    const prevSlotsSnap = {};
+    Object.keys(serverSlots).forEach((k) => {
+      prevSlotsSnap[k] = { ...serverSlots[k] };
+    });
 
     serverSlots[code] = {
       num: n,
@@ -4838,50 +5288,61 @@ html, body {
     persistLocalSlots();
     renderSlotsTable();
 
-    try {
-      const res = await fetch(`${apiBase}/api/slots`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "set_morning",
-          code,
-          morning: nextMorning
-        })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.slots) mergeServerSlots(data.slots);
-        if (Array.isArray(data.savedGuests)) mergeServerGuests(data.savedGuests);
-        renderSlotsTable();
-        buildRows();
+    const apiRes = await adminApiFetch("/api/slots", {
+      method: "POST",
+      body: {
+        action: "set_morning",
+        code,
+        morning: nextMorning
       }
-    } catch (_) {}
+    });
+    if (!apiRes.ok) {
+      savedGuests = prevSaved;
+      serverSlots = prevSlotsSnap;
+      persistLocalSlots();
+      persistLocalGuests();
+      renderSlotsTable();
+      buildRows();
+      notify(`⚠️ Chưa lưu được chế độ Lễ Sáng QR Số ${n} (${apiRes.error}).`);
+      return false;
+    }
+
+    const data = apiRes.data;
+    if (data && data.slots) mergeServerSlots(data.slots);
+    if (data && Array.isArray(data.savedGuests)) mergeServerGuests(data.savedGuests);
+    renderSlotsTable();
+    buildRows();
 
     const targetLabel = assignedName ? `QR Số ${n} (${assignedName})` : `QR Số ${n}`;
     notify(
       nextMorning === "groom"
-        ? `🏠 Đã bật mời "Lễ Sáng Nhà Trai + Tiệc Tối" cho ${targetLabel}!`
+        ? `🏠 Đã bật mời "Lễ Sáng Nhà Trai (05:30) + Tiệc Tối" cho ${targetLabel}!`
         : nextMorning === "bride"
-          ? `🏡 Đã bật mời "Lễ Sáng Nhà Gái + Tiệc Tối" cho ${targetLabel}!`
+          ? `🏡 Đã bật mời "Lễ Sáng Nhà Gái (06:00) + Tiệc Tối" cho ${targetLabel}!`
           : nextMorning === "both"
             ? `🌅 Đã bật mời "Lễ Sáng (05:30) + Tiệc Tối" cho ${targetLabel}!`
             : `🌙 Đã chuyển ${targetLabel} về Chỉ Tiệc Tối (18:00)!`
     );
+    return true;
   }
 
   async function assignSlotByNumber(num, rawName, rawNote, showToast = true) {
     const n = parseInt(num, 10);
     if (!n || n < 1 || n > 9999) {
       notify("⚠️ Số QR không hợp lệ (hãy nhập từ 1 đến 9999).");
-      return;
+      return false;
     }
     const code = makeSlotCode(n);
     const name = String(rawName || "").trim();
     const note = String(rawNote || "").trim();
     const prevSlot = serverSlots[code];
+    const prevSaved = savedGuests.map((g) => ({ ...g }));
+    const prevSlotsSnap = {};
+    Object.keys(serverSlots).forEach((k) => {
+      prevSlotsSnap[k] = { ...serverSlots[k] };
+    });
 
     if (!name) {
-      // Clear slot assignment
       if (prevSlot && prevSlot.name) {
         const pk = normalizeNameKey(prevSlot.name);
         savedGuests = savedGuests.map((g) => {
@@ -4910,22 +5371,29 @@ html, body {
       renderSlotsTable();
       buildRows();
       if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
-      try {
-        await fetch(`${apiBase}/api/slots`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "clear", code })
-        });
-      } catch (_) {}
+      const clrRes = await adminApiFetch("/api/slots", {
+        method: "POST",
+        body: { action: "clear", code }
+      });
+      if (!clrRes.ok) {
+        savedGuests = prevSaved;
+        serverSlots = prevSlotsSnap;
+        persistLocalSlots();
+        persistLocalGuests();
+        renderSlotsTable();
+        buildRows();
+        if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
+        notify(`⚠️ Chưa xóa được tên khỏi QR Số ${n} (${clrRes.error}).`);
+        return false;
+      }
       if (showToast) notify(`🗑️ Đã xóa tên khách khỏi QR Số ${n}.`);
-      return;
+      return true;
     }
 
     if (n > slotMaxPrinted) slotMaxPrinted = n;
     const hasHanzi = /[\u4e00-\u9fff]/.test(name);
     const lang = hasHanzi ? "zh" : "vi";
 
-    // Detach old guest if reassigned to someone else
     if (prevSlot && prevSlot.name && normalizeNameKey(prevSlot.name) !== normalizeNameKey(name)) {
       const pk = normalizeNameKey(prevSlot.name);
       savedGuests = savedGuests.map((g) => {
@@ -5002,303 +5470,48 @@ html, body {
     persistLocalGuests();
     renderSlotsTable();
     buildRows();
-    updateSlotAssignPreview();
     if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
 
-    try {
-      const res = await fetch(`${apiBase}/api/slots`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "assign",
-          code,
-          name,
-          note: finalNote,
-          lang,
-          mode: preservedMode,
-          morning: preservedMorning
-        })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.slots) mergeServerSlots(data.slots);
-        if (Array.isArray(data.savedGuests)) mergeServerGuests(data.savedGuests);
-        renderSlotsTable();
-        buildRows();
-        if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
+    const apiRes = await adminApiFetch("/api/slots", {
+      method: "POST",
+      body: {
+        action: "assign",
+        code,
+        name,
+        note: finalNote,
+        lang,
+        mode: preservedMode,
+        morning: preservedMorning
       }
-    } catch (_) {}
+    });
+    if (!apiRes.ok) {
+      savedGuests = prevSaved;
+      serverSlots = prevSlotsSnap;
+      persistLocalSlots();
+      persistLocalGuests();
+      renderSlotsTable();
+      buildRows();
+      if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
+      notify(`⚠️ Chưa lưu được gán QR Số ${n} (${apiRes.error}).`);
+      return false;
+    }
+
+    const data = apiRes.data;
+    if (data && data.slots) mergeServerSlots(data.slots);
+    if (data && Array.isArray(data.savedGuests)) mergeServerGuests(data.savedGuests);
+    renderSlotsTable();
+    buildRows();
+    if (typeof renderSeineFloorplan === "function") renderSeineFloorplan();
 
     if (showToast) {
       notify(`✅ Đã gán QR Số ${n} cho khách "${name}"!`);
     }
-  }
-
-  function updateSlotAssignPreview() {
-    if (!slotAssignPreview || !slotAssignNumInput) return;
-    const n = parseInt(slotAssignNumInput.value, 10);
-    if (!n || n < 1) {
-      slotAssignPreview.textContent = "Gõ số QR (VD: 1, 2, 3...) để xem số đó đang trống hay đã gán cho ai.";
-      slotAssignPreview.classList.remove("is-taken");
-      return;
-    }
-    const code = makeSlotCode(n);
-    const existing = serverSlots[code];
-    if (existing && existing.name) {
-      const k = normalizeNameKey(existing.name);
-      const noteStr = guestNotesMap[k] || "";
-      slotAssignPreview.textContent = `⚠️ QR Số ${n} hiện đang gán cho "${existing.name}"${noteStr ? ` (${noteStr})` : ""}. Nhập tên mới để đổi người khác.`;
-      slotAssignPreview.classList.add("is-taken");
-    } else {
-      slotAssignPreview.textContent = `✨ QR Số ${n} đang trống — sẵn sàng gán tên khách!`;
-      slotAssignPreview.classList.remove("is-taken");
-    }
+    return true;
   }
 
   function renderSlotsTable() {
     const assignedCount = Object.values(serverSlots).filter((s) => s && s.name).length;
     if (badgeSlotsEl) badgeSlotsEl.textContent = String(assignedCount);
-    if (!slotTableBody) return;
-
-    let maxN = Math.max(TOTAL_INVITE_TARGET, slotMaxPrinted);
-    Object.keys(serverSlots).forEach((code) => {
-      const n = parseInt(code.split("-")[0], 10) || 0;
-      if (n > maxN) maxN = n;
-    });
-
-    const q = (slotSearchInput ? slotSearchInput.value : "").trim().toLowerCase();
-    const { occ: slotTableOccMap } = computeTableStats();
-    slotTableBody.innerHTML = "";
-
-    // Sort: Named QR numbers on top, Unnamed QR numbers below!
-    const assignedNums = [];
-    const unassignedNums = [];
-    for (let n = 1; n <= maxN; n++) {
-      const code = makeSlotCode(n);
-      const s = serverSlots[code];
-      if (s && s.name && String(s.name).trim()) {
-        assignedNums.push(n);
-      } else {
-        unassignedNums.push(n);
-      }
-    }
-    const orderedNums = assignedNums.concat(unassignedNums);
-    const frag = document.createDocumentFragment();
-
-    for (let idxOrder = 0; idxOrder < orderedNums.length; idxOrder++) {
-      const n = orderedNums[idxOrder];
-      const code = makeSlotCode(n);
-      const slotObj = serverSlots[code] || null;
-      const assignedName = slotObj && slotObj.name ? String(slotObj.name).trim() : "";
-      const nameKey = assignedName ? normalizeNameKey(assignedName) : "";
-      const matchedGuest = nameKey
-        ? savedGuests.find((g) => normalizeNameKey(g.name) === nameKey)
-        : null;
-      const privateNote = String(
-        (matchedGuest && matchedGuest.note) || (nameKey ? guestNotesMap[nameKey] : "") || ""
-      ).trim();
-      const rowGroup = String(
-        (slotObj && slotObj.group) || (matchedGuest && matchedGuest.group) || ""
-      ).trim();
-      const rowTable = String(
-        (slotObj && slotObj.table) || (matchedGuest && matchedGuest.table) || ""
-      ).trim();
-      const rowPax = Math.max(
-        1,
-        parseInt((slotObj && slotObj.pax) || (matchedGuest && matchedGuest.pax) || "1", 10) || 1
-      );
-
-      if (q) {
-        const numMatch = String(n) === q || `số ${n}`.includes(q) || `#${n}` === q;
-        const nameMatch = assignedName.toLowerCase().includes(q);
-        const noteMatch = privateNote.toLowerCase().includes(q);
-        const tblMatch = rowTable && (`bàn ${rowTable}` === q || `ban ${rowTable}` === q);
-        if (!numMatch && !nameMatch && !noteMatch && !tblMatch) continue;
-      }
-
-      const unassignedLogKey = normalizeNameKey(`QR số ${n} (chưa gán tên)`);
-      const sessions = nameKey
-        ? (visitLogsByGuest[nameKey] || []).concat(visitLogsByGuest[unassignedLogKey] || [])
-        : visitLogsByGuest[unassignedLogKey] || [];
-      const hasOpened = sessions.length > 0;
-      const anyOpenedEnv = sessions.some((s) => s.openedEnvelope);
-
-      let statusHtml = `<span class="status-badge is-pending">⚪ Chưa gán tên</span>`;
-      if (assignedName) {
-        if (!hasOpened) {
-          statusHtml = `<span class="status-badge is-pending">⏳ Đã gán • Chờ mở</span>`;
-        } else if (anyOpenedEnv) {
-          statusHtml = `<span class="status-badge is-opened">✨ Đã mở phong bì (${sessions.length} lần)</span>`;
-        } else {
-          statusHtml = `<span class="status-badge is-viewed">👀 Đã mở link (${sessions.length} lần)</span>`;
-        }
-      } else if (hasOpened) {
-        statusHtml = `<span class="status-badge is-viewed">👀 Đã quét (${sessions.length} lần • Chưa gán tên)</span>`;
-      }
-
-      const slotUrl = getSlotUrl(n);
-      const rawMode =
-        (slotObj && slotObj.mode) ||
-        (matchedGuest && matchedGuest.mode) ||
-        "invite";
-      const slotMorning = normalizeMorningMode(
-        (slotObj && slotObj.morning) ||
-        (matchedGuest && matchedGuest.morning) ||
-        ""
-      );
-      const globalMode =
-        globalSiteConfig.globalMode ||
-        (globalSiteConfig.globalThankYou
-          ? "thankyou"
-          : globalSiteConfig.globalDirections
-            ? "directions"
-            : "invite");
-      const effectiveMode =
-        globalMode === "thankyou" || rawMode === "thankyou"
-          ? "thankyou"
-          : globalMode === "directions" || rawMode === "directions"
-            ? "directions"
-            : "invite";
-      const isDirEffective = effectiveMode === "directions";
-      const isTyEffective = effectiveMode === "thankyou";
-      const slotPreviewParams = new URLSearchParams();
-      slotPreviewParams.set("s", code);
-      if (assignedName) slotPreviewParams.set("to", assignedName);
-      if (slotMorning) slotPreviewParams.set("morning", slotMorning);
-      if (rowTable) {
-        slotPreviewParams.set("table", rowTable);
-        if (rowGroup) slotPreviewParams.set("group", rowGroup);
-        if (rowPax > 1) slotPreviewParams.set("pax", String(rowPax));
-      }
-      if (effectiveMode === "directions" || effectiveMode === "thankyou") {
-        slotPreviewParams.set("mode", effectiveMode);
-      }
-      slotPreviewParams.set("notrack", "1");
-      const previewUrl = `${baseOrigin.replace(/\?.*$/, "")}?${slotPreviewParams.toString()}`;
-
-      const tr = document.createElement("tr");
-      if (!assignedName) tr.className = "is-empty-slot";
-      tr.innerHTML = `
-        <td><span class="slot-num-pill">Số ${n}</span></td>
-        <td>
-          <input
-            type="text"
-            class="slot-inline-input js-slot-row-name"
-            placeholder="Gõ tên khách cho QR Số ${n}..."
-          />
-        </td>
-        <td>
-          <input
-            type="text"
-            class="slot-inline-input js-slot-row-note"
-            placeholder="Ghi chú riêng (VD: Bạn ĐH, cô chú...)"
-          />
-        </td>
-        <td>
-          <div class="seat-inline-bar">
-            <select class="seat-inline-select js-slot-group-select">
-              ${buildGroupSelectOptions(rowGroup)}
-            </select>
-            <select class="seat-inline-select ${rowTable ? "has-table" : ""} js-slot-table-select">
-              ${buildTableSelectOptions(rowTable, slotTableOccMap)}
-            </select>
-            <input
-              type="number"
-              min="1"
-              max="15"
-              class="seat-inline-pax js-slot-pax-input"
-              value="${rowPax}"
-              title="Số ghế (Pax) của khách này"
-            />
-          </div>
-        </td>
-        <td>
-          <div class="mode-switch-pill" title="Chuyển đổi trực tiếp giữa Thiệp Mời, Chỉ Đường Ngày Cưới và Thiệp Cảm Ơn cho QR Số ${n}">
-            <button type="button" class="mode-switch-btn js-slot-mode-invite ${effectiveMode === "invite" ? "is-active-invite" : ""}">💌 Thiệp Mời</button>
-            <button type="button" class="mode-switch-btn js-slot-mode-dir ${isDirEffective ? "is-active-dir" : ""}" title="Đẩy Sơ Đồ Đường Đi & Google Maps lên đầu trang, tự động mở sẵn bao thư">📍 Chỉ Đường</button>
-            <button type="button" class="mode-switch-btn js-slot-mode-ty ${isTyEffective ? "is-active-ty" : ""}">📸 Cảm Ơn</button>
-          </div>
-          <select class="morning-inline-select ${slotMorning ? "has-morning" : ""} js-slot-morning-select" style="margin-top:4px;" aria-label="Chế độ Lễ Sáng QR Số ${n}">
-            ${buildMorningSelectOptions(slotMorning)}
-          </select>
-        </td>
-        <td>${statusHtml}</td>
-        <td class="slot-actions">
-          <div style="display:inline-flex; gap:5px; align-items:center;">
-            <button type="button" class="btn-adm primary js-slot-save" title="Lưu tên khách cho Số ${n}">💾 Lưu</button>
-            <button type="button" class="btn-adm js-slot-copy" title="Copy link của QR Số ${n}">📋 Link</button>
-            <a class="btn-adm js-slot-preview" target="_blank" rel="noopener" title="Xem thử QR Số ${n}">👁️</a>
-            ${assignedName ? `<button type="button" class="btn-adm danger js-slot-clear" title="Xóa tên khỏi Số ${n}">✕</button>` : ""}
-          </div>
-        </td>
-      `;
-
-      const nameInput = tr.querySelector(".js-slot-row-name");
-      const noteInput = tr.querySelector(".js-slot-row-note");
-      nameInput.value = assignedName;
-      noteInput.value = privateNote;
-      tr.querySelector(".js-slot-preview").href = previewUrl;
-
-      const sGrpSel = tr.querySelector(".js-slot-group-select");
-      const sTblSel = tr.querySelector(".js-slot-table-select");
-      const sPaxInp = tr.querySelector(".js-slot-pax-input");
-      const triggerSlotSeatChange = () => {
-        setSlotSeat(
-          n,
-          sGrpSel ? sGrpSel.value : "",
-          sTblSel ? sTblSel.value : "",
-          sPaxInp ? sPaxInp.value : "1",
-          true
-        );
-      };
-      if (sGrpSel) sGrpSel.addEventListener("change", triggerSlotSeatChange);
-      if (sTblSel) sTblSel.addEventListener("change", triggerSlotSeatChange);
-      if (sPaxInp) sPaxInp.addEventListener("change", triggerSlotSeatChange);
-
-      tr.querySelector(".js-slot-mode-invite").addEventListener("click", () => {
-        setSlotMode(n, "invite");
-      });
-      tr.querySelector(".js-slot-mode-dir").addEventListener("click", () => {
-        setSlotMode(n, "directions");
-      });
-      tr.querySelector(".js-slot-mode-ty").addEventListener("click", () => {
-        setSlotMode(n, "thankyou");
-      });
-      const sMorningSel = tr.querySelector(".js-slot-morning-select");
-      if (sMorningSel) {
-        sMorningSel.addEventListener("change", () => setSlotMorning(n, sMorningSel.value));
-      }
-
-      const triggerSaveRow = () => {
-        assignSlotByNumber(n, nameInput.value, noteInput.value, true);
-      };
-
-      tr.querySelector(".js-slot-save").addEventListener("click", triggerSaveRow);
-      nameInput.addEventListener("keydown", (ev) => {
-        if (ev.key === "Enter") {
-          ev.preventDefault();
-          triggerSaveRow();
-        }
-      });
-      noteInput.addEventListener("keydown", (ev) => {
-        if (ev.key === "Enter") {
-          ev.preventDefault();
-          triggerSaveRow();
-        }
-      });
-      tr.querySelector(".js-slot-copy").addEventListener("click", () => {
-        copyText(slotUrl, `📋 Đã copy link của QR Số ${n}!`);
-      });
-      const clearBtn = tr.querySelector(".js-slot-clear");
-      if (clearBtn) {
-        clearBtn.addEventListener("click", () => {
-          assignSlotByNumber(n, "", "", true);
-        });
-      }
-
-      frag.appendChild(tr);
-    }
-    slotTableBody.appendChild(frag);
   }
 
   document.querySelectorAll(".js-slot-quick-range").forEach((btn) => {
@@ -5342,61 +5555,6 @@ html, body {
         slotNum: fromN
       });
     });
-  }
-
-  if (slotAssignNumInput) {
-    slotAssignNumInput.addEventListener("input", () => {
-      updateSlotAssignPreview();
-      const n = parseInt(slotAssignNumInput.value, 10);
-      if (n >= 1) {
-        const code = makeSlotCode(n);
-        const existing = serverSlots[code];
-        if (existing && existing.name && slotAssignNameInput && !slotAssignNameInput.value) {
-          slotAssignNameInput.placeholder = `Đang gán: ${existing.name}`;
-        } else if (slotAssignNameInput) {
-          slotAssignNameInput.placeholder = "VD: Gia Đình Dì Ý hoặc 林子惟";
-        }
-      }
-    });
-  }
-
-  if (btnAssignSlot) {
-    btnAssignSlot.addEventListener("click", () => {
-      const n = parseInt(slotAssignNumInput ? slotAssignNumInput.value : "0", 10);
-      const name = slotAssignNameInput ? slotAssignNameInput.value.trim() : "";
-      const note = slotAssignNoteInput ? slotAssignNoteInput.value.trim() : "";
-      if (!n || n < 1) {
-        notify("⚠️ Hãy nhập Số QR (VD: 1, 2, 3...)!");
-        if (slotAssignNumInput) slotAssignNumInput.focus();
-        return;
-      }
-      if (!name) {
-        notify("⚠️ Hãy nhập Tên khách mời cần gán cho QR Số " + n + "!");
-        if (slotAssignNameInput) slotAssignNameInput.focus();
-        return;
-      }
-      assignSlotByNumber(n, name, note, true);
-      // Advance to next number automatically for fast batch entry!
-      if (slotAssignNumInput) slotAssignNumInput.value = String(n + 1);
-      if (slotAssignNameInput) slotAssignNameInput.value = "";
-      if (slotAssignNoteInput) slotAssignNoteInput.value = "";
-      updateSlotAssignPreview();
-      if (slotAssignNameInput) slotAssignNameInput.focus();
-    });
-  }
-
-  [slotAssignNumInput, slotAssignNameInput, slotAssignNoteInput].forEach((inp) => {
-    if (!inp) return;
-    inp.addEventListener("keydown", (ev) => {
-      if (ev.key === "Enter" && btnAssignSlot) {
-        ev.preventDefault();
-        btnAssignSlot.click();
-      }
-    });
-  });
-
-  if (slotSearchInput) {
-    slotSearchInput.addEventListener("input", renderSlotsTable);
   }
 
   if (btnPrintSlots) {
@@ -5521,14 +5679,16 @@ html, body {
 
   async function saveSeatingConfigToServer(showToast = false) {
     persistLocalSeating();
-    try {
-      await fetch(`${apiBase}/api/seating`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(seatingConfig)
-      });
-    } catch (_) {}
+    const apiRes = await adminApiFetch("/api/seating", {
+      method: "POST",
+      body: seatingConfig
+    });
+    if (!apiRes.ok) {
+      notify(`⚠️ Chưa lưu được cấu hình sơ đồ bàn (${apiRes.error}).`);
+      return false;
+    }
     if (showToast) notify("✅ Đã lưu cấu hình Sơ Đồ Bàn Tiệc Sảnh Seine!");
+    return true;
   }
 
   // === Mobile Drawer for Seine Inspector ===
@@ -6116,7 +6276,6 @@ html, body {
   adminBootCompleted = true;
   refreshAllGroupSelects();
   renderSlotsTable();
-  updateSlotAssignPreview();
   renderSeineFloorplan();
 
   setTimeout(renderLuxuryWeddingQR, 250);

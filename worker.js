@@ -168,11 +168,116 @@ function normalizeSlotsAndGuests(stored) {
   });
 }
 
-const CORS_HEADERS = {
+const PUBLIC_CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type"
 };
+
+function isPublicGuestApiPath(pathname = "") {
+  return (
+    pathname === "/api/guest-config" ||
+    pathname === "/api/slot" ||
+    pathname === "/api/track"
+  );
+}
+
+function isAllowedAdminOrigin(origin = "", requestOrigin = "") {
+  if (!origin) return true;
+  if (requestOrigin && origin === requestOrigin) return true;
+  if (/^https:\/\/(www\.)?thuantuongtieudinh\.io\.vn$/i.test(origin)) return true;
+  if (/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin)) return true;
+  return false;
+}
+
+function getAdminCorsHeaders(request, url) {
+  const origin = request.headers.get("Origin") || "";
+  const headers = {
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, X-Admin-Action, X-Admin-Key, Authorization",
+    Vary: "Origin"
+  };
+  if (origin && isAllowedAdminOrigin(origin, url.origin)) {
+    headers["Access-Control-Allow-Origin"] = origin;
+  }
+  return headers;
+}
+
+function safeEqualSecret(a = "", b = "") {
+  const sa = String(a || "");
+  const sb = String(b || "");
+  const len = Math.max(sa.length, sb.length);
+  let diff = sa.length ^ sb.length;
+  for (let i = 0; i < len; i++) {
+    diff |= (sa.charCodeAt(i) || 0) ^ (sb.charCodeAt(i) || 0);
+  }
+  return diff === 0 && sa.length > 0;
+}
+
+function checkAdminAccess(request, env, url) {
+  const adminCors = getAdminCorsHeaders(request, url);
+  const origin = request.headers.get("Origin") || "";
+  const secFetchSite = String(request.headers.get("Sec-Fetch-Site") || "").toLowerCase();
+
+  if (origin && !isAllowedAdminOrigin(origin, url.origin)) {
+    return {
+      ok: false,
+      response: Response.json(
+        { ok: false, error: "Origin không được phép truy cập API quản trị." },
+        { status: 403, headers: adminCors }
+      )
+    };
+  }
+  if (secFetchSite === "cross-site" && (!origin || !isAllowedAdminOrigin(origin, url.origin))) {
+    return {
+      ok: false,
+      response: Response.json(
+        { ok: false, error: "Yêu cầu cross-site bị chặn." },
+        { status: 403, headers: adminCors }
+      )
+    };
+  }
+  if (request.headers.get("X-Admin-Action") !== "1") {
+    return {
+      ok: false,
+      response: Response.json(
+        { ok: false, error: "Thiếu header xác thực quản trị (X-Admin-Action)." },
+        { status: 403, headers: adminCors }
+      )
+    };
+  }
+
+  const configuredKey =
+    env && typeof env.ADMIN_KEY === "string" ? env.ADMIN_KEY.trim() : "";
+  if (configuredKey) {
+    const authHeader = request.headers.get("Authorization") || "";
+    const bearer = authHeader.toLowerCase().startsWith("bearer ")
+      ? authHeader.slice(7).trim()
+      : "";
+    const providedKey = (request.headers.get("X-Admin-Key") || bearer || "").trim();
+    if (!safeEqualSecret(providedKey, configuredKey)) {
+      return {
+        ok: false,
+        response: Response.json(
+          {
+            ok: false,
+            authRequired: true,
+            error: "Cần nhập mã khóa Admin để tiếp tục."
+          },
+          { status: 401, headers: adminCors }
+        )
+      };
+    }
+  }
+
+  return { ok: true, headers: adminCors };
+}
+
+function sanitizeDriveUrl(raw = "") {
+  const val = String(raw || "").trim();
+  if (!val || /1ExampleWeddingPhotos/i.test(val)) return "";
+  return val;
+}
 
 const VALID_TABLE_LABEL_MODES = ["none", "own_only", "same_label", "all"];
 
@@ -361,7 +466,7 @@ export class WeddingAnalytics {
       (saved && saved.morning) || (slotObj && slotObj.morning) || ""
     );
 
-    const driveUrl = (saved && saved.driveUrl) || cfg.driveUrl || "";
+    const driveUrl = sanitizeDriveUrl((saved && saved.driveUrl) || cfg.driveUrl || "");
     const table = String((saved && saved.table) || (slotObj && slotObj.table) || cleanTableHint || "").trim();
     const tMeta = (table && seatingCfg.tableMeta && seatingCfg.tableMeta[table]) || {};
     const group =
@@ -463,13 +568,38 @@ export class WeddingAnalytics {
 
   async fetch(request) {
     const url = new URL(request.url);
+    const isPublic = isPublicGuestApiPath(url.pathname);
 
     if (request.method === "OPTIONS") {
-      return new Response(null, { status: 204, headers: CORS_HEADERS });
+      if (isPublic) {
+        return new Response(null, { status: 204, headers: PUBLIC_CORS_HEADERS });
+      }
+      const origin = request.headers.get("Origin") || "";
+      if (origin && !isAllowedAdminOrigin(origin, url.origin)) {
+        return new Response(null, { status: 403, headers: getAdminCorsHeaders(request, url) });
+      }
+      return new Response(null, { status: 204, headers: getAdminCorsHeaders(request, url) });
+    }
+
+    let adminCors = null;
+    if (!isPublic) {
+      const adminGuard = checkAdminAccess(request, this.env, url);
+      if (!adminGuard.ok) return adminGuard.response;
+      adminCors = adminGuard.headers;
     }
 
     // Reset analytics counters & logs (keeps savedGuests, siteConfig, seatingConfig & pre-printed QR slots intact)
     if (url.pathname === "/api/reset" && request.method === "POST") {
+      let body = {};
+      try {
+        body = await request.json();
+      } catch (_) {}
+      if (body.confirm !== "RESET_ANALYTICS") {
+        return Response.json(
+          { ok: false, error: "Thiếu mã xác nhận RESET_ANALYTICS." },
+          { status: 400, headers: adminCors }
+        );
+      }
       const current = await this.loadData();
       const fresh = defaultState(
         current.savedGuests || [],
@@ -478,7 +608,7 @@ export class WeddingAnalytics {
       );
       fresh.slots = current.slots || {};
       await this.saveData(fresh);
-      return Response.json({ ok: true, stats: this.formatStats(fresh) }, { headers: CORS_HEADERS });
+      return Response.json({ ok: true, stats: this.formatStats(fresh) }, { headers: adminCors });
     }
 
     // Public lookup for a pre-printed numbered QR bookmark (?s=7-ab3x) -> assigned guest name, mode & table seat
@@ -534,7 +664,7 @@ export class WeddingAnalytics {
         },
         {
           headers: {
-            ...CORS_HEADERS,
+            ...PUBLIC_CORS_HEADERS,
             "Cache-Control": "no-store, no-cache, must-revalidate"
           }
         }
@@ -551,7 +681,7 @@ export class WeddingAnalytics {
       if (!isValidSlotCode(code)) {
         return Response.json(
           { ok: false, error: "Invalid slot code" },
-          { status: 400, headers: CORS_HEADERS }
+          { status: 400, headers: adminCors }
         );
       }
       const num = slotNumFromCode(code);
@@ -702,7 +832,7 @@ export class WeddingAnalytics {
       await this.saveData(data);
       return Response.json(
         { ok: true, slots: data.slots, savedGuests: data.savedGuests, stats: this.formatStats(data) },
-        { headers: CORS_HEADERS }
+        { headers: adminCors }
       );
     }
 
@@ -814,7 +944,7 @@ export class WeddingAnalytics {
           slots: data.slots,
           stats: this.formatStats(data)
         },
-        { headers: CORS_HEADERS }
+        { headers: adminCors }
       );
     }
 
@@ -837,14 +967,14 @@ export class WeddingAnalytics {
         globalMode: requestedMode,
         globalThankYou: requestedMode === "thankyou",
         globalDirections: requestedMode === "directions",
-        driveUrl: String(body.driveUrl ?? data.siteConfig.driveUrl ?? "").trim(),
+        driveUrl: sanitizeDriveUrl(body.driveUrl ?? data.siteConfig.driveUrl ?? ""),
         thankYouVI: String(body.thankYouVI ?? data.siteConfig.thankYouVI ?? "").trim(),
         thankYouZH: String(body.thankYouZH ?? data.siteConfig.thankYouZH ?? "").trim()
       };
       await this.saveData(data);
       return Response.json(
         { ok: true, siteConfig: data.siteConfig, stats: this.formatStats(data) },
-        { headers: CORS_HEADERS }
+        { headers: adminCors }
       );
     }
 
@@ -858,7 +988,7 @@ export class WeddingAnalytics {
         { ok: true, config: this.resolveGuestConfig(data, guest, slot, tableHint) },
         {
           headers: {
-            ...CORS_HEADERS,
+            ...PUBLIC_CORS_HEADERS,
             "Cache-Control": "no-store, no-cache, must-revalidate"
           }
         }
@@ -1116,7 +1246,7 @@ export class WeddingAnalytics {
               data.savedGuests[idx].morning = normalizeMorningMode(body.morning);
             }
             if (body.driveUrl !== undefined) {
-              data.savedGuests[idx].driveUrl = String(body.driveUrl || "").trim();
+              data.savedGuests[idx].driveUrl = sanitizeDriveUrl(body.driveUrl || "");
             }
             const sc = data.savedGuests[idx].slotCode;
             if (sc && data.slots && data.slots[sc]) {
@@ -1135,13 +1265,19 @@ export class WeddingAnalytics {
           );
         }
       } else if (action === "clear") {
+        if (body.confirm !== "CLEAR_ALL_GUESTS") {
+          return Response.json(
+            { ok: false, error: "Thiếu mã xác nhận CLEAR_ALL_GUESTS." },
+            { status: 400, headers: adminCors }
+          );
+        }
         data.savedGuests = [];
       }
 
       await this.saveData(data);
       return Response.json(
         { ok: true, savedGuests: data.savedGuests, stats: this.formatStats(data) },
-        { headers: CORS_HEADERS }
+        { headers: adminCors }
       );
     }
 
@@ -1154,7 +1290,7 @@ export class WeddingAnalytics {
 
       const ua = body.ua || request.headers.get("user-agent") || "";
       if (isBotUserAgent(ua)) {
-        return Response.json({ ok: true, skipped: "bot" }, { headers: CORS_HEADERS });
+        return Response.json({ ok: true, skipped: "bot" }, { headers: PUBLIC_CORS_HEADERS });
       }
 
       const eventType = String(body.event || "view");
@@ -1169,7 +1305,7 @@ export class WeddingAnalytics {
       const sid = String(body.sid || `${vid}_${Date.now()}`).slice(0, 80);
       const screen = String(body.screen || "").slice(0, 24);
       const lang = body.lang === "zh" ? "zh" : "vi";
-      const mode = body.mode === "thankyou" ? "thankyou" : "invite";
+      const mode = ["thankyou", "directions"].includes(body.mode) ? body.mode : "invite";
       const country = String(body.country || "VN").toUpperCase();
       const city = String(body.city || "").trim();
       const deviceDetail = parseDetailedDevice(ua, screen);
@@ -1311,7 +1447,7 @@ export class WeddingAnalytics {
       }
 
       await this.saveData(data);
-      return Response.json({ ok: true }, { headers: CORS_HEADERS });
+      return Response.json({ ok: true }, { headers: PUBLIC_CORS_HEADERS });
     }
 
     if (url.pathname === "/api/stats") {
@@ -1320,14 +1456,17 @@ export class WeddingAnalytics {
         { ok: true, stats: this.formatStats(data) },
         {
           headers: {
-            ...CORS_HEADERS,
+            ...adminCors,
             "Cache-Control": "no-store, no-cache, must-revalidate"
           }
         }
       );
     }
 
-    return new Response("Not Found", { status: 404, headers: CORS_HEADERS });
+    return new Response("Not Found", {
+      status: 404,
+      headers: isPublic ? PUBLIC_CORS_HEADERS : adminCors
+    });
   }
 
   formatStats(data) {
@@ -1338,6 +1477,7 @@ export class WeddingAnalytics {
     const uniqueVisitors = visitorsList.length;
     const openedEnvelopeCount = visitLogs.filter((r) => r.openedEnvelope).length;
     const flippedBackCount = visitLogs.filter((r) => r.flippedBack).length;
+    const sc = data.siteConfig || {};
 
     return {
       totalViews: data.totalViews || visitLogs.length || 0,
@@ -1345,15 +1485,20 @@ export class WeddingAnalytics {
       openedEnvelopeCount,
       flippedBackCount,
       countries: data.countries || {},
-      visitLogs: visitLogs.slice(0, 300),
-      guests: visitorsList.slice(0, 200),
+      visitLogs: visitLogs.slice(0, 500),
+      guests: visitorsList.slice(0, 1000),
       savedGuests: Array.isArray(data.savedGuests) ? data.savedGuests : [],
       slots: data.slots && typeof data.slots === "object" ? data.slots : {},
-      siteConfig: data.siteConfig || {
-        globalThankYou: false,
-        driveUrl: "",
-        thankYouVI: "",
-        thankYouZH: ""
+      siteConfig: {
+        ...sc,
+        globalMode:
+          sc.globalMode ||
+          (sc.globalThankYou ? "thankyou" : sc.globalDirections ? "directions" : "invite"),
+        globalThankYou: Boolean(sc.globalThankYou || sc.globalMode === "thankyou"),
+        globalDirections: Boolean(sc.globalDirections || sc.globalMode === "directions"),
+        driveUrl: sanitizeDriveUrl(sc.driveUrl || ""),
+        thankYouVI: sc.thankYouVI || "",
+        thankYouZH: sc.thankYouZH || ""
       },
       seatingConfig: data.seatingConfig || defaultSeatingConfig(),
       updatedAt: data.updatedAt || new Date().toISOString()
@@ -1366,9 +1511,24 @@ export default {
     const url = new URL(request.url);
 
     if (url.pathname.startsWith("/api/")) {
+      const isPublic = isPublicGuestApiPath(url.pathname);
       if (request.method === "OPTIONS") {
-        return new Response(null, { status: 204, headers: CORS_HEADERS });
+        if (isPublic) {
+          return new Response(null, { status: 204, headers: PUBLIC_CORS_HEADERS });
+        }
+        const origin = request.headers.get("Origin") || "";
+        if (origin && !isAllowedAdminOrigin(origin, url.origin)) {
+          return new Response(null, { status: 403, headers: getAdminCorsHeaders(request, url) });
+        }
+        return new Response(null, { status: 204, headers: getAdminCorsHeaders(request, url) });
       }
+
+      if (!isPublic) {
+        const adminGuard = checkAdminAccess(request, env, url);
+        if (!adminGuard.ok) return adminGuard.response;
+      }
+
+      const fallbackCors = isPublic ? PUBLIC_CORS_HEADERS : getAdminCorsHeaders(request, url);
 
       if (env.WEDDING_ANALYTICS) {
         try {
@@ -1397,14 +1557,14 @@ export default {
         } catch (err) {
           return Response.json(
             { ok: false, error: String(err && err.message ? err.message : err) },
-            { status: 500, headers: CORS_HEADERS }
+            { status: 500, headers: fallbackCors }
           );
         }
       }
 
       return Response.json(
         { ok: false, error: "WEDDING_ANALYTICS binding not available" },
-        { status: 503, headers: CORS_HEADERS }
+        { status: 503, headers: fallbackCors }
       );
     }
 
