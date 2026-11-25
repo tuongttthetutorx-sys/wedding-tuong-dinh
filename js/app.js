@@ -1417,7 +1417,6 @@
     const aisleLabel = isZh ? "L型紅毯走道" : "LỐI LÊN SÂN KHẤU (CHỮ L)";
     const door2Label = isZh ? "2 號門 (入場)" : "CỔNG 2 (LỐI VÀO)";
     const wcLabel = isZh ? "↙ WC • 洗手間" : "↙ WC • Nhà vệ sinh";
-    const vipLabel = isZh ? "VIP 室" : "PHÒNG VIP";
     const foyerTitle = isZh ? "迎賓大廳" : "SẢNH ĐÓN KHÁCH";
     const backdropTitle = isZh ? "主背板" : "BACKDROP";
     const photoTitle = isZh ? "拍貼機" : "PHOTOBOOTH";
@@ -1542,10 +1541,6 @@
         <!-- Hall Right Partition Wall (Single guest doorway opening at Cổng 2 between Row 6 & Row 7) -->
         <line x1="${hallW}" y1="${stageY}" x2="${hallW}" y2="${lTurnY - aisleW / 2}" stroke="rgba(132, 21, 23, 0.36)" stroke-width="1.4" />
         <line x1="${hallW}" y1="${lTurnY + aisleW / 2}" x2="${hallW}" y2="${bottomBarY + 14}" stroke="rgba(132, 21, 23, 0.36)" stroke-width="1.4" />
-
-        <!-- VIP Room (Top-Right alongside Rows 1-2) -->
-        <rect x="${foyerX}" y="${stageY}" width="${foyerW}" height="${rowY[1] + 24 - stageY}" rx="6" fill="rgba(132, 21, 23, 0.04)" stroke="rgba(132, 21, 23, 0.24)" stroke-width="1" />
-        <text x="${foyerCX}" y="${(stageY + rowY[1] + 24) / 2 + 4.5}" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="12" font-weight="700" letter-spacing="1.1" fill="rgba(132, 21, 23, 0.72)">${vipLabel}</text>
 
         <!-- Right-Side Reception Corridor (Between Hall Wall x=548 and Opposite Wall x=708) -->
         <rect x="${foyerX}" y="${rowY[1] + 32}" width="${foyerW}" height="${bottomBarY + 14 - (rowY[1] + 32)}" rx="6" fill="rgba(164, 112, 42, 0.05)" stroke="rgba(132, 21, 23, 0.22)" stroke-width="1" stroke-dasharray="4 3" />
