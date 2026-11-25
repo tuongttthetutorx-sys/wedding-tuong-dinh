@@ -2754,33 +2754,11 @@ body[data-whisper-theme="velvet"] .floating-whisper .fw-words {
 }
 
 .c2-epigraph-excerpt {
-  position: relative;
   font-family: var(--font-serif);
   font-style: italic;
   font-size: 15.8px;
   font-weight: 500;
   letter-spacing: 0.02em;
-}
-
-.c2-epigraph-excerpt::after {
-  content: "";
-  position: absolute;
-  left: 6%;
-  right: 6%;
-  bottom: -1px;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(168, 118, 48, 0.56),
-    transparent
-  );
-  transform-origin: center;
-  transition: opacity 0.28s ease, transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.c2-epigraph-trigger:hover .c2-epigraph-excerpt::after {
-  transform: scaleX(1.1);
 }
 
 .c2-epigraph-dot {
