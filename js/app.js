@@ -20,22 +20,22 @@
       btnFlipFront: "Chạm nhẹ để lật phong bì",
       btnOpenSealHint: "Chạm dấu sáp để mở thiệp",
       btnFlipBack: "Lật lại mặt trước phong bì",
-      envCreditHint: "Thiết kế thủ công bởi Cô dâu Tiểu Dinh & Chú rể Thuận Tường",
-      c2Epigraph: "“Từ bạn cùng lớp năm cấp 3…”",
-      c2Line1: "“Từ bạn cùng lớp thời trung học, chúng mình trở thành tình yêu của nhau.",
-      c2Line2: "Cùng nhau trưởng thành, thấu hiểu và tìm thấy hạnh phúc bên nhau.",
-      c2Line3: "Dẫu từng có những lần tranh cãi và thử thách, tụi mình vẫn nắm tay vượt qua.",
-      c2Line4: "Sau bảy năm rưỡi bên nhau, câu chuyện tiếp nối - nay là vợ chồng.”",
-      c2Pause: "Tạm dừng",
-      c2Resume: "Tiếp tục",
-      c2Copy: "Sao chép",
-      c2Copied: "Đã chép",
-      c2CloseAria: "Đóng câu chuyện viền thiệp",
-      c2FoldAria: "Thu gọn câu chuyện",
-      c2EdgeTop: "Phần 1: Từ bạn cùng lớp thời trung học, chúng mình trở thành tình yêu của nhau.",
-      c2EdgeRight: "Phần 2: Cùng nhau trưởng thành, thấu hiểu và tìm thấy hạnh phúc bên nhau.",
-      c2EdgeBottom: "Phần 3: Dẫu từng có những lần tranh cãi và thử thách, tụi mình vẫn nắm tay vượt qua.",
-      c2EdgeLeft: "Phần 4: Sau bảy năm rưỡi bên nhau, câu chuyện tiếp nối - nay là vợ chồng. T&D",
+      envCreditHint: "Personally designed by the Bride & Groom — Tiểu Dinh & Thuận Tường",
+      c2Epigraph: "“We began as classmates…”",
+      c2Line1: "“We began as classmates in high school and became each other’s love.",
+      c2Line2: "We grew together, understood each other, and found happiness in our relationship.",
+      c2Line3: "Despite many arguments and challenges, we made it through that chapter.",
+      c2Line4: "After seven and a half years, our story continues — now as husband and wife.”",
+      c2Pause: "Pause",
+      c2Resume: "Resume",
+      c2Copy: "Copy",
+      c2Copied: "Copied",
+      c2CloseAria: "Close",
+      c2FoldAria: "Fold quote",
+      c2EdgeTop: "We began as classmates in high school and became each other’s love.",
+      c2EdgeRight: "We grew together, understood each other, and found happiness in our relationship.",
+      c2EdgeBottom: "Despite many arguments and challenges, we made it through that chapter.",
+      c2EdgeLeft: "After seven and a half years, our story continues — now as husband and wife.",
       navEnv: "Phong bì",
       navCardsMobile: "Thiệp mời",
       navCard1: "Thiệp mời tiệc",
@@ -100,7 +100,7 @@
       rg4Body:
         "🚗 Gửi xe & Taxi/Grab: Cổng giữ xe máy & ô tô nằm ngay mặt tiền 360D Bến Vân Đồn (Taxi/Grab chạy thẳng vào sảnh đón có mái che). 🏛️ Sảnh tiệc: Tiến vào sảnh chính tầng trệt theo bảng đón khách Thuận Tường & Tiểu Dinh - Sảnh Seine (Đón khách 18:00 · Khai tiệc 19:00).",
       scrollCue: "Vuốt xuống xem tiếp thiệp",
-      footerCredit: "Thiết kế thủ công bởi Cô dâu Tiểu Dinh & Chú rể Thuận Tường",
+      footerCredit: "Personally designed by the Bride & Groom — Tiểu Dinh & Thuận Tường",
       footerToolLink: "🔗 Công cụ tạo link tên Khách Mời (dành cho Cô dâu & Chú rể)"
     },
     zh: {
@@ -113,22 +113,22 @@
       btnFlipFront: "輕觸翻看信封背面",
       btnOpenSealHint: "輕觸火漆印開啟喜帖",
       btnFlipBack: "返回信封正面",
-      envCreditHint: "新娘盧小瑩 & 新郎趙順祥 親手設計製作",
-      c2Epigraph: "「從高中同班同學到相愛相惜…」",
-      c2Line1: "「我們從高中同班同學開始，成為彼此的摯愛。",
-      c2Line2: "我們一起成長、彼此理解，在這段感情裡找到幸福。",
-      c2Line3: "儘管曾經歷過許多爭執與考驗，我們依然牽手走了過來。",
-      c2Line4: "走過七年半的歲月，我們的故事仍在繼續 - 如今成了夫妻。」",
-      c2Pause: "暫停",
-      c2Resume: "繼續",
-      c2Copy: "複製全文",
-      c2Copied: "已複製",
-      c2CloseAria: "關閉婚禮故事小卡",
-      c2FoldAria: "收合故事小卡",
-      c2EdgeTop: "第一段：我們從高中同班同學開始，成為彼此的摯愛。",
-      c2EdgeRight: "第二段：我們一起成長、彼此理解，在這段感情裡找到幸福。",
-      c2EdgeBottom: "第三段：儘管曾經歷過許多爭執與考驗，我們依然牽手走了過來。",
-      c2EdgeLeft: "第四段：走過七年半的歲月，我們的故事仍在繼續 - 如今成了夫妻。T&D",
+      envCreditHint: "Personally designed by the Bride & Groom — Tiểu Dinh & Thuận Tường",
+      c2Epigraph: "“We began as classmates…”",
+      c2Line1: "“We began as classmates in high school and became each other’s love.",
+      c2Line2: "We grew together, understood each other, and found happiness in our relationship.",
+      c2Line3: "Despite many arguments and challenges, we made it through that chapter.",
+      c2Line4: "After seven and a half years, our story continues — now as husband and wife.”",
+      c2Pause: "Pause",
+      c2Resume: "Resume",
+      c2Copy: "Copy",
+      c2Copied: "Copied",
+      c2CloseAria: "Close",
+      c2FoldAria: "Fold quote",
+      c2EdgeTop: "We began as classmates in high school and became each other’s love.",
+      c2EdgeRight: "We grew together, understood each other, and found happiness in our relationship.",
+      c2EdgeBottom: "Despite many arguments and challenges, we made it through that chapter.",
+      c2EdgeLeft: "After seven and a half years, our story continues — now as husband and wife.",
       navEnv: "喜帖信封",
       navCardsMobile: "喜帖",
       navCard3: "中文喜帖",
@@ -192,7 +192,7 @@
       rg4Body:
         "🚗 停車與計程車/Grab：360D Bến Vân Đồn 正門設有汽車與機車停車場（Grab 可直達正門有頂迎賓處）。🏛️ 宴會廳位置：進入一樓大廳後請依「順祥 & 小瑩 - Sảnh Seine（Seine 宴會廳）」指示牌入席（18:00 迎賓 · 19:00 開席）。",
       scrollCue: "下滑繼續瀏覽喜帖",
-      footerCredit: "新娘盧小瑩 & 新郎趙順祥 親手設計製作",
+      footerCredit: "Personally designed by the Bride & Groom — Tiểu Dinh & Thuận Tường",
       footerToolLink: "🔗 賓客專屬喜帖連結產生器（新人專用）"
     }
   };
@@ -225,6 +225,7 @@
   let refreshCountdownDisplay = null;
   let activeMorningMapLoc = "";
   let morningUiBound = false;
+  let deferredDefaultMapTimer = null;
 
   const VALID_MORNING_MODES = ["", "both", "groom", "bride"];
   function normalizeMorningMode(val) {
@@ -2029,6 +2030,46 @@
     }
   }
 
+  function attachVenueIframeErrorHandler(el) {
+    if (!el || el.dataset.errBound === "1") return;
+    el.dataset.errBound = "1";
+    el.addEventListener("error", () => {
+      mapFallbackActive = true;
+      syncVenueMapFallbackUI(activeMorningMapLoc || "venue", true);
+    });
+  }
+
+  function setVenueMapIframeSrc(nextSrc, nextTitle, options = {}) {
+    const iframe = document.getElementById("venue-map-iframe");
+    if (!iframe || !nextSrc) return;
+    const eager = Boolean(options.eager);
+    const forceReplace = Boolean(options.forceReplace);
+    const curSrc = iframe.getAttribute("src") || "";
+
+    if (!forceReplace && curSrc === nextSrc) {
+      if (nextTitle) iframe.setAttribute("title", nextTitle);
+      return;
+    }
+
+    // Replace existing cross-origin iframe node cleanly when URL changes so Chromium history/lazy state never keeps stale Riverside Palace
+    if (curSrc && (forceReplace || curSrc !== nextSrc)) {
+      const fresh = iframe.cloneNode(false);
+      delete fresh.dataset.errBound;
+      if (eager) fresh.setAttribute("loading", "eager");
+      else fresh.setAttribute("loading", "lazy");
+      if (nextTitle) fresh.setAttribute("title", nextTitle);
+      fresh.setAttribute("src", nextSrc);
+      attachVenueIframeErrorHandler(fresh);
+      iframe.replaceWith(fresh);
+      return;
+    }
+
+    iframe.setAttribute("loading", eager ? "eager" : "lazy");
+    if (nextTitle) iframe.setAttribute("title", nextTitle);
+    attachVenueIframeErrorHandler(iframe);
+    iframe.setAttribute("src", nextSrc);
+  }
+
   function switchMorningMapLocation(locKey, shouldScrollMap) {
     const validLoc = ["groom", "bride", "venue"].includes(locKey) ? locKey : "groom";
     activeMorningMapLoc = validLoc;
@@ -2052,14 +2093,10 @@
       });
     }
 
-    const iframe = document.getElementById("venue-map-iframe");
-    if (iframe && loc.embedUrl) {
+    if (loc.embedUrl) {
       const nextSrc =
         isZh && !loc.embedUrl.includes("hl=") ? loc.embedUrl + "&hl=zh-TW" : loc.embedUrl;
-      if (iframe.getAttribute("src") !== nextSrc) {
-        iframe.setAttribute("src", nextSrc);
-      }
-      iframe.setAttribute("title", loc.name);
+      setVenueMapIframeSrc(nextSrc, loc.name, { eager: true });
     }
 
     syncVenueMapFallbackUI(validLoc, false);
@@ -2149,21 +2186,21 @@
     if (retryIframeBtn) {
       retryIframeBtn.addEventListener("click", () => {
         mapFallbackActive = false;
-        const iframe = document.getElementById("venue-map-iframe");
-        if (iframe) {
-          const src = iframe.getAttribute("src");
-          if (src) iframe.setAttribute("src", src);
+        const loc = getMorningLocationData(activeMorningMapLoc || "venue");
+        const fallbackSrc =
+          loc.embedUrl ||
+          document.getElementById("venue-map-iframe")?.getAttribute("data-default-src") ||
+          "";
+        if (fallbackSrc) {
+          const isZh = currentLang === "zh";
+          const nextSrc =
+            isZh && !fallbackSrc.includes("hl=") ? fallbackSrc + "&hl=zh-TW" : fallbackSrc;
+          setVenueMapIframeSrc(nextSrc, loc.name, { eager: true, forceReplace: true });
         }
         syncVenueMapFallbackUI(activeMorningMapLoc || "venue", false);
       });
     }
-    const mapIframeEl = document.getElementById("venue-map-iframe");
-    if (mapIframeEl) {
-      mapIframeEl.addEventListener("error", () => {
-        mapFallbackActive = true;
-        syncVenueMapFallbackUI(activeMorningMapLoc || "venue", true);
-      });
-    }
+    attachVenueIframeErrorHandler(document.getElementById("venue-map-iframe"));
     window.addEventListener("offline", () => {
       syncVenueMapFallbackUI(activeMorningMapLoc || "venue", true);
     });
@@ -2225,17 +2262,34 @@
 
       if (activeMorningMapLoc && activeMorningMapLoc !== "venue") {
         activeMorningMapLoc = "";
-        const iframe = document.getElementById("venue-map-iframe");
-        const baseEmbed =
-          (CFG.venue && CFG.venue.googleMapsEmbed) ||
-          "https://maps.google.com/maps?q=Riverside%20Palace%20360D%20B%E1%BA%BFn%20V%C3%A2n%20%C4%90%E1%BB%93n%20H%E1%BB%93%20Ch%C3%AD%20Minh&t=&z=16&ie=UTF8&iwloc=&output=embed";
-        const defaultSrc = isZh && !baseEmbed.includes("hl=") ? baseEmbed + "&hl=zh-TW" : baseEmbed;
-        if (iframe && iframe.getAttribute("src") !== defaultSrc) {
-          iframe.setAttribute("src", defaultSrc);
-          if (dict.mapTitle) iframe.setAttribute("title", dict.mapTitle);
-        }
       }
       const venueLoc = getMorningLocationData("venue");
+      const baseEmbed =
+        venueLoc.embedUrl ||
+        document.getElementById("venue-map-iframe")?.getAttribute("data-default-src") ||
+        "https://maps.google.com/maps?q=Riverside%20Palace%20360D%20B%E1%BA%BFn%20V%C3%A2n%20%C4%90%E1%BB%93n%20H%E1%BB%93%20Ch%C3%AD%20Minh&t=&z=16&ie=UTF8&iwloc=&output=embed";
+      const defaultSrc = isZh && !baseEmbed.includes("hl=") ? baseEmbed + "&hl=zh-TW" : baseEmbed;
+      const waitingForSlotMorning = Boolean(
+        params.get("s") && params.get("morning") === null && !remoteGuestConfig
+      );
+      if (deferredDefaultMapTimer) {
+        clearTimeout(deferredDefaultMapTimer);
+        deferredDefaultMapTimer = null;
+      }
+      if (waitingForSlotMorning) {
+        deferredDefaultMapTimer = setTimeout(() => {
+          deferredDefaultMapTimer = null;
+          if (!getActiveMorningMode()) {
+            setVenueMapIframeSrc(defaultSrc, dict.mapTitle || venueLoc.name, {
+              eager: isDirectionsPriority
+            });
+          }
+        }, 900);
+      } else {
+        setVenueMapIframeSrc(defaultSrc, dict.mapTitle || venueLoc.name, {
+          eager: isDirectionsPriority
+        });
+      }
       const nameEl = document.getElementById("morning-map-active-name");
       const addrEl = document.getElementById("morning-map-active-addr");
       const dirEl = document.getElementById("morning-map-dir-link");
@@ -2249,6 +2303,11 @@
       if (refreshCountdownDisplay) refreshCountdownDisplay();
       updateGoogleCalendarLink();
       return;
+    }
+
+    if (deferredDefaultMapTimer) {
+      clearTimeout(deferredDefaultMapTimer);
+      deferredDefaultMapTimer = null;
     }
 
     // Hide VIP prelude in Directions Priority (banner is already at top) or Post-Wedding Thank You mode
@@ -3643,7 +3702,7 @@
       copyEnBtn.addEventListener("click", async () => {
         const dict = I18N[currentLang] || I18N.vi;
         const localizedStory =
-          `${dict.c2Line1} ${dict.c2Line2} ${dict.c2Line3} ${dict.c2Line4} - T&D`;
+          `${dict.c2Line1} ${dict.c2Line2} ${dict.c2Line3} ${dict.c2Line4} — T&D`;
         try {
           await navigator.clipboard.writeText(localizedStory);
         } catch (_) {
@@ -3655,10 +3714,10 @@
           ta.remove();
         }
         if (copyLabel) {
-          copyLabel.textContent = dict.c2Copied || "Đã chép";
+          copyLabel.textContent = dict.c2Copied || "Copied";
           if (copyResetTimer) clearTimeout(copyResetTimer);
           copyResetTimer = setTimeout(() => {
-            copyLabel.textContent = (I18N[currentLang] || I18N.vi).c2Copy || "Sao chép";
+            copyLabel.textContent = (I18N[currentLang] || I18N.vi).c2Copy || "Copy";
           }, 2400);
         }
       });
@@ -4347,15 +4406,6 @@
 
     if (guestName) {
       document.body.classList.add("is-guest-mode");
-    }
-
-    // Localize Google Maps embed UI labels to Traditional Chinese (zh-TW) when opened in 中文 mode
-    const mapIframe = document.getElementById("venue-map-iframe");
-    if (mapIframe && currentLang === "zh") {
-      const baseSrc = mapIframe.getAttribute("src") || "";
-      if (baseSrc && !baseSrc.includes("hl=")) {
-        mapIframe.setAttribute("src", baseSrc + "&hl=zh-TW");
-      }
     }
 
     mountArtworkSVGs();
