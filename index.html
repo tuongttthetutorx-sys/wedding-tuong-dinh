@@ -30,7 +30,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,500;1,600&family=Dancing+Script:wght@600;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="css/styles.css?v=70" />
+  <link rel="stylesheet" href="css/styles.css?v=71" />
 
   <!-- Pre-printed numbered QR bookmark (?s=7-k3x9): look up the guest name & card mode assigned later in the admin page -->
   <style>html.td-slot-resolving body { visibility: hidden; }</style>
@@ -44,8 +44,10 @@
           if (!slotObj) return false;
           var targetMode = slotObj.mode || "invite";
           var currentMode = p.get("mode") || "invite";
+          var targetMorning = slotObj.morning ? String(slotObj.morning).trim().toLowerCase() : "";
+          var currentMorning = (p.get("morning") || "").trim().toLowerCase();
           var cleanName = slotObj.name ? String(slotObj.name).trim() : "";
-          if (!cleanName && targetMode === currentMode) return false;
+          if (!cleanName && targetMode === currentMode && targetMorning === currentMorning) return false;
           if (cleanName) {
             p.set("to", cleanName);
             if (slotObj.lang === "zh" || /[\u4e00-\u9fff]/.test(cleanName)) p.set("lang", "zh");
@@ -57,6 +59,11 @@
           } else {
             p.delete("mode");
           }
+          if (targetMorning === "both" || targetMorning === "groom" || targetMorning === "bride") {
+            p.set("morning", targetMorning);
+          } else {
+            p.delete("morning");
+          }
           window.location.replace(window.location.pathname + "?" + p.toString() + window.location.hash);
           return true;
         };
@@ -64,7 +71,7 @@
           var localRaw = localStorage.getItem("td_saved_slots_v1");
           if (localRaw) {
             var localMap = JSON.parse(localRaw);
-            if (localMap && localMap[code] && (localMap[code].name || localMap[code].mode)) {
+            if (localMap && localMap[code] && (localMap[code].name || localMap[code].mode || localMap[code].morning)) {
               if (applySlotRedirect(localMap[code])) return;
             }
           }
@@ -315,6 +322,44 @@
       <h1 data-i18n="heroTitle">Thuận Tường &amp; Tiểu Dinh</h1>
     </div>
 
+    <!-- VIP MORNING CEREMONY + EVENING BANQUET INVITATION PRELUDE (Shown ONLY when morning mode is active) -->
+    <section id="morning-vip-card" class="morning-vip-card" hidden aria-label="Thư mời riêng tham dự Lễ Thành Hôn buổi sáng và Tiệc Cưới">
+      <div class="morning-vip-paper">
+        <div class="mv-eyebrow" id="mv-eyebrow"></div>
+        <h2 class="mv-title" id="mv-title"></h2>
+        <p class="mv-desc" id="mv-desc"></p>
+
+        <div class="mv-stops-grid" id="mv-stops-grid">
+          <button type="button" class="mv-stop-pill" data-jump-loc="groom">
+            <span class="mv-stop-time" id="mv-stop1-time"></span>
+            <strong class="mv-stop-name" id="mv-stop1-name"></strong>
+            <span class="mv-stop-addr" id="mv-stop1-addr"></span>
+          </button>
+          <button type="button" class="mv-stop-pill" data-jump-loc="bride">
+            <span class="mv-stop-time" id="mv-stop2-time"></span>
+            <strong class="mv-stop-name" id="mv-stop2-name"></strong>
+            <span class="mv-stop-addr" id="mv-stop2-addr"></span>
+          </button>
+          <button type="button" class="mv-stop-pill" data-jump-loc="venue">
+            <span class="mv-stop-time" id="mv-stop3-time"></span>
+            <strong class="mv-stop-name" id="mv-stop3-name"></strong>
+            <span class="mv-stop-addr" id="mv-stop3-addr"></span>
+          </button>
+        </div>
+
+        <div class="mv-actions">
+          <a href="#section-location" id="btn-mv-jump-itinerary" class="mv-btn primary"></a>
+          <a
+            id="btn-mv-full-route"
+            href="#section-location"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="mv-btn secondary"
+          ></a>
+        </div>
+      </div>
+    </section>
+
     <!-- POST-WEDDING THANK YOU CARD & GOOGLE DRIVE PHOTO ALBUM (Active when thankYouMode=true or ?mode=thankyou) -->
     <section id="thank-you-showcase" class="thank-you-showcase" hidden aria-label="Thiệp Cảm Ơn &amp; Kho Ảnh Kỷ Niệm">
       <div class="thank-you-paper">
@@ -509,7 +554,7 @@
           <p class="dpb-desc" data-i18n="dpbDesc">
             Sơ đồ đường đi, hướng dẫn gửi xe và vị trí Sảnh Seine (Riverside Palace — 360D Bến Vân Đồn) đã được đưa lên đầu trang để thuận tiện di chuyển.
           </p>
-          <div class="dpb-actions">
+          <div class="dpb-actions" id="dpb-default-actions">
             <a
               href="https://www.google.com/maps/dir/?api=1&destination=Riverside+Palace+360D+Ben+Van+Don+Ho+Chi+Minh"
               target="_blank"
@@ -518,6 +563,29 @@
               data-i18n="btnOpenGmapsNav"
             >🧭 Mở Google Maps dẫn đường ngay</a>
             <a href="#card-wrap-reception" class="dpb-btn secondary" id="btn-jump-to-cards" data-i18n="btnJumpToCards">💌 Xem 3 tấm thiệp mời bên dưới ↓</a>
+          </div>
+          <div class="dpb-actions dpb-morning-actions" id="dpb-morning-actions" hidden>
+            <a
+              id="dpb-btn-groom"
+              href="#section-location"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="dpb-btn primary"
+            ></a>
+            <a
+              id="dpb-btn-bride"
+              href="#section-location"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="dpb-btn primary"
+            ></a>
+            <a
+              id="dpb-btn-venue"
+              href="https://www.google.com/maps/dir/?api=1&destination=Riverside+Palace+360D+Ben+Van+Don+Ho+Chi+Minh"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="dpb-btn secondary"
+            ></a>
           </div>
         </div>
 
@@ -537,7 +605,7 @@
               <div class="day-schedule-lunar" data-i18n="dayLunarDate">Nhằm ngày 29 tháng 11 năm Bính Ngọ</div>
             </div>
 
-            <div class="timeline-list is-same-day-rail">
+            <div class="timeline-list is-same-day-rail" id="default-timeline-list">
               <div class="timeline-item" style="--tl-idx: 0">
                 <span class="timeline-node" aria-hidden="true"></span>
                 <span class="timeline-period" data-i18n="tl1Period">Buổi sáng • 05:30</span>
@@ -572,9 +640,17 @@
                 </div>
               </div>
             </div>
+
+            <!-- Detailed 3-Stop Morning + Evening Route Ledger (Visible ONLY for Morning Ceremony VIP Guests) -->
+            <div class="timeline-list is-same-day-rail is-morning-itinerary" id="morning-itinerary-list" hidden></div>
           </div>
 
-          <div class="venue-map-frame">
+          <div class="venue-map-frame" id="venue-map-frame">
+            <div class="morning-map-tabs" id="morning-map-tabs" role="tablist" aria-label="Chọn bản đồ địa điểm" hidden>
+              <button type="button" class="morning-map-tab is-active" role="tab" aria-selected="true" data-map-loc="groom">🏠 Nhà Trai · 05:30</button>
+              <button type="button" class="morning-map-tab" role="tab" aria-selected="false" data-map-loc="bride">🏡 Nhà Gái · Lô D</button>
+              <button type="button" class="morning-map-tab" role="tab" aria-selected="false" data-map-loc="venue">🥂 Tiệc Tối · 18:00</button>
+            </div>
             <iframe
               id="venue-map-iframe"
               title="Bản đồ Riverside Palace - 360D Bến Vân Đồn"
@@ -582,6 +658,16 @@
               referrerpolicy="no-referrer-when-downgrade"
               src="https://maps.google.com/maps?q=Riverside%20Palace%20360D%20B%E1%BA%BFn%20V%C3%A2n%20%C4%90%E1%BB%93n%20H%E1%BB%93%20Ch%C3%AD%20Minh&t=&z=16&ie=UTF8&iwloc=&output=embed"
             ></iframe>
+            <div class="morning-map-footer" id="morning-map-footer" hidden>
+              <div class="morning-map-footer-info">
+                <strong id="morning-map-active-name"></strong>
+                <span id="morning-map-active-addr"></span>
+              </div>
+              <div class="morning-map-footer-actions">
+                <a id="morning-map-open-link" href="#section-location" target="_blank" rel="noopener noreferrer" class="morning-map-link"></a>
+                <a id="morning-map-dir-link" href="#section-location" target="_blank" rel="noopener noreferrer" class="morning-map-link is-primary"></a>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -637,9 +723,9 @@
   </main>
 
   <!-- Artwork Bundle (Envelope critical; Cards lazy-loaded by app.js) & Interactive Scripts -->
-  <script src="js/config.js?v=66" defer></script>
+  <script src="js/config.js?v=67" defer></script>
   <script src="js/artwork-envelope.js?v=65" defer></script>
   <script src="js/audio.js?v=65" defer></script>
-  <script src="js/app.js?v=72" defer></script>
+  <script src="js/app.js?v=73" defer></script>
 </body>
 </html>

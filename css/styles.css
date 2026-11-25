@@ -3884,7 +3884,8 @@ body.lang-zh .thank-you-heading {
    ========================================================================== */
 
 /* When Priority Directions Mode is active, elevate #section-location to the very top of the page right below the couple's name */
-body.is-directions-priority-mode .invitation-table {
+body.is-directions-priority-mode .invitation-table,
+body.is-directions-priority-mode .invitation-main {
   display: flex;
   flex-direction: column;
 }
@@ -3893,34 +3894,42 @@ body.is-directions-priority-mode .utilities-wrapper {
   display: contents;
 }
 
-body.is-directions-priority-mode .table-prelude {
+body.is-directions-priority-mode .table-prelude,
+body.is-directions-priority-mode .hero-prelude {
   order: 1;
 }
 
 body.is-directions-priority-mode #section-location {
   order: 2;
-  width: min(980px, 100%);
-  margin: 8px auto 34px;
+  width: min(1008px, 100%);
+  margin: 4px auto 32px;
   border: 2px solid rgba(132, 21, 23, 0.28);
   box-shadow: 0 20px 52px rgba(68, 12, 16, 0.14);
 }
 
-body.is-directions-priority-mode #thank-you-section {
+body.is-directions-priority-mode #section-seating {
   order: 3;
+  width: min(1008px, 100%);
+  margin: 0 auto 36px;
 }
 
-body.is-directions-priority-mode .cards-stream {
+body.is-directions-priority-mode #thank-you-section,
+body.is-directions-priority-mode #thank-you-showcase {
   order: 4;
 }
 
-body.is-directions-priority-mode #section-countdown {
+body.is-directions-priority-mode .cards-stream {
   order: 5;
-  width: min(980px, 100%);
-  margin: 0 auto 28px;
+}
+
+body.is-directions-priority-mode #section-countdown {
+  order: 6;
+  width: min(1008px, 100%);
+  margin: 32px auto 28px;
 }
 
 body.is-directions-priority-mode .wedding-footer {
-  order: 6;
+  order: 7;
 }
 
 /* Wedding-Day Live Arrival Banner inside #section-location */
@@ -3987,6 +3996,10 @@ body.lang-zh .dpb-title {
   flex-wrap: wrap;
   justify-content: center;
   gap: 10px;
+}
+
+.dpb-actions[hidden] {
+  display: none !important;
 }
 
 .dpb-btn {
@@ -4690,14 +4703,6 @@ body.lang-zh .imap-title {
   margin-top: 12px;
 }
 
-body.is-directions-priority-mode #section-location {
-  order: -2 !important;
-}
-
-body.is-directions-priority-mode #section-seating {
-  order: -1 !important;
-}
-
 .seating-companions-line {
   margin-top: 8px !important;
   padding-top: 8px;
@@ -4891,4 +4896,543 @@ body.lang-zh .seating-info-badge {
   font-size: 12.8px;
   color: var(--text-muted);
   font-style: italic;
+}
+
+/* =====================================================================
+   MORNING CEREMONY VIP GUEST MODE (05:30 AT HOME + 18:00 BANQUET)
+   ===================================================================== */
+.timeline-list[hidden],
+.morning-vip-card[hidden],
+.morning-map-tabs[hidden],
+.morning-map-footer[hidden] {
+  display: none !important;
+}
+
+.morning-vip-card {
+  max-width: 780px;
+  margin: 0 auto 42px;
+}
+
+.morning-vip-paper {
+  position: relative;
+  padding: clamp(22px, 3.6vw, 32px) clamp(18px, 3.6vw, 30px);
+  border-radius: 14px;
+  background-color: var(--paper-cream);
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(217, 178, 119, 0.2), transparent 65%),
+    url("../assets/paper-texture.webp");
+  background-size: cover;
+  border: 1.5px solid rgba(132, 21, 23, 0.26);
+  box-shadow:
+    inset 0 0 0 5px rgba(250, 246, 238, 0.86),
+    inset 0 0 0 6px rgba(198, 125, 8, 0.22),
+    var(--card-shadow);
+  text-align: center;
+}
+
+.mv-eyebrow {
+  font-family: var(--font-serif);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--gold-ink);
+  margin-bottom: 8px;
+}
+
+body.lang-zh .mv-eyebrow {
+  font-family: var(--font-zh);
+  letter-spacing: 0.08em;
+}
+
+.mv-title {
+  margin: 0 0 10px;
+  font-family: var(--font-serif);
+  font-size: clamp(23px, 3.6vw, 31px);
+  font-weight: 700;
+  line-height: 1.22;
+  color: var(--crimson-ink);
+  text-wrap: balance;
+}
+
+body.lang-zh .mv-title {
+  font-family: var(--font-zh);
+}
+
+.mv-desc {
+  max-width: 630px;
+  margin: 0 auto 18px;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-main);
+  text-wrap: pretty;
+}
+
+.mv-stops-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 18px;
+  text-align: left;
+}
+
+.mv-stop-pill {
+  appearance: none;
+  border: 1px solid rgba(132, 21, 23, 0.18);
+  background: rgba(255, 255, 255, 0.78);
+  border-radius: 10px;
+  padding: 12px 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  min-width: 0;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.mv-stop-pill:hover,
+.mv-stop-pill:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--crimson-ink);
+  box-shadow: 0 8px 20px rgba(132, 21, 23, 0.11);
+  background: #ffffff;
+  outline: none;
+}
+
+.mv-stop-pill.is-primary-stop {
+  border-color: rgba(132, 21, 23, 0.48);
+  background: linear-gradient(135deg, rgba(132, 21, 23, 0.06) 0%, rgba(217, 178, 119, 0.18) 100%);
+  box-shadow: 0 6px 16px rgba(132, 21, 23, 0.1);
+}
+
+.mv-stop-time {
+  font-family: var(--font-serif);
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--gold-ink);
+}
+
+body.lang-zh .mv-stop-time {
+  font-family: var(--font-zh);
+}
+
+.mv-stop-name {
+  font-family: var(--font-serif);
+  font-size: 16.5px;
+  font-weight: 700;
+  color: var(--crimson-ink);
+  line-height: 1.25;
+}
+
+body.lang-zh .mv-stop-name {
+  font-family: var(--font-zh);
+  font-size: 15px;
+}
+
+.mv-stop-addr {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.mv-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.mv-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 13.4px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.mv-btn.primary {
+  background: linear-gradient(135deg, #841517 0%, #5c0c12 100%);
+  color: var(--ivory-ink);
+  border: 1px solid rgba(217, 178, 119, 0.52);
+  box-shadow: 0 8px 20px rgba(132, 21, 23, 0.24);
+}
+
+.mv-btn.primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 11px 24px rgba(132, 21, 23, 0.32);
+}
+
+.mv-btn.secondary {
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--crimson-ink);
+  border: 1px solid rgba(132, 21, 23, 0.3);
+}
+
+.mv-btn.secondary:hover {
+  transform: translateY(-1px);
+  background: rgba(132, 21, 23, 0.06);
+  border-color: var(--crimson-ink);
+}
+
+/* Detailed 3-Stop Morning + Evening Route Ledger */
+body.is-morning-guest-mode #section-location .venue-grid {
+  align-items: start;
+}
+
+body.is-morning-guest-mode #section-location .day-schedule-ledger {
+  justify-content: flex-start;
+}
+
+body.is-morning-guest-mode #section-location .venue-map-frame {
+  position: sticky;
+  top: 82px;
+  min-height: 520px;
+}
+
+body.is-morning-guest-mode #section-location .venue-map-frame iframe {
+  min-height: 390px;
+}
+
+.timeline-list.is-morning-itinerary {
+  gap: 12px;
+}
+
+#section-location.is-playing-entrance .timeline-list.is-morning-itinerary .timeline-item {
+  animation-duration: 0.48s;
+  animation-delay: calc(var(--tl-idx, 0) * 130ms + 100ms);
+}
+
+.morning-stop-item {
+  padding: 10px 12px 12px;
+  border-radius: 10px;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.morning-stop-item .timeline-node {
+  top: 15px;
+}
+
+.morning-stop-item.is-highlight-home {
+  background: rgba(217, 178, 119, 0.11);
+  box-shadow: inset 0 0 0 1px rgba(198, 125, 8, 0.26);
+}
+
+.morning-stop-item.is-map-focused {
+  background: rgba(255, 253, 248, 0.94);
+  box-shadow: inset 0 0 0 1.25px rgba(132, 21, 23, 0.28);
+}
+
+.morning-period-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+}
+
+.morning-side-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(132, 21, 23, 0.1);
+  color: var(--crimson-ink);
+  border: 1px solid rgba(132, 21, 23, 0.24);
+}
+
+.morning-stop-item .morning-addr-main {
+  margin-top: 2px;
+  font-size: 13.6px;
+  font-weight: 600;
+  color: var(--text-main);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.morning-stop-item .morning-landmark {
+  margin-top: 3px;
+  font-size: 12.6px;
+  color: var(--text-muted);
+}
+
+.morning-map-callout {
+  margin-top: 9px;
+  padding: 9px 11px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(217, 178, 119, 0.2) 0%, rgba(255, 251, 242, 0.94) 100%);
+  border: 1px solid rgba(198, 125, 8, 0.36);
+  border-left: 3.5px solid var(--crimson-ink);
+}
+
+.mmc-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--crimson-ink);
+  margin-bottom: 2px;
+}
+
+.mmc-pin {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.morning-map-callout .mmc-note {
+  margin-top: 3px;
+  font-size: 12.1px;
+  line-height: 1.48;
+  color: var(--text-muted);
+}
+
+.morning-stop-actions {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.morning-stop-actions .venue-action-btn {
+  font-size: 12.2px;
+  padding: 6px 11px;
+}
+
+.morning-route-connector {
+  padding: 8px 11px;
+  border-radius: 8px;
+  background: rgba(132, 21, 23, 0.045);
+  border: 1px dashed rgba(132, 21, 23, 0.22);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.mrc-text {
+  font-size: 12.3px;
+  font-weight: 600;
+  color: var(--text-main);
+  line-height: 1.42;
+}
+
+.mrc-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+}
+
+.mrc-link {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  font-size: 12.2px;
+  font-weight: 700;
+  color: var(--crimson-ink);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(132, 21, 23, 0.34);
+  padding-bottom: 1px;
+  transition: opacity 0.16s ease;
+}
+
+.mrc-link:hover {
+  opacity: 0.78;
+}
+
+/* Interactive 3-Location Google Maps Switcher inside #venue-map-frame */
+.morning-map-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  padding: 8px;
+  background: #f6efe3;
+  border-bottom: 1px solid rgba(132, 21, 23, 0.16);
+}
+
+.morning-map-tab {
+  appearance: none;
+  border: 1px solid rgba(132, 21, 23, 0.2);
+  background: #fffdf8;
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 12.2px;
+  font-weight: 600;
+  padding: 8px 6px;
+  border-radius: 7px;
+  cursor: pointer;
+  text-align: center;
+  line-height: 1.25;
+  min-width: 0;
+  overflow-wrap: break-word;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.morning-map-tab:hover {
+  border-color: var(--crimson-ink);
+  background: rgba(132, 21, 23, 0.06);
+}
+
+.morning-map-tab.is-active {
+  background: var(--crimson-ink);
+  border-color: var(--crimson-ink);
+  color: #fff9ef;
+  box-shadow: 0 4px 12px rgba(132, 21, 23, 0.22);
+}
+
+.morning-map-footer {
+  padding: 11px 13px;
+  background: #fbf6ec;
+  border-top: 1px solid rgba(132, 21, 23, 0.16);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.morning-map-footer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 180px;
+}
+
+.morning-map-footer-info strong {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--crimson-ink);
+  line-height: 1.25;
+}
+
+body.lang-zh .morning-map-footer-info strong {
+  font-family: var(--font-zh);
+  font-size: 14.5px;
+}
+
+.morning-map-footer-info span {
+  font-size: 12.2px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.morning-map-footer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.morning-map-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 7px 11px;
+  border-radius: 7px;
+  font-size: 12.2px;
+  font-weight: 700;
+  text-decoration: none;
+  border: 1px solid rgba(132, 21, 23, 0.28);
+  background: #fffdf8;
+  color: var(--crimson-ink);
+  white-space: nowrap;
+  transition: background 0.16s ease, border-color 0.16s ease;
+}
+
+.morning-map-link:hover {
+  border-color: var(--crimson-ink);
+  background: rgba(132, 21, 23, 0.06);
+}
+
+.morning-map-link.is-primary {
+  background: var(--crimson-ink);
+  border-color: var(--crimson-ink);
+  color: #fff9ef;
+}
+
+.morning-map-link.is-primary:hover {
+  background: #650f12;
+}
+
+@media (max-width: 820px) {
+  .mv-stops-grid {
+    grid-template-columns: 1fr;
+  }
+
+  body.is-morning-guest-mode #section-location .venue-map-frame {
+    position: static;
+    min-height: 360px;
+  }
+
+  body.is-morning-guest-mode #section-location .venue-map-frame iframe {
+    min-height: 290px;
+  }
+}
+
+@media (max-width: 520px) {
+  .morning-vip-card {
+    margin-bottom: 30px;
+  }
+
+  .morning-vip-paper {
+    padding: 20px 15px 18px;
+  }
+
+  .mv-actions {
+    flex-direction: column;
+  }
+
+  .mv-btn {
+    width: 100%;
+  }
+
+  .dpb-morning-actions {
+    flex-direction: column;
+  }
+
+  .dpb-morning-actions .dpb-btn {
+    width: 100%;
+  }
+
+  .morning-stop-item {
+    padding: 8px 9px 10px;
+  }
+
+  .morning-stop-actions .venue-action-btn {
+    font-size: 11.8px;
+    padding: 6px 9px;
+  }
+
+  .morning-map-tabs {
+    padding: 6px;
+    gap: 5px;
+  }
+
+  .morning-map-tab {
+    font-size: 11.2px;
+    padding: 7px 4px;
+  }
+
+  .morning-map-footer {
+    padding: 10px 11px;
+  }
+
+  .morning-map-footer-actions {
+    width: 100%;
+  }
+
+  .morning-map-link {
+    flex: 1 1 auto;
+  }
 }

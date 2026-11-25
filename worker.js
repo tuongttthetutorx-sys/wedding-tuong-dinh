@@ -115,6 +115,14 @@ function makeSlotCode(num) {
   return `${n}-${hash4}`;
 }
 
+const VALID_MORNING_MODES = ["", "both", "groom", "bride"];
+
+function normalizeMorningMode(val) {
+  if (val === true || val === 1 || val === "1" || val === "morning") return "both";
+  const s = String(val || "").trim().toLowerCase();
+  return VALID_MORNING_MODES.includes(s) ? s : "";
+}
+
 function normalizeSlotsAndGuests(stored) {
   if (!stored || !Array.isArray(stored.savedGuests)) return;
   if (!stored.slots || typeof stored.slots !== "object") stored.slots = {};
@@ -141,12 +149,17 @@ function normalizeSlotsAndGuests(stored) {
     g.slotCode = makeSlotCode(sNum);
 
     const prevSlot = stored.slots[g.slotCode] || {};
+    const resolvedMorning = normalizeMorningMode(
+      g.morning !== undefined ? g.morning : prevSlot.morning
+    );
+    g.morning = resolvedMorning;
     stored.slots[g.slotCode] = {
       ...prevSlot,
       num: sNum,
       name: g.name || prevSlot.name || "",
       lang: g.lang || prevSlot.lang || (/[\u4e00-\u9fff]/.test(g.name || "") ? "zh" : "vi"),
       mode: g.mode || prevSlot.mode || "invite",
+      morning: resolvedMorning,
       group: g.group || prevSlot.group || "",
       table: g.table || prevSlot.table || "",
       pax: Math.max(1, parseInt(g.pax || prevSlot.pax || "1", 10) || 1),
@@ -344,6 +357,10 @@ export class WeddingAnalytics {
       effectiveMode = "directions";
     }
 
+    const morning = normalizeMorningMode(
+      (saved && saved.morning) || (slotObj && slotObj.morning) || ""
+    );
+
     const driveUrl = (saved && saved.driveUrl) || cfg.driveUrl || "";
     const table = String((saved && saved.table) || (slotObj && slotObj.table) || cleanTableHint || "").trim();
     const tMeta = (table && seatingCfg.tableMeta && seatingCfg.tableMeta[table]) || {};
@@ -414,6 +431,8 @@ export class WeddingAnalytics {
       resolvedLang,
       slotCode: cleanSlotCode,
       mode: effectiveMode,
+      morning,
+      morningInvite: Boolean(morning),
       thankYouMode: effectiveMode === "thankyou",
       directionsMode: effectiveMode === "directions",
       driveUrl,
@@ -505,6 +524,7 @@ export class WeddingAnalytics {
                   (guestBySlot && guestBySlot.mode) ||
                   (slot && slot.mode) ||
                   "invite",
+                morning: (seatInfo && seatInfo.morning) || "",
                 group: (seatInfo && seatInfo.group) || "",
                 table: (seatInfo && seatInfo.table) || "",
                 pax: (seatInfo && seatInfo.pax) || 1
@@ -545,6 +565,10 @@ export class WeddingAnalytics {
       const requestedMode = validModes.includes(body.mode)
         ? body.mode
         : (prev && prev.mode) || "invite";
+      const requestedMorning =
+        body.morning !== undefined
+          ? normalizeMorningMode(body.morning)
+          : normalizeMorningMode(prev && prev.morning);
       const requestedGroup =
         body.group !== undefined ? String(body.group || "").trim() : (prev && prev.group) || "";
       const requestedTable =
@@ -569,12 +593,13 @@ export class WeddingAnalytics {
         });
       };
 
-      if (action === "set_mode" || action === "set_seat") {
+      if (action === "set_mode" || action === "set_seat" || action === "set_morning") {
         data.slots[code] = {
           num,
           name: (prev && prev.name) || "",
           lang: (prev && prev.lang) || "vi",
           mode: requestedMode,
+          morning: requestedMorning,
           group: requestedGroup,
           table: requestedTable,
           pax: requestedPax,
@@ -585,6 +610,7 @@ export class WeddingAnalytics {
           const idx = data.savedGuests.findIndex((g) => normalizeGuestKey(g.name) === pk);
           if (idx >= 0) {
             data.savedGuests[idx].mode = requestedMode;
+            data.savedGuests[idx].morning = requestedMorning;
             data.savedGuests[idx].group = requestedGroup;
             data.savedGuests[idx].table = requestedTable;
             data.savedGuests[idx].pax = requestedPax;
@@ -593,6 +619,7 @@ export class WeddingAnalytics {
               name: prev.name,
               lang: prev.lang || "vi",
               mode: requestedMode,
+              morning: requestedMorning,
               group: requestedGroup,
               table: requestedTable,
               pax: requestedPax,
@@ -607,13 +634,14 @@ export class WeddingAnalytics {
         detachPrevGuest();
         if (
           prev &&
-          ((prev.mode && prev.mode !== "invite") || prev.group || prev.table)
+          ((prev.mode && prev.mode !== "invite") || prev.morning || prev.group || prev.table)
         ) {
           data.slots[code] = {
             num,
             name: "",
             lang: "vi",
             mode: prev.mode || "invite",
+            morning: normalizeMorningMode(prev.morning),
             group: prev.group || "",
             table: prev.table || "",
             pax: prev.pax || 1,
@@ -633,6 +661,7 @@ export class WeddingAnalytics {
           name,
           lang,
           mode: requestedMode,
+          morning: requestedMorning,
           group: requestedGroup,
           table: requestedTable,
           pax: requestedPax,
@@ -647,6 +676,7 @@ export class WeddingAnalytics {
           g.slotCode = code;
           g.lang = lang;
           if (validModes.includes(body.mode)) g.mode = body.mode;
+          if (body.morning !== undefined || requestedMorning) g.morning = requestedMorning;
           if (body.group !== undefined || requestedGroup) g.group = requestedGroup;
           if (body.table !== undefined || requestedTable) g.table = requestedTable;
           if (body.pax !== undefined || requestedPax) g.pax = requestedPax;
@@ -656,6 +686,7 @@ export class WeddingAnalytics {
             name,
             lang,
             mode: requestedMode,
+            morning: requestedMorning,
             driveUrl: "",
             note,
             group: requestedGroup,
@@ -713,6 +744,8 @@ export class WeddingAnalytics {
             : undefined;
         const validModes = ["invite", "directions", "thankyou"];
         const nextMode = validModes.includes(body.mode) ? body.mode : undefined;
+        const nextMorning =
+          body.morning !== undefined ? normalizeMorningMode(body.morning) : undefined;
 
         if (Array.isArray(body.guestNames)) {
           const targetKeys = new Set(body.guestNames.map((n) => normalizeGuestKey(n)).filter(Boolean));
@@ -722,11 +755,13 @@ export class WeddingAnalytics {
             if (nextTable !== undefined) g.table = nextTable;
             if (nextPax !== undefined) g.pax = nextPax;
             if (nextMode !== undefined) g.mode = nextMode;
+            if (nextMorning !== undefined) g.morning = nextMorning;
             if (g.slotCode && data.slots && data.slots[g.slotCode]) {
               if (nextGroup !== undefined) data.slots[g.slotCode].group = nextGroup;
               if (nextTable !== undefined) data.slots[g.slotCode].table = nextTable;
               if (nextPax !== undefined) data.slots[g.slotCode].pax = nextPax;
               if (nextMode !== undefined) data.slots[g.slotCode].mode = nextMode;
+              if (nextMorning !== undefined) data.slots[g.slotCode].morning = nextMorning;
             }
           });
         }
@@ -742,6 +777,7 @@ export class WeddingAnalytics {
               name: "",
               lang: "vi",
               mode: "invite",
+              morning: "",
               group: "",
               table: "",
               pax: 1,
@@ -751,6 +787,7 @@ export class WeddingAnalytics {
             if (nextTable !== undefined) prev.table = nextTable;
             if (nextPax !== undefined) prev.pax = nextPax;
             if (nextMode !== undefined) prev.mode = nextMode;
+            if (nextMorning !== undefined) prev.morning = nextMorning;
             data.slots[code] = prev;
 
             if (prev.name) {
@@ -761,6 +798,7 @@ export class WeddingAnalytics {
                 if (nextTable !== undefined) g.table = nextTable;
                 if (nextPax !== undefined) g.pax = nextPax;
                 if (nextMode !== undefined) g.mode = nextMode;
+                if (nextMorning !== undefined) g.morning = nextMorning;
               }
             }
           });
@@ -865,6 +903,9 @@ export class WeddingAnalytics {
             name,
             lang: item.lang === "zh" || /[\u4e00-\u9fff]/.test(name) ? "zh" : "vi",
             mode: validModes.includes(item.mode) ? item.mode : existing?.mode || "invite",
+            morning: normalizeMorningMode(
+              item.morning !== undefined ? item.morning : existing?.morning
+            ),
             driveUrl: String(item.driveUrl ?? existing?.driveUrl ?? "").trim(),
             note: String(item.note !== undefined ? item.note : existing?.note || "").trim(),
             group: String(item.group !== undefined ? item.group : existing?.group || "").trim(),
@@ -949,6 +990,7 @@ export class WeddingAnalytics {
               name: newName,
               lang: newLang,
               mode: matchedG.mode || prevSlot.mode || "invite",
+              morning: normalizeMorningMode(matchedG.morning || prevSlot.morning),
               group: matchedG.group || prevSlot.group || "",
               table: matchedG.table || prevSlot.table || "",
               pax: matchedG.pax || prevSlot.pax || 1,
@@ -1035,6 +1077,28 @@ export class WeddingAnalytics {
             });
           }
         }
+      } else if (action === "toggle_morning") {
+        const targetKey = normalizeGuestKey(body.name || "");
+        if (targetKey) {
+          const nextMorning = normalizeMorningMode(body.morning);
+          const idx = data.savedGuests.findIndex(
+            (g) => normalizeGuestKey(g.name) === targetKey
+          );
+          if (idx >= 0) {
+            data.savedGuests[idx].morning = nextMorning;
+            const sc = data.savedGuests[idx].slotCode;
+            if (sc && data.slots && data.slots[sc]) {
+              data.slots[sc].morning = nextMorning;
+            }
+          }
+          if (data.slots) {
+            Object.values(data.slots).forEach((s) => {
+              if (s && s.name && normalizeGuestKey(s.name) === targetKey) {
+                s.morning = nextMorning;
+              }
+            });
+          }
+        }
       } else if (action === "toggle_mode") {
         const targetKey = normalizeGuestKey(body.name || "");
         if (targetKey) {
@@ -1048,12 +1112,18 @@ export class WeddingAnalytics {
                 ? "invite"
                 : "thankyou";
             data.savedGuests[idx].mode = nextMode;
+            if (body.morning !== undefined) {
+              data.savedGuests[idx].morning = normalizeMorningMode(body.morning);
+            }
             if (body.driveUrl !== undefined) {
               data.savedGuests[idx].driveUrl = String(body.driveUrl || "").trim();
             }
             const sc = data.savedGuests[idx].slotCode;
             if (sc && data.slots && data.slots[sc]) {
               data.slots[sc].mode = nextMode;
+              if (body.morning !== undefined) {
+                data.slots[sc].morning = data.savedGuests[idx].morning;
+              }
             }
           }
         }

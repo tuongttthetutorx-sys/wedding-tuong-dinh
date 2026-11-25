@@ -414,6 +414,37 @@
     return { occ, byTable, totalSeatedRecords, totalSeatedPax };
   }
 
+  const VALID_MORNING_MODES = ["", "both", "groom", "bride"];
+  function normalizeMorningMode(val) {
+    if (val === true || val === 1 || val === "1" || val === "morning") return "both";
+    const s = String(val || "").trim().toLowerCase();
+    return VALID_MORNING_MODES.includes(s) ? s : "";
+  }
+
+  function buildMorningSelectOptions(selectedMorning = "") {
+    const cur = normalizeMorningMode(selectedMorning);
+    const opts = [
+      { value: "", label: "🌙 Chỉ Tiệc Tối (18:00)" },
+      { value: "both", label: "🌅 Mời Sáng (05:30) + Tối" },
+      { value: "groom", label: "🏠 Sáng Nhà Trai + Tối" },
+      { value: "bride", label: "🏡 Sáng Nhà Gái + Tối" }
+    ];
+    return opts
+      .map(
+        (o) =>
+          `<option value="${o.value}" ${o.value === cur ? "selected" : ""}>${o.label}</option>`
+      )
+      .join("");
+  }
+
+  function getMorningBadgeText(morningMode) {
+    const m = normalizeMorningMode(morningMode);
+    if (m === "groom") return "🏠 Sáng Nhà Trai 05:30";
+    if (m === "bride") return "🏡 Sáng Nhà Gái 05:30";
+    if (m === "both") return "🌅 Lễ Sáng 05:30 + Tối";
+    return "";
+  }
+
   function buildGroupSelectOptions(selectedGroup = "") {
     return Object.keys(SEAT_GROUPS)
       .map(
@@ -635,6 +666,7 @@
   const bulkFloatGroup = document.getElementById("bulk-float-group");
   const bulkFloatTable = document.getElementById("bulk-float-table");
   const bulkFloatMode = document.getElementById("bulk-float-mode");
+  const bulkFloatMorning = document.getElementById("bulk-float-morning");
 
   function updateBulkBadgeUI() {
     const count = (window._bulkSelectedSet && window._bulkSelectedSet.size) || 0;
@@ -691,6 +723,7 @@
   const bulkAssignGrp = document.getElementById("bulk-assign-group");
   const bulkAssignTbl = document.getElementById("bulk-assign-table");
   const bulkAssignMod = document.getElementById("bulk-assign-mode");
+  const bulkAssignMorning = document.getElementById("bulk-assign-morning");
 
   if (bulkAssignGrp && bulkFloatGroup) {
     bulkAssignGrp.addEventListener("change", () => { bulkFloatGroup.value = bulkAssignGrp.value; });
@@ -704,10 +737,14 @@
     bulkAssignMod.addEventListener("change", () => { bulkFloatMode.value = bulkAssignMod.value; });
     bulkFloatMode.addEventListener("change", () => { bulkAssignMod.value = bulkFloatMode.value; });
   }
+  if (bulkAssignMorning && bulkFloatMorning) {
+    bulkAssignMorning.addEventListener("change", () => { bulkFloatMorning.value = bulkAssignMorning.value; });
+    bulkFloatMorning.addEventListener("change", () => { bulkAssignMorning.value = bulkFloatMorning.value; });
+  }
 
-  async function executeBulkAssignment({ grpVal, tblVal, modeVal, fromNum, toNum, rangeMode }) {
-    if (grpVal === "__keep__" && tblVal === "__keep__" && modeVal === "__keep__") {
-      notify("⚠️ Hãy chọn ít nhất 1 mục cần gán (Nhóm khách, Bàn tiệc hoặc Loại thiệp)!");
+  async function executeBulkAssignment({ grpVal, tblVal, modeVal, morningVal = "__keep__", fromNum, toNum, rangeMode }) {
+    if (grpVal === "__keep__" && tblVal === "__keep__" && modeVal === "__keep__" && morningVal === "__keep__") {
+      notify("⚠️ Hãy chọn ít nhất 1 mục cần gán (Nhóm khách, Bàn tiệc, Loại thiệp hoặc Lễ Sáng)!");
       return false;
     }
 
@@ -747,6 +784,7 @@
     const nextGroup = grpVal === "__keep__" ? undefined : grpVal;
     const nextTable = tblVal === "__keep__" ? undefined : tblVal;
     const nextMode = modeVal === "__keep__" ? undefined : modeVal;
+    const nextMorning = morningVal === "__keep__" ? undefined : normalizeMorningMode(morningVal);
 
     const guestNamesToUpdate = [];
     savedGuests = savedGuests.map((g) => {
@@ -759,10 +797,12 @@
       if (nextGroup !== undefined) updated.group = nextGroup;
       if (nextTable !== undefined) updated.table = nextTable;
       if (nextMode !== undefined) updated.mode = nextMode;
+      if (nextMorning !== undefined) updated.morning = nextMorning;
       if (g.slotCode && serverSlots[g.slotCode]) {
         if (nextGroup !== undefined) serverSlots[g.slotCode].group = nextGroup;
         if (nextTable !== undefined) serverSlots[g.slotCode].table = nextTable;
         if (nextMode !== undefined) serverSlots[g.slotCode].mode = nextMode;
+        if (nextMorning !== undefined) serverSlots[g.slotCode].morning = nextMorning;
       }
       return updated;
     });
@@ -775,6 +815,7 @@
         name: "",
         lang: "vi",
         mode: "invite",
+        morning: "",
         group: "",
         table: "",
         pax: 1,
@@ -783,6 +824,7 @@
       if (nextGroup !== undefined) prev.group = nextGroup;
       if (nextTable !== undefined) prev.table = nextTable;
       if (nextMode !== undefined) prev.mode = nextMode;
+      if (nextMorning !== undefined) prev.morning = nextMorning;
       serverSlots[code] = prev;
       slotItemsToUpdate.push({ code, num: n });
     });
@@ -809,7 +851,8 @@
           slotItems: slotItemsToUpdate,
           ...(nextGroup !== undefined ? { group: nextGroup } : {}),
           ...(nextTable !== undefined ? { table: nextTable } : {}),
-          ...(nextMode !== undefined ? { mode: nextMode } : {})
+          ...(nextMode !== undefined ? { mode: nextMode } : {}),
+          ...(nextMorning !== undefined ? { morning: nextMorning } : {})
         })
       });
     } catch (_) {}
@@ -823,6 +866,7 @@
       const grpSel = document.getElementById("bulk-assign-group");
       const tblSel = document.getElementById("bulk-assign-table");
       const modeSel = document.getElementById("bulk-assign-mode");
+      const morningSel = document.getElementById("bulk-assign-morning");
       const rangeTypeEl = document.getElementById("bulk-range-type");
       const rangeFromEl = document.getElementById("bulk-range-from");
       const rangeToEl = document.getElementById("bulk-range-to");
@@ -830,11 +874,12 @@
       const grpVal = grpSel ? grpSel.value : "__keep__";
       const tblVal = tblSel ? tblSel.value : "__keep__";
       const modeVal = modeSel ? modeSel.value : "__keep__";
+      const morningVal = morningSel ? morningSel.value : "__keep__";
       const fromNum = parseInt(rangeFromEl ? rangeFromEl.value : "", 10);
       const toNum = parseInt(rangeToEl ? rangeToEl.value : "", 10);
       const rangeMode = rangeTypeEl ? rangeTypeEl.value : "order";
 
-      executeBulkAssignment({ grpVal, tblVal, modeVal, fromNum, toNum, rangeMode });
+      executeBulkAssignment({ grpVal, tblVal, modeVal, morningVal, fromNum, toNum, rangeMode });
     });
   }
 
@@ -843,7 +888,8 @@
       const grpVal = bulkFloatGroup ? bulkFloatGroup.value : "__keep__";
       const tblVal = bulkFloatTable ? bulkFloatTable.value : "__keep__";
       const modeVal = bulkFloatMode ? bulkFloatMode.value : "__keep__";
-      executeBulkAssignment({ grpVal, tblVal, modeVal, fromNum: NaN, toNum: NaN, rangeMode: "order" });
+      const morningVal = bulkFloatMorning ? bulkFloatMorning.value : "__keep__";
+      executeBulkAssignment({ grpVal, tblVal, modeVal, morningVal, fromNum: NaN, toNum: NaN, rangeMode: "order" });
     });
   }
 
@@ -932,12 +978,17 @@
         if (prevS.name !== g.name || prevS.num !== sNum) {
           changed = true;
         }
+        const resolvedMorning = normalizeMorningMode(
+          g.morning !== undefined ? g.morning : prevS.morning
+        );
+        g.morning = resolvedMorning;
         serverSlots[expectedCode] = {
           ...prevS,
           num: sNum,
           name: g.name,
           lang: g.lang || (/[\u4e00-\u9fff]/.test(g.name || "") ? "zh" : "vi"),
           mode: g.mode || prevS.mode || "invite",
+          morning: resolvedMorning,
           group: g.group || prevS.group || "",
           table: g.table || prevS.table || "",
           pax: Math.max(1, parseInt(g.pax || prevS.pax || "1", 10) || 1),
@@ -968,6 +1019,7 @@
                   lang: g.lang || (/[\u4e00-\u9fff]/.test(g.name) ? "zh" : "vi"),
                   note: g.note || "",
                   mode: g.mode || "invite",
+                  morning: normalizeMorningMode(g.morning),
                   group: g.group || "",
                   table: g.table || "",
                   pax: g.pax || 1
@@ -1016,6 +1068,9 @@
         const mergedSlot = g.slot || (loc ? loc.slot : null);
         const mergedSlotCode = g.slotCode || (loc ? loc.slotCode : "");
         const mergedMode = g.mode || (loc ? loc.mode : "invite") || "invite";
+        const mergedMorning = normalizeMorningMode(
+          g.morning !== undefined ? g.morning : loc ? loc.morning : ""
+        );
         const mergedAliases = Array.from(
           new Set([
             ...(loc && Array.isArray(loc.aliases) ? loc.aliases : []),
@@ -1032,6 +1087,7 @@
           slot: mergedSlot,
           slotCode: mergedSlotCode,
           mode: mergedMode,
+          morning: mergedMorning,
           note: mergedNote,
           ...(mergedAliases.length ? { aliases: mergedAliases } : {})
         });
@@ -1202,6 +1258,53 @@
     );
   }
 
+  async function setGuestMorningOnServer(name, nextMorningRaw) {
+    const key = normalizeNameKey(name);
+    const nextMorning = normalizeMorningMode(nextMorningRaw);
+    let linkedSlotCode = "";
+    savedGuests = savedGuests.map((g) => {
+      if (normalizeNameKey(g.name) === key) {
+        if (g.slotCode) linkedSlotCode = g.slotCode;
+        return { ...g, morning: nextMorning };
+      }
+      return g;
+    });
+    if (linkedSlotCode && serverSlots[linkedSlotCode]) {
+      serverSlots[linkedSlotCode].morning = nextMorning;
+      persistLocalSlots();
+    }
+    Object.keys(serverSlots).forEach((code) => {
+      const s = serverSlots[code];
+      if (s && s.name && normalizeNameKey(s.name) === key) {
+        s.morning = nextMorning;
+        persistLocalSlots();
+      }
+    });
+    persistLocalGuests();
+    buildRows();
+    if (typeof renderSlotsTable === "function") renderSlotsTable();
+    try {
+      await fetch(`${apiBase}/api/guests`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "toggle_morning",
+          name,
+          morning: nextMorning
+        })
+      });
+    } catch (_) {}
+    notify(
+      nextMorning === "groom"
+        ? `🏠 Đã bật mời "Lễ Sáng Nhà Trai (05:30) + Tiệc Tối" cho "${name}"!`
+        : nextMorning === "bride"
+          ? `🏡 Đã bật mời "Lễ Sáng Nhà Gái (05:30) + Tiệc Tối" cho "${name}"!`
+          : nextMorning === "both"
+            ? `🌅 Đã bật mời "Lễ Sáng (05:30) + Tiệc Tối (Đầy đủ 2 nhà)" cho "${name}"!`
+            : `🌙 Đã chuyển "${name}" về chế độ Chỉ Tiệc Tối (18:00)!`
+    );
+  }
+
   async function updateGuestSeatOnServer(name, nextGroup, nextTable, nextPax, showToast = true) {
     const key = normalizeNameKey(name);
     let linkedSlotCode = "";
@@ -1328,6 +1431,7 @@
       name: cleanNew,
       lang: newLang,
       mode: (updatedRecord && updatedRecord.mode) || prevSlot.mode || "invite",
+      morning: normalizeMorningMode((updatedRecord && updatedRecord.morning) || prevSlot.morning),
       group: (updatedRecord && updatedRecord.group) || prevSlot.group || "",
       table: (updatedRecord && updatedRecord.table) || prevSlot.table || "",
       pax: (updatedRecord && updatedRecord.pax) || prevSlot.pax || 1,
@@ -1373,6 +1477,7 @@
           lang: newLang,
           note: (updatedRecord && updatedRecord.note) || "",
           mode: (updatedRecord && updatedRecord.mode) || "invite",
+          morning: normalizeMorningMode(updatedRecord && updatedRecord.morning),
           group: (updatedRecord && updatedRecord.group) || "",
           table: (updatedRecord && updatedRecord.table) || "",
           pax: (updatedRecord && updatedRecord.pax) || 1
@@ -1510,6 +1615,9 @@
       const mode = guestObj.mode || "invite";
       const linkedSlotObj =
         slotCode && serverSlots[slotCode] ? serverSlots[slotCode] : null;
+      const guestMorning = normalizeMorningMode(
+        guestObj.morning !== undefined ? guestObj.morning : linkedSlotObj && linkedSlotObj.morning
+      );
       const guestGroup = String(
         guestObj.group || (linkedSlotObj && linkedSlotObj.group) || ""
       ).trim();
@@ -1544,6 +1652,7 @@
       previewQs.set("s", slotCode);
       previewQs.set("to", name);
       if (effectiveLang === "zh") previewQs.set("lang", "zh");
+      if (guestMorning) previewQs.set("morning", guestMorning);
       if (guestTable) {
         previewQs.set("table", guestTable);
         if (guestGroup) previewQs.set("group", guestGroup);
@@ -1560,9 +1669,17 @@
           ? effectiveLang === "zh"
             ? `囍 婚禮感謝卡與現場相簿｜${name} 您好：\n誠摯感謝您蒞臨參與順祥與小瑩的婚禮！我們已整理好婚禮現場高畫質照片與紀錄（Google Drive），歡迎點擊專屬感謝卡瀏覽與下載：\n${fullUrl}`
             : `📸 Thiệp Cảm Ơn & Album Ảnh Cưới｜Trân trọng cảm ơn ${name},\nThuận Tường & Tiểu Dinh xin gửi lời cảm ơn chân thành nhất đến ${name} đã đến chung vui cùng gia đình. Mời ${name} mở Thiệp Cảm Ơn và xem / tải ảnh kỷ niệm buổi tiệc trên Google Drive tại đây nhé:\n${fullUrl}`
-          : effectiveLang === "zh"
-            ? `囍 婚禮喜帖敬邀｜${name} 您好：\n順祥與小瑩謹訂於 2027 年 1 月 6 日（星期三）晚間六時，於越南胡志明市 RIVERSIDE PALACE（Seine 宴會廳）敬備喜筵。\n誠摯邀請您開啟專屬電子喜帖，與我們分享這份喜悅：\n${fullUrl}`
-            : `💌 Trân trọng kính mời ${name},\nThuận Tường & Tiểu Dinh rất hạnh phúc được mời ${name} đến dự buổi tiệc cưới chung vui vào lúc 18:00 Thứ Tư, 06.01.2027 tại Riverside Palace (Sảnh Seine).\nMời xem thiệp cưới dành riêng cho ${name} tại đây nhé:\n${fullUrl}`;
+          : guestMorning
+            ? effectiveLang === "zh"
+              ? `🌅 婚禮全日敬邀（上午迎親 + 晚宴）｜${name} 您好：\n順祥與小瑩誠摯邀請您於 2027 年 1 月 6 日（星期三）全程參與我們的婚禮：\n• 05:30 上午（府上迎親暨結婚典禮）：\n  - 男方府上：80/99/7 Đường Hoàng Ngân, P. Phú Định（富定坊）\n  - 女方府上：302 Chung cư Âu Cơ (Lô D), P. Hòa Bình（地圖定位入口：279/005 Lô D Trịnh Đình Trọng）\n• 18:00 晚間（婚禮晚宴）：RIVERSIDE PALACE（Seine 宴會廳）— 360D Bến Vân Đồn, P. Vĩnh Hội\n點擊專屬喜帖查看完整行程與三地精準導航：\n${fullUrl}`
+              : guestMorning === "bride"
+                ? `🌅 Trân trọng kính mời riêng ${name},\nThuận Tường & Tiểu Dinh rất hạnh phúc được mời ${name} đến tham dự trọn vẹn ngày cưới Thứ Tư, 06.01.2027:\n• 05:30 Sáng (Lễ Thành Hôn tại Tư Gia):\n  - Tư Gia Nhà Gái (điểm hẹn): 302 Chung cư Âu Cơ (Lô D), P. Hòa Bình (ghim bản đồ lối vào chuẩn: 279/005 Lô D Trịnh Đình Trọng)\n  - Tư Gia Nhà Trai: 80/99/7 Đường Hoàng Ngân, P. Phú Định\n• 18:00 Tối (Tiệc Cưới): Riverside Palace (Sảnh Seine) — 360D Bến Vân Đồn, P. Vĩnh Hội\nMời xem thiệp riêng kèm chi tiết lộ trình & bản đồ chỉ đường cả 3 điểm tại đây nhé:\n${fullUrl}`
+                : guestMorning === "groom"
+                  ? `🌅 Trân trọng kính mời riêng ${name},\nThuận Tường & Tiểu Dinh rất hạnh phúc được mời ${name} đến tham dự trọn vẹn ngày cưới Thứ Tư, 06.01.2027:\n• 05:30 Sáng (Lễ Thành Hôn & Đón Dâu):\n  - Tư Gia Nhà Trai (điểm hẹn 05:30): 80/99/7 Đường Hoàng Ngân, P. Phú Định\n  - Tư Gia Nhà Gái: 302 Chung cư Âu Cơ (Lô D), P. Hòa Bình (ghim bản đồ lối vào chuẩn: 279/005 Lô D Trịnh Đình Trọng)\n• 18:00 Tối (Tiệc Cưới): Riverside Palace (Sảnh Seine) — 360D Bến Vân Đồn, P. Vĩnh Hội\nMời xem thiệp riêng kèm chi tiết lộ trình & bản đồ chỉ đường cả 3 điểm tại đây nhé:\n${fullUrl}`
+                  : `🌅 Trân trọng kính mời riêng ${name},\nThuận Tường & Tiểu Dinh rất hạnh phúc được mời ${name} đến tham dự trọn vẹn ngày cưới Thứ Tư, 06.01.2027:\n• 05:30 Sáng (Lễ Thành Hôn tại Tư Gia):\n  - Tư Gia Nhà Trai: 80/99/7 Đường Hoàng Ngân, P. Phú Định\n  - Tư Gia Nhà Gái: 302 Chung cư Âu Cơ (Lô D), P. Hòa Bình (ghim bản đồ lối vào chuẩn: 279/005 Lô D Trịnh Đình Trọng)\n• 18:00 Tối (Tiệc Cưới): Riverside Palace (Sảnh Seine) — 360D Bến Vân Đồn, P. Vĩnh Hội\nMời xem thiệp riêng kèm chi tiết lộ trình & bản đồ chỉ đường cả 3 điểm tại đây nhé:\n${fullUrl}`
+            : effectiveLang === "zh"
+              ? `囍 婚禮喜帖敬邀｜${name} 您好：\n順祥與小瑩謹訂於 2027 年 1 月 6 日（星期三）晚間六時，於越南胡志明市 RIVERSIDE PALACE（Seine 宴會廳）敬備喜筵。\n誠摯邀請您開啟專屬電子喜帖，與我們分享這份喜悅：\n${fullUrl}`
+              : `💌 Trân trọng kính mời ${name},\nThuận Tường & Tiểu Dinh rất hạnh phúc được mời ${name} đến dự buổi tiệc cưới chung vui vào lúc 18:00 Thứ Tư, 06.01.2027 tại Riverside Palace (Sảnh Seine).\nMời xem thiệp cưới dành riêng cho ${name} tại đây nhé:\n${fullUrl}`;
 
       const devicesSummary = sessions.length
         ? sessions.map((s) => s.deviceDetail || "Thiết bị").join(" | ")
@@ -1574,6 +1691,7 @@
         name,
         privateNote,
         effectiveLang,
+        morning: guestMorning,
         fullUrl,
         inviteMsg,
         openCount: sessions.length,
@@ -1600,6 +1718,7 @@
       if (currentFilter === "opened" && !hasOpened) return;
       if (currentFilter === "pending" && hasOpened) return;
       if (currentFilter === "directions" && !isDirEffective) return;
+      if (currentFilter === "morning" && !guestMorning) return;
       if (currentFilter === "thankyou" && !isTyEffective) return;
 
       visibleCount++;
@@ -1659,6 +1778,7 @@
               </span>
               <span class="lang-tag">${effectiveLang === "zh" ? "繁體中文" : "VI"}</span>
               <span class="lang-tag" title="Mã QR & Link cố định vĩnh viễn: ?s=${slotCode}">🔢 QR số ${slotNum} · Link cố định</span>
+              ${guestMorning ? `<span class="morning-status-badge">${getMorningBadgeText(guestMorning)}</span>` : ""}
               ${statusBadgeHtml}
               <label class="guest-private-note-wrap ${privateNote ? "has-note" : ""}" title="Ghi chú riêng cho Cô Dâu & Chú Rể (Khách mời tuyệt đối KHÔNG thấy ghi chú này)">
                 <span class="guest-private-note-icon" aria-hidden="true">📝</span>
@@ -1697,6 +1817,13 @@
                 <button type="button" class="mode-switch-btn js-mode-dir ${isDirEffective ? "is-active-dir" : ""}" title="Đẩy Sơ Đồ Đường Đi & Google Maps lên đầu trang, tự động mở sẵn bao thư">📍 Chỉ Đường</button>
                 <button type="button" class="mode-switch-btn js-mode-ty ${isTyEffective ? "is-active-ty" : ""}">📸 Cảm Ơn</button>
               </div>
+              <select
+                class="morning-inline-select ${guestMorning ? "has-morning" : ""} js-guest-morning-select"
+                aria-label="Chế độ mời Lễ Sáng 05:30 cho ${safeAttrName}"
+                title="Bật chế độ thiệp riêng cho khách mời tham dự Lễ Sáng (05:30 tại Tư Gia Nhà Trai & Nhà Gái + Tiệc Tối)"
+              >
+                ${buildMorningSelectOptions(guestMorning)}
+              </select>
               <button type="button" class="btn-adm primary js-copy-link">📋 Copy Link</button>
               <button type="button" class="btn-adm js-copy-msg">${msgBtnLabel}</button>
               <button type="button" class="btn-adm js-open-guest-qr" title="Tạo & tải Mã QR đẹp riêng cho khách này">📱 Mã QR</button>
@@ -1856,6 +1983,12 @@
       card.querySelector(".js-mode-ty").addEventListener("click", () => {
         if (effectiveMode !== "thankyou") setGuestModeOnServer(name, "thankyou");
       });
+      const morningSelEl = card.querySelector(".js-guest-morning-select");
+      if (morningSelEl) {
+        morningSelEl.addEventListener("change", () => {
+          setGuestMorningOnServer(name, morningSelEl.value);
+        });
+      }
       card.querySelector(".js-copy-link").addEventListener("click", () =>
         copyText(fullUrl, `✅ Đã copy link cố định (#${slotNum}) của "${name}"!`)
       );
@@ -1912,6 +2045,7 @@
         const rowTable = String(slotObj.table || "").trim();
         const rowPax = Math.max(1, parseInt(slotObj.pax || "1", 10) || 1);
         const rawMode = slotObj.mode || "invite";
+        const rowMorning = normalizeMorningMode(slotObj.morning);
         const effectiveMode =
           globalMode === "thankyou" || rawMode === "thankyou"
             ? "thankyou"
@@ -1942,6 +2076,7 @@
         if (currentFilter === "opened" && !hasOpened) return;
         if (currentFilter === "pending" && hasOpened) return;
         if (currentFilter === "directions" && !isDirEffective) return;
+        if (currentFilter === "morning" && !rowMorning) return;
         if (currentFilter === "thankyou" && !isTyEffective) return;
 
         visibleCount++;
@@ -1960,6 +2095,7 @@
         const slotUrl = getSlotUrl(n);
         const slotPreviewParams = new URLSearchParams();
         slotPreviewParams.set("s", code);
+        if (rowMorning) slotPreviewParams.set("morning", rowMorning);
         if (rowTable) {
           slotPreviewParams.set("table", rowTable);
           if (rowGroup) slotPreviewParams.set("group", rowGroup);
@@ -1991,6 +2127,7 @@
                   />
                   <span class="guest-idx" title="Thứ tự trong tổng 414 thiệp">#${overallIdx}</span>
                   <span class="slot-num-pill">🔢 QR Số ${n}</span>
+                  ${rowMorning ? `<span class="morning-status-badge">${getMorningBadgeText(rowMorning)}</span>` : ""}
                   ${statusBadgeHtml}
                   <button type="button" class="mob-toggle-details js-mob-toggle" aria-expanded="false">▾ Mở</button>
                 </div>
@@ -2036,6 +2173,12 @@
                       <button type="button" class="mode-switch-btn js-u-mode-dir ${isDirEffective ? "is-active-dir" : ""}">📍 Chỉ Đường</button>
                       <button type="button" class="mode-switch-btn js-u-mode-ty ${isTyEffective ? "is-active-ty" : ""}">📸 Cảm Ơn</button>
                     </div>
+                    <select
+                      class="morning-inline-select ${rowMorning ? "has-morning" : ""} js-u-slot-morning"
+                      aria-label="Chế độ mời Lễ Sáng 05:30 cho QR Số ${n}"
+                    >
+                      ${buildMorningSelectOptions(rowMorning)}
+                    </select>
                     <button type="button" class="btn-adm js-u-copy-link">📋 Copy Link</button>
                     <a class="btn-adm" href="${previewUrl}" target="_blank" rel="noopener">👁️ Xem thử</a>
                   </div>
@@ -2109,6 +2252,10 @@
         card.querySelector(".js-u-mode-invite").addEventListener("click", () => setSlotMode(n, "invite"));
         card.querySelector(".js-u-mode-dir").addEventListener("click", () => setSlotMode(n, "directions"));
         card.querySelector(".js-u-mode-ty").addEventListener("click", () => setSlotMode(n, "thankyou"));
+        const uMorningSel = card.querySelector(".js-u-slot-morning");
+        if (uMorningSel) {
+          uMorningSel.addEventListener("change", () => setSlotMorning(n, uMorningSel.value));
+        }
         card.querySelector(".js-u-copy-link").addEventListener("click", () =>
           copyText(slotUrl, `📋 Đã copy link của QR Số ${n}!`)
         );
@@ -2207,7 +2354,9 @@
   async function handleAddGuests() {
     const lang = langSelect.value;
     const defaultAddGrpEl = document.getElementById("default-add-group");
+    const defaultAddMorningEl = document.getElementById("default-add-morning");
     const batchGroup = defaultAddGrpEl ? defaultAddGrpEl.value : "";
+    const batchMorning = normalizeMorningMode(defaultAddMorningEl ? defaultAddMorningEl.value : "");
     const names = (listArea.value || "")
       .split(/\r?\n/)
       .map((s) => s.trim())
@@ -2246,6 +2395,7 @@
       const hasHanzi = /[\u4e00-\u9fff]/.test(name);
       const effectiveLang = lang === "zh" || hasHanzi ? "zh" : "vi";
       const effectiveGrp = batchGroup || (existing && existing.group ? existing.group : "");
+      const effectiveMorning = batchMorning || normalizeMorningMode(existing && existing.morning);
 
       // Find slot: keep existing slot if already assigned, or assign from next available
       let slotNum = existing && existing.slot ? existing.slot : neededSlots[idx];
@@ -2255,6 +2405,7 @@
         name,
         lang: effectiveLang,
         mode: existing && existing.mode ? existing.mode : "invite",
+        morning: effectiveMorning,
         driveUrl: existing && existing.driveUrl ? existing.driveUrl : "",
         note: finalNote,
         group: effectiveGrp,
@@ -2279,6 +2430,7 @@
           name,
           lang: effectiveLang,
           mode: record.mode,
+          morning: effectiveMorning,
           group: effectiveGrp,
           table: record.table,
           pax: record.pax,
@@ -2290,7 +2442,8 @@
           name,
           lang: effectiveLang,
           note: finalNote,
-          group: effectiveGrp
+          group: effectiveGrp,
+          morning: effectiveMorning
         });
       }
     });
@@ -2315,7 +2468,7 @@
         await fetch(`${apiBase}/api/slots`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "set_name", code: s.code, name: s.name, lang: s.lang, note: s.note, group: s.group })
+          body: JSON.stringify({ action: "set_name", code: s.code, name: s.name, lang: s.lang, note: s.note, group: s.group, morning: s.morning })
         }).catch(() => {});
       }
     } catch (_) {}
@@ -2584,6 +2737,7 @@
       "STT",
       "Ten Khach Moi",
       "Ghi Chu Rieng (Co Dau Chu Re)",
+      "Moi Le Sang (05:30)",
       "So Lan Mo",
       "Chi Tiet Thiet Bi Da Mo",
       "Ngon Ngu",
@@ -2597,6 +2751,7 @@
           r.idx,
           r.name,
           r.privateNote || "",
+          r.morning ? getMorningBadgeText(r.morning) : "Chỉ Tiệc Tối",
           r.openCount,
           r.devicesSummary,
           r.effectiveLang,
@@ -2710,11 +2865,39 @@
   }
 
   function getLayoutSheetConfig(layoutMode) {
+    if (layoutMode === "square_qr_xl") {
+      return {
+        cols: 2,
+        rows: 3,
+        itemsPerSheet: 6,
+        cellWmm: 90,
+        cellHmm: 90,
+        gridWmm: 180,
+        gridHmm: 270,
+        marginXmm: 15,
+        marginYmm: 13.5,
+        safePadMm: 4.0,
+        sheetWidth: "180mm",
+        pageMargin: "13.5mm 15mm",
+        cellPadding: "0",
+        cellWidth: "90mm",
+        cellHeight: "90mm",
+        name: "Thẻ Vuông QR + Bản Đồ Cỡ Rộng (9×9cm • 1 hàng 2 thẻ • 6 thẻ/tờ A4)",
+        shortName: "6 Thẻ Vuông 9×9cm (1 hàng 2 thẻ)"
+      };
+    }
     if (layoutMode === "square_qr" || layoutMode === "square_qr_lg") {
       return {
         cols: 3,
         rows: 4,
         itemsPerSheet: 12,
+        cellWmm: 60,
+        cellHmm: 60,
+        gridWmm: 180,
+        gridHmm: 240,
+        marginXmm: 15,
+        marginYmm: 28.5,
+        safePadMm: 3.5,
         sheetWidth: "180mm",
         pageMargin: "28.5mm 15mm",
         cellPadding: "0",
@@ -2729,6 +2912,13 @@
         cols: 4,
         rows: 6,
         itemsPerSheet: 24,
+        cellWmm: 45,
+        cellHmm: 45,
+        gridWmm: 180,
+        gridHmm: 270,
+        marginXmm: 15,
+        marginYmm: 13.5,
+        safePadMm: 2.5,
         sheetWidth: "180mm",
         pageMargin: "13.5mm 15mm",
         cellPadding: "0",
@@ -2743,12 +2933,19 @@
         cols: 6,
         rows: 3,
         itemsPerSheet: 18,
-        sheetWidth: "197mm",
-        pageMargin: "6.5mm",
+        cellWmm: 32.5,
+        cellHmm: 93.7,
+        gridWmm: 195,
+        gridHmm: 281.1,
+        marginXmm: 7.5,
+        marginYmm: 7.95,
+        safePadMm: 2.2,
+        sheetWidth: "195mm",
+        pageMargin: "7.95mm 7.5mm",
         cellPadding: "0",
-        cellWidth: "auto",
-        cellHeight: "auto",
-        name: "Dải Bookmark Dọc Thon Dài (3.1×9cm • 18 dải/tờ A4)",
+        cellWidth: "32.5mm",
+        cellHeight: "93.7mm",
+        name: "Dải Bookmark Dọc Thon Dài (3.25×9.37cm • 18 dải/tờ A4)",
         shortName: "18 Dải Bookmark Dọc"
       };
     }
@@ -2756,14 +2953,543 @@
       cols: 4,
       rows: 5,
       itemsPerSheet: 20,
-      sheetWidth: "197mm",
-      pageMargin: "6.5mm",
+      cellWmm: 48,
+      cellHmm: 56,
+      gridWmm: 192,
+      gridHmm: 280,
+      marginXmm: 9,
+      marginYmm: 8.5,
+      safePadMm: 3.0,
+      sheetWidth: "192mm",
+      pageMargin: "8.5mm 9mm",
       cellPadding: "1.8mm 2.2mm",
-      cellWidth: "auto",
-      cellHeight: "auto",
-      name: "Thẻ Phụ Chữ Nhật Không Khung (4.6×5.4cm • 20 thẻ/tờ A4)",
+      cellWidth: "48mm",
+      cellHeight: "56mm",
+      name: "Thẻ Phụ Chữ Nhật Không Khung (4.8×5.6cm • 20 thẻ/tờ A4)",
       shortName: "20 Thẻ Phụ Chữ Nhật"
     };
+  }
+
+  function getBackMapAssetUrl() {
+    if (window.location.protocol === "file:") {
+      return new URL("./assets/ban-do-riverside-palace-card.png", window.location.href).href;
+    }
+    return new URL("/assets/ban-do-riverside-palace-card.png", window.location.origin).href;
+  }
+
+  function buildDuplexCropMarksHtml(cfg) {
+    // Crisp guillotine crop marks placed strictly OUTSIDE the card grid in the white waste margin
+    // (only rendered on Front QR pages so Back Map stays 100% clean with zero mark bleed!)
+    const marks = [];
+    const offset = 1.6;
+    const len = 4.6;
+    const topEnd = Math.max(0.5, cfg.marginYmm - offset);
+    const topStart = Math.max(0.2, topEnd - len);
+    const botStart = Math.min(296.5, cfg.marginYmm + cfg.gridHmm + offset);
+    const botEnd = Math.min(296.8, botStart + len);
+    const leftEnd = Math.max(0.5, cfg.marginXmm - offset);
+    const leftStart = Math.max(0.2, leftEnd - len);
+    const rightStart = Math.min(209.5, cfg.marginXmm + cfg.gridWmm + offset);
+    const rightEnd = Math.min(209.8, rightStart + len);
+
+    for (let c = 0; c <= cfg.cols; c++) {
+      const x = (cfg.marginXmm + c * cfg.cellWmm).toFixed(2);
+      marks.push(
+        `<span class="crop-v" style="left:${x}mm; top:${topStart.toFixed(2)}mm; height:${(topEnd - topStart).toFixed(2)}mm;"></span>`,
+        `<span class="crop-v" style="left:${x}mm; top:${botStart.toFixed(2)}mm; height:${(botEnd - botStart).toFixed(2)}mm;"></span>`
+      );
+    }
+    for (let r = 0; r <= cfg.rows; r++) {
+      const y = (cfg.marginYmm + r * cfg.cellHmm).toFixed(2);
+      marks.push(
+        `<span class="crop-h" style="top:${y}mm; left:${leftStart.toFixed(2)}mm; width:${(leftEnd - leftStart).toFixed(2)}mm;"></span>`,
+        `<span class="crop-h" style="top:${y}mm; left:${rightStart.toFixed(2)}mm; width:${(rightEnd - rightStart).toFixed(2)}mm;"></span>`
+      );
+    }
+    return marks.join("");
+  }
+
+  function buildDuplexFrontQrHtml({
+    title,
+    toolbarTitle,
+    toolbarDesc,
+    sheetsCells,
+    cfg,
+    isSquareQr,
+    isPinterestStrip
+  }) {
+    const totalSheets = sheetsCells.length;
+    const cropMarks = buildDuplexCropMarksHtml(cfg);
+    const cellBg = isPinterestStrip || isSquareQr ? "#faf8f4" : "transparent";
+    const pagesHtml = sheetsCells
+      .map((chunk, idx) => {
+        const isLast = idx === totalSheets - 1;
+        return `<div class="a4-page${isLast ? " is-last" : ""}">
+  <div class="sheet-orient-tag">▲ ĐẦU TRÊN - MẶT 1 (QR) · Tờ ${idx + 1}/${totalSheets}</div>
+  ${cropMarks}
+  <div class="a4-grid">${chunk.join("")}</div>
+</div>`;
+      })
+      .join("\n");
+
+    return `<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>${title}</title>
+  <style>
+@page { size: A4 portrait; margin: 0; }
+* {
+  box-sizing: border-box;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #f4efe6;
+  color: #2c1e1e;
+}
+.print-toolbar {
+  max-width: 210mm;
+  margin: 12px auto;
+  padding: 14px 18px;
+  background: #fff;
+  border: 1px solid #d9c3a3;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+.print-btn {
+  background: #7d1518;
+  color: #fff;
+  border: none;
+  padding: 11px 20px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.a4-page {
+  position: relative;
+  width: 210mm;
+  height: 297mm;
+  margin: 0 auto 18px;
+  background: #ffffff;
+  overflow: hidden;
+  page-break-after: always;
+  break-after: page;
+}
+.a4-page.is-last {
+  page-break-after: auto;
+  break-after: auto;
+}
+.sheet-orient-tag {
+  position: absolute;
+  top: 3.5mm;
+  left: ${cfg.marginXmm}mm;
+  font-size: 7.5pt;
+  font-weight: 600;
+  color: #9e877e;
+  letter-spacing: 0.3px;
+  user-select: none;
+}
+.crop-v {
+  position: absolute;
+  width: 0;
+  border-left: 0.22mm solid #8f6b62;
+  pointer-events: none;
+}
+.crop-h {
+  position: absolute;
+  height: 0;
+  border-top: 0.22mm solid #8f6b62;
+  pointer-events: none;
+}
+.a4-grid {
+  position: absolute;
+  left: ${cfg.marginXmm}mm;
+  top: ${cfg.marginYmm}mm;
+  width: ${cfg.gridWmm}mm;
+  height: ${cfg.gridHmm}mm;
+  display: grid;
+  grid-template-columns: repeat(${cfg.cols}, ${cfg.cellWmm}mm);
+  grid-template-rows: repeat(${cfg.rows}, ${cfg.cellHmm}mm);
+  gap: 0;
+}
+.sticker-cell {
+  width: ${cfg.cellWmm}mm;
+  height: ${cfg.cellHmm}mm;
+  padding: ${cfg.cellPadding};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: ${cellBg};
+  overflow: hidden;
+  box-shadow: inset 0 0 0 0.14mm rgba(176, 123, 114, 0.72);
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+.sticker-cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+@media screen {
+  .a4-page {
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
+  }
+}
+@media print {
+  html, body { background: #ffffff; }
+  .print-toolbar { display: none !important; }
+  .a4-page { margin: 0; box-shadow: none; }
+}
+  </style>
+</head>
+<body>
+  <div class="print-toolbar">
+    <div>
+      <strong>${toolbarTitle}</strong>
+      <div style="font-size:12.4px; color:#5c4747; margin-top:4px; line-height:1.52;">
+        ${toolbarDesc}
+        <br/>• <strong>Khóa tọa độ 2 mặt đối xứng tâm A4:</strong> Lưới ${cfg.cols}×${cfg.rows} ô (${cfg.cellWmm}×${cfg.cellHmm}mm), lề trái/phải <strong>${cfg.marginXmm}mm</strong>, lề trên/dưới <strong>${cfg.marginYmm}mm</strong>, có sẵn dấu xén ngoài lề.
+        <br/>• <strong>Bắt buộc khi in:</strong> Khổ giấy <strong>A4</strong> · Tỷ lệ (Scale) <strong>100% / Mặc định</strong> · Lề (Margins) <strong>None / Không có</strong>.
+      </div>
+    </div>
+    <button class="print-btn" onclick="window.print()">🖨️ In Ngay / Lưu File PDF</button>
+  </div>
+  ${pagesHtml}
+</body>
+</html>`;
+  }
+
+  function openBacksideMapPrintWindow({ layoutMode, pageCount = 1, testPairQrDataUrl = "" }) {
+    const cfg = getLayoutSheetConfig(layoutMode);
+    const mapImgUrl = getBackMapAssetUrl();
+    const isTestMode = Boolean(testPairQrDataUrl);
+    const safePages = isTestMode ? 1 : Math.max(1, Math.min(80, parseInt(pageCount, 10) || 1));
+
+    const win = window.open("", "_blank");
+    if (!win) {
+      notify("⚠️ Trình duyệt chặn cửa sổ bật lên. Hãy cho phép Popup để mở trang in Mặt Bản Đồ nhé!");
+      return;
+    }
+
+    const totalCells = cfg.cols * cfg.rows;
+    let mapCellsHtml = "";
+    for (let i = 0; i < totalCells; i++) {
+      mapCellsHtml += `<div class="map-cell"><img src="${mapImgUrl}" alt="Bản đồ Riverside Palace" /></div>`;
+    }
+
+    let testFrontHtml = "";
+    if (isTestMode) {
+      const cropMarks = buildDuplexCropMarksHtml(cfg);
+      let qrCellsHtml = "";
+      for (let i = 0; i < totalCells; i++) {
+        qrCellsHtml += `<div class="sticker-cell"><img src="${testPairQrDataUrl}" alt="Test QR" /></div>`;
+      }
+      testFrontHtml = `<div class="a4-page is-front-test">
+  <div class="sheet-orient-tag">▲ ĐẦU TRÊN - MẶT 1 (QR TEST) · Trang 1/2</div>
+  ${cropMarks}
+  <div class="a4-grid">${qrCellsHtml}</div>
+</div>`;
+    }
+
+    const pageTitle = isTestMode
+      ? `Test Khớp 2 Mặt (QR + Bản Đồ • ${cfg.shortName}) — Riverside Palace`
+      : `Mặt Sau Bản Đồ Riverside Palace (${cfg.shortName}) — Khớp 100% Mặt QR`;
+
+    win.document.open();
+    win.document.write(`<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>${pageTitle}</title>
+  <style>
+@page { size: A4 portrait; margin: 0; }
+:root {
+  --dx: 0mm;
+  --dy: 0mm;
+  --safe-pad: ${cfg.safePadMm}mm;
+  --sheet-bg: #FBF7F2;
+  --cell-rot: 0deg;
+}
+* {
+  box-sizing: border-box;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #ece5dc;
+  color: #2c1e1e;
+}
+.print-toolbar {
+  max-width: 210mm;
+  margin: 12px auto;
+  padding: 14px 18px;
+  background: #fff;
+  border: 1.5px solid #9e2f42;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.tb-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.tb-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  padding-top: 8px;
+  border-top: 1px dashed #e2d1c4;
+  font-size: 12.5px;
+}
+.tb-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 600;
+  color: #4a2e2e;
+}
+.tb-field input[type="number"] {
+  width: 66px;
+  height: 30px;
+  padding: 2px 6px;
+  border: 1px solid #c9b2a4;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.tb-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 600;
+  color: #4a2e2e;
+  cursor: pointer;
+}
+.print-btn {
+  background: #8e2b3a;
+  color: #fff;
+  border: none;
+  padding: 11px 20px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.reset-btn {
+  background: #f5eee6;
+  color: #5c3a3a;
+  border: 1px solid #d2beb0;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.a4-page {
+  position: relative;
+  width: 210mm;
+  height: 297mm;
+  margin: 0 auto 18px;
+  background: var(--sheet-bg);
+  overflow: hidden;
+  page-break-after: always;
+  break-after: page;
+}
+.a4-page.is-front-test {
+  background: #ffffff;
+}
+.a4-page:last-of-type {
+  page-break-after: auto;
+  break-after: auto;
+}
+.sheet-orient-tag {
+  position: absolute;
+  top: 3.5mm;
+  left: ${cfg.marginXmm}mm;
+  font-size: 7.5pt;
+  font-weight: 600;
+  color: #a99389;
+  letter-spacing: 0.3px;
+  user-select: none;
+}
+.crop-v {
+  position: absolute;
+  width: 0;
+  border-left: 0.22mm solid #8f6b62;
+  pointer-events: none;
+}
+.crop-h {
+  position: absolute;
+  height: 0;
+  border-top: 0.22mm solid #8f6b62;
+  pointer-events: none;
+}
+.a4-grid {
+  position: absolute;
+  left: ${cfg.marginXmm}mm;
+  top: ${cfg.marginYmm}mm;
+  width: ${cfg.gridWmm}mm;
+  height: ${cfg.gridHmm}mm;
+  display: grid;
+  grid-template-columns: repeat(${cfg.cols}, ${cfg.cellWmm}mm);
+  grid-template-rows: repeat(${cfg.rows}, ${cfg.cellHmm}mm);
+  gap: 0;
+}
+.a4-page.is-map-back .a4-grid {
+  transform: translate(var(--dx), var(--dy));
+}
+.sticker-cell {
+  width: ${cfg.cellWmm}mm;
+  height: ${cfg.cellHmm}mm;
+  padding: ${cfg.cellPadding};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #faf8f4;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 0.14mm rgba(176, 123, 114, 0.72);
+}
+.sticker-cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.map-cell {
+  width: ${cfg.cellWmm}mm;
+  height: ${cfg.cellHmm}mm;
+  padding: var(--safe-pad);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  /* Không vẽ khung viền cắt ở mặt sau để máy in lệch 1-2mm vẫn mịn đẹp tuyệt đối! */
+}
+.map-cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  transform: rotate(var(--cell-rot));
+}
+@media screen {
+  .a4-page {
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.14);
+  }
+  .a4-page.is-map-back .map-cell {
+    outline: 0.25px dashed rgba(158, 47, 66, 0.22);
+  }
+}
+@media print {
+  html, body { background: transparent; }
+  .print-toolbar { display: none !important; }
+  .a4-page { margin: 0; box-shadow: none; }
+  .a4-page.is-map-back .map-cell { outline: none !important; }
+}
+  </style>
+</head>
+<body>
+  <div class="print-toolbar">
+    <div class="tb-top">
+      <div>
+        <strong>${isTestMode ? "🧪 Tờ Test Khớp 2 Mặt (Trang 1: Mặt QR · Trang 2: Mặt Bản Đồ)" : `🗺️ Mặt Sau A4: Bản Đồ Riverside Palace (${cfg.name})`}</strong>
+        <div style="font-size:12.2px; color:#5c4747; margin-top:4px; line-height:1.5;">
+          • <strong>Khóa khớp tâm A4:</strong> ${cfg.cols}×${cfg.rows} ô (${cfg.cellWmm}×${cfg.cellHmm}mm), lề trái/phải <strong>${cfg.marginXmm}mm</strong>, lề trên/dưới <strong>${cfg.marginYmm}mm</strong> - trùng khít 100% mặt QR.<br/>
+          • <strong>Bắt buộc khi in:</strong> Khổ giấy <strong>A4</strong> · Tỷ lệ <strong>100% (Actual Size)</strong> · Lề <strong>None</strong>. ${isTestMode ? "In Trang 1 trước, lật giấy đút lại in Trang 2 rồi đưa lên soi đèn!" : "Mẹo: Chỉ cần để 1 tờ rồi chỉnh Số bản (Copies) trên máy in bằng số tờ QR đã in."}
+        </div>
+      </div>
+      <button class="print-btn" onclick="window.print()">🖨️ In Ngay / Lưu File PDF</button>
+    </div>
+    <div class="tb-controls">
+      ${isTestMode ? "" : `<label class="tb-field">Số tờ A4: <input type="number" id="cal-pages" min="1" max="80" step="1" value="${safePages}" /></label>`}
+      <label class="tb-field" title="Dịch toàn bộ lưới bản đồ sang phải (+) hoặc sang trái (-) nếu máy in bị lệch ngang khi đút giấy lần 2">Bù ngang X (mm): <input type="number" id="cal-dx" min="-8" max="8" step="0.5" value="0" /></label>
+      <label class="tb-field" title="Dịch toàn bộ lưới bản đồ xuống dưới (+) hoặc lên trên (-) nếu máy in bị lệch dọc khi đút giấy lần 2">Bù dọc Y (mm): <input type="number" id="cal-dy" min="-8" max="8" step="0.5" value="0" /></label>
+      <label class="tb-field" title="Khoảng đệm an toàn quanh mỗi ô bản đồ để khi cắt không bao giờ phạm vào chữ">Lề an toàn (mm): <input type="number" id="cal-pad" min="1.5" max="7" step="0.5" value="${cfg.safePadMm}" /></label>
+      <label class="tb-check"><input type="checkbox" id="cal-bleed" checked /> Phủ nền kem tràn tờ (#FBF7F2)</label>
+      <label class="tb-check"><input type="checkbox" id="cal-rot" /> Xoay 180° (nếu máy lật ngược)</label>
+      <button type="button" class="reset-btn" id="cal-reset">↺ Về mặc định</button>
+    </div>
+  </div>
+  ${testFrontHtml}
+  <div id="map-pages-host"></div>
+  <script>
+    (function() {
+      var mapCells = ${JSON.stringify(mapCellsHtml)};
+      var host = document.getElementById("map-pages-host");
+      var inpPages = document.getElementById("cal-pages");
+      var inpDx = document.getElementById("cal-dx");
+      var inpDy = document.getElementById("cal-dy");
+      var inpPad = document.getElementById("cal-pad");
+      var chkBleed = document.getElementById("cal-bleed");
+      var chkRot = document.getElementById("cal-rot");
+      var btnReset = document.getElementById("cal-reset");
+      var defaultPad = ${cfg.safePadMm};
+      var isTest = ${isTestMode ? "true" : "false"};
+
+      function renderPages(count) {
+        var n = Math.max(1, Math.min(80, parseInt(count, 10) || 1));
+        var html = "";
+        for (var p = 0; p < n; p++) {
+          var tag = isTest ? "▲ ĐẦU TRÊN - MẶT 2 (BẢN ĐỒ TEST) · Trang 2/2" : ("▲ ĐẦU TRÊN - MẶT 2 (BẢN ĐỒ)" + (n > 1 ? " · Tờ " + (p + 1) + "/" + n : ""));
+          html += '<div class="a4-page is-map-back"><div class="sheet-orient-tag">' + tag + '</div><div class="a4-grid">' + mapCells + '</div></div>';
+        }
+        host.innerHTML = html;
+      }
+
+      function applyCal() {
+        var root = document.documentElement.style;
+        var dx = parseFloat(inpDx.value) || 0;
+        var dy = parseFloat(inpDy.value) || 0;
+        var pad = Math.max(0, parseFloat(inpPad.value) || defaultPad);
+        root.setProperty("--dx", dx + "mm");
+        root.setProperty("--dy", dy + "mm");
+        root.setProperty("--safe-pad", pad + "mm");
+        root.setProperty("--sheet-bg", chkBleed.checked ? "#FBF7F2" : "#ffffff");
+        root.setProperty("--cell-rot", chkRot.checked ? "180deg" : "0deg");
+      }
+
+      renderPages(${safePages});
+      applyCal();
+
+      if (inpPages) inpPages.addEventListener("input", function() { renderPages(inpPages.value); });
+      inpDx.addEventListener("input", applyCal);
+      inpDy.addEventListener("input", applyCal);
+      inpPad.addEventListener("input", applyCal);
+      chkBleed.addEventListener("change", applyCal);
+      chkRot.addEventListener("change", applyCal);
+      btnReset.addEventListener("click", function() {
+        inpDx.value = "0";
+        inpDy.value = "0";
+        inpPad.value = String(defaultPad);
+        chkBleed.checked = true;
+        chkRot.checked = false;
+        if (inpPages) { inpPages.value = "1"; renderPages(1); }
+        applyCal();
+      });
+    })();
+  <\/script>
+</body>
+</html>`);
+    win.document.close();
   }
 
   function renderLuxuryWeddingQR(forPrintTransparent = false, overrideOpts = null) {
@@ -3520,6 +4246,21 @@
     if (btnPrintQrSheet) {
       btnPrintQrSheet.textContent = `🖨️ Xuất Tờ A4 Theo Đúng Cấu Hình Đang Xem (${cfg.shortName} / Tờ A4)`;
     }
+    const mapBackSyncInfo = document.getElementById("map-back-sync-info");
+    if (mapBackSyncInfo) {
+      const sizeNote =
+        cfg.cellWmm >= 85
+          ? "Cỡ rộng đọc bản đồ rất rõ nét."
+          : cfg.cellWmm >= 58
+            ? "Mẹo: muốn chữ bản đồ to rõ nhất cho khách lớn tuổi, bạn có thể chọn kiểu 9×9cm (6 thẻ/tờ A4)."
+            : "Lưu ý: khổ thẻ nhỏ nên cân nhắc chọn 6×6cm hoặc 9×9cm để tên đường dễ đọc.";
+      mapBackSyncInfo.innerHTML =
+        `Đang khóa khớp lưới đối xứng tâm A4: <strong>${cfg.shortName} (${cfg.cols}×${cfg.rows} ô · Lề ${cfg.marginXmm}mm / ${cfg.marginYmm}mm)</strong>. Phủ tràn nền kem + vùng an toàn <strong>${cfg.safePadMm}mm</strong> mỗi ô để máy in lệch 1-2mm cắt vẫn không phạm chữ. ${sizeNote}`;
+    }
+    const btnPrintMapBackEl = document.getElementById("btn-print-map-back");
+    if (btnPrintMapBackEl) {
+      btnPrintMapBackEl.textContent = `🗺️ Xuất Tờ A4 Mặt Sau - Bản Đồ (${cfg.shortName})`;
+    }
   }
 
   if (qrBatchGuests && !qrBatchGuests.value.trim() && Array.isArray(savedGuests) && savedGuests.length > 0) {
@@ -3689,13 +4430,9 @@
         renderLuxuryWeddingQR(false);
 
         const totalCount = cells.length;
-        const sheetsHtml = [];
+        const sheetsCells = [];
         for (let i = 0; i < totalCount; i += cfg.itemsPerSheet) {
-          const chunk = cells.slice(i, i + cfg.itemsPerSheet);
-          const isLast = i + cfg.itemsPerSheet >= totalCount;
-          sheetsHtml.push(
-            `<div class="a4-sheet${isLast ? "" : " page-break"}">${chunk.join("")}</div>`
-          );
+          sheetsCells.push(cells.slice(i, i + cfg.itemsPerSheet));
         }
 
         const remainderDesc =
@@ -3704,104 +4441,17 @@
             : `${remainderCount} QR Chung`;
 
         win.document.open();
-        win.document.write(`<!DOCTYPE html>
-<html lang="vi">
-<head>
-  <meta charset="UTF-8" />
-  <title>In Tờ A4 Gộp (${personalNames.length} Có Tên + ${remainderDesc} = ${totalCount} Thẻ) — Thuận Tường & Tiểu Dinh</title>
-  <style>
-@page { size: A4 portrait; margin: ${cfg.pageMargin}; }
-* {
-  box-sizing: border-box;
-  -webkit-print-color-adjust: exact !important;
-  print-color-adjust: exact !important;
-}
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: #f4efe6;
-  color: #2c1e1e;
-}
-.print-toolbar {
-  max-width: 210mm;
-  margin: 12px auto;
-  padding: 14px 18px;
-  background: #fff;
-  border: 1px solid #d9c3a3;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-}
-.print-btn {
-  background: #7d1518;
-  color: #fff;
-  border: none;
-  padding: 11px 20px;
-  border-radius: 8px;
-  font-weight: 700;
-  font-size: 14px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-.a4-sheet {
-  width: ${cfg.sheetWidth};
-  margin: 0 auto 20px;
-  background: transparent;
-  display: grid;
-  grid-template-columns: repeat(${cfg.cols}, 1fr);
-  gap: 0;
-  border-top: 0.25mm solid #b07b72;
-  border-left: 0.25mm solid #b07b72;
-}
-.a4-sheet.page-break {
-  page-break-after: always;
-  break-after: page;
-}
-.sticker-cell {
-  border-right: 0.25mm solid #b07b72;
-  border-bottom: 0.25mm solid #b07b72;
-  padding: ${cfg.cellPadding};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: ${isPinterestStrip || isSquareQr ? "#faf8f4" : "transparent"};
-  page-break-inside: avoid;
-  break-inside: avoid;
-}
-.sticker-cell img {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-@media screen {
-  .a4-sheet {
-    background: transparent;
-    box-shadow: 0 10px 28px rgba(0,0,0,0.08);
-  }
-}
-@media print {
-  body { background: transparent; }
-  .print-toolbar { display: none !important; }
-  .a4-sheet { width: 100%; margin: 0; padding: 0; box-shadow: none; background: transparent !important; }
-}
-  </style>
-</head>
-<body>
-  <div class="print-toolbar">
-<div>
-  <strong>🖨️ Bản Dàn Trang A4 Đủ Số Lượng: ${personalNames.length} Thẻ Đã Có Tên + ${remainderDesc} = Tổng ${totalCount} chiếc (${sheetsHtml.length} tờ A4 • ${cfg.name})</strong>
-  <div style="font-size:12.5px; color:#5c4747; margin-top:4px; line-height:1.5;">
-    • Những khách đã có tên được xếp ở các ô đầu tiên, tiếp nối liền mạch bởi <strong>${remainderDesc}</strong> mà không trùng lặp số.<br/>
-    • Khi bấm In / Lưu PDF nhớ chọn <strong>Tỷ lệ (Scale): Mặc định / 100%</strong>.
-  </div>
-</div>
-<button class="print-btn" onclick="window.print()">🖨️ In Ngay / Lưu File PDF</button>
-  </div>
-  ${sheetsHtml.join("\n")}
-</body>
-</html>`);
+        win.document.write(
+          buildDuplexFrontQrHtml({
+            title: `In Tờ A4 Gộp (${personalNames.length} Có Tên + ${remainderDesc} = ${totalCount} Thẻ) - Thuận Tường & Tiểu Dinh`,
+            toolbarTitle: `🖨️ Mặt 1 (QR): ${personalNames.length} Có Tên + ${remainderDesc} = Tổng ${totalCount} thẻ (${sheetsCells.length} tờ A4 • ${cfg.name})`,
+            toolbarDesc: `• Khách đã có tên xếp ở các ô đầu, tiếp nối liền mạch bởi <strong>${remainderDesc}</strong> không trùng số.`,
+            sheetsCells,
+            cfg,
+            isSquareQr,
+            isPinterestStrip
+          })
+        );
         win.document.close();
       }, 50);
     });
@@ -3843,105 +4493,50 @@ body {
         notify("⚠️ Trình duyệt chặn cửa sổ bật lên. Hãy cho phép Popup để mở trang in A4 nhé!");
         return;
       }
-      let stickersHtml = "";
+      const cells = [];
       for (let i = 0; i < totalItems; i++) {
-        stickersHtml += `<div class="sticker-cell"><img src="${printDataUrl}" alt="Thẻ Phụ QR Thiệp Cưới" /></div>`;
+        cells.push(`<div class="sticker-cell"><img src="${printDataUrl}" alt="Thẻ Phụ QR Thiệp Cưới" /></div>`);
       }
-      win.document.write(`<!DOCTYPE html>
-<html lang="vi">
-<head>
-  <meta charset="UTF-8" />
-  <title>In Tờ A4 (${totalItems} ${cfg.name}) — Thuận Tường & Tiểu Dinh</title>
-  <style>
-@page { size: A4 portrait; margin: ${cfg.pageMargin}; }
-* {
-  box-sizing: border-box;
-  -webkit-print-color-adjust: exact !important;
-  print-color-adjust: exact !important;
-}
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: #f4efe6;
-  color: #2c1e1e;
-}
-.print-toolbar {
-  max-width: 210mm;
-  margin: 12px auto;
-  padding: 14px 18px;
-  background: #fff;
-  border: 1px solid #d9c3a3;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-}
-.print-btn {
-  background: #7d1518;
-  color: #fff;
-  border: none;
-  padding: 11px 20px;
-  border-radius: 8px;
-  font-weight: 700;
-  font-size: 14px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-.a4-sheet {
-  width: ${cfg.sheetWidth};
-  margin: 0 auto 20px;
-  background: transparent;
-  display: grid;
-  grid-template-columns: repeat(${cfg.cols}, 1fr);
-  gap: 0;
-  border-top: 0.25mm solid #b07b72;
-  border-left: 0.25mm solid #b07b72;
-}
-.sticker-cell {
-  border-right: 0.25mm solid #b07b72;
-  border-bottom: 0.25mm solid #b07b72;
-  padding: ${cfg.cellPadding};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: ${isPinterestStrip || isSquareQr ? "#faf8f4" : "transparent"};
-  page-break-inside: avoid;
-  break-inside: avoid;
-}
-.sticker-cell img {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-@media screen {
-  .a4-sheet {
-    background: transparent;
-    box-shadow: 0 10px 28px rgba(0,0,0,0.08);
-  }
-}
-@media print {
-  body { background: transparent; }
-  .print-toolbar { display: none !important; }
-  .a4-sheet { width: 100%; margin: 0; padding: 0; box-shadow: none; background: transparent !important; }
-}
-  </style>
-</head>
-<body>
-  <div class="print-toolbar">
-<div>
-  <strong>🖨️ Tờ A4 Gồm ${totalItems} Thẻ (${cfg.name})</strong>
-  <div style="font-size:12.5px; color:#5c4747; margin-top:4px; line-height:1.5;">
-    • <strong>Chống mất mép 100%:</strong> Đã căn chỉnh lề an toàn ở cả 4 cạnh tờ A4 để in trọn vẹn, không bị mất nét.<br/>
-    • <strong>Tỷ lệ in:</strong> Khi bấm In / Lưu PDF nhớ chọn <strong>Tỷ lệ (Scale): Mặc định / 100%</strong>.
-  </div>
-</div>
-<button class="print-btn" onclick="window.print()">🖨️ In Ngay / Lưu File PDF</button>
-  </div>
-  <div class="a4-sheet">${stickersHtml}</div>
-</body>
-</html>`);
+      win.document.open();
+      win.document.write(
+        buildDuplexFrontQrHtml({
+          title: `In Tờ A4 (${totalItems} ${cfg.name}) - Thuận Tường & Tiểu Dinh`,
+          toolbarTitle: `🖨️ Mặt 1 (QR): ${totalItems} Thẻ (${cfg.name})`,
+          toolbarDesc: "• Đã căn giữa tuyệt đối theo tâm tờ A4 để in mặt 2 Bản Đồ khớp 100%.",
+          sheetsCells: [cells],
+          cfg,
+          isSquareQr,
+          isPinterestStrip
+        })
+      );
       win.document.close();
+    });
+  }
+
+  const btnPrintMapBack = document.getElementById("btn-print-map-back");
+  if (btnPrintMapBack) {
+    btnPrintMapBack.addEventListener("click", () => {
+      const layoutMode = (qrLayoutStyle && qrLayoutStyle.value) || "square_qr";
+      openBacksideMapPrintWindow({ layoutMode, pageCount: 1 });
+    });
+  }
+
+  const btnPrintDuplexTest = document.getElementById("btn-print-duplex-test");
+  if (btnPrintDuplexTest) {
+    btnPrintDuplexTest.addEventListener("click", () => {
+      const layoutMode = (qrLayoutStyle && qrLayoutStyle.value) || "square_qr";
+      const isSquareQr = layoutMode.startsWith("square_qr");
+      const isPinterestStrip = layoutMode === "pinterest_strip";
+      renderLuxuryWeddingQR(true, { layoutMode, slotNum: 1 });
+      const sampleQrUrl = (isPinterestStrip || isSquareQr)
+        ? qrCanvas.toDataURL("image/jpeg", 0.95)
+        : qrCanvas.toDataURL("image/png");
+      renderLuxuryWeddingQR(false);
+      openBacksideMapPrintWindow({
+        layoutMode,
+        pageCount: 1,
+        testPairQrDataUrl: sampleQrUrl
+      });
     });
   }
 
@@ -4020,12 +4615,16 @@ body {
             ? r.name
             : loc.name || "";
         const mergedMode = r.mode || loc.mode || "invite";
+        const mergedMorning = normalizeMorningMode(
+          r.morning !== undefined ? r.morning : loc.morning
+        );
 
         merged[code] = {
           ...loc,
           ...r,
           name: mergedName,
           mode: mergedMode,
+          morning: mergedMorning,
           table: mergedTable,
           group: mergedGroup,
           pax: mergedPax
@@ -4069,6 +4668,7 @@ body {
       name: assignedName,
       lang,
       mode: prev.mode || "invite",
+      morning: normalizeMorningMode(prev.morning),
       group: effectiveGroup,
       table: cleanTable,
       pax: cleanPax,
@@ -4151,6 +4751,7 @@ body {
       name: assignedName,
       lang,
       mode: nextMode,
+      morning: normalizeMorningMode(prev.morning),
       group: prev.group || "",
       table: prev.table || "",
       pax: prev.pax || 1,
@@ -4198,6 +4799,73 @@ body {
         : nextMode === "directions"
           ? `📍 Đã bật "Chỉ Đường Ngày Cưới" cho ${targetLabel}!`
           : `💌 Đã chuyển ${targetLabel} về chế độ Thiệp Mời!`
+    );
+  }
+
+  async function setSlotMorning(num, nextMorningRaw) {
+    const n = parseInt(num, 10);
+    if (!n || n < 1 || n > 9999) return;
+    const code = makeSlotCode(n);
+    const prev = serverSlots[code] || {};
+    const assignedName = prev.name ? String(prev.name).trim() : "";
+    const lang = prev.lang || (/[\u4e00-\u9fff]/.test(assignedName) ? "zh" : "vi");
+    const nextMorning = normalizeMorningMode(nextMorningRaw);
+
+    serverSlots[code] = {
+      num: n,
+      name: assignedName,
+      lang,
+      mode: prev.mode || "invite",
+      morning: nextMorning,
+      group: prev.group || "",
+      table: prev.table || "",
+      pax: prev.pax || 1,
+      assignedAt: prev.assignedAt || new Date().toISOString()
+    };
+
+    if (assignedName) {
+      const pk = normalizeNameKey(assignedName);
+      savedGuests = savedGuests.map((g) => {
+        if (normalizeNameKey(g.name) === pk) {
+          return { ...g, morning: nextMorning, slot: n, slotCode: code };
+        }
+        return g;
+      });
+      persistLocalGuests();
+      buildRows();
+    }
+
+    persistLocalSlots();
+    renderSlotsTable();
+
+    try {
+      const res = await fetch(`${apiBase}/api/slots`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "set_morning",
+          code,
+          morning: nextMorning
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.slots) mergeServerSlots(data.slots);
+        if (Array.isArray(data.savedGuests)) mergeServerGuests(data.savedGuests);
+        renderSlotsTable();
+        buildRows();
+      }
+    } catch (_) {}
+
+    const targetLabel = assignedName ? `QR Số ${n} (${assignedName})` : `QR Số ${n}`;
+    notify(
+      nextMorning === "groom"
+        ? `🏠 Đã bật mời "Lễ Sáng Nhà Trai + Tiệc Tối" cho ${targetLabel}!`
+        : nextMorning === "bride"
+          ? `🏡 Đã bật mời "Lễ Sáng Nhà Gái + Tiệc Tối" cho ${targetLabel}!`
+          : nextMorning === "both"
+            ? `🌅 Đã bật mời "Lễ Sáng (05:30) + Tiệc Tối" cho ${targetLabel}!`
+            : `🌙 Đã chuyển ${targetLabel} về Chỉ Tiệc Tối (18:00)!`
     );
   }
 
@@ -4279,6 +4947,11 @@ body {
       (prevSlot && prevSlot.mode) ||
       (existingIdx >= 0 && savedGuests[existingIdx].mode) ||
       "invite";
+    const preservedMorning = normalizeMorningMode(
+      (prevSlot && prevSlot.morning) ||
+      (existingIdx >= 0 && savedGuests[existingIdx].morning) ||
+      ""
+    );
     const preservedGroup =
       (prevSlot && prevSlot.group) ||
       (existingIdx >= 0 && savedGuests[existingIdx].group) ||
@@ -4296,6 +4969,7 @@ body {
       name,
       lang,
       mode: preservedMode,
+      morning: preservedMorning,
       group: preservedGroup,
       table: preservedTable,
       pax: preservedPax,
@@ -4305,6 +4979,7 @@ body {
       name,
       lang,
       mode: preservedMode,
+      morning: preservedMorning,
       driveUrl: existingIdx >= 0 && savedGuests[existingIdx].driveUrl ? savedGuests[existingIdx].driveUrl : "",
       note: finalNote,
       group: preservedGroup,
@@ -4340,7 +5015,8 @@ body {
           name,
           note: finalNote,
           lang,
-          mode: preservedMode
+          mode: preservedMode,
+          morning: preservedMorning
         })
       });
       if (res.ok) {
@@ -4465,6 +5141,11 @@ body {
         (slotObj && slotObj.mode) ||
         (matchedGuest && matchedGuest.mode) ||
         "invite";
+      const slotMorning = normalizeMorningMode(
+        (slotObj && slotObj.morning) ||
+        (matchedGuest && matchedGuest.morning) ||
+        ""
+      );
       const globalMode =
         globalSiteConfig.globalMode ||
         (globalSiteConfig.globalThankYou
@@ -4483,6 +5164,7 @@ body {
       const slotPreviewParams = new URLSearchParams();
       slotPreviewParams.set("s", code);
       if (assignedName) slotPreviewParams.set("to", assignedName);
+      if (slotMorning) slotPreviewParams.set("morning", slotMorning);
       if (rowTable) {
         slotPreviewParams.set("table", rowTable);
         if (rowGroup) slotPreviewParams.set("group", rowGroup);
@@ -4536,6 +5218,9 @@ body {
             <button type="button" class="mode-switch-btn js-slot-mode-dir ${isDirEffective ? "is-active-dir" : ""}" title="Đẩy Sơ Đồ Đường Đi & Google Maps lên đầu trang, tự động mở sẵn bao thư">📍 Chỉ Đường</button>
             <button type="button" class="mode-switch-btn js-slot-mode-ty ${isTyEffective ? "is-active-ty" : ""}">📸 Cảm Ơn</button>
           </div>
+          <select class="morning-inline-select ${slotMorning ? "has-morning" : ""} js-slot-morning-select" style="margin-top:4px;" aria-label="Chế độ Lễ Sáng QR Số ${n}">
+            ${buildMorningSelectOptions(slotMorning)}
+          </select>
         </td>
         <td>${statusHtml}</td>
         <td class="slot-actions">
@@ -4579,6 +5264,10 @@ body {
       tr.querySelector(".js-slot-mode-ty").addEventListener("click", () => {
         setSlotMode(n, "thankyou");
       });
+      const sMorningSel = tr.querySelector(".js-slot-morning-select");
+      if (sMorningSel) {
+        sMorningSel.addEventListener("change", () => setSlotMorning(n, sMorningSel.value));
+      }
 
       const triggerSaveRow = () => {
         assignSlotByNumber(n, nameInput.value, noteInput.value, true);
@@ -4645,9 +5334,10 @@ body {
 
   if (slotPrintFromInput) {
     slotPrintFromInput.addEventListener("input", () => {
+      const layoutMode = (qrLayoutStyle && qrLayoutStyle.value) || "square_qr";
       const fromN = Math.max(1, parseInt(slotPrintFromInput.value || "1", 10) || 1);
       renderLuxuryWeddingQR(false, {
-        layoutMode: "pinterest_strip",
+        layoutMode,
         targetUrl: getSlotUrl(fromN),
         slotNum: fromN
       });
@@ -4763,114 +5453,24 @@ body {
       }
 
       const totalCount = itemsHtml.length;
-      const sheetsHtml = [];
+      const sheetsCells = [];
       for (let i = 0; i < totalCount; i += cfg.itemsPerSheet) {
-        const chunk = itemsHtml.slice(i, i + cfg.itemsPerSheet);
-        const isLast = i + cfg.itemsPerSheet >= totalCount;
-        sheetsHtml.push(
-          `<div class="a4-sheet${isLast ? "" : " page-break"}">${chunk.join("")}</div>`
-        );
+        sheetsCells.push(itemsHtml.slice(i, i + cfg.itemsPerSheet));
       }
-      const numSheets = sheetsHtml.length;
+      const numSheets = sheetsCells.length;
 
-      win.document.write(`<!DOCTYPE html>
-<html lang="vi">
-<head>
-  <meta charset="UTF-8" />
-  <title>In ${numSheets} Tờ A4 Thẻ QR Đánh Số (Số ${fromN} → Số ${toN} • ${cfg.name}) — Thuận Tường & Tiểu Dinh</title>
-  <style>
-@page { size: A4 portrait; margin: ${cfg.pageMargin}; }
-* {
-  box-sizing: border-box;
-  -webkit-print-color-adjust: exact !important;
-  print-color-adjust: exact !important;
-}
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: #f4efe6;
-  color: #2c1e1e;
-}
-.print-toolbar {
-  max-width: 210mm;
-  margin: 12px auto;
-  padding: 14px 18px;
-  background: #fff;
-  border: 1px solid #d9c3a3;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-}
-.print-btn {
-  background: #7d1518;
-  color: #fff;
-  border: none;
-  padding: 11px 20px;
-  border-radius: 8px;
-  font-weight: 700;
-  font-size: 14px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-.a4-sheet {
-  width: ${cfg.sheetWidth};
-  margin: 0 auto 20px;
-  background: transparent;
-  display: grid;
-  grid-template-columns: repeat(${cfg.cols}, 1fr);
-  gap: 0;
-  border-top: 0.25mm solid #b07b72;
-  border-left: 0.25mm solid #b07b72;
-}
-.a4-sheet.page-break {
-  page-break-after: always;
-  break-after: page;
-}
-.sticker-cell {
-  border-right: 0.25mm solid #b07b72;
-  border-bottom: 0.25mm solid #b07b72;
-  padding: ${cfg.cellPadding};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: ${isPinterestStrip || isSquareQr ? "#faf8f4" : "transparent"};
-  page-break-inside: avoid;
-  break-inside: avoid;
-}
-.sticker-cell img {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-@media screen {
-  .a4-sheet {
-    background: transparent;
-    box-shadow: 0 10px 28px rgba(0,0,0,0.08);
-  }
-}
-@media print {
-  body { background: transparent; }
-  .print-toolbar { display: none !important; }
-  .a4-sheet { width: 100%; margin: 0; padding: 0; box-shadow: none; background: transparent !important; }
-}
-  </style>
-</head>
-<body>
-  <div class="print-toolbar">
-<div>
-  <strong>🖨️ Xuất In ${totalCount} Thẻ QR Đánh Số (#${String(fromN).padStart(2, "0")} → #${String(toN).padStart(2, "0")}) Gồm ${numSheets} Tờ A4 (${cfg.name})</strong>
-  <div style="font-size:12.5px; color:#5c4747; margin-top:4px; line-height:1.5;">
-    • <strong>Mã QR chuyên dụng:</strong> Mỗi thẻ có mã QR riêng và số thứ tự ở góc để đối soát với link cố định.<br/>
-    • Khi bấm In / Lưu PDF nhớ chọn <strong>Tỷ lệ (Scale): Mặc định / 100%</strong>.
-  </div>
-</div>
-<button class="print-btn" onclick="window.print()">🖨️ In Ngay / Lưu File PDF</button>
-  </div>
-  ${sheetsHtml.join("")}
-</body>
-</html>`);
+      win.document.open();
+      win.document.write(
+        buildDuplexFrontQrHtml({
+          title: `In ${numSheets} Tờ A4 Thẻ QR Đánh Số (Số ${fromN} → Số ${toN} • ${cfg.name}) - Thuận Tường & Tiểu Dinh`,
+          toolbarTitle: `🖨️ Mặt 1 (QR Đánh Số): ${totalCount} thẻ (#${String(fromN).padStart(2, "0")} → #${String(toN).padStart(2, "0")}) gồm ${numSheets} tờ A4 (${cfg.name})`,
+          toolbarDesc: "• Mỗi thẻ có mã QR riêng và số thứ tự ở góc để đối soát link cố định.",
+          sheetsCells,
+          cfg,
+          isSquareQr,
+          isPinterestStrip
+        })
+      );
       win.document.close();
     });
   }

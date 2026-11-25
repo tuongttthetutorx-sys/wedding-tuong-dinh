@@ -184,6 +184,57 @@
   let envelopeFlipped = false;
   let toastTimeout = null;
   let syncTopbarNavUI = null;
+  let refreshCountdownDisplay = null;
+  let activeMorningMapLoc = "";
+  let morningUiBound = false;
+
+  const VALID_MORNING_MODES = ["", "both", "groom", "bride"];
+  function normalizeMorningMode(val) {
+    const s = String(val || "").trim().toLowerCase();
+    if (s === "1" || s === "true" || s === "yes" || s === "morning") return "both";
+    return VALID_MORNING_MODES.includes(s) ? s : "";
+  }
+
+  function getActiveMorningMode() {
+    const rawParam = params.get("morning");
+    if (rawParam !== null) {
+      const lowered = String(rawParam).trim().toLowerCase();
+      if (lowered === "0" || lowered === "false" || lowered === "off" || lowered === "none") {
+        return "";
+      }
+      const fromUrl = normalizeMorningMode(lowered);
+      if (fromUrl) return fromUrl;
+    }
+    if ((params.get("mode") || "").trim().toLowerCase() === "morning") {
+      return "both";
+    }
+    if (remoteGuestConfig && remoteGuestConfig.morning) {
+      return normalizeMorningMode(remoteGuestConfig.morning);
+    }
+    return "";
+  }
+
+  function getCountdownTargetTime() {
+    const isMorning = Boolean(getActiveMorningMode());
+    const iso = isMorning
+      ? CFG.ceremonyDateISO || "2027-01-06T05:30:00+07:00"
+      : CFG.weddingDateISO || "2027-01-06T18:00:00+07:00";
+    return new Date(iso).getTime();
+  }
+
+  async function copyTextWithToast(text, toastMsg) {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (_) {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      ta.remove();
+    }
+    if (toastMsg) showToast(toastMsg);
+  }
 
   /* Real-time Guest Visit & Envelope Open Tracker (Cloudflare Edge /api/track) */
   const VISIT_SESSION_ID =
@@ -938,19 +989,26 @@
     const isZh = currentLang === "zh";
     const dict = I18N[currentLang];
     const displayGuest = guestName || dict.defaultGuest;
+    const isMorning = Boolean(getActiveMorningMode());
 
     const phrase = isZh
       ? {
           ornament: "♡",
           speaker: "Save the Date · 2027.01.06",
-          words: guestName
-            ? `期待與 ${displayGuest} 於 18:00 婚宴相見 ♥`
-            : "期待於 2027.01.06 18:00 婚宴與您相見 ♥"
+          words: isMorning
+            ? guestName
+              ? `期待與 ${displayGuest} 參與 05:30 上午典禮與 18:00 晚宴 ♥`
+              : "期待與您共度 05:30 上午典禮與 18:00 晚宴 ♥"
+            : guestName
+              ? `期待與 ${displayGuest} 於 18:00 婚宴相見 ♥`
+              : "期待於 2027.01.06 18:00 婚宴與您相見 ♥"
         }
       : {
           ornament: "♡",
           speaker: "Save the Date · 06.01.2027",
-          words: `Hẹn gặp ${displayGuest} lúc 18:00 ngày 06.01.2027 nhé ♥`
+          words: isMorning
+            ? `Hẹn gặp ${displayGuest} từ Lễ Sáng 05:30 & Tiệc Tối 18:00 ngày 06.01.2027 nhé ♥`
+            : `Hẹn gặp ${displayGuest} lúc 18:00 ngày 06.01.2027 nhé ♥`
         };
     spawnFloatingWhisper(anchorEl, ev || null, phrase, true, 4.4);
     spawnGuestHearts(anchorEl, ev || null, 22);
@@ -998,20 +1056,37 @@
     const gcalBtn = document.getElementById("btn-google-cal");
     if (!gcalBtn) return;
     const isZh = currentLang === "zh";
+    const isMorning = Boolean(getActiveMorningMode());
+    const mv = CFG.morningVenues || {};
+    const groomAddr = (mv.groom && mv.groom.addressVI) || "80/99/7 Đường Hoàng Ngân, P. Phú Định, TP. Hồ Chí Minh";
+    const brideAddr = (mv.bride && mv.bride.addressVI) || "302 Chung cư Âu Cơ (Lô D), P. Hòa Bình, TP. Hồ Chí Minh";
+    const brideMapAddr = (mv.bride && mv.bride.mapAddressVI) || "279/005 Lô D Trịnh Đình Trọng, P. Hòa Bình, TP. Hồ Chí Minh";
+
     const title = encodeURIComponent(
-      isZh
-        ? "囍 趙順祥 & 盧小瑩 婚禮晚宴（Riverside Palace）"
-        : "Tiệc Cưới Thuận Tường & Tiểu Dinh (囍)"
+      isMorning
+        ? isZh
+          ? "囍 趙順祥 & 盧小瑩 上午迎親典禮 (05:30) 暨婚禮晚宴 (18:00)"
+          : "Lễ Thành Hôn (05:30) & Tiệc Cưới Thuận Tường & Tiểu Dinh (囍)"
+        : isZh
+          ? "囍 趙順祥 & 盧小瑩 婚禮晚宴（Riverside Palace）"
+          : "Tiệc Cưới Thuận Tường & Tiểu Dinh (囍)"
     );
     const details = encodeURIComponent(
-      isZh
-        ? "18:00 迎賓入席・19:00 準時開席｜地點：越南胡志明市 RIVERSIDE PALACE — Seine 宴會廳（Sảnh Seine），地址：360D Bến Vân Đồn, Phường Vĩnh Hội, TP. Hồ Chí Minh。誠摯期待您的蒞臨！"
-        : "Đón khách 18:00 - Khai tiệc 19:00 tại Riverside Palace (Sảnh Seine), 360D Bến Vân Đồn, P. Vĩnh Hội, TP. Hồ Chí Minh."
+      isMorning
+        ? isZh
+          ? `05:30 男方府上：${groomAddr}｜迎親 女方府上：${brideAddr}（Google 地圖定位：${brideMapAddr}）｜18:00 婚禮晚宴：RIVERSIDE PALACE — Seine 宴會廳（360D Bến Vân Đồn, P. Vĩnh Hội, TP. Hồ Chí Minh）。`
+          : `05:30 Lễ Sáng Nhà Trai: ${groomAddr} | Đón dâu Nhà Gái: ${brideAddr} (Ghim Google Maps: ${brideMapAddr}) | 18:00 Tiệc Tối: Riverside Palace (Sảnh Seine), 360D Bến Vân Đồn, P. Vĩnh Hội, TP. Hồ Chí Minh.`
+        : isZh
+          ? "18:00 迎賓入席・19:00 準時開席｜地點：越南胡志明市 RIVERSIDE PALACE — Seine 宴會廳（Sảnh Seine），地址：360D Bến Vân Đồn, Phường Vĩnh Hội, TP. Hồ Chí Minh。誠摯期待您的蒞臨！"
+          : "Đón khách 18:00 - Khai tiệc 19:00 tại Riverside Palace (Sảnh Seine), 360D Bến Vân Đồn, P. Vĩnh Hội, TP. Hồ Chí Minh."
     );
     const loc = encodeURIComponent(
-      "Riverside Palace (Sảnh Seine), 360D Bến Vân Đồn, Phường Vĩnh Hội, TP. Hồ Chí Minh"
+      isMorning
+        ? `${groomAddr} -> ${brideMapAddr} -> Riverside Palace, 360D Bến Vân Đồn, TP. Hồ Chí Minh`
+        : "Riverside Palace (Sảnh Seine), 360D Bến Vân Đồn, Phường Vĩnh Hội, TP. Hồ Chí Minh"
     );
-    gcalBtn.href = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=20270106T110000Z/20270106T143000Z&details=${details}&location=${loc}`;
+    const dates = isMorning ? "20270105T223000Z/20270106T143000Z" : "20270106T110000Z/20270106T143000Z";
+    gcalBtn.href = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dates}&details=${details}&location=${loc}`;
   }
 
   /* Post-Wedding Thank You Card + Google Drive Photo Album & Access Toggle */
@@ -1075,7 +1150,8 @@
         (sObj && sObj.lang) ||
         (/[\u4e00-\u9fff]/.test(resolvedName) ? "zh" : "vi");
       const table = String((saved && saved.table) || (sObj && sObj.table) || "").trim();
-      if (!table && !resolvedName) return null;
+      const morning = normalizeMorningMode((saved && saved.morning) || (sObj && sObj.morning) || "");
+      if (!table && !resolvedName && !morning) return null;
       const tMeta = (table && seatCfg && seatCfg.tableMeta && seatCfg.tableMeta[table]) || {};
       const group = String(
         (saved && saved.group) || (sObj && sObj.group) || tMeta.group || ""
@@ -1096,6 +1172,7 @@
         resolvedName,
         resolvedLang,
         table,
+        morning,
         group,
         pax,
         tableLabel: tMeta.label || "",
@@ -1156,7 +1233,9 @@
           if (data && data.config) {
             remoteGuestConfig = data.config;
             if (!remoteGuestConfig.table && localSeat && localSeat.table) {
-              remoteGuestConfig = { ...remoteGuestConfig, ...localSeat };
+              remoteGuestConfig = { ...remoteGuestConfig, ...localSeat, morning: typeof remoteGuestConfig.morning !== "undefined" ? remoteGuestConfig.morning : localSeat.morning };
+            } else if (typeof remoteGuestConfig.morning === "undefined" && localSeat && localSeat.morning) {
+              remoteGuestConfig = { ...remoteGuestConfig, morning: localSeat.morning };
             }
             applyResolvedGuestIdentity(remoteGuestConfig);
             syncPostWeddingAndAccessMode();
@@ -1772,6 +1851,571 @@
     }
   }
 
+  function escapeHtmlMorning(str) {
+    return String(str || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function getMorningLocationData(locKey) {
+    const isZh = currentLang === "zh";
+    const mv = CFG.morningVenues || {};
+    const groom = mv.groom || {};
+    const bride = mv.bride || {};
+    const venue = CFG.venue || {};
+
+    if (locKey === "groom") {
+      return {
+        key: "groom",
+        name: isZh ? "男方府上（新郎家 · 05:30）" : "Tư Gia Nhà Trai (05:30)",
+        addr: isZh
+          ? groom.addressZH || "胡志明市富定坊黃銀街 80/99/7 號"
+          : groom.addressVI || "80/99/7 Đường Hoàng Ngân, Phường Phú Định, TP. Hồ Chí Minh",
+        copyText: groom.addressVI || "80/99/7 Đường Hoàng Ngân, Phường Phú Định, TP. Hồ Chí Minh",
+        copiedToast: isZh
+          ? "✅ 已複製男方府上地址（80/99/7 Đường Hoàng Ngân）！"
+          : "✅ Đã copy địa chỉ Tư Gia Nhà Trai (80/99/7 Đường Hoàng Ngân)!",
+        mapPinUrl: groom.mapPinUrl || "https://share.google/gwDmGCmMs2WfCNkfK",
+        directionsUrl:
+          groom.directionsUrl ||
+          "https://www.google.com/maps/dir/?api=1&destination=80%2F99%2F7+%C4%90%C6%B0%E1%BB%9Dng+Ho%C3%A0ng+Ng%C3%A2n,+Ph%C3%BA+%C4%90%E1%BB%8Bnh,+H%E1%BB%93+Ch%C3%AD+Minh",
+        embedUrl:
+          groom.embedUrl ||
+          "https://maps.google.com/maps?q=80/99/7+%C4%90%C6%B0%E1%BB%9Dng+Ho%C3%A0ng+Ng%C3%A2n,+Ph%C3%BA+%C4%90%E1%BB%8Bnh,+H%E1%BB%93+Ch%C3%AD+Minh&t=&z=17&ie=UTF8&iwloc=&output=embed"
+      };
+    }
+
+    if (locKey === "bride") {
+      return {
+        key: "bride",
+        name: isZh ? "女方府上（新娘家 · 迎親 06:30）" : "Tư Gia Nhà Gái (Đón Dâu 06:30)",
+        addr: isZh
+          ? "302 Chung cư Âu Cơ (Lô D) · 地圖定位：279/005 Lô D Trịnh Đình Trọng, P. Hòa Bình"
+          : "302 CC Âu Cơ (Lô D) · Ghim Maps: 279/005 Lô D Trịnh Đình Trọng, P. Hòa Bình",
+        copyText:
+          (bride.mapAddressVI || "279/005 Lô D Trịnh Đình Trọng, Phường Hòa Bình, TP. Hồ Chí Minh") +
+          " (302 Chung cư Âu Cơ, Lô D)",
+        copiedToast: isZh
+          ? "✅ 已複製女方府上 Google 地圖精準定位（279/005 Lô D Trịnh Đình Trọng）！"
+          : "✅ Đã copy vị trí Google Maps Nhà Gái (279/005 Lô D Trịnh Đình Trọng)!",
+        mapPinUrl: bride.mapPinUrl || "https://maps.app.goo.gl/Aa97a3aPuXLTLUZw6",
+        directionsUrl:
+          bride.directionsUrl ||
+          "https://www.google.com/maps/dir/?api=1&destination=10.7743392,106.6442479",
+        embedUrl:
+          bride.embedUrl ||
+          "https://maps.google.com/maps?q=10.7743392,106.6442479&t=&z=17&ie=UTF8&iwloc=&output=embed"
+      };
+    }
+
+    return {
+      key: "venue",
+      name: isZh
+        ? "RIVERSIDE PALACE（Seine 宴會廳 · 18:00）"
+        : "Riverside Palace (Sảnh Seine · 18:00)",
+      addr: isZh
+        ? venue.addressZH || "胡志明市永會坊檳雲屯街 360D 號"
+        : venue.addressVI || "360D Bến Vân Đồn, Phường Vĩnh Hội, TP. Hồ Chí Minh",
+      copyText:
+        "Riverside Palace (Sảnh Seine) - 360D Bến Vân Đồn, Phường Vĩnh Hội, TP. Hồ Chí Minh",
+      copiedToast: I18N[currentLang].copiedAddr,
+      mapPinUrl:
+        venue.googleMapsUrl ||
+        "https://www.google.com/maps/search/?api=1&query=Riverside+Palace+360D+Ben+Van+Don+Ho+Chi+Minh",
+      directionsUrl:
+        "https://www.google.com/maps/dir/?api=1&destination=Riverside+Palace+360D+Ben+Van+Don+Ho+Chi+Minh",
+      embedUrl:
+        venue.googleMapsEmbed ||
+        "https://maps.google.com/maps?q=Riverside%20Palace%20360D%20B%E1%BA%BFn%20V%C3%A2n%20%C4%90%E1%BB%93n%20H%E1%BB%93%20Ch%C3%AD%20Minh&t=&z=16&ie=UTF8&iwloc=&output=embed"
+    };
+  }
+
+  function revealLocationSectionImmediate() {
+    const locSec = document.getElementById("section-location");
+    if (!locSec) return null;
+    locSec.dataset.entrancePlayed = "1";
+    locSec.classList.remove("will-reveal", "is-awaiting-entrance", "is-playing-entrance");
+    locSec.classList.add("is-visible");
+    return locSec;
+  }
+
+  function switchMorningMapLocation(locKey, shouldScrollMap) {
+    const validLoc = ["groom", "bride", "venue"].includes(locKey) ? locKey : "groom";
+    activeMorningMapLoc = validLoc;
+    const isZh = currentLang === "zh";
+    const loc = getMorningLocationData(validLoc);
+
+    const tabsWrap = document.getElementById("morning-map-tabs");
+    if (tabsWrap) {
+      tabsWrap.querySelectorAll(".morning-map-tab").forEach((btn) => {
+        const isMatch = btn.dataset.mapLoc === validLoc;
+        btn.classList.toggle("is-active", isMatch);
+        btn.setAttribute("aria-selected", isMatch ? "true" : "false");
+      });
+    }
+
+    const itineraryEl = document.getElementById("morning-itinerary-list");
+    if (itineraryEl) {
+      itineraryEl.querySelectorAll("[data-stop-loc]").forEach((item) => {
+        item.classList.toggle("is-map-focused", item.dataset.stopLoc === validLoc);
+      });
+    }
+
+    const iframe = document.getElementById("venue-map-iframe");
+    if (iframe && loc.embedUrl) {
+      const nextSrc =
+        isZh && !loc.embedUrl.includes("hl=") ? loc.embedUrl + "&hl=zh-TW" : loc.embedUrl;
+      if (iframe.getAttribute("src") !== nextSrc) {
+        iframe.setAttribute("src", nextSrc);
+      }
+      iframe.setAttribute("title", loc.name);
+    }
+
+    const nameEl = document.getElementById("morning-map-active-name");
+    const addrEl = document.getElementById("morning-map-active-addr");
+    const openEl = document.getElementById("morning-map-open-link");
+    const dirEl = document.getElementById("morning-map-dir-link");
+
+    if (nameEl) nameEl.textContent = loc.name;
+    if (addrEl) addrEl.textContent = loc.addr;
+    if (openEl) {
+      openEl.href = loc.mapPinUrl;
+      openEl.textContent = isZh ? "地圖標記 ↗" : "Ghim Maps ↗";
+    }
+    if (dirEl) {
+      dirEl.href = loc.directionsUrl;
+      dirEl.textContent = isZh ? "🧭 開始導航" : "🧭 Chỉ đường";
+    }
+
+    if (shouldScrollMap) {
+      const locSec = revealLocationSectionImmediate();
+      const mapFrame = document.getElementById("venue-map-frame");
+      if (window.innerWidth <= 820 && mapFrame) {
+        const targetY = Math.max(0, window.scrollY + mapFrame.getBoundingClientRect().top - 70);
+        window.scrollTo({ top: targetY, behavior: "smooth" });
+      } else if (locSec) {
+        const rect = locSec.getBoundingClientRect();
+        if (rect.top < 0 || rect.top > window.innerHeight * 0.45) {
+          const targetY = Math.max(0, window.scrollY + rect.top - 68);
+          window.scrollTo({ top: targetY, behavior: "smooth" });
+        }
+      }
+    }
+  }
+
+  function bindMorningGuestEvents() {
+    if (morningUiBound) return;
+    morningUiBound = true;
+
+    const tabsWrap = document.getElementById("morning-map-tabs");
+    if (tabsWrap) {
+      tabsWrap.addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-map-loc]");
+        if (!btn) return;
+        switchMorningMapLocation(btn.dataset.mapLoc, false);
+      });
+    }
+
+    const itineraryEl = document.getElementById("morning-itinerary-list");
+    if (itineraryEl) {
+      itineraryEl.addEventListener("click", (e) => {
+        const focusBtn = e.target.closest("[data-focus-map]");
+        if (focusBtn) {
+          switchMorningMapLocation(focusBtn.dataset.focusMap, true);
+          return;
+        }
+        const copyBtn = e.target.closest("[data-copy-addr]");
+        if (copyBtn) {
+          const loc = getMorningLocationData(copyBtn.dataset.copyAddr);
+          copyTextWithToast(loc.copyText, loc.copiedToast);
+        }
+      });
+    }
+
+    const stopsGrid = document.getElementById("mv-stops-grid");
+    if (stopsGrid) {
+      stopsGrid.addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-jump-loc]");
+        if (!btn) return;
+        const locKey = btn.dataset.jumpLoc;
+        switchMorningMapLocation(locKey, false);
+        const locSec = revealLocationSectionImmediate();
+        if (locSec) {
+          const targetY = Math.max(0, window.scrollY + locSec.getBoundingClientRect().top - 66);
+          window.scrollTo({ top: targetY, behavior: "smooth" });
+        }
+      });
+    }
+
+    const jumpBtn = document.getElementById("btn-mv-jump-itinerary");
+    if (jumpBtn) {
+      jumpBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const locSec = revealLocationSectionImmediate();
+        if (locSec) {
+          const targetY = Math.max(0, window.scrollY + locSec.getBoundingClientRect().top - 66);
+          window.scrollTo({ top: targetY, behavior: "smooth" });
+        }
+      });
+    }
+  }
+
+  function syncMorningGuestUI(opts) {
+    const options = opts || {};
+    const isDirectionsPriority = Boolean(options.isDirectionsPriority);
+    const isThankYou = Boolean(options.isThankYou);
+    const morningMode = getActiveMorningMode();
+    const isActive = Boolean(morningMode);
+    const isZh = currentLang === "zh";
+    const dict = I18N[currentLang];
+    const displayGuest = guestName || dict.defaultGuest;
+    const mv = CFG.morningVenues || {};
+    const groom = mv.groom || {};
+    const bride = mv.bride || {};
+
+    document.body.classList.toggle("is-morning-guest-mode", isActive);
+
+    const vipCard = document.getElementById("morning-vip-card");
+    const defaultTl = document.getElementById("default-timeline-list");
+    const morningTl = document.getElementById("morning-itinerary-list");
+    const mapTabs = document.getElementById("morning-map-tabs");
+    const mapFooter = document.getElementById("morning-map-footer");
+    const dpbDefault = document.getElementById("dpb-default-actions");
+    const dpbMorning = document.getElementById("dpb-morning-actions");
+
+    if (!isActive) {
+      if (vipCard) vipCard.hidden = true;
+      if (defaultTl) defaultTl.hidden = false;
+      if (morningTl) {
+        morningTl.hidden = true;
+        morningTl.innerHTML = "";
+      }
+      if (mapTabs) mapTabs.hidden = true;
+      if (mapFooter) mapFooter.hidden = true;
+      if (dpbDefault) dpbDefault.hidden = false;
+      if (dpbMorning) dpbMorning.hidden = true;
+
+      if (activeMorningMapLoc && activeMorningMapLoc !== "venue") {
+        activeMorningMapLoc = "";
+        const iframe = document.getElementById("venue-map-iframe");
+        const baseEmbed =
+          (CFG.venue && CFG.venue.googleMapsEmbed) ||
+          "https://maps.google.com/maps?q=Riverside%20Palace%20360D%20B%E1%BA%BFn%20V%C3%A2n%20%C4%90%E1%BB%93n%20H%E1%BB%93%20Ch%C3%AD%20Minh&t=&z=16&ie=UTF8&iwloc=&output=embed";
+        const defaultSrc = isZh && !baseEmbed.includes("hl=") ? baseEmbed + "&hl=zh-TW" : baseEmbed;
+        if (iframe && iframe.getAttribute("src") !== defaultSrc) {
+          iframe.setAttribute("src", defaultSrc);
+          if (dict.mapTitle) iframe.setAttribute("title", dict.mapTitle);
+        }
+      }
+      if (refreshCountdownDisplay) refreshCountdownDisplay();
+      updateGoogleCalendarLink();
+      return;
+    }
+
+    bindMorningGuestEvents();
+
+    // Hide VIP prelude in Directions Priority (banner is already at top) or Post-Wedding Thank You mode
+    if (vipCard) {
+      vipCard.hidden = isDirectionsPriority || isThankYou;
+    }
+    if (defaultTl) defaultTl.hidden = true;
+    if (morningTl) morningTl.hidden = false;
+    if (mapTabs) mapTabs.hidden = false;
+    if (mapFooter) mapFooter.hidden = false;
+
+    // 1. Populate VIP Morning Invitation Prelude Card
+    const eyebrowEl = document.getElementById("mv-eyebrow");
+    const titleEl = document.getElementById("mv-title");
+    const descEl = document.getElementById("mv-desc");
+    if (eyebrowEl) {
+      eyebrowEl.textContent =
+        morningMode === "groom"
+          ? isZh
+            ? "✦ 男方親友專屬敬邀 · 05:30 上午典禮 & 18:00 晚宴 ✦"
+            : "✦ THƯ MỜI RIÊNG NHÀ TRAI · LỄ SÁNG 05:30 & TIỆC TỐI 18:00 ✦"
+          : morningMode === "bride"
+            ? isZh
+              ? "✦ 女方親友專屬敬邀 · 05:30 上午典禮 & 18:00 晚宴 ✦"
+              : "✦ THƯ MỜI RIÊNG NHÀ GÁI · LỄ SÁNG 05:30 & TIỆC TỐI 18:00 ✦"
+            : isZh
+              ? "✦ 專屬敬邀 · 05:30 上午迎親典禮 & 18:00 婚禮晚宴 ✦"
+              : "✦ THƯ MỜI RIÊNG · LỄ SÁNG 05:30 & TIỆC TỐI 18:00 ✦";
+    }
+    if (titleEl) {
+      titleEl.textContent = isZh
+        ? `誠摯邀請 ${displayGuest} 蒞臨參與全日婚禮喜事`
+        : `Kính Mời ${displayGuest} Tham Dự Trọn Ngày Hỷ Sự`;
+    }
+    if (descEl) {
+      if (morningMode === "groom") {
+        descEl.textContent = isZh
+          ? `誠摯邀請 ${displayGuest} 於上午 05:30 蒞臨男方府上（富定坊）集合並同行迎親，晚間 18:00 共赴 Riverside Palace（Seine 宴會廳）參加婚禮晚宴。`
+          : `Gia đình trân trọng kính mời ${displayGuest} tập trung dự Lễ Thành Hôn buổi sáng lúc 05:30 tại Tư Gia Nhà Trai (P. Phú Định), cùng đoàn đón dâu sang Nhà Gái và dự Tiệc Cưới buổi tối lúc 18:00 tại Riverside Palace (Sảnh Seine).`;
+      } else if (morningMode === "bride") {
+        descEl.textContent = isZh
+          ? `誠摯邀請 ${displayGuest} 蒞臨女方府上（Âu Cơ 公寓 D 棟 302 室，地圖定位於 Trịnh Đình Trọng 街）參與上午迎親典禮，並於晚間 18:00 共赴 Riverside Palace（Seine 宴會廳）婚禮晚宴。`
+          : `Gia đình trân trọng kính mời ${displayGuest} tham dự Lễ Vu Quy & Đón Dâu buổi sáng tại Tư Gia Nhà Gái (302 Chung cư Âu Cơ, Lô D · P. Hòa Bình) và chung vui Tiệc Cưới buổi tối lúc 18:00 tại Riverside Palace (Sảnh Seine).`;
+      } else {
+        descEl.textContent = isZh
+          ? `誠摯邀請 ${displayGuest} 共度 2027.01.06 全日婚禮喜事：從上午 05:30 雙方府上迎親成婚典禮，至晚間 18:00 於 Riverside Palace（Seine 宴會廳）舉杯同慶。`
+          : `Gia đình trân trọng kính mời ${displayGuest} cùng chung vui trọn ngày cưới 06.01.2027: từ Lễ Thành Hôn buổi sáng lúc 05:30 tại Tư Gia hai họ đến Tiệc Cưới buổi tối lúc 18:00 tại Riverside Palace (Sảnh Seine).`;
+      }
+    }
+
+    const setTxt = (id, val) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val;
+    };
+    setTxt("mv-stop1-time", isZh ? "05:30 · 上午出發" : "05:30 · Sáng");
+    setTxt("mv-stop1-name", isZh ? "男方府上（新郎家）" : "Tư Gia Nhà Trai");
+    setTxt("mv-stop1-addr", isZh ? "80/99/7 Đường Hoàng Ngân, P. Phú Định" : "80/99/7 Hoàng Ngân, P. Phú Định");
+
+    setTxt("mv-stop2-time", isZh ? "06:30 · 迎親典禮" : "06:30 · Đón Dâu");
+    setTxt("mv-stop2-name", isZh ? "女方府上（新娘家）" : "Tư Gia Nhà Gái");
+    setTxt(
+      "mv-stop2-addr",
+      isZh ? "302 Âu Cơ 公寓 · 定位 279/005 Trịnh Đình Trọng" : "302 CC Âu Cơ · Ghim 279/005 Trịnh Đình Trọng"
+    );
+
+    setTxt("mv-stop3-time", isZh ? "18:00 · 婚禮晚宴" : "18:00 · Tiệc Tối");
+    setTxt("mv-stop3-name", isZh ? "Riverside Palace" : "Riverside Palace");
+    setTxt(
+      "mv-stop3-addr",
+      isZh ? "Seine 宴會廳 · 360D Bến Vân Đồn, P. Vĩnh Hội" : "Sảnh Seine · 360D Bến Vân Đồn, P. Vĩnh Hội"
+    );
+
+    const stopsGrid = document.getElementById("mv-stops-grid");
+    if (stopsGrid) {
+      stopsGrid.querySelectorAll(".mv-stop-pill").forEach((pill) => {
+        const loc = pill.dataset.jumpLoc;
+        const isPrimary =
+          (morningMode === "groom" && loc === "groom") ||
+          (morningMode === "bride" && loc === "bride");
+        pill.classList.toggle("is-primary-stop", isPrimary);
+      });
+    }
+
+    const jumpBtn = document.getElementById("btn-mv-jump-itinerary");
+    if (jumpBtn) {
+      jumpBtn.textContent = isZh
+        ? "🗺️ 查看全日路線與三地地圖 ↓"
+        : "🗺️ Xem Lộ Trình & Bản Đồ 3 Điểm ↓";
+    }
+    const fullRouteBtn = document.getElementById("btn-mv-full-route");
+    if (fullRouteBtn) {
+      fullRouteBtn.href =
+        mv.routeFullDayUrl ||
+        "https://www.google.com/maps/dir/?api=1&origin=80%2F99%2F7+%C4%90%C6%B0%E1%BB%9Dng+Ho%C3%A0ng+Ng%C3%A2n,+Ph%C3%BA+%C4%90%E1%BB%8Bnh,+H%E1%BB%93+Ch%C3%AD+Minh&waypoints=10.7743392,106.6442479&destination=Riverside+Palace+360D+Ben+Van+Don+Ho+Chi+Minh&travelmode=driving";
+      fullRouteBtn.textContent = isZh
+        ? "🚗 開啟全日路線 (Google Maps) ↗"
+        : "🚗 Mở Lộ Trình Cả Ngày (Google Maps) ↗";
+    }
+
+    // 2. Adapt Countdown, Calendar & Section Headings for Full-Day Guests
+    const setI18nOverride = (key, text) => {
+      document.querySelectorAll(`[data-i18n="${key}"]`).forEach((el) => {
+        el.textContent = text;
+      });
+    };
+    setI18nOverride(
+      "cdTitle",
+      isZh
+        ? `誠摯期待與 ${displayGuest} 共度全日喜事`
+        : `Hẹn Gặp ${displayGuest} Trọn Ngày Hỷ Sự`
+    );
+    setI18nOverride(
+      "cdSub",
+      isZh
+        ? "國曆 2027 年 1 月 6 日（星期三）05:30 上午典禮 · 18:00 婚禮晚宴（農曆丙午年十一月二十九日）"
+        : `Lễ Sáng 05:30 tại Tư Gia · Tiệc Tối 18:00 • Thứ Tư, 06.01.2027 (${CFG.lunarDateVI || "Nhằm ngày 29 tháng 11 năm Bính Ngọ"})`
+    );
+    setI18nOverride(
+      "cdVenueLine",
+      isZh
+        ? "男方府上（富定坊）· 女方府上（和平坊）· Riverside Palace（Seine 宴會廳）"
+        : "Tư Gia Nhà Trai (P. Phú Định) · Tư Gia Nhà Gái (P. Hòa Bình) · Riverside Palace (Sảnh Seine)"
+    );
+    setI18nOverride(
+      "calFooterNote",
+      isZh ? "星期三 · 2027.01.06 · 05:30 & 18:00" : "Thứ Tư · 06.01.2027 · 05:30 & 18:00"
+    );
+    setI18nOverride(
+      "dayBadge",
+      isZh ? "全日婚禮路線 · 上午典禮貴賓專屬" : "Lộ Trình Trọn Ngày · Khách Mời Lễ Sáng"
+    );
+    if (isZh) {
+      setI18nOverride("venueTitle", "全日婚禮流程與三地導航");
+      setI18nOverride(
+        "venueSub",
+        "上午 05:30 雙方府上迎親典禮 · 晚間 18:00 Riverside Palace（Seine 宴會廳）婚禮晚宴"
+      );
+    }
+
+    // 3. Render Detailed 3-Stop Itinerary with Exact Addresses, Map Warnings & Inter-Stop Routes
+    if (morningTl) {
+      const groomLoc = getMorningLocationData("groom");
+      const brideLoc = getMorningLocationData("bride");
+      const venueLoc = getMorningLocationData("venue");
+      const groomBadge =
+        morningMode === "groom"
+          ? `<span class="morning-side-badge">${isZh ? "您的集合地點" : "Điểm hẹn buổi sáng"}</span>`
+          : "";
+      const brideBadge =
+        morningMode === "bride"
+          ? `<span class="morning-side-badge">${isZh ? "您的集合地點" : "Điểm hẹn buổi sáng"}</span>`
+          : "";
+
+      const groomLandmark = isZh
+        ? groom.landmarkZH || "鄰近武文傑大道（Võ Văn Kiệt）與 La Chateau 飯店"
+        : groom.landmarkVI || "Gần đại lộ Võ Văn Kiệt & Khách sạn La Chateau";
+      const brideRealAddr = isZh
+        ? bride.addressZH || "胡志明市和平坊 Âu Cơ 公寓 D 棟 302 室（302 Chung cư Âu Cơ, Lô D）"
+        : bride.addressVI || "302 Chung cư Âu Cơ (Lô D), Phường Hòa Bình, TP. Hồ Chí Minh";
+      const brideMapTitle = isZh
+        ? "📍 Google 地圖精準定位（Trịnh Đình Trọng 街入口）"
+        : "📍 Vị trí ghim Google Maps chuẩn (đường Trịnh Đình Trọng)";
+      const brideMapPinText = isZh
+        ? "279/005 Lô D Trịnh Đình Trọng, Phường Hòa Bình, TP. Hồ Chí Minh"
+        : bride.mapAddressVI || "279/005 Lô D Trịnh Đình Trọng, Phường Hòa Bình, TP. Hồ Chí Minh";
+      const brideMapWarn = isZh
+        ? bride.mapNoteZH ||
+          "直接搜尋「302 Chung cư Âu Cơ」易偏移，請直接點擊下方「導航」或「地圖標記」按鈕前往。"
+        : bride.mapNoteVI ||
+          "Tìm \"302 Chung cư Âu Cơ\" trên Google Maps không ra đúng lối vào — Quý Khách bấm nút Chỉ đường bên dưới để tới đúng vị trí.";
+
+      const routeG2B =
+        mv.routeGroomToBrideUrl ||
+        "https://www.google.com/maps/dir/?api=1&origin=80%2F99%2F7+%C4%90%C6%B0%E1%BB%9Dng+Ho%C3%A0ng+Ng%C3%A2n,+Ph%C3%BA+%C4%90%E1%BB%8Bnh,+H%E1%BB%93+Ch%C3%AD+Minh&destination=10.7743392,106.6442479&travelmode=driving";
+      const routeB2G =
+        mv.routeBrideToGroomUrl ||
+        "https://www.google.com/maps/dir/?api=1&origin=10.7743392,106.6442479&destination=80%2F99%2F7+%C4%90%C6%B0%E1%BB%9Dng+Ho%C3%A0ng+Ng%C3%A2n,+Ph%C3%BA+%C4%90%E1%BB%8Bnh,+H%E1%BB%93+Ch%C3%AD+Minh&travelmode=driving";
+      const routeFull =
+        mv.routeFullDayUrl ||
+        "https://www.google.com/maps/dir/?api=1&origin=80%2F99%2F7+%C4%90%C6%B0%E1%BB%9Dng+Ho%C3%A0ng+Ng%C3%A2n,+Ph%C3%BA+%C4%90%E1%BB%8Bnh,+H%E1%BB%93+Ch%C3%AD+Minh&waypoints=10.7743392,106.6442479&destination=Riverside+Palace+360D+Ben+Van+Don+Ho+Chi+Minh&travelmode=driving";
+
+      morningTl.innerHTML = `
+        <div class="timeline-item morning-stop-item ${morningMode === "groom" ? "is-highlight-home" : ""}" data-stop-loc="groom" style="--tl-idx: 0">
+          <span class="timeline-node is-morning-home" aria-hidden="true"></span>
+          <div class="morning-period-row">
+            <span class="timeline-period">${isZh ? "第 1 站 · 上午 05:30" : "Chặng 1 · Buổi sáng 05:30"}</span>
+            ${groomBadge}
+          </div>
+          <h3>${isZh ? "Tư Gia Nhà Trai — 男方府上（新郎家）" : "Tư Gia Nhà Trai"}</h3>
+          <p class="morning-addr-main">${escapeHtmlMorning(groomLoc.addr)}</p>
+          <p class="morning-landmark">${escapeHtmlMorning(groomLandmark)}</p>
+          <div class="morning-stop-actions">
+            <button type="button" class="venue-action-btn is-map-btn" data-focus-map="groom">${isZh ? "📍 查看地圖" : "📍 Xem bản đồ"}</button>
+            <a href="${escapeHtmlMorning(groomLoc.directionsUrl)}" target="_blank" rel="noopener noreferrer" class="venue-action-btn is-primary">${isZh ? "🧭 導航前往" : "🧭 Chỉ đường"}</a>
+            <a href="${escapeHtmlMorning(groomLoc.mapPinUrl)}" target="_blank" rel="noopener noreferrer" class="venue-action-btn">${isZh ? "📌 地圖標記" : "📌 Ghim Maps"}</a>
+            <button type="button" class="venue-action-btn" data-copy-addr="groom">${isZh ? "📋 複製地址" : "📋 Copy"}</button>
+          </div>
+        </div>
+
+        <div class="morning-route-connector">
+          <span class="mrc-text">${isZh ? "🚗 出發前往女方府上迎親（車程約 15-20 分鐘）" : "🚗 Di chuyển sang Tư Gia Nhà Gái đón dâu (~15-20 phút)"}</span>
+          <a href="${escapeHtmlMorning(routeG2B)}" target="_blank" rel="noopener noreferrer" class="mrc-link">${isZh ? "男方家 → 女方家路線 ↗" : "Lộ trình Nhà Trai → Nhà Gái ↗"}</a>
+        </div>
+
+        <div class="timeline-item morning-stop-item ${morningMode === "bride" ? "is-highlight-home" : ""}" data-stop-loc="bride" style="--tl-idx: 1">
+          <span class="timeline-node is-morning-home" aria-hidden="true"></span>
+          <div class="morning-period-row">
+            <span class="timeline-period">${isZh ? "第 2 站 · 上午迎親 ~06:30 - 07:00" : "Chặng 2 · Đón dâu ~06:30 - 07:00"}</span>
+            ${brideBadge}
+          </div>
+          <h3>${isZh ? "Tư Gia Nhà Gái — 女方府上（新娘家）" : "Tư Gia Nhà Gái"}</h3>
+          <p class="morning-addr-main">${escapeHtmlMorning(brideRealAddr)}</p>
+          <div class="morning-map-callout">
+            <div class="mmc-title">${escapeHtmlMorning(brideMapTitle)}</div>
+            <div class="mmc-pin">${escapeHtmlMorning(brideMapPinText)}</div>
+            <p class="mmc-note">${escapeHtmlMorning(brideMapWarn)}</p>
+          </div>
+          <div class="morning-stop-actions">
+            <button type="button" class="venue-action-btn is-map-btn" data-focus-map="bride">${isZh ? "📍 查看地圖" : "📍 Xem bản đồ"}</button>
+            <a href="${escapeHtmlMorning(brideLoc.directionsUrl)}" target="_blank" rel="noopener noreferrer" class="venue-action-btn is-primary">${isZh ? "🧭 精準導航" : "🧭 Chỉ đường"}</a>
+            <a href="${escapeHtmlMorning(brideLoc.mapPinUrl)}" target="_blank" rel="noopener noreferrer" class="venue-action-btn">${isZh ? "📌 地圖標記" : "📌 Ghim Maps"}</a>
+            <button type="button" class="venue-action-btn" data-copy-addr="bride">${isZh ? "📋 複製定位" : "📋 Copy vị trí Maps"}</button>
+          </div>
+        </div>
+
+        <div class="morning-route-connector">
+          <span class="mrc-text">${isZh ? "🚗 迎親返抵男方府上行成婚禮 · 晚間赴宴" : "🚗 Đón dâu về Nhà Trai (Lễ Thành Hôn) · Tối dự tiệc"}</span>
+          <div class="mrc-links">
+            <a href="${escapeHtmlMorning(routeB2G)}" target="_blank" rel="noopener noreferrer" class="mrc-link">${isZh ? "女方家 → 男方家 ↗" : "Nhà Gái → Nhà Trai ↗"}</a>
+            <a href="${escapeHtmlMorning(routeFull)}" target="_blank" rel="noopener noreferrer" class="mrc-link">${isZh ? "全日 3 地路線 ↗" : "Trọn lộ trình 3 điểm ↗"}</a>
+          </div>
+        </div>
+
+        <div class="timeline-item morning-stop-item" data-stop-loc="venue" style="--tl-idx: 2">
+          <span class="timeline-node is-evening" aria-hidden="true"></span>
+          <div class="morning-period-row">
+            <span class="timeline-period">${isZh ? "第 3 站 · 同日晚間 18:00 迎賓 · 19:00 開席" : "Chặng 3 · Buổi tối · Đón khách 18:00 · Khai tiệc 19:00"}</span>
+          </div>
+          <h3>${isZh ? "婚禮晚宴 — RIVERSIDE PALACE（Seine 宴會廳）" : "Tiệc Cưới - Riverside Palace (Sảnh Seine)"}</h3>
+          <p class="morning-addr-main">${escapeHtmlMorning(venueLoc.addr)}</p>
+          <div class="morning-stop-actions">
+            <button type="button" class="venue-action-btn is-map-btn" data-focus-map="venue">${isZh ? "📍 查看地圖" : "📍 Xem bản đồ"}</button>
+            <a href="${escapeHtmlMorning(venueLoc.directionsUrl)}" target="_blank" rel="noopener noreferrer" class="venue-action-btn is-primary">${isZh ? "🧭 導航前往" : "🧭 Chỉ đường"}</a>
+            <button type="button" class="venue-action-btn" data-copy-addr="venue">${isZh ? "📋 複製地址" : "📋 Copy địa chỉ"}</button>
+          </div>
+        </div>
+      `;
+    }
+
+    // 4. Localize Map Switcher Tabs & Sync Active Map Location
+    if (mapTabs) {
+      const tabLabels = isZh
+        ? { groom: "🏠 男方家 · 05:30", bride: "🏡 女方家 · D棟", venue: "🥂 晚宴 · 18:00" }
+        : { groom: "🏠 Nhà Trai · 05:30", bride: "🏡 Nhà Gái · Lô D", venue: "🥂 Tiệc Tối · 18:00" };
+      mapTabs.querySelectorAll(".morning-map-tab").forEach((btn) => {
+        const k = btn.dataset.mapLoc;
+        if (tabLabels[k]) btn.textContent = tabLabels[k];
+      });
+    }
+    const defaultLoc = activeMorningMapLoc || (morningMode === "bride" ? "bride" : "groom");
+    switchMorningMapLocation(defaultLoc, false);
+
+    // 5. Enhance Wedding-Day Directions Priority Banner for Morning Guests
+    if (dpbDefault && dpbMorning) {
+      dpbDefault.hidden = isDirectionsPriority;
+      dpbMorning.hidden = !isDirectionsPriority;
+    }
+    if (isDirectionsPriority) {
+      const dpbTitle = document.getElementById("dpb-guest-title");
+      if (dpbTitle && isZh) {
+        dpbTitle.textContent = `誠摯歡迎 ${displayGuest} 蒞臨順祥 & 小瑩的全日婚禮喜事！`;
+      }
+      setI18nOverride(
+        "dpbDesc",
+        isZh
+          ? "已為您置頂上午迎親兩處府上（男方家 05:30、女方家 Trịnh Đình Trọng 入口）及晚宴 Riverside Palace（18:00）一鍵導航按鈕與詳細路線。"
+          : "Các nút dẫn đường nhanh cho Tư Gia Nhà Trai (05:30), Tư Gia Nhà Gái (ghim Trịnh Đình Trọng) và Tiệc Tối Riverside Palace (18:00) đã được đưa lên đầu trang."
+      );
+      const groomLoc = getMorningLocationData("groom");
+      const brideLoc = getMorningLocationData("bride");
+      const venueLoc = getMorningLocationData("venue");
+      const bGroom = document.getElementById("dpb-btn-groom");
+      const bBride = document.getElementById("dpb-btn-bride");
+      const bVenue = document.getElementById("dpb-btn-venue");
+      if (bGroom) {
+        bGroom.href = groomLoc.directionsUrl;
+        bGroom.textContent = isZh ? "🏠 導航至男方府上 (05:30)" : "🏠 Dẫn đường Nhà Trai (05:30)";
+      }
+      if (bBride) {
+        bBride.href = brideLoc.directionsUrl;
+        bBride.textContent = isZh ? "🏡 導航至女方府上 (D棟)" : "🏡 Dẫn đường Nhà Gái (Lô D)";
+      }
+      if (bVenue) {
+        bVenue.href = venueLoc.directionsUrl;
+        bVenue.textContent = isZh ? "🥂 晚宴 Riverside Palace (18:00)" : "🥂 Tiệc Tối Riverside Palace (18:00)";
+      }
+    }
+
+    if (refreshCountdownDisplay) refreshCountdownDisplay();
+    updateGoogleCalendarLink();
+  }
+
   function syncPostWeddingAndAccessMode() {
     const cfg = window.WEDDING_CONFIG || {};
     const rCfg = remoteGuestConfig || {};
@@ -1807,17 +2451,22 @@
       }
     }
 
-    if (isDirectionsPriority && !envelopeOpened) {
-      const stageEl = document.getElementById("envelope-stage");
-      if (stageEl) {
-        stageEl.classList.add("is-dismissed", "is-gone");
-        stageEl.classList.remove("is-opening");
-      }
-      document.body.classList.remove("envelope-locked", "is-unsealing-env");
-      envelopeOpened = true;
+    // 2. Post-Wedding Thank You Card & Google Drive Photo Album flag
+    const isThankYou =
+      cfg.thankYouMode === true ||
+      rCfg.thankYouMode === true ||
+      rCfg.mode === "thankyou" ||
+      params.get("mode") === "thankyou" ||
+      params.get("thankyou") === "1";
+
+    // Sync Morning Ceremony VIP Guest Mode (orthogonal to invite/directions/thankyou)
+    syncMorningGuestUI({ isDirectionsPriority, isThankYou });
+
+    if (isDirectionsPriority) {
       const locSec = document.getElementById("section-location");
       if (locSec) {
-        locSec.classList.remove("will-reveal");
+        locSec.dataset.entrancePlayed = "1";
+        locSec.classList.remove("will-reveal", "is-awaiting-entrance", "is-playing-entrance");
         locSec.classList.add("is-visible");
       }
       const seatSec = document.getElementById("section-seating");
@@ -1825,17 +2474,19 @@
         seatSec.classList.remove("will-reveal");
         seatSec.classList.add("is-visible");
       }
-      window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
-      triggerScrollRevealCheck();
+      if (!envelopeOpened) {
+        const stageEl = document.getElementById("envelope-stage");
+        if (stageEl) {
+          stageEl.classList.add("is-dismissed", "is-gone");
+          stageEl.classList.remove("is-opening");
+        }
+        document.body.classList.remove("envelope-locked", "is-unsealing-env");
+        envelopeOpened = true;
+        window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
+        triggerScrollRevealCheck();
+      }
     }
 
-    // 2. Post-Wedding Thank You Card & Google Drive Photo Album
-    const isThankYou =
-      cfg.thankYouMode === true ||
-      rCfg.thankYouMode === true ||
-      rCfg.mode === "thankyou" ||
-      params.get("mode") === "thankyou" ||
-      params.get("thankyou") === "1";
     const tySection = document.getElementById("thank-you-showcase");
     if (!tySection) return;
     tySection.hidden = !isThankYou;
@@ -2862,7 +3513,6 @@
 
   /* 7. Countdown Timer & Keepsake January 2027 Calendar + .ics / Google Calendar */
   function setupCountdownAndCalendar() {
-    const targetTime = new Date(CFG.weddingDateISO || "2027-01-06T18:00:00+07:00").getTime();
     const elD = document.getElementById("cd-days");
     const elH = document.getElementById("cd-hours");
     const elM = document.getElementById("cd-mins");
@@ -2871,7 +3521,7 @@
 
     function getRemainingParts() {
       const now = Date.now();
-      const diff = Math.max(0, targetTime - now);
+      const diff = Math.max(0, getCountdownTargetTime() - now);
       return {
         d: Math.floor(diff / 86400000),
         h: Math.floor((diff % 86400000) / 3600000),
@@ -2888,6 +3538,7 @@
       if (elM) elM.textContent = String(m).padStart(2, "0");
       if (elS) elS.textContent = String(s).padStart(2, "0");
     }
+    refreshCountdownDisplay = tick;
     tick();
     setInterval(tick, 1000);
 
@@ -3062,12 +3713,29 @@
     if (icsBtn) {
       icsBtn.addEventListener("click", () => {
         const isZh = currentLang === "zh";
-        const summary = isZh
-          ? "囍 趙順祥 & 盧小瑩 婚禮晚宴（Riverside Palace — Seine 宴會廳）"
-          : "Tiệc Cưới Thuận Tường & Tiểu Dinh (Riverside Palace - Sảnh Seine)";
-        const description = isZh
-          ? "18:00 迎賓入席・19:00 準時開席｜越南胡志明市 RIVERSIDE PALACE — Seine 宴會廳（Sảnh Seine）。誠摯期待您的蒞臨！"
-          : "Đón khách 18:00 - Khai tiệc 19:00. Sự hiện diện của Quý Khách là niềm vinh hạnh cho gia đình chúng tôi!";
+        const isMorning = Boolean(getActiveMorningMode());
+        const mv = CFG.morningVenues || {};
+        const groomAddr = (mv.groom && mv.groom.addressVI) || "80/99/7 Đường Hoàng Ngân, P. Phú Định, TP. Hồ Chí Minh";
+        const brideAddr = (mv.bride && mv.bride.addressVI) || "302 Chung cư Âu Cơ (Lô D), P. Hòa Bình, TP. Hồ Chí Minh";
+        const brideMapAddr = (mv.bride && mv.bride.mapAddressVI) || "279/005 Lô D Trịnh Đình Trọng, P. Hòa Bình, TP. Hồ Chí Minh";
+        const summary = isMorning
+          ? isZh
+            ? "囍 趙順祥 & 盧小瑩 上午迎親典禮 (05:30) 暨婚禮晚宴 (18:00)"
+            : "Lễ Thành Hôn (05:30) & Tiệc Cưới Thuận Tường & Tiểu Dinh"
+          : isZh
+            ? "囍 趙順祥 & 盧小瑩 婚禮晚宴（Riverside Palace — Seine 宴會廳）"
+            : "Tiệc Cưới Thuận Tường & Tiểu Dinh (Riverside Palace - Sảnh Seine)";
+        const description = isMorning
+          ? isZh
+            ? `05:30 男方府上：${groomAddr}｜女方府上：${brideAddr}（Google Maps：${brideMapAddr}）｜18:00 晚宴：Riverside Palace (Seine 宴會廳), 360D Bến Vân Đồn, P. Vĩnh Hội, TP. Hồ Chí Minh。`
+            : `05:30 Lễ Sáng Nhà Trai: ${groomAddr} | Nhà Gái: ${brideAddr} (Ghim Maps: ${brideMapAddr}) | 18:00 Tiệc Tối: Riverside Palace (Sảnh Seine), 360D Bến Vân Đồn, P. Vĩnh Hội, TP. Hồ Chí Minh.`
+          : isZh
+            ? "18:00 迎賓入席・19:00 準時開席｜越南胡志明市 RIVERSIDE PALACE — Seine 宴會廳（Sảnh Seine）。誠摯期待您的蒞臨！"
+            : "Đón khách 18:00 - Khai tiệc 19:00. Sự hiện diện của Quý Khách là niềm vinh hạnh cho gia đình chúng tôi!";
+        const dtStart = isMorning ? "20270105T223000Z" : "20270106T110000Z";
+        const locationLine = isMorning
+          ? `LOCATION:${groomAddr.replace(/,/g, "\\,")} -> ${brideMapAddr.replace(/,/g, "\\,")} -> Riverside Palace\\, 360D Bến Vân Đồn\\, TP. Hồ Chí Minh`
+          : "LOCATION:Riverside Palace (Sảnh Seine)\\, 360D Bến Vân Đồn\\, Phường Vĩnh Hội\\, TP. Hồ Chí Minh";
         const icsLines = [
           "BEGIN:VCALENDAR",
           "VERSION:2.0",
@@ -3077,11 +3745,11 @@
           "BEGIN:VEVENT",
           "UID:wedding-tuong-dinh-20270106@riversidepalace",
           "DTSTAMP:20261101T120000Z",
-          "DTSTART:20270106T110000Z",
+          `DTSTART:${dtStart}`,
           "DTEND:20270106T143000Z",
           `SUMMARY:${summary}`,
-          "LOCATION:Riverside Palace (Sảnh Seine)\\, 360D Bến Vân Đồn\\, Phường Vĩnh Hội\\, TP. Hồ Chí Minh",
-          `DESCRIPTION:${description}`,
+          locationLine,
+          `DESCRIPTION:${description.replace(/,/g, "\\,")}`,
           "END:VEVENT",
           "END:VCALENDAR"
         ].join("\r\n");
@@ -3317,8 +3985,9 @@
         locSec.classList.add("is-visible");
 
         const vh = window.innerHeight || 680;
-        if (window.innerWidth <= 820 && mapFrame) {
-          const hlItem = locSec.querySelector(".timeline-item:last-child");
+        const isMorningMode = document.body.classList.contains("is-morning-guest-mode");
+        if (!isMorningMode && window.innerWidth <= 820 && mapFrame) {
+          const hlItem = locSec.querySelector("#default-timeline-list .timeline-item:last-child");
           const mapRect = mapFrame.getBoundingClientRect();
           const mapTop = window.scrollY + mapRect.top;
           const mapBottom = mapTop + mapRect.height;

@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Cormorant+Garamond:wght@600;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23721427'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='38' fill='%23fffbf2'%3E%E5%9B%8D%3C/text%3E%3C/svg%3E" />
   <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
-  <link rel="stylesheet" href="css/admin.css?v=68" />
+  <link rel="stylesheet" href="css/admin.css?v=69" />
 </head>
 <body>
   <div class="adm-shell">
@@ -123,6 +123,15 @@
               </select>
             </div>
             <div>
+              <label for="default-add-morning" style="display:block; font-size:12px; font-weight:600; color:var(--adm-muted); margin-bottom:5px;">Chế độ mời Lễ Sáng (05:30):</label>
+              <select id="default-add-morning" class="adm-select">
+                <option value="">🌙 Chỉ Tiệc Tối 18:00 (Mặc định)</option>
+                <option value="both">🌅 Mời Sáng (05:30) + Tối (18:00) — Cả 2 Nhà</option>
+                <option value="groom">🏠 Sáng Nhà Trai (80/99/7 Hoàng Ngân) + Tối</option>
+                <option value="bride">🏡 Sáng Nhà Gái (302 CC Âu Cơ) + Tối</option>
+              </select>
+            </div>
+            <div>
               <button type="button" id="btn-generate" class="btn-adm primary lg" style="width:100%; height:44px; font-weight:700;">
                 ✨ Lưu &amp; Gán Vào Thẻ QR Tiếp Theo
               </button>
@@ -170,6 +179,7 @@
             <button type="button" class="filter-chip" data-filter="opened">✨ Đã xem thiệp</button>
             <button type="button" class="filter-chip" data-filter="pending">⏳ Chưa mở</button>
             <button type="button" class="filter-chip" data-filter="directions">📍 Đang bật Chỉ Đường</button>
+            <button type="button" class="filter-chip" data-filter="morning">🌅 Mời Lễ Sáng (05:30)</button>
             <button type="button" class="filter-chip" data-filter="thankyou">📸 Đang bật Lời Cảm Ơn</button>
           </div>
           <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
@@ -238,6 +248,14 @@
               <option value="invite">💌 Chuyển sang: Thiệp Mời</option>
               <option value="directions">📍 Chuyển sang: Chỉ Đường</option>
               <option value="thankyou">📸 Chuyển sang: Cảm Ơn</option>
+            </select>
+
+            <select id="bulk-assign-morning" class="adm-select adm-select-compact" aria-label="Bật hoặc tắt chế độ mời Lễ Sáng hàng loạt">
+              <option value="__keep__">-- Giữ nguyên Lễ Sáng --</option>
+              <option value="both">🌅 Bật: Sáng (05:30) + Tối (Cả 2 Nhà)</option>
+              <option value="groom">🏠 Bật: Sáng Nhà Trai + Tối</option>
+              <option value="bride">🏡 Bật: Sáng Nhà Gái + Tối</option>
+              <option value="">🌙 Tắt Lễ Sáng (Chỉ Tiệc Tối)</option>
             </select>
 
             <button type="button" id="btn-apply-bulk-assign" class="btn-adm primary">
@@ -367,6 +385,7 @@
                   <label for="qr-layout-style" style="display:block; font-size:12.5px; font-weight:600; margin-bottom:5px;">1. Kiểu Thẻ Phụ QR (Không cần mua ghim kẹp):</label>
                   <select id="qr-layout-style" class="adm-select">
                     <option value="square_qr" selected>🟦 Thẻ Vuông QR Cỡ Lớn (6×6cm • 1 hàng 3 thẻ • 12 thẻ/tờ A4 • Đẹp &amp; Rõ Nhất)</option>
+                    <option value="square_qr_xl">🗺️ Thẻ Vuông QR + Bản Đồ Cỡ Rộng (9×9cm • 1 hàng 2 thẻ • 6 thẻ/tờ A4 • Đọc Bản Đồ Cực Rõ)</option>
                     <option value="square_qr_sm">🟦 Thẻ Vuông QR Tiết Kiệm (4.5×4.5cm • 1 hàng 4 thẻ • 24 thẻ/tờ A4)</option>
                     <option value="pinterest_strip">🔖 Dải Bookmark Dọc Thon Dài (3.1×9cm • 18 dải/tờ A4 có lề an toàn)</option>
                     <option value="frameless">✨ Thẻ Phụ Chữ Nhật Không Khung (4.6×5.4cm • 20 thẻ/tờ A4)</option>
@@ -422,6 +441,37 @@
                 <button type="button" id="btn-download-qr-png" class="btn-adm lg" style="border-color:var(--adm-crimson); color:var(--adm-crimson);">
                   ⬇️ Tải Ảnh Lẻ (.PNG)
                 </button>
+              </div>
+
+              <!-- KHỐI IN MẶT SAU: BẢN ĐỒ RIVERSIDE PALACE KHỚP 100% LƯỚI TỌA ĐỘ MẶT QR -->
+              <div style="margin-top:8px; padding:14px 16px; border-radius:10px; background:#f8f3ec; border:1.5px solid #9e2f42;">
+                <div style="display:flex; align-items:flex-start; gap:14px; flex-wrap:wrap;">
+                  <img
+                    src="/assets/ban-do-riverside-palace-card.png"
+                    onerror="this.onerror=null; this.src='./assets/ban-do-riverside-palace-card.png';"
+                    alt="Bản đồ Riverside Palace mặt sau"
+                    style="width:88px; height:88px; object-fit:cover; border-radius:8px; border:1px solid #d9c3a3; background:#fbf7f2; flex-shrink:0;"
+                  />
+                  <div style="flex:1; min-width:240px;">
+                    <div style="font-weight:700; font-size:14px; color:#8e2b3a; margin-bottom:4px;">
+                      🗺️ In Mặt Sau: Bản Đồ Riverside Palace (Khớp Tọa Độ 100% Với Mặt QR)
+                    </div>
+                    <div id="map-back-sync-info" style="font-size:12.4px; color:#4f3737; line-height:1.5; margin-bottom:10px;">
+                      Đang khóa khớp lưới đối xứng tâm A4: <strong>12 Thẻ Vuông 6×6cm (3×4 ô · Lề 15mm / 28.5mm)</strong>. Phủ tràn nền kem + chừa vùng an toàn 3.5mm mỗi ô để máy in lệch 1-2mm cắt vẫn không phạm chữ.
+                    </div>
+                    <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                      <button type="button" id="btn-print-map-back" class="btn-adm primary lg" style="background:#8e2b3a;">
+                        🗺️ Xuất Tờ A4 Mặt Sau (Bản Đồ)
+                      </button>
+                      <button type="button" id="btn-print-duplex-test" class="btn-adm lg" style="border-color:#8e2b3a; color:#8e2b3a;">
+                        🧪 In 1 Tờ Test Khớp 2 Mặt (QR + Bản Đồ)
+                      </button>
+                    </div>
+                    <div style="font-size:11.8px; color:#6b4e4e; margin-top:8px; line-height:1.48;">
+                      <strong>Quy trình in 2 mặt không lệch:</strong> In hết mặt QR (Scale 100%, Lề None) → test trước <strong>1 tờ</strong> mặt Bản đồ rồi đưa lên soi đèn → nếu máy in lệch nhẹ, chỉnh ô <strong>Bù lệch X/Y (±mm)</strong> ngay trên màn hình in mặt Bản đồ cho khớp 0mm rồi mới chạy hết chồng giấy.
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <!-- KHỐI 1 (KHUYÊN DÙNG): IN TRƯỚC QR ĐÁNH SỐ (SỐ 1, SỐ 2...) — ĐIỀN TÊN KHÁCH SAU -->
@@ -841,6 +891,13 @@
         <option value="directions">📍 Chỉ Đường</option>
         <option value="thankyou">📸 Lời Cảm Ơn</option>
       </select>
+      <select id="bulk-float-morning" aria-label="Bật hoặc tắt mời Lễ Sáng cho các mục đã chọn" title="Mời Lễ Sáng">
+        <option value="__keep__">-- Giữ nguyên Lễ Sáng --</option>
+        <option value="both">🌅 Sáng + Tối (2 Nhà)</option>
+        <option value="groom">🏠 Sáng Nhà Trai + Tối</option>
+        <option value="bride">🏡 Sáng Nhà Gái + Tối</option>
+        <option value="">🌙 Chỉ Tiệc Tối</option>
+      </select>
       <button type="button" id="btn-float-apply" class="btn-adm primary" style="font-weight:700;">
         ⚡ Áp Dụng
       </button>
@@ -849,6 +906,6 @@
 
   <div id="puppy-toast" class="puppy-toast" role="status" aria-live="polite"></div>
 
-  <script src="js/admin.js?v=67" defer></script>
+  <script src="js/admin.js?v=69" defer></script>
 </body>
 </html>

@@ -891,6 +891,46 @@ details.tw-details summary {
   box-shadow: 0 1px 4px rgba(17, 105, 57, 0.25);
 }
 
+/* MORNING CEREMONY (05:30) SELECT & BADGE */
+.morning-inline-select {
+  appearance: auto;
+  height: 36px;
+  padding: 0 8px;
+  border-radius: 7px;
+  border: 1px solid var(--adm-border-strong);
+  background: #faf6ee;
+  color: var(--adm-muted);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  max-width: 100%;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+.morning-inline-select:hover {
+  border-color: #b87414;
+  color: var(--adm-crimson);
+}
+.morning-inline-select.has-morning {
+  background: #fff3da;
+  border-color: #c27b14;
+  color: #7d1518;
+  font-weight: 700;
+}
+.morning-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #fff3da;
+  border: 1px solid #d4963a;
+  color: #7d1518;
+  font-size: 11.2px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 /* BUTTONS */
 .btn-adm {
   appearance: none;
@@ -1238,6 +1278,14 @@ table.adm-table {
   .guest-btn-group .mode-switch-pill {
     flex: 1 1 100%;
     width: 100%;
+  }
+  .guest-btn-group .morning-inline-select,
+  .guest-item-card .mob-slot-actions .morning-inline-select {
+    flex: 1 1 100%;
+    width: 100%;
+    min-height: 34px;
+    height: 36px;
+    font-size: 11.8px;
   }
   .guest-btn-group > .btn-adm {
     flex: 1 1 calc(50% - 4px);
