@@ -1975,18 +1975,13 @@
 
     const nameEl = document.getElementById("morning-map-active-name");
     const addrEl = document.getElementById("morning-map-active-addr");
-    const openEl = document.getElementById("morning-map-open-link");
     const dirEl = document.getElementById("morning-map-dir-link");
 
     if (nameEl) nameEl.textContent = loc.name;
     if (addrEl) addrEl.textContent = loc.addr;
-    if (openEl) {
-      openEl.href = loc.mapPinUrl;
-      openEl.textContent = isZh ? "地圖標記 ↗" : "Ghim Maps ↗";
-    }
     if (dirEl) {
       dirEl.href = loc.directionsUrl;
-      dirEl.textContent = isZh ? "🧭 開始導航" : "🧭 Chỉ đường";
+      dirEl.textContent = isZh ? "🧭 導航" : "🧭 Chỉ đường";
     }
 
     if (shouldScrollMap) {
@@ -2021,30 +2016,16 @@
     const itineraryEl = document.getElementById("morning-itinerary-list");
     if (itineraryEl) {
       itineraryEl.addEventListener("click", (e) => {
-        const focusBtn = e.target.closest("[data-focus-map]");
-        if (focusBtn) {
-          switchMorningMapLocation(focusBtn.dataset.focusMap, true);
-          return;
-        }
         const copyBtn = e.target.closest("[data-copy-addr]");
         if (copyBtn) {
           const loc = getMorningLocationData(copyBtn.dataset.copyAddr);
           copyTextWithToast(loc.copyText, loc.copiedToast);
+          return;
         }
-      });
-    }
-
-    const stopsGrid = document.getElementById("mv-stops-grid");
-    if (stopsGrid) {
-      stopsGrid.addEventListener("click", (e) => {
-        const btn = e.target.closest("[data-jump-loc]");
-        if (!btn) return;
-        const locKey = btn.dataset.jumpLoc;
-        switchMorningMapLocation(locKey, false);
-        const locSec = revealLocationSectionImmediate();
-        if (locSec) {
-          const targetY = Math.max(0, window.scrollY + locSec.getBoundingClientRect().top - 66);
-          window.scrollTo({ top: targetY, behavior: "smooth" });
+        if (e.target.closest("a, button")) return;
+        const stopItem = e.target.closest("[data-stop-loc]");
+        if (stopItem && stopItem.dataset.stopLoc) {
+          switchMorningMapLocation(stopItem.dataset.stopLoc, false);
         }
       });
     }
@@ -2125,92 +2106,34 @@
     if (mapTabs) mapTabs.hidden = false;
     if (mapFooter) mapFooter.hidden = false;
 
-    // 1. Populate VIP Morning Invitation Prelude Card
+    // 1. Populate Slim Morning Prelude Card (2-3 crisp lines + 1 jump button)
     const eyebrowEl = document.getElementById("mv-eyebrow");
     const titleEl = document.getElementById("mv-title");
-    const descEl = document.getElementById("mv-desc");
+    const summaryEl = document.getElementById("mv-summary");
     if (eyebrowEl) {
-      eyebrowEl.textContent =
-        morningMode === "groom"
-          ? isZh
-            ? "✦ 男方親友專屬敬邀 · 05:30 上午典禮 & 18:00 晚宴 ✦"
-            : "✦ THƯ MỜI RIÊNG NHÀ TRAI · LỄ SÁNG 05:30 & TIỆC TỐI 18:00 ✦"
-          : morningMode === "bride"
-            ? isZh
-              ? "✦ 女方親友專屬敬邀 · 05:30 上午典禮 & 18:00 晚宴 ✦"
-              : "✦ THƯ MỜI RIÊNG NHÀ GÁI · LỄ SÁNG 05:30 & TIỆC TỐI 18:00 ✦"
-            : isZh
-              ? "✦ 專屬敬邀 · 05:30 上午迎親典禮 & 18:00 婚禮晚宴 ✦"
-              : "✦ THƯ MỜI RIÊNG · LỄ SÁNG 05:30 & TIỆC TỐI 18:00 ✦";
+      eyebrowEl.textContent = isZh
+        ? "全日婚禮敬邀 · 2027.01.06"
+        : "LỄ SÁNG & TIỆC TỐI · 06.01.2027";
     }
     if (titleEl) {
       titleEl.textContent = isZh
-        ? `誠摯邀請 ${displayGuest} 蒞臨參與全日婚禮喜事`
-        : `Kính Mời ${displayGuest} Tham Dự Trọn Ngày Hỷ Sự`;
+        ? `誠摯邀請 ${displayGuest} 參與全日婚禮`
+        : `Kính mời ${displayGuest} dự trọn ngày hỷ sự`;
     }
-    if (descEl) {
-      if (morningMode === "groom") {
-        descEl.textContent = isZh
-          ? `誠摯邀請 ${displayGuest} 於上午 05:30 蒞臨男方府上（富定坊）集合並同行迎親，晚間 18:00 共赴 Riverside Palace（Seine 宴會廳）參加婚禮晚宴。`
-          : `Gia đình trân trọng kính mời ${displayGuest} tập trung dự Lễ Thành Hôn buổi sáng lúc 05:30 tại Tư Gia Nhà Trai (P. Phú Định), cùng đoàn đón dâu sang Nhà Gái và dự Tiệc Cưới buổi tối lúc 18:00 tại Riverside Palace (Sảnh Seine).`;
-      } else if (morningMode === "bride") {
-        descEl.textContent = isZh
-          ? `誠摯邀請 ${displayGuest} 蒞臨女方府上（Âu Cơ 公寓 D 棟 302 室，地圖定位於 Trịnh Đình Trọng 街）參與上午迎親典禮，並於晚間 18:00 共赴 Riverside Palace（Seine 宴會廳）婚禮晚宴。`
-          : `Gia đình trân trọng kính mời ${displayGuest} tham dự Lễ Vu Quy & Đón Dâu buổi sáng tại Tư Gia Nhà Gái (302 Chung cư Âu Cơ, Lô D · P. Hòa Bình) và chung vui Tiệc Cưới buổi tối lúc 18:00 tại Riverside Palace (Sảnh Seine).`;
-      } else {
-        descEl.textContent = isZh
-          ? `誠摯邀請 ${displayGuest} 共度 2027.01.06 全日婚禮喜事：從上午 05:30 雙方府上迎親成婚典禮，至晚間 18:00 於 Riverside Palace（Seine 宴會廳）舉杯同慶。`
-          : `Gia đình trân trọng kính mời ${displayGuest} cùng chung vui trọn ngày cưới 06.01.2027: từ Lễ Thành Hôn buổi sáng lúc 05:30 tại Tư Gia hai họ đến Tiệc Cưới buổi tối lúc 18:00 tại Riverside Palace (Sảnh Seine).`;
-      }
-    }
-
-    const setTxt = (id, val) => {
-      const el = document.getElementById(id);
-      if (el) el.textContent = val;
-    };
-    setTxt("mv-stop1-time", isZh ? "05:30 · 上午出發" : "05:30 · Sáng");
-    setTxt("mv-stop1-name", isZh ? "男方府上（新郎家）" : "Tư Gia Nhà Trai");
-    setTxt("mv-stop1-addr", isZh ? "80/99/7 Đường Hoàng Ngân, P. Phú Định" : "80/99/7 Hoàng Ngân, P. Phú Định");
-
-    setTxt("mv-stop2-time", isZh ? "06:30 · 迎親典禮" : "06:30 · Đón Dâu");
-    setTxt("mv-stop2-name", isZh ? "女方府上（新娘家）" : "Tư Gia Nhà Gái");
-    setTxt(
-      "mv-stop2-addr",
-      isZh ? "302 Âu Cơ 公寓 · 定位 279/005 Trịnh Đình Trọng" : "302 CC Âu Cơ · Ghim 279/005 Trịnh Đình Trọng"
-    );
-
-    setTxt("mv-stop3-time", isZh ? "18:00 · 婚禮晚宴" : "18:00 · Tiệc Tối");
-    setTxt("mv-stop3-name", isZh ? "Riverside Palace" : "Riverside Palace");
-    setTxt(
-      "mv-stop3-addr",
-      isZh ? "Seine 宴會廳 · 360D Bến Vân Đồn, P. Vĩnh Hội" : "Sảnh Seine · 360D Bến Vân Đồn, P. Vĩnh Hội"
-    );
-
-    const stopsGrid = document.getElementById("mv-stops-grid");
-    if (stopsGrid) {
-      stopsGrid.querySelectorAll(".mv-stop-pill").forEach((pill) => {
-        const loc = pill.dataset.jumpLoc;
-        const isPrimary =
-          (morningMode === "groom" && loc === "groom") ||
-          (morningMode === "bride" && loc === "bride");
-        pill.classList.toggle("is-primary-stop", isPrimary);
-      });
+    if (summaryEl) {
+      summaryEl.textContent =
+        morningMode === "bride"
+          ? isZh
+            ? "06:00 - 06:30 女方家 · 09:00 前至男方家（~10:00 午宴）· 18:00 Riverside Palace"
+            : "06:00 - 06:30 Nhà Gái · Trước 09:00 về Nhà Trai (Tiệc ~10:00) · 18:00 Riverside Palace"
+          : isZh
+            ? "05:30 男方家（06:00 出發）· 女方家 · 09:00 前返男方家（~10:00 午宴）· 18:00 晚宴"
+            : "05:30 Nhà Trai (06:00 xuất phát) · Nhà Gái · Trước 09:00 về Nhà Trai (Tiệc ~10:00) · 18:00 Tiệc Tối";
     }
 
     const jumpBtn = document.getElementById("btn-mv-jump-itinerary");
     if (jumpBtn) {
-      jumpBtn.textContent = isZh
-        ? "🗺️ 查看全日路線與三地地圖 ↓"
-        : "🗺️ Xem Lộ Trình & Bản Đồ 3 Điểm ↓";
-    }
-    const fullRouteBtn = document.getElementById("btn-mv-full-route");
-    if (fullRouteBtn) {
-      fullRouteBtn.href =
-        mv.routeFullDayUrl ||
-        "https://www.google.com/maps/dir/?api=1&origin=80%2F99%2F7+%C4%90%C6%B0%E1%BB%9Dng+Ho%C3%A0ng+Ng%C3%A2n,+Ph%C3%BA+%C4%90%E1%BB%8Bnh,+H%E1%BB%93+Ch%C3%AD+Minh&waypoints=10.7743392,106.6442479&destination=Riverside+Palace+360D+Ben+Van+Don+Ho+Chi+Minh&travelmode=driving";
-      fullRouteBtn.textContent = isZh
-        ? "🚗 開啟全日路線 (Google Maps) ↗"
-        : "🚗 Mở Lộ Trình Cả Ngày (Google Maps) ↗";
+      jumpBtn.textContent = isZh ? "查看路線與導航 ↓" : "Xem lộ trình & chỉ đường ↓";
     }
 
     // 2. Adapt Countdown, Calendar & Section Headings for Full-Day Guests
@@ -2229,13 +2152,13 @@
       "cdSub",
       isZh
         ? "國曆 2027 年 1 月 6 日（星期三）05:30 上午典禮 · 18:00 婚禮晚宴（農曆丙午年十一月二十九日）"
-        : `Lễ Sáng 05:30 tại Tư Gia · Tiệc Tối 18:00 • Thứ Tư, 06.01.2027 (${CFG.lunarDateVI || "Nhằm ngày 29 tháng 11 năm Bính Ngọ"})`
+        : `Lễ Sáng 05:30 · Tiệc Tối 18:00 • Thứ Tư, 06.01.2027 (${CFG.lunarDateVI || "Nhằm ngày 29 tháng 11 năm Bính Ngọ"})`
     );
     setI18nOverride(
       "cdVenueLine",
       isZh
         ? "男方府上（富定坊）· 女方府上（和平坊）· Riverside Palace（Seine 宴會廳）"
-        : "Tư Gia Nhà Trai (P. Phú Định) · Tư Gia Nhà Gái (P. Hòa Bình) · Riverside Palace (Sảnh Seine)"
+        : "Tư Gia Nhà Trai · Tư Gia Nhà Gái · Riverside Palace (Sảnh Seine)"
     );
     setI18nOverride(
       "calFooterNote",
@@ -2243,131 +2166,120 @@
     );
     setI18nOverride(
       "dayBadge",
-      isZh ? "全日婚禮路線 · 上午典禮貴賓專屬" : "Lộ Trình Trọn Ngày · Khách Mời Lễ Sáng"
+      isZh ? "全日婚禮流程" : "Lộ Trình Trọn Ngày"
     );
     if (isZh) {
-      setI18nOverride("venueTitle", "全日婚禮流程與三地導航");
+      setI18nOverride("venueTitle", "全日婚禮流程與導航");
       setI18nOverride(
         "venueSub",
-        "上午 05:30 雙方府上迎親典禮 · 晚間 18:00 Riverside Palace（Seine 宴會廳）婚禮晚宴"
+        "上午迎親典禮暨午宴 · 晚間 Riverside Palace（Seine 宴會廳）"
       );
     }
 
-    // 3. Render Detailed 3-Stop Itinerary with Exact Addresses, Map Warnings & Inter-Stop Routes
+    // 3. Render Minimal Real-World Itinerary (2 crisp buttons per address, zero verbose boxes)
     if (morningTl) {
       const groomLoc = getMorningLocationData("groom");
       const brideLoc = getMorningLocationData("bride");
       const venueLoc = getMorningLocationData("venue");
-      const groomBadge =
-        morningMode === "groom"
-          ? `<span class="morning-side-badge">${isZh ? "您的集合地點" : "Điểm hẹn buổi sáng"}</span>`
-          : "";
-      const brideBadge =
-        morningMode === "bride"
-          ? `<span class="morning-side-badge">${isZh ? "您的集合地點" : "Điểm hẹn buổi sáng"}</span>`
-          : "";
-
-      const groomLandmark = isZh
-        ? groom.landmarkZH || "鄰近武文傑大道（Võ Văn Kiệt）與 La Chateau 飯店"
-        : groom.landmarkVI || "Gần đại lộ Võ Văn Kiệt & Khách sạn La Chateau";
       const brideRealAddr = isZh
-        ? bride.addressZH || "胡志明市和平坊 Âu Cơ 公寓 D 棟 302 室（302 Chung cư Âu Cơ, Lô D）"
-        : bride.addressVI || "302 Chung cư Âu Cơ (Lô D), Phường Hòa Bình, TP. Hồ Chí Minh";
-      const brideMapTitle = isZh
-        ? "📍 Google 地圖精準定位（Trịnh Đình Trọng 街入口）"
-        : "📍 Vị trí ghim Google Maps chuẩn (đường Trịnh Đình Trọng)";
-      const brideMapPinText = isZh
-        ? "279/005 Lô D Trịnh Đình Trọng, Phường Hòa Bình, TP. Hồ Chí Minh"
-        : bride.mapAddressVI || "279/005 Lô D Trịnh Đình Trọng, Phường Hòa Bình, TP. Hồ Chí Minh";
-      const brideMapWarn = isZh
-        ? bride.mapNoteZH ||
-          "直接搜尋「302 Chung cư Âu Cơ」易偏移，請直接點擊下方「導航」或「地圖標記」按鈕前往。"
-        : bride.mapNoteVI ||
-          "Tìm \"302 Chung cư Âu Cơ\" trên Google Maps không ra đúng lối vào — Quý Khách bấm nút Chỉ đường bên dưới để tới đúng vị trí.";
+        ? bride.addressZH || "胡志明市和平坊 Âu Cơ 公寓 D 棟 302 室"
+        : bride.addressVI || "302 Chung cư Âu Cơ (Lô D), P. Hòa Bình, TP. Hồ Chí Minh";
+      const bridePinLine = isZh
+        ? "地圖定位：279/005 Lô D Trịnh Đình Trọng, P. Hòa Bình"
+        : "Ghim Maps: 279/005 Lô D Trịnh Đình Trọng, P. Hòa Bình";
+      const startBadge = `<span class="morning-side-badge">${isZh ? "集合點" : "Điểm hẹn"}</span>`;
+      const btnDirLabel = isZh ? "🧭 導航" : "🧭 Chỉ đường";
+      const btnCopyLabel = isZh ? "📋 複製" : "📋 Copy";
 
-      const routeG2B =
-        mv.routeGroomToBrideUrl ||
-        "https://www.google.com/maps/dir/?api=1&origin=80%2F99%2F7+%C4%90%C6%B0%E1%BB%9Dng+Ho%C3%A0ng+Ng%C3%A2n,+Ph%C3%BA+%C4%90%E1%BB%8Bnh,+H%E1%BB%93+Ch%C3%AD+Minh&destination=10.7743392,106.6442479&travelmode=driving";
-      const routeB2G =
-        mv.routeBrideToGroomUrl ||
-        "https://www.google.com/maps/dir/?api=1&origin=10.7743392,106.6442479&destination=80%2F99%2F7+%C4%90%C6%B0%E1%BB%9Dng+Ho%C3%A0ng+Ng%C3%A2n,+Ph%C3%BA+%C4%90%E1%BB%8Bnh,+H%E1%BB%93+Ch%C3%AD+Minh&travelmode=driving";
-      const routeFull =
-        mv.routeFullDayUrl ||
-        "https://www.google.com/maps/dir/?api=1&origin=80%2F99%2F7+%C4%90%C6%B0%E1%BB%9Dng+Ho%C3%A0ng+Ng%C3%A2n,+Ph%C3%BA+%C4%90%E1%BB%8Bnh,+H%E1%BB%93+Ch%C3%AD+Minh&waypoints=10.7743392,106.6442479&destination=Riverside+Palace+360D+Ben+Van+Don+Ho+Chi+Minh&travelmode=driving";
-
-      morningTl.innerHTML = `
-        <div class="timeline-item morning-stop-item ${morningMode === "groom" ? "is-highlight-home" : ""}" data-stop-loc="groom" style="--tl-idx: 0">
-          <span class="timeline-node is-morning-home" aria-hidden="true"></span>
-          <div class="morning-period-row">
-            <span class="timeline-period">${isZh ? "第 1 站 · 上午 05:30" : "Chặng 1 · Buổi sáng 05:30"}</span>
-            ${groomBadge}
-          </div>
-          <h3>${isZh ? "Tư Gia Nhà Trai — 男方府上（新郎家）" : "Tư Gia Nhà Trai"}</h3>
-          <p class="morning-addr-main">${escapeHtmlMorning(groomLoc.addr)}</p>
-          <p class="morning-landmark">${escapeHtmlMorning(groomLandmark)}</p>
-          <div class="morning-stop-actions">
-            <button type="button" class="venue-action-btn is-map-btn" data-focus-map="groom">${isZh ? "📍 查看地圖" : "📍 Xem bản đồ"}</button>
-            <a href="${escapeHtmlMorning(groomLoc.directionsUrl)}" target="_blank" rel="noopener noreferrer" class="venue-action-btn is-primary">${isZh ? "🧭 導航前往" : "🧭 Chỉ đường"}</a>
-            <a href="${escapeHtmlMorning(groomLoc.mapPinUrl)}" target="_blank" rel="noopener noreferrer" class="venue-action-btn">${isZh ? "📌 地圖標記" : "📌 Ghim Maps"}</a>
-            <button type="button" class="venue-action-btn" data-copy-addr="groom">${isZh ? "📋 複製地址" : "📋 Copy"}</button>
-          </div>
-        </div>
-
-        <div class="morning-route-connector">
-          <span class="mrc-text">${isZh ? "🚗 出發前往女方府上迎親（車程約 15-20 分鐘）" : "🚗 Di chuyển sang Tư Gia Nhà Gái đón dâu (~15-20 phút)"}</span>
-          <a href="${escapeHtmlMorning(routeG2B)}" target="_blank" rel="noopener noreferrer" class="mrc-link">${isZh ? "男方家 → 女方家路線 ↗" : "Lộ trình Nhà Trai → Nhà Gái ↗"}</a>
-        </div>
-
-        <div class="timeline-item morning-stop-item ${morningMode === "bride" ? "is-highlight-home" : ""}" data-stop-loc="bride" style="--tl-idx: 1">
-          <span class="timeline-node is-morning-home" aria-hidden="true"></span>
-          <div class="morning-period-row">
-            <span class="timeline-period">${isZh ? "第 2 站 · 上午迎親 ~06:30 - 07:00" : "Chặng 2 · Đón dâu ~06:30 - 07:00"}</span>
-            ${brideBadge}
-          </div>
-          <h3>${isZh ? "Tư Gia Nhà Gái — 女方府上（新娘家）" : "Tư Gia Nhà Gái"}</h3>
-          <p class="morning-addr-main">${escapeHtmlMorning(brideRealAddr)}</p>
-          <div class="morning-map-callout">
-            <div class="mmc-title">${escapeHtmlMorning(brideMapTitle)}</div>
-            <div class="mmc-pin">${escapeHtmlMorning(brideMapPinText)}</div>
-            <p class="mmc-note">${escapeHtmlMorning(brideMapWarn)}</p>
-          </div>
-          <div class="morning-stop-actions">
-            <button type="button" class="venue-action-btn is-map-btn" data-focus-map="bride">${isZh ? "📍 查看地圖" : "📍 Xem bản đồ"}</button>
-            <a href="${escapeHtmlMorning(brideLoc.directionsUrl)}" target="_blank" rel="noopener noreferrer" class="venue-action-btn is-primary">${isZh ? "🧭 精準導航" : "🧭 Chỉ đường"}</a>
-            <a href="${escapeHtmlMorning(brideLoc.mapPinUrl)}" target="_blank" rel="noopener noreferrer" class="venue-action-btn">${isZh ? "📌 地圖標記" : "📌 Ghim Maps"}</a>
-            <button type="button" class="venue-action-btn" data-copy-addr="bride">${isZh ? "📋 複製定位" : "📋 Copy vị trí Maps"}</button>
-          </div>
-        </div>
-
-        <div class="morning-route-connector">
-          <span class="mrc-text">${isZh ? "🚗 迎親返抵男方府上行成婚禮 · 晚間赴宴" : "🚗 Đón dâu về Nhà Trai (Lễ Thành Hôn) · Tối dự tiệc"}</span>
-          <div class="mrc-links">
-            <a href="${escapeHtmlMorning(routeB2G)}" target="_blank" rel="noopener noreferrer" class="mrc-link">${isZh ? "女方家 → 男方家 ↗" : "Nhà Gái → Nhà Trai ↗"}</a>
-            <a href="${escapeHtmlMorning(routeFull)}" target="_blank" rel="noopener noreferrer" class="mrc-link">${isZh ? "全日 3 地路線 ↗" : "Trọn lộ trình 3 điểm ↗"}</a>
-          </div>
-        </div>
-
-        <div class="timeline-item morning-stop-item" data-stop-loc="venue" style="--tl-idx: 2">
+      const stopVenueHtml = (idx) => `
+        <div class="timeline-item morning-stop-item" data-stop-loc="venue" style="--tl-idx: ${idx}">
           <span class="timeline-node is-evening" aria-hidden="true"></span>
-          <div class="morning-period-row">
-            <span class="timeline-period">${isZh ? "第 3 站 · 同日晚間 18:00 迎賓 · 19:00 開席" : "Chặng 3 · Buổi tối · Đón khách 18:00 · Khai tiệc 19:00"}</span>
-          </div>
-          <h3>${isZh ? "婚禮晚宴 — RIVERSIDE PALACE（Seine 宴會廳）" : "Tiệc Cưới - Riverside Palace (Sảnh Seine)"}</h3>
+          <span class="timeline-period">${isZh ? "18:00 迎賓 · 19:00 開席" : "Buổi tối · Đón khách 18:00 · Khai tiệc 19:00"}</span>
+          <h3>${isZh ? "婚禮晚宴 - Riverside Palace（Seine 宴會廳）" : "Tiệc Cưới - Riverside Palace (Sảnh Seine)"}</h3>
           <p class="morning-addr-main">${escapeHtmlMorning(venueLoc.addr)}</p>
           <div class="morning-stop-actions">
-            <button type="button" class="venue-action-btn is-map-btn" data-focus-map="venue">${isZh ? "📍 查看地圖" : "📍 Xem bản đồ"}</button>
-            <a href="${escapeHtmlMorning(venueLoc.directionsUrl)}" target="_blank" rel="noopener noreferrer" class="venue-action-btn is-primary">${isZh ? "🧭 導航前往" : "🧭 Chỉ đường"}</a>
-            <button type="button" class="venue-action-btn" data-copy-addr="venue">${isZh ? "📋 複製地址" : "📋 Copy địa chỉ"}</button>
+            <a href="${escapeHtmlMorning(venueLoc.directionsUrl)}" target="_blank" rel="noopener noreferrer" class="venue-action-btn is-primary">${btnDirLabel}</a>
+            <button type="button" class="venue-action-btn" data-copy-addr="venue">${btnCopyLabel}</button>
           </div>
         </div>
       `;
+
+      if (morningMode === "bride") {
+        morningTl.innerHTML = `
+          <div class="timeline-item morning-stop-item" data-stop-loc="bride" style="--tl-idx: 0">
+            <span class="timeline-node is-morning-home" aria-hidden="true"></span>
+            <div class="morning-period-row">
+              <span class="timeline-period">${isZh ? "06:00 - 06:30 · 迎親典禮與遊戲" : "06:00 - 06:30 · Tập trung & đón dâu"}</span>
+              ${startBadge}
+            </div>
+            <h3>${isZh ? "女方府上（新娘家）" : "Tư Gia Nhà Gái"}</h3>
+            <p class="morning-addr-main">${escapeHtmlMorning(brideRealAddr)}</p>
+            <p class="morning-map-hint">${escapeHtmlMorning(bridePinLine)}</p>
+            <div class="morning-stop-actions">
+              <a href="${escapeHtmlMorning(brideLoc.directionsUrl)}" target="_blank" rel="noopener noreferrer" class="venue-action-btn is-primary">${btnDirLabel}</a>
+              <button type="button" class="venue-action-btn" data-copy-addr="bride">${btnCopyLabel}</button>
+            </div>
+          </div>
+
+          <div class="timeline-item morning-stop-item" data-stop-loc="groom" style="--tl-idx: 1">
+            <span class="timeline-node is-morning-home" aria-hidden="true"></span>
+            <span class="timeline-period">${isZh ? "09:00 前 · 成婚禮 & ~10:00 午宴" : "Trước 09:00 · Lễ Thành Hôn & tiệc ~10:00"}</span>
+            <h3>${isZh ? "男方府上（新郎家）" : "Tư Gia Nhà Trai"}</h3>
+            <p class="morning-addr-main">${escapeHtmlMorning(groomLoc.addr)}</p>
+            <p class="morning-step-note">${isZh ? "約 10:00 禮成，誠邀留步於男方府上共進午宴。" : "Xong lễ ~10:00, mời dùng tiệc thân mật tại Nhà Trai."}</p>
+            <div class="morning-stop-actions">
+              <a href="${escapeHtmlMorning(groomLoc.directionsUrl)}" target="_blank" rel="noopener noreferrer" class="venue-action-btn is-primary">${btnDirLabel}</a>
+              <button type="button" class="venue-action-btn" data-copy-addr="groom">${btnCopyLabel}</button>
+            </div>
+          </div>
+
+          ${stopVenueHtml(2)}
+        `;
+      } else {
+        morningTl.innerHTML = `
+          <div class="timeline-item morning-stop-item" data-stop-loc="groom" style="--tl-idx: 0">
+            <span class="timeline-node is-morning-home" aria-hidden="true"></span>
+            <div class="morning-period-row">
+              <span class="timeline-period">${isZh ? "05:30 集合 · ~06:00 出發" : "05:30 tập trung · ~06:00 xuất phát"}</span>
+              ${morningMode === "groom" ? startBadge : ""}
+            </div>
+            <h3>${isZh ? "男方府上（新郎家）" : "Tư Gia Nhà Trai"}</h3>
+            <p class="morning-addr-main">${escapeHtmlMorning(groomLoc.addr)}</p>
+            <div class="morning-stop-actions">
+              <a href="${escapeHtmlMorning(groomLoc.directionsUrl)}" target="_blank" rel="noopener noreferrer" class="venue-action-btn is-primary">${btnDirLabel}</a>
+              <button type="button" class="venue-action-btn" data-copy-addr="groom">${btnCopyLabel}</button>
+            </div>
+          </div>
+
+          <div class="timeline-item morning-stop-item" data-stop-loc="bride" style="--tl-idx: 1">
+            <span class="timeline-node is-morning-home" aria-hidden="true"></span>
+            <span class="timeline-period">${isZh ? "~06:30 · 迎親典禮與遊戲" : "~06:30 · Lễ Vu Quy & trò chơi"}</span>
+            <h3>${isZh ? "女方府上（新娘家）" : "Tư Gia Nhà Gái"}</h3>
+            <p class="morning-addr-main">${escapeHtmlMorning(brideRealAddr)}</p>
+            <p class="morning-map-hint">${escapeHtmlMorning(bridePinLine)}</p>
+            <div class="morning-stop-actions">
+              <a href="${escapeHtmlMorning(brideLoc.directionsUrl)}" target="_blank" rel="noopener noreferrer" class="venue-action-btn is-primary">${btnDirLabel}</a>
+              <button type="button" class="venue-action-btn" data-copy-addr="bride">${btnCopyLabel}</button>
+            </div>
+          </div>
+
+          <div class="timeline-item morning-stop-item" data-stop-loc="groom" style="--tl-idx: 2">
+            <span class="timeline-node is-morning-home" aria-hidden="true"></span>
+            <span class="timeline-period">${isZh ? "09:00 前返抵 · ~10:00 用餐" : "Trước 09:00 · Lễ Thành Hôn & tiệc ~10:00"}</span>
+            <h3>${isZh ? "返抵男方府上 & 午宴" : "Về Tư Gia Nhà Trai & dùng tiệc"}</h3>
+            <p class="morning-step-note">${isZh ? "行成婚禮後約 10:00 禮成，邀請親友於男方家用餐。" : "Làm lễ xong ~10:00, mời dùng tiệc thân mật tại Nhà Trai."}</p>
+          </div>
+
+          ${stopVenueHtml(3)}
+        `;
+      }
     }
 
     // 4. Localize Map Switcher Tabs & Sync Active Map Location
     if (mapTabs) {
       const tabLabels = isZh
-        ? { groom: "🏠 男方家 · 05:30", bride: "🏡 女方家 · D棟", venue: "🥂 晚宴 · 18:00" }
-        : { groom: "🏠 Nhà Trai · 05:30", bride: "🏡 Nhà Gái · Lô D", venue: "🥂 Tiệc Tối · 18:00" };
+        ? { groom: "男方家 · 05:30", bride: "女方家 · 06:30", venue: "晚宴 · 18:00" }
+        : { groom: "Nhà Trai · 05:30", bride: "Nhà Gái · 06:30", venue: "Tiệc Tối · 18:00" };
       mapTabs.querySelectorAll(".morning-map-tab").forEach((btn) => {
         const k = btn.dataset.mapLoc;
         if (tabLabels[k]) btn.textContent = tabLabels[k];
@@ -2389,8 +2301,8 @@
       setI18nOverride(
         "dpbDesc",
         isZh
-          ? "已為您置頂上午迎親兩處府上（男方家 05:30、女方家 Trịnh Đình Trọng 入口）及晚宴 Riverside Palace（18:00）一鍵導航按鈕與詳細路線。"
-          : "Các nút dẫn đường nhanh cho Tư Gia Nhà Trai (05:30), Tư Gia Nhà Gái (ghim Trịnh Đình Trọng) và Tiệc Tối Riverside Palace (18:00) đã được đưa lên đầu trang."
+          ? "點選下方按鈕即可開啟 Google 地圖導航。"
+          : "Chọn địa điểm bên dưới để mở Google Maps dẫn đường nhanh."
       );
       const groomLoc = getMorningLocationData("groom");
       const brideLoc = getMorningLocationData("bride");
@@ -2400,15 +2312,15 @@
       const bVenue = document.getElementById("dpb-btn-venue");
       if (bGroom) {
         bGroom.href = groomLoc.directionsUrl;
-        bGroom.textContent = isZh ? "🏠 導航至男方府上 (05:30)" : "🏠 Dẫn đường Nhà Trai (05:30)";
+        bGroom.textContent = isZh ? "🏠 導航至男方家 (05:30)" : "🏠 Nhà Trai (05:30)";
       }
       if (bBride) {
         bBride.href = brideLoc.directionsUrl;
-        bBride.textContent = isZh ? "🏡 導航至女方府上 (D棟)" : "🏡 Dẫn đường Nhà Gái (Lô D)";
+        bBride.textContent = isZh ? "🏡 導航至女方家 (06:30)" : "🏡 Nhà Gái (06:30)";
       }
       if (bVenue) {
         bVenue.href = venueLoc.directionsUrl;
-        bVenue.textContent = isZh ? "🥂 晚宴 Riverside Palace (18:00)" : "🥂 Tiệc Tối Riverside Palace (18:00)";
+        bVenue.textContent = isZh ? "🥂 晚宴 Riverside Palace (18:00)" : "🥂 Riverside Palace (18:00)";
       }
     }
 

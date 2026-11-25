@@ -30,7 +30,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,500;1,600&family=Dancing+Script:wght@600;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="css/styles.css?v=71" />
+  <link rel="stylesheet" href="css/styles.css?v=72" />
 
   <!-- Pre-printed numbered QR bookmark (?s=7-k3x9): look up the guest name & card mode assigned later in the admin page -->
   <style>html.td-slot-resolving body { visibility: hidden; }</style>
@@ -322,41 +322,13 @@
       <h1 data-i18n="heroTitle">Thuận Tường &amp; Tiểu Dinh</h1>
     </div>
 
-    <!-- VIP MORNING CEREMONY + EVENING BANQUET INVITATION PRELUDE (Shown ONLY when morning mode is active) -->
-    <section id="morning-vip-card" class="morning-vip-card" hidden aria-label="Thư mời riêng tham dự Lễ Thành Hôn buổi sáng và Tiệc Cưới">
+    <!-- SLIM MORNING CEREMONY + EVENING BANQUET PRELUDE (Shown ONLY when morning mode is active) -->
+    <section id="morning-vip-card" class="morning-vip-card" hidden aria-label="Thư mời riêng tham dự Lễ Sáng và Tiệc Tối">
       <div class="morning-vip-paper">
         <div class="mv-eyebrow" id="mv-eyebrow"></div>
         <h2 class="mv-title" id="mv-title"></h2>
-        <p class="mv-desc" id="mv-desc"></p>
-
-        <div class="mv-stops-grid" id="mv-stops-grid">
-          <button type="button" class="mv-stop-pill" data-jump-loc="groom">
-            <span class="mv-stop-time" id="mv-stop1-time"></span>
-            <strong class="mv-stop-name" id="mv-stop1-name"></strong>
-            <span class="mv-stop-addr" id="mv-stop1-addr"></span>
-          </button>
-          <button type="button" class="mv-stop-pill" data-jump-loc="bride">
-            <span class="mv-stop-time" id="mv-stop2-time"></span>
-            <strong class="mv-stop-name" id="mv-stop2-name"></strong>
-            <span class="mv-stop-addr" id="mv-stop2-addr"></span>
-          </button>
-          <button type="button" class="mv-stop-pill" data-jump-loc="venue">
-            <span class="mv-stop-time" id="mv-stop3-time"></span>
-            <strong class="mv-stop-name" id="mv-stop3-name"></strong>
-            <span class="mv-stop-addr" id="mv-stop3-addr"></span>
-          </button>
-        </div>
-
-        <div class="mv-actions">
-          <a href="#section-location" id="btn-mv-jump-itinerary" class="mv-btn primary"></a>
-          <a
-            id="btn-mv-full-route"
-            href="#section-location"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="mv-btn secondary"
-          ></a>
-        </div>
+        <p class="mv-summary" id="mv-summary"></p>
+        <a href="#section-location" id="btn-mv-jump-itinerary" class="mv-btn primary"></a>
       </div>
     </section>
 
@@ -647,9 +619,9 @@
 
           <div class="venue-map-frame" id="venue-map-frame">
             <div class="morning-map-tabs" id="morning-map-tabs" role="tablist" aria-label="Chọn bản đồ địa điểm" hidden>
-              <button type="button" class="morning-map-tab is-active" role="tab" aria-selected="true" data-map-loc="groom">🏠 Nhà Trai · 05:30</button>
-              <button type="button" class="morning-map-tab" role="tab" aria-selected="false" data-map-loc="bride">🏡 Nhà Gái · Lô D</button>
-              <button type="button" class="morning-map-tab" role="tab" aria-selected="false" data-map-loc="venue">🥂 Tiệc Tối · 18:00</button>
+              <button type="button" class="morning-map-tab is-active" role="tab" aria-selected="true" data-map-loc="groom">Nhà Trai · 05:30</button>
+              <button type="button" class="morning-map-tab" role="tab" aria-selected="false" data-map-loc="bride">Nhà Gái · 06:30</button>
+              <button type="button" class="morning-map-tab" role="tab" aria-selected="false" data-map-loc="venue">Tiệc Tối · 18:00</button>
             </div>
             <iframe
               id="venue-map-iframe"
@@ -664,7 +636,6 @@
                 <span id="morning-map-active-addr"></span>
               </div>
               <div class="morning-map-footer-actions">
-                <a id="morning-map-open-link" href="#section-location" target="_blank" rel="noopener noreferrer" class="morning-map-link"></a>
                 <a id="morning-map-dir-link" href="#section-location" target="_blank" rel="noopener noreferrer" class="morning-map-link is-primary"></a>
               </div>
             </div>
@@ -726,6 +697,6 @@
   <script src="js/config.js?v=67" defer></script>
   <script src="js/artwork-envelope.js?v=65" defer></script>
   <script src="js/audio.js?v=65" defer></script>
-  <script src="js/app.js?v=73" defer></script>
+  <script src="js/app.js?v=74" defer></script>
 </body>
 </html>

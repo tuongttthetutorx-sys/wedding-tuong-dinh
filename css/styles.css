@@ -4899,7 +4899,7 @@ body.lang-zh .seating-info-badge {
 }
 
 /* =====================================================================
-   MORNING CEREMONY VIP GUEST MODE (05:30 AT HOME + 18:00 BANQUET)
+   MORNING CEREMONY VIP GUEST MODE (SLIM PRELUDE + MINIMAL TIMELINE)
    ===================================================================== */
 .timeline-list[hidden],
 .morning-vip-card[hidden],
@@ -4909,34 +4909,34 @@ body.lang-zh .seating-info-badge {
 }
 
 .morning-vip-card {
-  max-width: 780px;
-  margin: 0 auto 42px;
+  max-width: 680px;
+  margin: 0 auto 32px;
 }
 
 .morning-vip-paper {
   position: relative;
-  padding: clamp(22px, 3.6vw, 32px) clamp(18px, 3.6vw, 30px);
-  border-radius: 14px;
+  padding: clamp(16px, 2.6vw, 22px) clamp(16px, 3vw, 26px);
+  border-radius: 12px;
   background-color: var(--paper-cream);
   background-image:
-    radial-gradient(circle at 50% 0%, rgba(217, 178, 119, 0.2), transparent 65%),
+    radial-gradient(circle at 50% 0%, rgba(217, 178, 119, 0.16), transparent 65%),
     url("../assets/paper-texture.webp");
   background-size: cover;
-  border: 1.5px solid rgba(132, 21, 23, 0.26);
+  border: 1px solid rgba(132, 21, 23, 0.24);
   box-shadow:
-    inset 0 0 0 5px rgba(250, 246, 238, 0.86),
-    inset 0 0 0 6px rgba(198, 125, 8, 0.22),
+    inset 0 0 0 4px rgba(250, 246, 238, 0.85),
+    inset 0 0 0 5px rgba(198, 125, 8, 0.18),
     var(--card-shadow);
   text-align: center;
 }
 
 .mv-eyebrow {
   font-family: var(--font-serif);
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.15em;
   color: var(--gold-ink);
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 body.lang-zh .mv-eyebrow {
@@ -4945,11 +4945,11 @@ body.lang-zh .mv-eyebrow {
 }
 
 .mv-title {
-  margin: 0 0 10px;
+  margin: 0 0 6px;
   font-family: var(--font-serif);
-  font-size: clamp(23px, 3.6vw, 31px);
+  font-size: clamp(20px, 3.2vw, 26px);
   font-weight: 700;
-  line-height: 1.22;
+  line-height: 1.24;
   color: var(--crimson-ink);
   text-wrap: balance;
 }
@@ -4958,91 +4958,13 @@ body.lang-zh .mv-title {
   font-family: var(--font-zh);
 }
 
-.mv-desc {
-  max-width: 630px;
-  margin: 0 auto 18px;
-  font-size: 14px;
-  line-height: 1.65;
+.mv-summary {
+  max-width: 580px;
+  margin: 0 auto 14px;
+  font-size: 13.4px;
+  line-height: 1.55;
   color: var(--text-main);
   text-wrap: pretty;
-}
-
-.mv-stops-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-  margin-bottom: 18px;
-  text-align: left;
-}
-
-.mv-stop-pill {
-  appearance: none;
-  border: 1px solid rgba(132, 21, 23, 0.18);
-  background: rgba(255, 255, 255, 0.78);
-  border-radius: 10px;
-  padding: 12px 13px;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  text-align: left;
-  cursor: pointer;
-  font-family: inherit;
-  min-width: 0;
-  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
-}
-
-.mv-stop-pill:hover,
-.mv-stop-pill:focus-visible {
-  transform: translateY(-2px);
-  border-color: var(--crimson-ink);
-  box-shadow: 0 8px 20px rgba(132, 21, 23, 0.11);
-  background: #ffffff;
-  outline: none;
-}
-
-.mv-stop-pill.is-primary-stop {
-  border-color: rgba(132, 21, 23, 0.48);
-  background: linear-gradient(135deg, rgba(132, 21, 23, 0.06) 0%, rgba(217, 178, 119, 0.18) 100%);
-  box-shadow: 0 6px 16px rgba(132, 21, 23, 0.1);
-}
-
-.mv-stop-time {
-  font-family: var(--font-serif);
-  font-size: 12.5px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: var(--gold-ink);
-}
-
-body.lang-zh .mv-stop-time {
-  font-family: var(--font-zh);
-}
-
-.mv-stop-name {
-  font-family: var(--font-serif);
-  font-size: 16.5px;
-  font-weight: 700;
-  color: var(--crimson-ink);
-  line-height: 1.25;
-}
-
-body.lang-zh .mv-stop-name {
-  font-family: var(--font-zh);
-  font-size: 15px;
-}
-
-.mv-stop-addr {
-  font-size: 12px;
-  color: var(--text-muted);
-  line-height: 1.4;
-  overflow-wrap: anywhere;
-}
-
-.mv-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
 }
 
 .mv-btn {
@@ -5050,39 +4972,27 @@ body.lang-zh .mv-stop-name {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 10px 18px;
+  padding: 9px 20px;
   border-radius: 999px;
-  font-size: 13.4px;
+  font-size: 13.2px;
   font-weight: 700;
   text-decoration: none;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 .mv-btn.primary {
   background: linear-gradient(135deg, #841517 0%, #5c0c12 100%);
   color: var(--ivory-ink);
-  border: 1px solid rgba(217, 178, 119, 0.52);
-  box-shadow: 0 8px 20px rgba(132, 21, 23, 0.24);
+  border: 1px solid rgba(217, 178, 119, 0.5);
+  box-shadow: 0 6px 16px rgba(132, 21, 23, 0.22);
 }
 
 .mv-btn.primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 11px 24px rgba(132, 21, 23, 0.32);
+  box-shadow: 0 9px 20px rgba(132, 21, 23, 0.3);
 }
 
-.mv-btn.secondary {
-  background: rgba(255, 255, 255, 0.85);
-  color: var(--crimson-ink);
-  border: 1px solid rgba(132, 21, 23, 0.3);
-}
-
-.mv-btn.secondary:hover {
-  transform: translateY(-1px);
-  background: rgba(132, 21, 23, 0.06);
-  border-color: var(--crimson-ink);
-}
-
-/* Detailed 3-Stop Morning + Evening Route Ledger */
+/* Minimal Real-World Morning + Evening Route Ledger */
 body.is-morning-guest-mode #section-location .venue-grid {
   align-items: start;
 }
@@ -5094,40 +5004,34 @@ body.is-morning-guest-mode #section-location .day-schedule-ledger {
 body.is-morning-guest-mode #section-location .venue-map-frame {
   position: sticky;
   top: 82px;
-  min-height: 520px;
+  min-height: 460px;
 }
 
 body.is-morning-guest-mode #section-location .venue-map-frame iframe {
-  min-height: 390px;
+  min-height: 345px;
 }
 
 .timeline-list.is-morning-itinerary {
-  gap: 12px;
+  gap: 18px;
 }
 
 #section-location.is-playing-entrance .timeline-list.is-morning-itinerary .timeline-item {
-  animation-duration: 0.48s;
-  animation-delay: calc(var(--tl-idx, 0) * 130ms + 100ms);
+  animation-duration: 0.45s;
+  animation-delay: calc(var(--tl-idx, 0) * 110ms + 80ms);
 }
 
 .morning-stop-item {
-  padding: 10px 12px 12px;
-  border-radius: 10px;
-  transition: background 0.2s ease, box-shadow 0.2s ease;
+  padding: 2px 4px 2px 0;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
 .morning-stop-item .timeline-node {
-  top: 15px;
+  top: 6px;
 }
 
-.morning-stop-item.is-highlight-home {
-  background: rgba(217, 178, 119, 0.11);
-  box-shadow: inset 0 0 0 1px rgba(198, 125, 8, 0.26);
-}
-
-.morning-stop-item.is-map-focused {
-  background: rgba(255, 253, 248, 0.94);
-  box-shadow: inset 0 0 0 1.25px rgba(132, 21, 23, 0.28);
+.morning-stop-item.is-map-focused .timeline-period {
+  color: var(--crimson-ink);
 }
 
 .morning-period-row {
@@ -5142,109 +5046,47 @@ body.is-morning-guest-mode #section-location .venue-map-frame iframe {
   align-items: center;
   font-size: 11px;
   font-weight: 700;
-  padding: 2px 8px;
+  padding: 1px 8px;
   border-radius: 999px;
-  background: rgba(132, 21, 23, 0.1);
+  background: rgba(132, 21, 23, 0.09);
   color: var(--crimson-ink);
-  border: 1px solid rgba(132, 21, 23, 0.24);
+  border: 1px solid rgba(132, 21, 23, 0.22);
 }
 
 .morning-stop-item .morning-addr-main {
   margin-top: 2px;
   font-size: 13.6px;
-  font-weight: 600;
   color: var(--text-main);
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
 
-.morning-stop-item .morning-landmark {
+.morning-stop-item .morning-map-hint {
   margin-top: 3px;
   font-size: 12.6px;
-  color: var(--text-muted);
-}
-
-.morning-map-callout {
-  margin-top: 9px;
-  padding: 9px 11px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, rgba(217, 178, 119, 0.2) 0%, rgba(255, 251, 242, 0.94) 100%);
-  border: 1px solid rgba(198, 125, 8, 0.36);
-  border-left: 3.5px solid var(--crimson-ink);
-}
-
-.mmc-title {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--crimson-ink);
-  margin-bottom: 2px;
-}
-
-.mmc-pin {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-main);
-  line-height: 1.4;
+  font-weight: 600;
+  color: var(--gold-ink);
+  line-height: 1.45;
   overflow-wrap: anywhere;
 }
 
-.morning-map-callout .mmc-note {
+.morning-stop-item .morning-step-note {
   margin-top: 3px;
-  font-size: 12.1px;
-  line-height: 1.48;
+  font-size: 13px;
   color: var(--text-muted);
+  line-height: 1.5;
 }
 
 .morning-stop-actions {
-  margin-top: 10px;
+  margin-top: 9px;
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 7px;
 }
 
 .morning-stop-actions .venue-action-btn {
-  font-size: 12.2px;
-  padding: 6px 11px;
-}
-
-.morning-route-connector {
-  padding: 8px 11px;
-  border-radius: 8px;
-  background: rgba(132, 21, 23, 0.045);
-  border: 1px dashed rgba(132, 21, 23, 0.22);
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.mrc-text {
-  font-size: 12.3px;
-  font-weight: 600;
-  color: var(--text-main);
-  line-height: 1.42;
-}
-
-.mrc-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 14px;
-}
-
-.mrc-link {
-  display: inline-flex;
-  align-items: center;
-  align-self: flex-start;
-  font-size: 12.2px;
-  font-weight: 700;
-  color: var(--crimson-ink);
-  text-decoration: none;
-  border-bottom: 1px solid rgba(132, 21, 23, 0.34);
-  padding-bottom: 1px;
-  transition: opacity 0.16s ease;
-}
-
-.mrc-link:hover {
-  opacity: 0.78;
+  font-size: 12.4px;
+  padding: 6px 12px;
 }
 
 /* Interactive 3-Location Google Maps Switcher inside #venue-map-frame */
@@ -5288,7 +5130,7 @@ body.is-morning-guest-mode #section-location .venue-map-frame iframe {
 }
 
 .morning-map-footer {
-  padding: 11px 13px;
+  padding: 10px 13px;
   background: #fbf6ec;
   border-top: 1px solid rgba(132, 21, 23, 0.16);
   display: flex;
@@ -5308,7 +5150,7 @@ body.is-morning-guest-mode #section-location .venue-map-frame iframe {
 
 .morning-map-footer-info strong {
   font-family: var(--font-serif);
-  font-size: 16px;
+  font-size: 15.5px;
   font-weight: 700;
   color: var(--crimson-ink);
   line-height: 1.25;
@@ -5328,8 +5170,6 @@ body.lang-zh .morning-map-footer-info strong {
 
 .morning-map-footer-actions {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
   flex-shrink: 0;
 }
 
@@ -5338,59 +5178,40 @@ body.lang-zh .morning-map-footer-info strong {
   align-items: center;
   justify-content: center;
   gap: 4px;
-  padding: 7px 11px;
+  padding: 7px 13px;
   border-radius: 7px;
-  font-size: 12.2px;
+  font-size: 12.4px;
   font-weight: 700;
   text-decoration: none;
-  border: 1px solid rgba(132, 21, 23, 0.28);
-  background: #fffdf8;
-  color: var(--crimson-ink);
+  border: 1px solid var(--crimson-ink);
+  background: var(--crimson-ink);
+  color: #fff9ef;
   white-space: nowrap;
-  transition: background 0.16s ease, border-color 0.16s ease;
+  transition: background 0.16s ease;
 }
 
 .morning-map-link:hover {
-  border-color: var(--crimson-ink);
-  background: rgba(132, 21, 23, 0.06);
-}
-
-.morning-map-link.is-primary {
-  background: var(--crimson-ink);
-  border-color: var(--crimson-ink);
-  color: #fff9ef;
-}
-
-.morning-map-link.is-primary:hover {
   background: #650f12;
 }
 
 @media (max-width: 820px) {
-  .mv-stops-grid {
-    grid-template-columns: 1fr;
-  }
-
   body.is-morning-guest-mode #section-location .venue-map-frame {
     position: static;
-    min-height: 360px;
+    min-height: 350px;
   }
 
   body.is-morning-guest-mode #section-location .venue-map-frame iframe {
-    min-height: 290px;
+    min-height: 280px;
   }
 }
 
 @media (max-width: 520px) {
   .morning-vip-card {
-    margin-bottom: 30px;
+    margin-bottom: 24px;
   }
 
   .morning-vip-paper {
-    padding: 20px 15px 18px;
-  }
-
-  .mv-actions {
-    flex-direction: column;
+    padding: 15px 14px 16px;
   }
 
   .mv-btn {
@@ -5405,27 +5226,14 @@ body.lang-zh .morning-map-footer-info strong {
     width: 100%;
   }
 
-  .morning-stop-item {
-    padding: 8px 9px 10px;
-  }
-
-  .morning-stop-actions .venue-action-btn {
-    font-size: 11.8px;
-    padding: 6px 9px;
-  }
-
   .morning-map-tabs {
     padding: 6px;
     gap: 5px;
   }
 
   .morning-map-tab {
-    font-size: 11.2px;
+    font-size: 11.4px;
     padding: 7px 4px;
-  }
-
-  .morning-map-footer {
-    padding: 10px 11px;
   }
 
   .morning-map-footer-actions {
@@ -5433,6 +5241,6 @@ body.lang-zh .morning-map-footer-info strong {
   }
 
   .morning-map-link {
-    flex: 1 1 auto;
+    width: 100%;
   }
 }
