@@ -22,16 +22,19 @@
       btnFlipBack: "Lật lại mặt trước phong bì",
       envCreditHint: "Personally designed by the Bride & Groom — Tiểu Dinh & Thuận Tường",
       c2Epigraph: "“We began as classmates…”",
+      c2OpenAria: "Mở đọc toàn bộ câu chuyện viền thiệp",
       c2Line1: "“We began as classmates in high school and became each other’s love.",
       c2Line2: "We grew together, understood each other, and found happiness in our relationship.",
       c2Line3: "Despite many arguments and challenges, we made it through that chapter.",
       c2Line4: "After seven and a half years, our story continues — now as husband and wife.”",
-      c2Pause: "Pause",
-      c2Resume: "Resume",
-      c2Copy: "Copy",
-      c2Copied: "Copied",
-      c2CloseAria: "Close",
-      c2FoldAria: "Fold quote",
+      c2Trans1: "“Từ bạn cùng lớp thời trung học, chúng mình trở thành tình yêu của nhau.",
+      c2Trans2: "Cùng nhau trưởng thành, thấu hiểu và tìm thấy hạnh phúc bên nhau.",
+      c2Trans3: "Dẫu từng có những lần tranh cãi và thử thách, tụi mình vẫn nắm tay vượt qua.",
+      c2Trans4: "Sau bảy năm rưỡi bên nhau, câu chuyện tiếp nối - nay là vợ chồng.”",
+      c2TranslateToLocal: "Xem bản dịch",
+      c2TranslateToEn: "Nguyên bản",
+      c2CloseAria: "Đóng",
+      c2FoldAria: "Thu gọn câu chuyện",
       c2EdgeTop: "We began as classmates in high school and became each other’s love.",
       c2EdgeRight: "We grew together, understood each other, and found happiness in our relationship.",
       c2EdgeBottom: "Despite many arguments and challenges, we made it through that chapter.",
@@ -115,16 +118,19 @@
       btnFlipBack: "返回信封正面",
       envCreditHint: "Personally designed by the Bride & Groom — Tiểu Dinh & Thuận Tường",
       c2Epigraph: "“We began as classmates…”",
+      c2OpenAria: "點擊展開完整英文手寫故事",
       c2Line1: "“We began as classmates in high school and became each other’s love.",
       c2Line2: "We grew together, understood each other, and found happiness in our relationship.",
       c2Line3: "Despite many arguments and challenges, we made it through that chapter.",
       c2Line4: "After seven and a half years, our story continues — now as husband and wife.”",
-      c2Pause: "Pause",
-      c2Resume: "Resume",
-      c2Copy: "Copy",
-      c2Copied: "Copied",
-      c2CloseAria: "Close",
-      c2FoldAria: "Fold quote",
+      c2Trans1: "「我們從高中同班同學開始，成為彼此的摯愛。",
+      c2Trans2: "我們一起成長、彼此理解，在這段感情裡找到幸福。",
+      c2Trans3: "儘管曾經歷過許多爭執與考驗，我們依然牽手走了過來。",
+      c2Trans4: "走過七年半的歲月，我們的故事仍在繼續 - 如今成了夫妻。」",
+      c2TranslateToLocal: "查看譯文",
+      c2TranslateToEn: "查看原文",
+      c2CloseAria: "關閉",
+      c2FoldAria: "收合故事",
       c2EdgeTop: "We began as classmates in high school and became each other’s love.",
       c2EdgeRight: "We grew together, understood each other, and found happiness in our relationship.",
       c2EdgeBottom: "Despite many arguments and challenges, we made it through that chapter.",
@@ -1534,6 +1540,10 @@
           </linearGradient>
         </defs>
 
+        <!-- Outer Architectural Hall Floorplan Frame -->
+        <rect x="3" y="3" width="${W - 6}" height="${svgH - 6}" rx="8" fill="rgba(255, 253, 248, 0.52)" stroke="rgba(132, 21, 23, 0.32)" stroke-width="1.35" />
+        <rect x="7" y="7" width="${W - 14}" height="${svgH - 14}" rx="5" fill="none" stroke="rgba(198, 125, 8, 0.26)" stroke-width="0.75" />
+
         <!-- Stage -->
         <rect x="${stageX}" y="${stageY}" width="${stageW}" height="${stageH}" rx="4" fill="#841518" stroke="#c67d08" stroke-width="1.3" />
         <rect x="${stageX + 3.5}" y="${stageY + 3}" width="${stageW - 7}" height="${stageH - 6}" rx="2.5" fill="none" stroke="rgba(255, 240, 200, 0.45)" stroke-width="0.8" />
@@ -2715,6 +2725,8 @@
     }
   }
 
+  let syncCard2VerseUI = null;
+
   /* 4. Apply Language (VI / 台灣繁體中文) & Reorder Cards Smoothly */
   function applyLanguage(lang) {
     currentLang = lang === "zh" ? "zh" : "vi";
@@ -2774,10 +2786,13 @@
       const k = c2EdgeKeys[el.dataset.edge];
       if (k && dict[k]) el.setAttribute("aria-label", dict[k]);
     });
+    const whisperBtnEl = document.getElementById("c2-border-whisper-btn");
+    if (whisperBtnEl && dict.c2OpenAria) whisperBtnEl.setAttribute("aria-label", dict.c2OpenAria);
     const foldSigEl = document.getElementById("btn-fold-sig");
     if (foldSigEl && dict.c2FoldAria) foldSigEl.setAttribute("aria-label", dict.c2FoldAria);
     const closeEnEl = document.getElementById("btn-close-border-en");
     if (closeEnEl && dict.c2CloseAria) closeEnEl.setAttribute("aria-label", dict.c2CloseAria);
+    if (syncCard2VerseUI) syncCard2VerseUI();
     const touchCueEl = document.getElementById("env-touch-cue");
     if (touchCueEl) {
       touchCueEl.textContent = envelopeFlipped ? dict.btnOpenSealHint : dict.btnFlipFront;
@@ -3503,10 +3518,8 @@
     const secretWrap = document.getElementById("c2-border-secret");
     const whisperBtn = document.getElementById("c2-border-whisper-btn");
     const reader = document.getElementById("c2-border-reader");
-    const copyEnBtn = document.getElementById("btn-copy-border-en");
-    const copyLabel = document.getElementById("c2-copy-label");
-    const pauseTourBtn = document.getElementById("btn-pause-border-tour");
-    const pauseLabel = document.getElementById("c2-pause-label");
+    const translateBtn = document.getElementById("btn-translate-border");
+    const translateLabel = document.getElementById("c2-translate-label");
     const closeEnBtn = document.getElementById("btn-close-border-en");
     const foldSigBtn = document.getElementById("btn-fold-sig");
     if (!card2 || !secretWrap || !whisperBtn || !reader) return;
@@ -3521,9 +3534,8 @@
     let penTimer = null;
     let activeEdge = "top";
     let tourInterval = null;
-    let isTourPaused = false;
     let manualPauseUntil = 0;
-    let copyResetTimer = null;
+    let isTranslated = false;
 
     function finishPenImmediately() {
       penStarted = true;
@@ -3609,17 +3621,41 @@
       }
     }
 
-    function syncPauseBtnUI() {
+    function syncVerseLanguageUI(animateSwitch) {
       const dict = I18N[currentLang] || I18N.vi;
-      if (pauseTourBtn) pauseTourBtn.setAttribute("aria-pressed", isTourPaused ? "true" : "false");
-      if (pauseLabel) pauseLabel.textContent = isTourPaused ? dict.c2Resume : dict.c2Pause;
+      const keys = isTranslated
+        ? ["c2Trans1", "c2Trans2", "c2Trans3", "c2Trans4"]
+        : ["c2Line1", "c2Line2", "c2Line3", "c2Line4"];
+      if (animateSwitch && !reducedMotion) {
+        reader.classList.remove("is-switching");
+        void reader.offsetWidth;
+        reader.classList.add("is-switching");
+      } else if (!animateSwitch) {
+        reader.classList.remove("is-switching");
+      }
+      reader.classList.toggle("is-translated", isTranslated);
+      lineEls.forEach((p, idx) => {
+        const k = keys[idx];
+        if (k && dict[k]) p.textContent = dict[k];
+      });
+      if (translateBtn) {
+        translateBtn.setAttribute("aria-pressed", isTranslated ? "true" : "false");
+      }
+      if (translateLabel) {
+        translateLabel.textContent = isTranslated
+          ? (dict.c2TranslateToEn || "Nguyên bản")
+          : (dict.c2TranslateToLocal || "Xem bản dịch");
+      }
     }
+
+    syncCard2VerseUI = () => syncVerseLanguageUI(false);
+    syncVerseLanguageUI(false);
 
     function startClockwiseTour() {
       stopClockwiseTour();
-      if (reducedMotion || isTourPaused) return;
+      if (reducedMotion) return;
       tourInterval = setInterval(() => {
-        if (isTourPaused || Date.now() < manualPauseUntil) return;
+        if (Date.now() < manualPauseUntil) return;
         const idx = EDGES.indexOf(activeEdge);
         const nextEdge = EDGES[(idx + 1) % EDGES.length];
         focusEdge(nextEdge, 0);
@@ -3634,11 +3670,12 @@
     }
 
     function openReader(initialEdge, isManualPick) {
+      isTranslated = false;
+      syncVerseLanguageUI(false);
       secretWrap.classList.add("is-open");
       reader.hidden = false;
       whisperBtn.setAttribute("aria-expanded", "true");
       focusEdge(initialEdge || "top", isManualPick ? 10000 : 0);
-      syncPauseBtnUI();
       startClockwiseTour();
     }
 
@@ -3648,6 +3685,8 @@
       whisperBtn.setAttribute("aria-expanded", "false");
       stopClockwiseTour();
       manualPauseUntil = 0;
+      isTranslated = false;
+      syncVerseLanguageUI(false);
       delete card2.dataset.focusEdge;
       if (returnFocus) whisperBtn.focus();
     }
@@ -3656,12 +3695,10 @@
       openReader("top", false);
     });
 
-    if (pauseTourBtn) {
-      pauseTourBtn.addEventListener("click", () => {
-        isTourPaused = !isTourPaused;
-        syncPauseBtnUI();
-        if (isTourPaused) stopClockwiseTour();
-        else startClockwiseTour();
+    if (translateBtn) {
+      translateBtn.addEventListener("click", () => {
+        isTranslated = !isTranslated;
+        syncVerseLanguageUI(true);
       });
     }
 
@@ -3697,31 +3734,6 @@
         focusEdge(p.dataset.edge || "top", 10000);
       });
     });
-
-    if (copyEnBtn) {
-      copyEnBtn.addEventListener("click", async () => {
-        const dict = I18N[currentLang] || I18N.vi;
-        const localizedStory =
-          `${dict.c2Line1} ${dict.c2Line2} ${dict.c2Line3} ${dict.c2Line4} — T&D`;
-        try {
-          await navigator.clipboard.writeText(localizedStory);
-        } catch (_) {
-          const ta = document.createElement("textarea");
-          ta.value = localizedStory;
-          document.body.appendChild(ta);
-          ta.select();
-          document.execCommand("copy");
-          ta.remove();
-        }
-        if (copyLabel) {
-          copyLabel.textContent = dict.c2Copied || "Copied";
-          if (copyResetTimer) clearTimeout(copyResetTimer);
-          copyResetTimer = setTimeout(() => {
-            copyLabel.textContent = (I18N[currentLang] || I18N.vi).c2Copy || "Copy";
-          }, 2400);
-        }
-      });
-    }
 
     const debugBorder = params.get("debug_border");
     if (debugBorder === "done") {

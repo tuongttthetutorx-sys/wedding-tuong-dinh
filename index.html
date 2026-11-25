@@ -30,7 +30,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,500;1,600&family=Dancing+Script:wght@600;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="css/styles.css?v=78" />
+  <link rel="stylesheet" href="css/styles.css?v=80" />
 
   <!-- Pre-printed numbered QR bookmark (?s=7-k3x9): look up the guest name & card mode assigned later in the admin page -->
   <style>html.td-slot-resolving body { visibility: hidden; }</style>
@@ -424,36 +424,38 @@
 
         <!-- Understated Editorial Epigraph (blossoms in-place into full English calligraphy quote when tapped) -->
         <div id="c2-border-secret" class="c2-border-secret">
-          <button type="button" id="c2-border-whisper-btn" class="c2-epigraph-trigger" aria-expanded="false">
-            <span class="c2-epigraph-excerpt" id="c2-epigraph-excerpt" data-i18n="c2Epigraph">“We began as classmates…”</span>
-            <span class="c2-epigraph-dot" aria-hidden="true">·</span>
-            <span class="c2-epigraph-sig">T &amp; D</span>
+          <button type="button" id="c2-border-whisper-btn" class="c2-epigraph-trigger" aria-expanded="false" aria-label="Mở đọc toàn bộ câu chuyện viền thiệp">
+            <span class="c2-epigraph-row">
+              <span class="c2-epigraph-excerpt" id="c2-epigraph-excerpt" data-i18n="c2Epigraph">“We began as classmates…”</span>
+              <span class="c2-epigraph-dot" aria-hidden="true">·</span>
+              <span class="c2-epigraph-sig">T &amp; D</span>
+            </span>
+            <span class="c2-epigraph-cue" aria-hidden="true">
+              <span class="c2-epigraph-foldline is-long"></span>
+              <span class="c2-epigraph-foldline is-short"></span>
+              <svg class="c2-epigraph-chevrons" viewBox="0 0 18 12" fill="none">
+                <path class="c2-chev-1" d="M4 2L9 6.2L14 2" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path class="c2-chev-2" d="M4 6.2L9 10.4L14 6.2" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </span>
           </button>
 
           <div id="c2-border-reader" class="c2-border-reader" hidden>
             <blockquote class="c2-verse-poem">
-              <p class="c2-verse-line is-active" data-edge="top" data-i18n="c2Line1">“We began as classmates in high school and became each other’s love.</p>
-              <p class="c2-verse-line" data-edge="right" data-i18n="c2Line2">We grew together, understood each other, and found happiness in our relationship.</p>
-              <p class="c2-verse-line" data-edge="bottom" data-i18n="c2Line3">Despite many arguments and challenges, we made it through that chapter.</p>
-              <p class="c2-verse-line" data-edge="left" data-i18n="c2Line4">After seven and a half years, our story continues — now as husband and wife.”</p>
+              <p class="c2-verse-line is-active" data-edge="top">“We began as classmates in high school and became each other’s love.</p>
+              <p class="c2-verse-line" data-edge="right">We grew together, understood each other, and found happiness in our relationship.</p>
+              <p class="c2-verse-line" data-edge="bottom">Despite many arguments and challenges, we made it through that chapter.</p>
+              <p class="c2-verse-line" data-edge="left">After seven and a half years, our story continues — now as husband and wife.”</p>
             </blockquote>
 
             <div class="c2-verse-colophon">
-              <button type="button" id="btn-fold-sig" class="c2-verse-sig-btn" aria-label="Fold quote">— T &amp; D —</button>
+              <button type="button" id="btn-fold-sig" class="c2-verse-sig-btn" aria-label="Thu gọn câu chuyện">— T &amp; D —</button>
               <span class="c2-verse-sep" aria-hidden="true">·</span>
-              <button type="button" id="btn-pause-border-tour" class="c2-verse-action" aria-pressed="false">
-                <span id="c2-pause-label" data-i18n="c2Pause">Pause</span>
+              <button type="button" id="btn-translate-border" class="c2-verse-action c2-verse-translate" aria-pressed="false">
+                <span id="c2-translate-label">Xem bản dịch</span>
               </button>
               <span class="c2-verse-sep" aria-hidden="true">·</span>
-              <button type="button" id="btn-copy-border-en" class="c2-verse-action">
-                <svg width="11.5" height="11.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
-                <span id="c2-copy-label" data-i18n="c2Copy">Copy</span>
-              </button>
-              <span class="c2-verse-sep" aria-hidden="true">·</span>
-              <button type="button" id="btn-close-border-en" class="c2-verse-action c2-verse-close" aria-label="Close">×</button>
+              <button type="button" id="btn-close-border-en" class="c2-verse-action c2-verse-close" aria-label="Đóng">×</button>
             </div>
           </div>
         </div>
@@ -717,6 +719,6 @@
   <script src="js/config.js?v=68" defer></script>
   <script src="js/artwork-envelope.js?v=65" defer></script>
   <script src="js/audio.js?v=65" defer></script>
-  <script src="js/app.js?v=78" defer></script>
+  <script src="js/app.js?v=80" defer></script>
 </body>
 </html>
