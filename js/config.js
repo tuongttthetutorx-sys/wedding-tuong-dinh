@@ -7,7 +7,7 @@ window.WEDDING_CONFIG = {
   brideName: "Lư Tiểu Dinh",
   shortCouple: "Thuận Tường & Tiểu Dinh",
   weddingDateISO: "2027-01-06T18:00:00+07:00",
-  ceremonyDateISO: "2027-01-06T06:00:00+07:00",
+  ceremonyDateISO: "2027-01-06T05:30:00+07:00",
   displayDate: "06.01.2027",
   lunarDateVI: "Nhằm ngày 29 tháng 11 năm Bính Ngọ",
   lunarDateZH: "農曆 二〇二六年十一月二十九日（星期三）",
@@ -20,7 +20,7 @@ window.WEDDING_CONFIG = {
     addressZH: "胡志明市永會坊檳雲屯街 360D 號",
     welcomeTime: "18:00",
     banquetTime: "19:00",
-    ceremonyTime: "06:00",
+    ceremonyTime: "05:30",
     googleMapsUrl: "https://www.google.com/maps/search/?api=1&query=Riverside+Palace+360D+Ben+Van+Don+Ho+Chi+Minh",
     googleMapsEmbed: "https://maps.google.com/maps?q=Riverside%20Palace%20360D%20B%E1%BA%BFn%20V%C3%A2n%20%C4%90%E1%BB%93n%20H%E1%BB%93%20Ch%C3%AD%20Minh&t=&z=16&ie=UTF8&iwloc=&output=embed"
   },

@@ -48,7 +48,7 @@
       dayBadge: "Trọn Ngày Hỷ Sự",
       dayMainDate: "Thứ Tư • 06.01.2027",
       dayLunarDate: "Nhằm ngày 29 tháng 11 năm Bính Ngọ",
-      tl1Period: "Buổi sáng • 06:00",
+      tl1Period: "Buổi sáng • 05:30",
       tl1Title: "Lễ Thành Hôn Tại Tư Gia",
       tl1Desc: "Nhà Trai (P. Phú Định) & Nhà Gái (P. Hoà Bình), TP. Hồ Chí Minh.",
       tl2Period: "Buổi tối cùng ngày • Đón khách 18:00 · Khai tiệc 19:00",
@@ -122,7 +122,7 @@
       dayBadge: "婚禮當日完整流程",
       dayMainDate: "2027 年 1 月 6 日（星期三）",
       dayLunarDate: "農曆丙午年十一月二十九日",
-      tl1Period: "當日上午 • 06:00",
+      tl1Period: "當日上午 • 05:30",
       tl1Title: "府上迎親暨結婚典禮",
       tl1Desc: "於男方府上（胡志明市富定坊）與女方府上（和平坊）舉行傳統迎親暨結婚典禮。",
       tl2Period: "同日晚間 • 18:00 迎賓入席 · 19:00 準時開席",
@@ -1299,30 +1299,31 @@
       const isMine = tNum > 0 && num === tNum;
       const padded = String(num).padStart(2, "0");
 
-      // 10 chairs around each table
+      // 10 transparent acrylic/ghost chairs around each table
       let chairs = "";
       for (let ch = 0; ch < 10; ch++) {
         const deg = ch * 36 - 90;
         const rad = (deg * Math.PI) / 180;
         const chX = (cx + Math.cos(rad) * chairR).toFixed(1);
         const chY = (cy + Math.sin(rad) * chairR).toFixed(1);
-        const chairStroke = isMine ? "#841518" : "rgba(164, 112, 42, 0.48)";
-        const chairFill = isMine ? "rgba(198, 125, 8, 0.26)" : "rgba(250, 245, 234, 0.92)";
+        const chairStroke = isMine ? "rgba(198, 125, 8, 0.78)" : "rgba(126, 134, 142, 0.46)";
+        const chairFill = "url(#seine-ghost-chair)";
         chairs += `<g transform="translate(${chX},${chY}) rotate(${deg + 90})">
-          <rect x="-4.5" y="-3" width="9" height="6" rx="2.2" fill="${chairFill}" stroke="${chairStroke}" stroke-width="${isMine ? "1.3" : "0.85"}" />
+          <rect x="-4.5" y="-3" width="9" height="6" rx="2.2" fill="${chairFill}" stroke="${chairStroke}" stroke-width="${isMine ? "1.1" : "0.8"}" />
+          <line x1="-2.4" y1="-1.5" x2="1.8" y2="-1.5" stroke="rgba(255, 255, 255, 0.85)" stroke-width="0.65" stroke-linecap="round" />
         </g>`;
       }
 
       const halo = isMine
-        ? `<circle cx="${cx}" cy="${cy}" r="36" fill="none" stroke="rgba(198, 125, 8, 0.65)" stroke-width="1.8" stroke-dasharray="3.5 3">
+        ? `<circle cx="${cx}" cy="${cy}" r="36" fill="none" stroke="rgba(198, 125, 8, 0.72)" stroke-width="1.8" stroke-dasharray="3.5 3">
             <animate attributeName="r" values="35;39;35" dur="2s" repeatCount="indefinite" />
            </circle>`
         : "";
 
-      const tableFill = isMine ? "#841518" : "#fdfaf3";
-      const tableStroke = isMine ? "#c67d08" : "rgba(164, 112, 42, 0.58)";
-      const innerStroke = isMine ? "rgba(255, 244, 214, 0.45)" : "rgba(164, 112, 42, 0.2)";
-      const textFill = isMine ? "#fffbf2" : "#5e3d28";
+      const tableFill = isMine ? "#841518" : "url(#seine-brown-table)";
+      const tableStroke = isMine ? "#d49a2a" : "#c7a982";
+      const innerStroke = isMine ? "rgba(255, 244, 214, 0.5)" : "rgba(255, 244, 224, 0.28)";
+      const textFill = "#fdf6ea";
       const fontSize = isMine ? "14" : "12.5";
       const tblName = (tblLabels[String(num)] || "").trim();
       const truncName = tblName.length > 12 ? tblName.substring(0, 11) + "…" : tblName;
@@ -1330,8 +1331,8 @@
 
       const nameBadgeSvg = truncName
         ? `<g transform="translate(${cx}, ${cy + tableR + 5})">
-            <rect x="${(-pillW / 2).toFixed(1)}" y="-7" width="${pillW.toFixed(1)}" height="13" rx="4" fill="${isMine ? "#841518" : "#fffdf8"}" stroke="${isMine ? "#c67d08" : "rgba(132, 21, 23, 0.35)"}" stroke-width="0.9" />
-            <text x="0" y="2.2" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.8" font-weight="700" fill="${isMine ? "#fffbf2" : "#841518"}">${truncName}</text>
+            <rect x="${(-pillW / 2).toFixed(1)}" y="-7" width="${pillW.toFixed(1)}" height="13" rx="4" fill="${isMine ? "#841518" : "#fffdf8"}" stroke="${isMine ? "#d49a2a" : "rgba(90, 56, 37, 0.45)"}" stroke-width="0.9" />
+            <text x="0" y="2.2" text-anchor="middle" font-family="Cormorant Garamond, Noto Serif TC, serif" font-size="8.8" font-weight="700" fill="${isMine ? "#fffbf2" : "#4e2f20"}">${truncName}</text>
           </g>`
         : "";
 
@@ -1373,6 +1374,16 @@
     return `
       <svg viewBox="0 0 ${W} ${svgH}" xmlns="http://www.w3.org/2000/svg" role="img">
         <defs>
+          <radialGradient id="seine-brown-table" cx="38%" cy="32%" r="72%">
+            <stop offset="0%" stop-color="#6d4834" />
+            <stop offset="62%" stop-color="#523323" />
+            <stop offset="100%" stop-color="#3c2317" />
+          </radialGradient>
+          <linearGradient id="seine-ghost-chair" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.46" />
+            <stop offset="50%" stop-color="#dce4ea" stop-opacity="0.14" />
+            <stop offset="100%" stop-color="#ffffff" stop-opacity="0.34" />
+          </linearGradient>
           <linearGradient id="seine-brown-drape" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stop-color="#2e1910" />
             <stop offset="22%" stop-color="#48291b" />
