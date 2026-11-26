@@ -3957,9 +3957,11 @@ html, body {
       ctx.stroke();
       ctx.restore();
 
-      // Discreet Corner Index (#01, #14) or ornamental corner accents
+      // Corner display: show #01 only for unnamed slots; named or generic cards keep symmetric 囍
+      const hasGuestName = Boolean(guestText);
+      const showSlotNum = Boolean(slotNum && !hasGuestName);
       ctx.save();
-      if (slotNum) {
+      if (showSlotNum) {
         ctx.textAlign = "left";
         ctx.textBaseline = "alphabetic";
         ctx.fillStyle = "#681115";
@@ -4066,7 +4068,11 @@ html, body {
           const raw = guestText.trim();
           if (/^(mời|kính mời)/i.test(raw)) {
             line1 = raw;
-          } else if (/^(anh|chị|bạn|em|cô|chú|bác|dì|ông|bà|gia đình)/i.test(raw)) {
+          } else if (
+            /^(anh|chị|bạn|em|cô|chú|bác|dì|ông|bà|gia đình|gđ|vợ chồng|vc|hia|chế|thím|cậu|mợ|dượng|thầy|sếp|quý)/i.test(
+              raw
+            )
+          ) {
             line1 = `Mời ${raw}`;
           } else if (/[\u4e00-\u9fff]/.test(raw)) {
             line1 = `敬邀 ${raw}`;
@@ -4080,13 +4086,21 @@ html, body {
       }
 
       ctx.textAlign = "center";
-      // Dòng 1: Lời mời / Tên khách (Font to, nổi bật, trang trọng)
+      // Dòng 1: Lời mời / Tên khách (Tự co nhẹ nếu tên dài để luôn nằm gọn trong khung 800px)
       ctx.fillStyle = "#681115";
       const len1 = line1.length;
-      const size1 = len1 > 28 ? 24 : len1 > 18 ? 28 : 33;
-      ctx.font = capMode === "zh"
-        ? `700 ${size1}px "Noto Serif TC", serif`
-        : `700 ${size1}px "Be Vietnam Pro", sans-serif`;
+      let size1 = len1 > 28 ? 24 : len1 > 18 ? 28 : 33;
+      const setLine1Font = (sz) => {
+        ctx.font =
+          capMode === "zh"
+            ? `700 ${sz}px "Noto Serif TC", serif`
+            : `700 ${sz}px "Be Vietnam Pro", sans-serif`;
+      };
+      setLine1Font(size1);
+      while (size1 > 18 && ctx.measureText(line1).width > W - 84) {
+        size1 -= 1;
+        setLine1Font(size1);
+      }
       ctx.fillText(line1, W / 2, 638);
 
       // Dòng 2: Hành động (Font rõ ràng, sắc nét, dễ đọc từ xa)
@@ -4133,8 +4147,8 @@ html, body {
       ctx.stroke();
       ctx.restore();
 
-      if (slotNum) {
-        // Numbered QR bookmark:
+      if (slotNum && !guestText) {
+        // Numbered QR bookmark (chỉ hiện số góc khi chưa có tên khách):
         // 1. Tiny, discreet number in the top-left corner so guests barely notice it, while bride/groom can identify it!
         // 2. Delicate couture ornament in the center of the back-folded flap.
         if (!forPrintTransparent) {
@@ -4584,15 +4598,21 @@ html, body {
     const remainder = Math.max(0, targetTotal - namedCount);
     const sheets = Math.ceil(targetTotal / cfg.itemsPerSheet);
 
-    // Compute unassigned slots sequence without duplicating named guests' slots
-    const usedSlotNums = new Set();
+    // Compute unassigned slots sequence without duplicating any named guest or server slot
     ensureGuestSlotsNormalized();
-    names.forEach((gName, pIdx) => {
+    const usedSlotNums = getAllUsedSlotNums();
+    let manualCursor = 1;
+    names.forEach((gName) => {
       const matchedG = savedGuests.find(
         (g) => g && normalizeNameKey(g.name) === normalizeNameKey(gName)
       );
-      const sNum = (matchedG && Number(matchedG.slot)) || pIdx + 1;
-      usedSlotNums.add(sNum);
+      if (matchedG && Number(matchedG.slot)) {
+        usedSlotNums.add(Number(matchedG.slot));
+      } else {
+        while (usedSlotNums.has(manualCursor)) manualCursor++;
+        usedSlotNums.add(manualCursor);
+        manualCursor++;
+      }
     });
 
     let startSlotAuto = startSlot > 1 && !usedSlotNums.has(startSlot) ? startSlot : 1;
@@ -4740,16 +4760,22 @@ html, body {
 
       setTimeout(() => {
         const cells = [];
-        const usedSlotNums = new Set();
 
-        // 1. Render Personalized QR cards for each named guest
+        // 1. Render Personalized QR cards for each named guest (cái nào có tên thì hiện tên, không hiện số)
         ensureGuestSlotsNormalized();
-        personalNames.forEach((gName, pIdx) => {
+        const usedSlotNums = getAllUsedSlotNums();
+        let manualSlotCursor = 1;
+        personalNames.forEach((gName) => {
           const hasCjk = /[\u4e00-\u9fff]/.test(gName);
           const matchedG = savedGuests.find(
             (g) => g && normalizeNameKey(g.name) === normalizeNameKey(gName)
           );
-          const slotNum = (matchedG && Number(matchedG.slot)) || pIdx + 1;
+          let slotNum = matchedG && Number(matchedG.slot);
+          if (!slotNum) {
+            while (usedSlotNums.has(manualSlotCursor)) manualSlotCursor++;
+            slotNum = manualSlotCursor;
+            manualSlotCursor++;
+          }
           usedSlotNums.add(slotNum);
           const gUrl = getSlotUrl(slotNum);
 
@@ -4764,8 +4790,9 @@ html, body {
           const dUrl = (isPinterestStrip || isSquareQr)
             ? qrCanvas.toDataURL("image/jpeg", 0.95)
             : qrCanvas.toDataURL("image/png");
+          const safeAltName = String(gName).replace(/&/g, "&amp;").replace(/"/g, "&quot;");
           cells.push(
-            `<div class="sticker-cell"><img src="${dUrl}" alt="Thẻ QR #${slotNum} ${gName}" /></div>`
+            `<div class="sticker-cell"><img src="${dUrl}" alt="Thẻ QR ${safeAltName}" /></div>`
           );
         });
 
@@ -4932,7 +4959,17 @@ html, body {
       const layoutMode = (qrLayoutStyle && qrLayoutStyle.value) || "square_qr";
       const isSquareQr = layoutMode.startsWith("square_qr");
       const isPinterestStrip = layoutMode === "pinterest_strip";
-      renderLuxuryWeddingQR(true, { layoutMode, slotNum: 1 });
+      const assigned1 = getSlotGuestRecord(1);
+      renderLuxuryWeddingQR(true, {
+        layoutMode,
+        targetUrl: getSlotUrl(1),
+        guestText: assigned1 ? assigned1.name : "",
+        capMode:
+          assigned1 && /[\u4e00-\u9fff]/.test(assigned1.name)
+            ? "zh"
+            : (qrCaptionStyle && qrCaptionStyle.value) || "bilingual",
+        slotNum: 1
+      });
       const sampleQrUrl = (isPinterestStrip || isSquareQr)
         ? qrCanvas.toDataURL("image/jpeg", 0.95)
         : qrCanvas.toDataURL("image/png");
@@ -5033,6 +5070,27 @@ html, body {
     serverSlots = merged;
     ensureGuestSlotsNormalized();
     persistLocalSlots();
+    const batchTa = document.getElementById("qr-batch-guests");
+    if (batchTa && !batchTa.value.trim()) {
+      const slotNamesMap = new Map();
+      (Array.isArray(savedGuests) ? savedGuests : []).forEach((g) => {
+        if (g && g.name && String(g.name).trim()) {
+          slotNamesMap.set(normalizeNameKey(g.name), String(g.name).trim());
+        }
+      });
+      Object.values(serverSlots || {})
+        .filter((s) => s && s.name && String(s.name).trim())
+        .sort((a, b) => (Number(a.num) || 9999) - (Number(b.num) || 9999))
+        .forEach((s) => {
+          const clean = String(s.name).trim();
+          const k = normalizeNameKey(clean);
+          if (!slotNamesMap.has(k)) slotNamesMap.set(k, clean);
+        });
+      if (slotNamesMap.size > 0) {
+        batchTa.value = Array.from(slotNamesMap.values()).join("\n");
+        if (typeof updateBatchLiveSummary === "function") updateBatchLiveSummary();
+      }
+    }
   }
 
   // Advance default print range if already printed earlier
@@ -5041,6 +5099,48 @@ html, body {
     const defaultCfg = getLayoutSheetConfig((qrLayoutStyle && qrLayoutStyle.value) || "square_qr");
     slotPrintFromInput.value = String(nextStart);
     slotPrintToInput.value = String(nextStart + defaultCfg.itemsPerSheet - 1);
+  }
+
+  function getSlotGuestRecord(num) {
+    const n = Number(num);
+    if (!n || n < 1) return null;
+    const code = makeSlotCode(n);
+    const slotObj = serverSlots && serverSlots[code];
+    if (slotObj && slotObj.name && String(slotObj.name).trim()) {
+      return {
+        name: String(slotObj.name).trim(),
+        lang: slotObj.lang || (/[\u4e00-\u9fff]/.test(slotObj.name) ? "zh" : "vi")
+      };
+    }
+    const guestObj = Array.isArray(savedGuests)
+      ? savedGuests.find((g) => g && Number(g.slot) === n && g.name && String(g.name).trim())
+      : null;
+    if (guestObj) {
+      return {
+        name: String(guestObj.name).trim(),
+        lang: guestObj.lang || (/[\u4e00-\u9fff]/.test(guestObj.name) ? "zh" : "vi")
+      };
+    }
+    return null;
+  }
+
+  function getAllUsedSlotNums() {
+    const used = new Set();
+    if (Array.isArray(savedGuests)) {
+      savedGuests.forEach((g) => {
+        if (g && g.slot && g.name && String(g.name).trim()) {
+          used.add(Number(g.slot));
+        }
+      });
+    }
+    Object.keys(serverSlots || {}).forEach((code) => {
+      const s = serverSlots[code];
+      if (s && s.name && String(s.name).trim()) {
+        const sn = Number(s.num || parseInt(code.split("-")[0], 10));
+        if (sn >= 1) used.add(sn);
+      }
+    });
+    return used;
   }
 
   function getSlotUrl(num) {
@@ -5514,6 +5614,28 @@ html, body {
     if (badgeSlotsEl) badgeSlotsEl.textContent = String(assignedCount);
   }
 
+  const slotFlapCenterStyle = document.getElementById("slot-flap-center-style");
+
+  function buildSlotQrOptions(n, overrideLayout) {
+    const layoutMode = overrideLayout || (qrLayoutStyle && qrLayoutStyle.value) || "square_qr";
+    const baseCapMode = (qrCaptionStyle && qrCaptionStyle.value) || "bilingual";
+    const namePosMode = (qrBatchNamePos && qrBatchNamePos.value) || "flap_only";
+    const flapCenterMode = (slotFlapCenterStyle && slotFlapCenterStyle.value) || "xi_emblem";
+    const assigned = getSlotGuestRecord(n);
+    const gName = assigned ? assigned.name : "";
+    const hasCjk = Boolean(gName && /[\u4e00-\u9fff]/.test(gName));
+    return {
+      layoutMode,
+      targetUrl: getSlotUrl(n),
+      capMode: hasCjk ? "zh" : baseCapMode,
+      guestText: gName,
+      namePosMode,
+      flapCenterMode,
+      slotNum: n,
+      assignedName: gName
+    };
+  }
+
   document.querySelectorAll(".js-slot-quick-range").forEach((btn) => {
     btn.addEventListener("click", () => {
       const layoutMode = (qrLayoutStyle && qrLayoutStyle.value) || "square_qr";
@@ -5524,24 +5646,15 @@ html, body {
       const fromN = Math.max(1, parseInt(slotPrintFromInput ? slotPrintFromInput.value : "1", 10) || 1);
       const toN = fromN + count - 1;
       if (slotPrintToInput) slotPrintToInput.value = String(toN);
-      renderLuxuryWeddingQR(false, {
-        layoutMode,
-        targetUrl: getSlotUrl(fromN),
-        slotNum: fromN
-      });
+      renderLuxuryWeddingQR(false, buildSlotQrOptions(fromN, layoutMode));
       notify(`📐 Đã chọn in từ Số ${fromN} → Số ${toN} (${count} chiếc = ${Math.ceil(count / cfg.itemsPerSheet)} tờ A4)!`);
     });
   });
 
-  const slotFlapCenterStyle = document.getElementById("slot-flap-center-style");
   if (slotFlapCenterStyle) {
     slotFlapCenterStyle.addEventListener("change", () => {
       const fromN = Math.max(1, parseInt(slotPrintFromInput ? slotPrintFromInput.value : "1", 10) || 1);
-      renderLuxuryWeddingQR(false, {
-        layoutMode: "pinterest_strip",
-        targetUrl: getSlotUrl(fromN),
-        slotNum: fromN
-      });
+      renderLuxuryWeddingQR(false, buildSlotQrOptions(fromN, "pinterest_strip"));
     });
   }
 
@@ -5549,16 +5662,13 @@ html, body {
     slotPrintFromInput.addEventListener("input", () => {
       const layoutMode = (qrLayoutStyle && qrLayoutStyle.value) || "square_qr";
       const fromN = Math.max(1, parseInt(slotPrintFromInput.value || "1", 10) || 1);
-      renderLuxuryWeddingQR(false, {
-        layoutMode,
-        targetUrl: getSlotUrl(fromN),
-        slotNum: fromN
-      });
+      renderLuxuryWeddingQR(false, buildSlotQrOptions(fromN, layoutMode));
     });
   }
 
   if (btnPrintSlots) {
     btnPrintSlots.addEventListener("click", () => {
+      ensureGuestSlotsNormalized();
       const layoutMode = (qrLayoutStyle && qrLayoutStyle.value) || "square_qr";
       const cfg = getLayoutSheetConfig(layoutMode);
       const isSquareQr = layoutMode.startsWith("square_qr");
@@ -5571,7 +5681,6 @@ html, body {
           parseInt(slotPrintToInput ? slotPrintToInput.value : String(fromN + cfg.itemsPerSheet - 1), 10) || (fromN + cfg.itemsPerSheet - 1)
         )
       );
-      const capMode = (qrCaptionStyle && qrCaptionStyle.value) || "bilingual";
 
       const win = window.open("", "_blank");
       if (!win) {
@@ -5580,20 +5689,29 @@ html, body {
       }
 
       const itemsHtml = [];
+      let namedInRange = 0;
+      let numberedInRange = 0;
+      let firstNumbered = null;
+      let lastNumbered = null;
+
       for (let n = fromN; n <= toN; n++) {
-        const slotUrl = getSlotUrl(n);
-        renderLuxuryWeddingQR(true, {
-          layoutMode,
-          targetUrl: slotUrl,
-          capMode,
-          guestText: "",
-          slotNum: n
-        });
+        const opts = buildSlotQrOptions(n, layoutMode);
+        if (opts.assignedName) {
+          namedInRange++;
+        } else {
+          numberedInRange++;
+          if (firstNumbered === null) firstNumbered = n;
+          lastNumbered = n;
+        }
+        renderLuxuryWeddingQR(true, opts);
         const dUrl = (isPinterestStrip || isSquareQr)
           ? qrCanvas.toDataURL("image/jpeg", 0.95)
           : qrCanvas.toDataURL("image/png");
+        const safeAlt = opts.assignedName
+          ? `Thẻ QR ${String(opts.assignedName).replace(/&/g, "&amp;").replace(/"/g, "&quot;")}`
+          : `Thẻ QR Số ${n}`;
         itemsHtml.push(
-          `<div class="sticker-cell"><img src="${dUrl}" alt="Thẻ QR Số ${n}" /></div>`
+          `<div class="sticker-cell"><img src="${dUrl}" alt="${safeAlt}" /></div>`
         );
       }
 
@@ -5616,13 +5734,20 @@ html, body {
         sheetsCells.push(itemsHtml.slice(i, i + cfg.itemsPerSheet));
       }
       const numSheets = sheetsCells.length;
+      const padN = (v) => `#${String(v).padStart(2, "0")}`;
+      const rangeSummary =
+        namedInRange > 0 && numberedInRange > 0
+          ? `${namedInRange} Đã Có Tên + ${numberedInRange} Đánh Số (${padN(firstNumbered)} → ${padN(lastNumbered)})`
+          : namedInRange > 0
+            ? `${namedInRange} Đã Có Tên`
+            : `${totalCount} thẻ (${padN(fromN)} → ${padN(toN)})`;
 
       win.document.open();
       win.document.write(
         buildDuplexFrontQrHtml({
-          title: `In ${numSheets} Tờ A4 Thẻ QR Đánh Số (Số ${fromN} → Số ${toN} • ${cfg.name}) - Thuận Tường & Tiểu Dinh`,
-          toolbarTitle: `🖨️ Mặt 1 (QR Đánh Số): ${totalCount} thẻ (#${String(fromN).padStart(2, "0")} → #${String(toN).padStart(2, "0")}) gồm ${numSheets} tờ A4 (${cfg.name})`,
-          toolbarDesc: "• Mỗi thẻ có mã QR riêng và số thứ tự ở góc để đối soát link cố định.",
+          title: `In ${numSheets} Tờ A4 Thẻ QR (${rangeSummary} • ${cfg.name}) - Thuận Tường & Tiểu Dinh`,
+          toolbarTitle: `🖨️ Mặt 1 (QR): ${rangeSummary} gồm ${numSheets} tờ A4 (${cfg.name})`,
+          toolbarDesc: "• Thẻ đã có tên tự hiện Tên Khách (không in số); thẻ chưa có tên đánh số góc để điền tên sau.",
           sheetsCells,
           cfg,
           isSquareQr,
