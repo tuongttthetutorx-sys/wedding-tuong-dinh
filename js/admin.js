@@ -3352,9 +3352,229 @@
 
   function getBackMapAssetUrl() {
     if (window.location.protocol === "file:") {
-      return new URL("./assets/ban-do-riverside-palace-card.png", window.location.href).href;
+      return new URL("./assets/ban-do-riverside-palace-card.svg", window.location.href).href;
     }
-    return new URL("/assets/ban-do-riverside-palace-card.png", window.location.origin).href;
+    return new URL("/assets/ban-do-riverside-palace-card.svg", window.location.origin).href;
+  }
+
+  function getBackMapMasterSvgDefHtml() {
+    return `<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden;" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="td-map-frame-clip">
+      <rect x="18" y="114" width="964" height="868" rx="18" ry="18" />
+    </clipPath>
+    <g id="td-traffic-light">
+      <rect x="-5.5" y="-13.5" width="11" height="27" rx="5.5" fill="#2c1d1c" stroke="#ffffff" stroke-width="1.2" />
+      <circle cx="0" cy="-7" r="2.7" fill="#e53935" />
+      <circle cx="0" cy="0" r="2.7" fill="#fbc02d" />
+      <circle cx="0" cy="7" r="2.7" fill="#43a047" />
+    </g>
+    <g id="td-arrow-r">
+      <path d="M-11,0 L8,0 M3.5,-4 L9,0 L3.5,4" fill="none" stroke="#6c2b2c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+    <g id="td-arrow-l">
+      <path d="M11,0 L-8,0 M-3.5,-4 L-9,0 L-3.5,4" fill="none" stroke="#6c2b2c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+    <g id="td-arrow-u">
+      <path d="M0,11 L0,-8 M-4,-3.5 L0,-9 L4,-3.5" fill="none" stroke="#6c2b2c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+    <g id="td-arrow-d">
+      <path d="M0,-11 L0,8 M-4,3.5 L0,9 L4,3.5" fill="none" stroke="#6c2b2c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+  </defs>
+  <g id="td-back-map-master" text-rendering="geometricPrecision" shape-rendering="geometricPrecision">
+    <text x="500" y="56" text-anchor="middle" font-family="'Cormorant Garamond', Georgia, serif" font-size="60" font-weight="700" fill="#8e1e30" letter-spacing="0.5">Riverside Palace</text>
+    <text x="500" y="92" text-anchor="middle" font-family="'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, sans-serif" font-size="27" font-weight="700" fill="#3a201e">360D Bến Vân Đồn, Quận 4 · Sảnh Seine</text>
+    <rect x="18" y="114" width="964" height="868" rx="18" ry="18" fill="#ffffff" />
+    <g clip-path="url(#td-map-frame-clip)">
+      <polygon points="0,382 1000,388 1000,498 0,486" fill="#b7ddf0" />
+      <polygon points="0,664 1000,828 1000,906 0,742" fill="#b7ddf0" />
+      <polygon points="274,772 344,784 282,1000 212,1000" fill="#b7ddf0" />
+      <text x="485" y="446" text-anchor="middle" font-family="'Be Vietnam Pro', sans-serif" font-size="21" font-weight="700" font-style="italic" fill="#185978">Kênh Bến Nghé</text>
+      <text x="500" y="796" text-anchor="middle" transform="rotate(9.3 500 796)" font-family="'Be Vietnam Pro', sans-serif" font-size="20" font-weight="700" font-style="italic" fill="#185978">Kênh Tẻ</text>
+      <text x="278" y="916" text-anchor="middle" transform="rotate(-74 278 916)" font-family="'Be Vietnam Pro', sans-serif" font-size="18" font-weight="700" font-style="italic" fill="#185978">Rạch Ông Lớn</text>
+      <g font-family="'Be Vietnam Pro', sans-serif" font-size="18.5" font-weight="700" fill="#6b504b" letter-spacing="0.6">
+        <text x="116" y="242" text-anchor="middle">QUẬN 5</text>
+        <text x="502" y="242" text-anchor="middle">QUẬN 1</text>
+        <text x="606" y="616" text-anchor="middle" font-size="14.5">QUẬN 4</text>
+        <text x="108" y="886" text-anchor="middle">QUẬN 8</text>
+        <text x="846" y="882" text-anchor="middle">QUẬN 7</text>
+      </g>
+      <rect x="0" y="152" width="1000" height="36" fill="#e6c0bc" />
+      <line x1="0" y1="152" x2="1000" y2="152" stroke="#c9958f" stroke-width="1.2" />
+      <line x1="0" y1="188" x2="1000" y2="188" stroke="#c9958f" stroke-width="1.2" />
+      <line x1="0" y1="170" x2="1000" y2="170" stroke="#ffffff" stroke-width="2.2" stroke-dasharray="10 9" />
+      <use href="#td-arrow-l" x="120" y="161" />
+      <use href="#td-arrow-r" x="120" y="179" />
+      <use href="#td-arrow-l" x="528" y="161" />
+      <use href="#td-arrow-r" x="528" y="179" />
+      <use href="#td-arrow-l" x="945" y="161" />
+      <use href="#td-arrow-r" x="945" y="179" />
+      <rect x="0" y="302" width="1000" height="64" fill="#e6c0bc" />
+      <line x1="0" y1="302" x2="1000" y2="302" stroke="#c9958f" stroke-width="1.2" />
+      <line x1="0" y1="366" x2="1000" y2="366" stroke="#c9958f" stroke-width="1.2" />
+      <rect x="0" y="331" width="1000" height="6" fill="#ffffff" />
+      <use href="#td-arrow-l" x="72" y="317" />
+      <use href="#td-arrow-r" x="72" y="350" />
+      <use href="#td-arrow-l" x="524" y="317" />
+      <use href="#td-arrow-r" x="524" y="350" />
+      <rect x="200" y="512" width="800" height="44" fill="#e6c0bc" />
+      <line x1="200" y1="512" x2="1000" y2="512" stroke="#c9958f" stroke-width="1.2" />
+      <line x1="200" y1="556" x2="1000" y2="556" stroke="#c9958f" stroke-width="1.2" />
+      <line x1="200" y1="534" x2="1000" y2="534" stroke="#ffffff" stroke-width="2.4" />
+      <use href="#td-arrow-l" x="325" y="523" />
+      <use href="#td-arrow-r" x="325" y="545" />
+      <use href="#td-arrow-l" x="595" y="523" />
+      <use href="#td-arrow-r" x="595" y="545" />
+      <use href="#td-arrow-l" x="722" y="523" />
+      <use href="#td-arrow-r" x="722" y="545" />
+      <rect x="665" y="638" width="335" height="34" fill="#e6c0bc" />
+      <line x1="665" y1="638" x2="1000" y2="638" stroke="#c9958f" stroke-width="1.2" />
+      <line x1="665" y1="672" x2="1000" y2="672" stroke="#c9958f" stroke-width="1.2" />
+      <line x1="665" y1="655" x2="1000" y2="655" stroke="#ffffff" stroke-width="2" stroke-dasharray="9 8" />
+      <path d="M 272,642 L 1010,766" fill="none" stroke="#c9958f" stroke-width="38.5" stroke-linecap="round" />
+      <path d="M 272,642 L 1010,766" fill="none" stroke="#e6c0bc" stroke-width="36" stroke-linecap="round" />
+      <use href="#td-arrow-l" x="515" y="674" transform="rotate(9.3 515 674)" />
+      <use href="#td-arrow-r" x="515" y="690" transform="rotate(9.3 515 690)" />
+      <use href="#td-arrow-l" x="804" y="721" transform="rotate(9.3 804 721)" />
+      <use href="#td-arrow-r" x="804" y="738" transform="rotate(9.3 804 738)" />
+      <rect x="538" y="546" width="28" height="145" fill="#e6c0bc" />
+      <line x1="538" y1="556" x2="538" y2="680" stroke="#c9958f" stroke-width="1.2" />
+      <line x1="566" y1="556" x2="566" y2="685" stroke="#c9958f" stroke-width="1.2" />
+      <use href="#td-arrow-u" x="524" y="618" />
+      <use href="#td-arrow-d" x="510" y="618" />
+      <rect x="424" y="546" width="20" height="122" fill="#e6c0bc" />
+      <path d="M 426,570 L 404,570" fill="none" stroke="#e6c0bc" stroke-width="11" />
+      <path d="M 419,549 L 419,570 L 402,570" fill="none" stroke="#841826" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M 407,566 L 400,570 L 407,574" fill="none" stroke="#841826" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+      <rect x="446" y="562" width="12" height="14" fill="#e6c0bc" />
+      <rect x="456" y="556" width="32" height="32" rx="7" fill="#175987" />
+      <text x="472" y="579" text-anchor="middle" font-family="'Be Vietnam Pro', sans-serif" font-size="20" font-weight="700" fill="#ffffff">P</text>
+      <text x="472" y="606" text-anchor="middle" font-family="'Be Vietnam Pro', sans-serif" font-size="16" font-weight="700" fill="#175987">Bãi xe</text>
+      <rect x="658" y="546" width="32" height="454" fill="#e6c0bc" />
+      <line x1="658" y1="556" x2="658" y2="1000" stroke="#c9958f" stroke-width="1.2" />
+      <line x1="690" y1="556" x2="690" y2="1000" stroke="#c9958f" stroke-width="1.2" />
+      <line x1="674" y1="546" x2="674" y2="1000" stroke="#ffffff" stroke-width="2" stroke-dasharray="9 8" />
+      <use href="#td-arrow-u" x="706" y="608" />
+      <use href="#td-arrow-d" x="694" y="608" />
+      <g>
+        <rect x="654" y="758" width="40" height="72" fill="#d9a8a3" stroke="#8a4444" stroke-width="2" />
+        <line x1="674" y1="758" x2="674" y2="830" stroke="#ffffff" stroke-width="2" stroke-dasharray="8 7" />
+        <path d="M 650,752 L 654,758 L 690,758 L 694,752" fill="none" stroke="#8a4444" stroke-width="2" stroke-linecap="round" />
+        <path d="M 650,836 L 654,830 L 690,830 L 694,836" fill="none" stroke="#8a4444" stroke-width="2" stroke-linecap="round" />
+      </g>
+      <rect x="760" y="114" width="32" height="580" fill="#e6c0bc" />
+      <line x1="760" y1="114" x2="760" y2="694" stroke="#c9958f" stroke-width="1.2" />
+      <line x1="792" y1="114" x2="792" y2="694" stroke="#c9958f" stroke-width="1.2" />
+      <line x1="776" y1="114" x2="776" y2="694" stroke="#ffffff" stroke-width="2" stroke-dasharray="9 8" />
+      <use href="#td-arrow-u" x="783" y="228" />
+      <use href="#td-arrow-d" x="769" y="228" />
+      <rect x="756" y="376" width="40" height="142" fill="#d5a09a" stroke="#7d3b3b" stroke-width="2.2" />
+      <line x1="776" y1="376" x2="776" y2="518" stroke="#ffffff" stroke-width="2.2" stroke-dasharray="9 8" />
+      <path d="M 751,370 L 756,376 L 796,376 L 801,370" fill="none" stroke="#7d3b3b" stroke-width="2.2" stroke-linecap="round" />
+      <path d="M 751,524 L 756,518 L 796,518 L 801,524" fill="none" stroke="#7d3b3b" stroke-width="2.2" stroke-linecap="round" />
+      <rect x="884" y="114" width="32" height="580" fill="#e6c0bc" />
+      <line x1="884" y1="114" x2="884" y2="694" stroke="#c9958f" stroke-width="1.2" />
+      <line x1="916" y1="114" x2="916" y2="694" stroke="#c9958f" stroke-width="1.2" />
+      <line x1="900" y1="114" x2="900" y2="694" stroke="#ffffff" stroke-width="2" stroke-dasharray="9 8" />
+      <path d="M 885,432 Q 885,522 814,528 L 814,550 Q 906,544 906,432 Z" fill="#d5a09a" stroke="#7d3b3b" stroke-width="1.8" />
+      <path d="M 915,432 Q 915,522 962,528 L 962,550 Q 894,544 894,432 Z" fill="#d5a09a" stroke="#7d3b3b" stroke-width="1.8" />
+      <path d="M 880,455 Q 875,515 824,522" fill="none" stroke="#781822" stroke-width="2.2" stroke-linecap="round" />
+      <path d="M 831,517 L 823,522 L 832,526" fill="none" stroke="#781822" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M 920,455 Q 925,515 954,522" fill="none" stroke="#781822" stroke-width="2.2" stroke-linecap="round" />
+      <path d="M 947,517 L 955,522 L 947,526" fill="none" stroke="#781822" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+      <rect x="880" y="376" width="40" height="142" fill="#d5a09a" stroke="#7d3b3b" stroke-width="2.2" />
+      <line x1="900" y1="376" x2="900" y2="518" stroke="#ffffff" stroke-width="2.2" stroke-dasharray="9 8" />
+      <path d="M 875,370 L 880,376 L 920,376 L 925,370" fill="none" stroke="#7d3b3b" stroke-width="2.2" stroke-linecap="round" />
+      <path d="M 875,524 L 880,518 L 920,518 L 925,524" fill="none" stroke="#7d3b3b" stroke-width="2.2" stroke-linecap="round" />
+      <g transform="rotate(6.2 225 500)">
+        <rect x="206" y="100" width="42" height="920" fill="#e6c0bc" />
+        <line x1="206" y1="100" x2="206" y2="1020" stroke="#c9958f" stroke-width="1.2" />
+        <line x1="248" y1="100" x2="248" y2="1020" stroke="#c9958f" stroke-width="1.2" />
+        <line x1="227" y1="100" x2="227" y2="1020" stroke="#ffffff" stroke-width="2.2" stroke-dasharray="10 9" />
+      </g>
+      <path d="M 225,512 L 136,512 C 62,512 58,610 136,610 L 222,610" fill="none" stroke="#7d3b3b" stroke-width="40" stroke-linecap="round" />
+      <path d="M 225,512 L 136,512 C 62,512 58,610 136,610 L 222,610" fill="none" stroke="#e0b2ad" stroke-width="35" stroke-linecap="round" />
+      <path d="M 225,512 L 136,512 C 62,512 58,610 136,610 L 222,610" fill="none" stroke="#ffffff" stroke-width="2" stroke-dasharray="9 8" />
+      <path d="M 155,512 L 128,512" fill="none" stroke="#781822" stroke-width="2.4" stroke-linecap="round" />
+      <path d="M 134,507.5 L 126,512 L 134,516.5" fill="none" stroke="#781822" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M 126,610 L 160,610" fill="none" stroke="#781822" stroke-width="2.4" stroke-linecap="round" />
+      <path d="M 154,605.5 L 162,610 L 154,614.5" fill="none" stroke="#781822" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M 232,442 Q 246,356 306,350 L 306,328 Q 222,334 210,442 Z" fill="#d5a09a" stroke="#7d3b3b" stroke-width="1.8" />
+      <path d="M 226,476 Q 238,522 288,528 L 288,548 Q 222,542 204,476 Z" fill="#d5a09a" stroke="#7d3b3b" stroke-width="1.8" />
+      <g transform="rotate(6.2 225 500)">
+        <rect x="202" y="250" width="50" height="512" fill="#d5a09a" stroke="#7d3b3b" stroke-width="2.4" />
+        <line x1="227" y1="250" x2="227" y2="762" stroke="#ffffff" stroke-width="2.4" stroke-dasharray="10 9" />
+        <path d="M 196,244 L 202,250 L 252,250 L 258,244" fill="none" stroke="#7d3b3b" stroke-width="2.4" stroke-linecap="round" />
+        <path d="M 196,768 L 202,762 L 252,762 L 258,768" fill="none" stroke="#7d3b3b" stroke-width="2.4" stroke-linecap="round" />
+        <use href="#td-arrow-u" x="237" y="210" />
+        <use href="#td-arrow-d" x="217" y="210" />
+        <use href="#td-arrow-d" x="216" y="704" />
+        <use href="#td-arrow-u" x="238" y="704" />
+      </g>
+      <path d="M 238,392 Q 254,352 292,344" fill="none" stroke="#781822" stroke-width="2.4" stroke-linecap="round" />
+      <path d="M 284,340 L 293,344 L 285,349" fill="none" stroke="#781822" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M 224,492 Q 242,520 278,524" fill="none" stroke="#781822" stroke-width="2.4" stroke-linecap="round" />
+      <path d="M 271,519 L 280,524 L 270,528" fill="none" stroke="#781822" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+      <use href="#td-traffic-light" x="236" y="198" />
+      <use href="#td-traffic-light" x="444" y="514" />
+      <use href="#td-traffic-light" x="576" y="562" />
+      <use href="#td-traffic-light" x="698" y="562" />
+      <use href="#td-traffic-light" x="698" y="688" />
+      <use href="#td-traffic-light" x="794" y="688" />
+      <g font-family="'Be Vietnam Pro', -apple-system, sans-serif" font-weight="700" fill="#2d1716">
+        <text x="122" y="143" text-anchor="middle" font-size="18.5">TRẦN HƯNG ĐẠO</text>
+        <text x="528" y="143" text-anchor="middle" font-size="19">TRẦN HƯNG ĐẠO</text>
+        <text x="126" y="294" text-anchor="middle" font-size="17.5">ĐẠI LỘ VÕ VĂN KIỆT</text>
+        <text x="524" y="294" text-anchor="middle" font-size="19.5">ĐẠI LỘ VÕ VĂN KIỆT</text>
+        <text x="562" y="503" text-anchor="middle" font-size="22" letter-spacing="0.4">BẾN VÂN ĐỒN</text>
+        <text x="826" y="630" text-anchor="middle" font-size="18.5">HOÀNG DIỆU</text>
+        <text x="518" y="707" text-anchor="middle" transform="rotate(9.3 518 707)" font-size="18">TÔN THẤT THUYẾT</text>
+        <text x="434" y="622" text-anchor="middle" transform="rotate(-90 434 622)" font-size="14.2">Hẻm 360</text>
+        <text x="556" y="624" text-anchor="middle" transform="rotate(-90 556 624)" font-size="15.8">NGUYỄN KHOÁI</text>
+        <text x="653" y="612" text-anchor="middle" transform="rotate(-90 653 612)" font-size="16.5">KHÁNH HỘI</text>
+        <text x="678" y="794" text-anchor="middle" transform="rotate(-90 678 794)" font-size="16">CẦU KÊNH TẺ</text>
+        <text x="647" y="896" text-anchor="middle" transform="rotate(-90 647 896)" font-size="15.8">NGUYỄN HỮU THỌ</text>
+        <text x="275" y="238" text-anchor="middle" transform="rotate(-83.8 275 238)" font-size="16.5">NGUYỄN VĂN CỪ</text>
+        <text x="190" y="426" text-anchor="middle" transform="rotate(-83.8 190 426)" font-size="16.5">CẦU NGUYỄN VĂN CỪ</text>
+        <text x="178" y="882" text-anchor="middle" transform="rotate(-83.8 178 882)" font-size="17">DƯƠNG BÁ TRẠC</text>
+        <text x="747" y="236" text-anchor="middle" transform="rotate(-90 747 236)" font-size="17">NGUYỄN THÁI HỌC</text>
+        <text x="744" y="446" text-anchor="middle" transform="rotate(-90 744 446)" font-size="17">CẦU ÔNG LÃNH</text>
+        <text x="872" y="236" text-anchor="middle" transform="rotate(-90 872 236)" font-size="17.5">CALMETTE</text>
+        <text x="935" y="434" text-anchor="middle" transform="rotate(-90 935 434)" font-size="15.5">CẦU CALMETTE</text>
+      </g>
+      <rect x="330" y="544" width="84" height="36" rx="7" fill="#fae8eb" stroke="#8e1e30" stroke-width="2.2" />
+      <rect x="200" y="591" width="218" height="54" rx="10" fill="rgba(110, 20, 30, 0.14)" />
+      <rect x="198" y="588" width="218" height="54" rx="10" fill="#ffffff" stroke="#8e1e30" stroke-width="2.6" />
+      <text x="307" y="611" text-anchor="middle" font-family="'Be Vietnam Pro', sans-serif" font-size="19" font-weight="700" fill="#8e1e30" letter-spacing="0.3">RIVERSIDE PALACE</text>
+      <text x="307" y="632" text-anchor="middle" font-family="'Be Vietnam Pro', sans-serif" font-size="13.2" font-weight="700" fill="#3a201e">Sảnh Seine · Lối vào Hẻm 360</text>
+      <g transform="translate(396, 560)">
+        <path d="M 0,0 C -16,-19 -23,-32 -23,-43 A 23,23 0 1,1 23,-43 C 23,-32 16,-19 0,0 Z" fill="#8e1e30" stroke="#ffffff" stroke-width="2.8" />
+        <path d="M 0,-32 C -3.8,-37 -11,-37 -11,-29.5 C -11,-23 -3.8,-18 0,-14.5 C 3.8,-18 11,-23 11,-29.5 C 11,-37 3.8,-37 0,-32 Z" fill="#ffffff" />
+      </g>
+      <g transform="translate(708, 906)">
+        <rect x="0" y="0" width="264" height="68" rx="10" fill="#faf7f3" stroke="#cbb3a6" stroke-width="1.6" />
+        <g transform="translate(24, 21)">
+          <rect x="-11" y="-5.5" width="22" height="11" fill="#d5a09a" stroke="#7d3b3b" stroke-width="1.6" />
+          <path d="M-15,-8.5 L-11,-5.5 L11,-5.5 L15,-8.5 M-15,8.5 L-11,5.5 L11,5.5 L15,8.5" fill="none" stroke="#7d3b3b" stroke-width="1.6" stroke-linecap="round" />
+        </g>
+        <text x="46" y="25.5" font-family="'Be Vietnam Pro', sans-serif" font-size="14.5" font-weight="700" fill="#3a201e">Cầu vượt</text>
+        <use href="#td-arrow-r" x="148" y="21" />
+        <text x="166" y="25.5" font-family="'Be Vietnam Pro', sans-serif" font-size="14.5" font-weight="700" fill="#3a201e">Chiều đường</text>
+        <path d="M 14,49 L 33,49 M 28,44.5 L 34,49 L 28,53.5" fill="none" stroke="#8e1e30" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" />
+        <text x="46" y="53.5" font-family="'Be Vietnam Pro', sans-serif" font-size="14.5" font-weight="700" fill="#3a201e">Nhánh cầu</text>
+        <g transform="translate(148, 49) scale(0.75)">
+          <rect x="-5.5" y="-13.5" width="11" height="27" rx="5.5" fill="#2c1d1c" />
+          <circle cx="0" cy="-7" r="2.7" fill="#e53935" />
+          <circle cx="0" cy="0" r="2.7" fill="#fbc02d" />
+          <circle cx="0" cy="7" r="2.7" fill="#43a047" />
+        </g>
+        <text x="166" y="53.5" font-family="'Be Vietnam Pro', sans-serif" font-size="14.5" font-weight="700" fill="#3a201e">Đèn tín hiệu</text>
+      </g>
+    </g>
+    <rect x="18" y="114" width="964" height="868" rx="18" ry="18" fill="none" stroke="#bfa599" stroke-width="2.5" />
+  </g>
+</svg>`;
   }
 
   function buildDuplexCropMarksHtml(cfg) {
@@ -3551,7 +3771,6 @@ html, body {
 
   function openBacksideMapPrintWindow({ layoutMode, pageCount = 1, testPairQrDataUrl = "" }) {
     const cfg = getLayoutSheetConfig(layoutMode);
-    const mapImgUrl = getBackMapAssetUrl();
     const isTestMode = Boolean(testPairQrDataUrl);
     const safePages = isTestMode ? 1 : Math.max(1, Math.min(80, parseInt(pageCount, 10) || 1));
 
@@ -3564,7 +3783,7 @@ html, body {
     const totalCells = cfg.cols * cfg.rows;
     let mapCellsHtml = "";
     for (let i = 0; i < totalCells; i++) {
-      mapCellsHtml += `<div class="map-cell"><img src="${mapImgUrl}" alt="Bản đồ Riverside Palace" /></div>`;
+      mapCellsHtml += `<div class="map-cell"><svg viewBox="0 0 1000 1000" role="img" aria-label="Bản đồ Riverside Palace"><use href="#td-back-map-master" /></svg></div>`;
     }
 
     let testFrontHtml = "";
@@ -3591,6 +3810,9 @@ html, body {
 <head>
   <meta charset="UTF-8" />
   <title>${pageTitle}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@500;600;700&family=Cormorant+Garamond:wght@700&display=swap" rel="stylesheet" />
   <style>
 @page { size: A4 portrait; margin: 0; }
 :root {
@@ -3764,7 +3986,8 @@ html, body {
   overflow: hidden;
   /* Không vẽ khung viền cắt ở mặt sau để máy in lệch 1-2mm vẫn mịn đẹp tuyệt đối! */
 }
-.map-cell img {
+.map-cell img,
+.map-cell svg {
   width: 100%;
   height: 100%;
   object-fit: contain;
@@ -3788,12 +4011,13 @@ html, body {
   </style>
 </head>
 <body>
+  ${getBackMapMasterSvgDefHtml()}
   <div class="print-toolbar">
     <div class="tb-top">
       <div>
-        <strong>${isTestMode ? "🧪 Tờ Test Khớp 2 Mặt (Trang 1: Mặt QR · Trang 2: Mặt Bản Đồ)" : `🗺️ Mặt Sau A4: Bản Đồ Riverside Palace (${cfg.name})`}</strong>
+        <strong>${isTestMode ? "🧪 Tờ Test Khớp 2 Mặt (Trang 1: Mặt QR · Trang 2: Mặt Bản Đồ Vector)" : `🗺️ Mặt Sau A4: Bản Đồ Riverside Palace (${cfg.name})`}</strong>
         <div style="font-size:12.2px; color:#5c4747; margin-top:4px; line-height:1.5;">
-          • <strong>Khóa khớp tâm A4:</strong> ${cfg.cols}×${cfg.rows} ô (${cfg.cellWmm}×${cfg.cellHmm}mm), lề trái/phải <strong>${cfg.marginXmm}mm</strong>, lề trên/dưới <strong>${cfg.marginYmm}mm</strong> - trùng khít 100% mặt QR.<br/>
+          • <strong>Bản đồ Vector siêu nét ∞ DPI:</strong> Nét đường &amp; chữ đậm rõ, khóa khớp tâm A4 ${cfg.cols}×${cfg.rows} ô (${cfg.cellWmm}×${cfg.cellHmm}mm · lề ${cfg.marginXmm}/${cfg.marginYmm}mm).<br/>
           • <strong>Bắt buộc khi in:</strong> Khổ giấy <strong>A4</strong> · Tỷ lệ <strong>100% (Actual Size)</strong> · Lề <strong>None</strong>. ${isTestMode ? "In Trang 1 trước, lật giấy đút lại in Trang 2 rồi đưa lên soi đèn!" : "Mẹo: Chỉ cần để 1 tờ rồi chỉnh Số bản (Copies) trên máy in bằng số tờ QR đã in."}
         </div>
       </div>
